@@ -56,7 +56,7 @@ if (! function_exists('write_file')) {
         }
 
         flock($fp, LOCK_EX);
-        fwrite($fp, $data);
+        fwrite($fp, (string) $data);
         flock($fp, LOCK_UN);
         fclose($fp);
 
@@ -83,7 +83,7 @@ if (! function_exists('delete_files')) {
     function delete_files($path, $del_dir = false, $level = 0, $exclude = array())
     {
         // Trim the trailing slash
-        $path = rtrim($path, DIRECTORY_SEPARATOR);
+        $path = rtrim((string) $path, DIRECTORY_SEPARATOR);
 
         // If this isnt a directory, lets return false
         if (! is_dir($path) || ! $current_dir = @opendir($path)) {
@@ -126,7 +126,7 @@ if (! function_exists('delete_files')) {
 if (! function_exists('write_index_html')) {
     function write_index_html($path)
     {
-        $path = rtrim($path, '/') . '/';
+        $path = rtrim((string) $path, '/') . '/';
 
         return write_file($path . 'index.html', 'Directory access is forbidden.');
     }
@@ -242,7 +242,7 @@ if (! function_exists('get_file_info')) {
         foreach ($returned_values as $key) {
             switch ($key) {
                 case 'name':
-                    $fileinfo['name'] = substr(strrchr($file, DIRECTORY_SEPARATOR), 1);
+                    $fileinfo['name'] = substr(strrchr((string) $file, DIRECTORY_SEPARATOR), 1);
 
                     break;
                 case 'server_path':

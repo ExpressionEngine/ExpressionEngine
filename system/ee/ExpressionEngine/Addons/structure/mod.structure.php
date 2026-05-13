@@ -99,13 +99,13 @@ class Structure extends Channel
         $branch_entry_id = 0; // default to 'root'
 
         if ($start_from != '/') {
-            $start_from = Structure_Helper::remove_double_slashes('/' . html_entity_decode($start_from) . '/');
+            $start_from = Structure_Helper::remove_double_slashes('/' . html_entity_decode((string) $start_from) . '/');
 
             $settings = $this->sql->get_settings();
             $trailing_slash = isset($settings['add_trailing_slash']) && $settings['add_trailing_slash'] === 'y';
 
             if ($trailing_slash === false) {
-                $start_from = rtrim($start_from, '/');
+                $start_from = rtrim((string) $start_from, '/');
             }
 
             // find 'start_from' in pages
@@ -182,7 +182,7 @@ class Structure extends Channel
         $html = "";
 
         $css_id = ee()->TMPL->fetch_param('css_id');
-        $css_id = $css_id ? strtolower($css_id) : "sitemap";
+        $css_id = $css_id ? strtolower((string) $css_id) : "sitemap";
 
         if ($css_id == "none") {
             $css_id = '';
@@ -213,7 +213,9 @@ class Structure extends Channel
 
         // Remove the default "open" status if explicitly set
         if (in_array('open', $exclude_status_list)) {
-            $status = array_filter($status, function($v) { return $v != "open"; });
+            $status = array_filter($status, function ($v) {
+                return $v != "open";
+            });
         }
 
         if ($status_state == 'positive') {
@@ -242,8 +244,8 @@ class Structure extends Channel
 
         foreach ($pages as $key => $entry_data) {
             if (
-                $status_state == 'negative' && in_array(strtolower($entry_data['status']), $status)
-                || ($status_state == 'positive' && ! in_array(strtolower($entry_data['status']), $status))
+                $status_state == 'negative' && in_array(strtolower((string) $entry_data['status']), $status)
+                || ($status_state == 'positive' && ! in_array(strtolower((string) $entry_data['status']), $status))
                 || in_array($entry_data['parent_id'], $closed_parents)
                 || in_array($entry_data['entry_id'], $exclude)
             ) {
@@ -335,7 +337,7 @@ class Structure extends Channel
                     if (ee()->config->item('auto_convert_high_ascii') != 'n') {
                         $page_title = $page['title'];
                     } else {
-                        $page_title = htmlspecialchars($page['title']);
+                        $page_title = htmlspecialchars((string) $page['title']);
                     }
 
                     $list_item = "<li$classes><a href='$item_uri'>" . $page_title . "</a></li>\n";
@@ -531,7 +533,7 @@ class Structure extends Channel
 
         // Are we passed a URI to work from? If not use current URI
         $uri = ee()->TMPL->fetch_param('uri', $this->sql->get_uri());
-        $uri = html_entity_decode($uri);
+        $uri = html_entity_decode((string) $uri);
 
         // get current entry id
         if ($channel_id !== false && is_numeric($channel_id)) {
@@ -585,7 +587,7 @@ class Structure extends Channel
 
         $home_entry = array_search('/', $site_pages['uris']) ? array_search('/', $site_pages['uris']) : 0; #default to zero
 
-        $site_index = trim(ee()->functions->fetch_site_index(0, 0), '/');
+        $site_index = trim((string) ee()->functions->fetch_site_index(0, 0), '/');
         $home_link = ee()->TMPL->fetch_param('home_link', $site_index);
 
         $custom_title_fields = $this->sql->create_custom_titles(true);
@@ -620,7 +622,7 @@ class Structure extends Channel
                 $title = $custom_title_fields !== false ? array_key_exists($entry_id, $custom_title_fields) ? $custom_title_fields[$entry_id] : $this->sql->get_entry_title($entry_id) : $this->sql->get_entry_title($entry_id);
 
                 if (ee()->TMPL->fetch_param('encode_titles', 'yes') === "yes") {
-                    $title = htmlspecialchars($title);
+                    $title = htmlspecialchars((string) $title);
                 }
 
                 $crumbs[] = !empty($wrap_here) ? "<{$wrap_here}>$title</{$wrap_here}>" : $title;
@@ -676,7 +678,7 @@ class Structure extends Channel
 
         // node does not have any structure data we return site_name to prevent errors
         if ($node === false && !$entry_id) {
-            return stripslashes(ee()->config->item('site_name'));
+            return stripslashes((string) ee()->config->item('site_name'));
         }
 
         // if we have an entry id but no node, we have listing entry
@@ -730,14 +732,14 @@ class Structure extends Channel
             $title = $custom_titles && isset($custom_titles[$entry['entry_id']]) ? $custom_titles[$entry['entry_id']] : $entry['title'];
 
             if ($encode_titles) {
-                $title = htmlspecialchars($title);
+                $title = htmlspecialchars((string) $title);
             }
 
             $title_array[] = $title;
         }
 
         if ($site_name === 'yes') {
-            $title_array[] = stripslashes(ee()->config->item('site_name'));
+            $title_array[] = stripslashes((string) ee()->config->item('site_name'));
         }
 
         if ($reverse == 'yes') {
@@ -802,7 +804,7 @@ class Structure extends Channel
 
         // node does not have any structure data we return site_name to prevent errors
         if ($node === false && ! $entry_id) {
-            return stripslashes(ee()->config->item('site_name'));
+            return stripslashes((string) ee()->config->item('site_name'));
         }
 
         // if we have an entry id but no node, we have listing entry
@@ -866,7 +868,7 @@ class Structure extends Channel
         @$uri = $site_pages['uris'][$entry_id];
 
         // if there are no / then we have a root slug already, else get the end
-        $slug .= trim($uri, '/');
+        $slug .= trim((string) $uri, '/');
 
         if (strpos($slug, '/')) {
             $slug = substr(strrchr($slug, '/'), 1);
@@ -921,7 +923,7 @@ class Structure extends Channel
             $current_uri = implode('/', ee()->uri->segment_array());
             $parent = array_search("/$current_uri/", $site_pages['uris']);
         } elseif ($start_from) {
-            $start_from = trim($start_from, '/');
+            $start_from = trim((string) $start_from, '/');
             $parent = array_search("/$start_from/", $site_pages['uris']);
         }
 
@@ -1061,9 +1063,9 @@ class Structure extends Channel
         $html = $pid = "";
         $html = (! ee()->TMPL->tagdata) ? '' : ee()->TMPL->tagdata;
 
-        if (strtolower(ee()->TMPL->fetch_param('type')) == "next") {
+        if (strtolower((string) ee()->TMPL->fetch_param('type')) == "next") {
             $type = 'ASC';
-        } elseif (strtolower(ee()->TMPL->fetch_param('type')) == "previous") {
+        } elseif (strtolower((string) ee()->TMPL->fetch_param('type')) == "previous") {
             $type = 'DESC';
         } else {
             return "";
@@ -1364,7 +1366,7 @@ class Structure extends Channel
                                 $child_id = $child['entry_id'];
 
                                 // replaces only first occurrence of $prevUri, makes sure only initial slash is replaced
-                                $site_pages['uris'][$child_id] = Structure_Helper::remove_double_slashes(preg_replace("#" . $prevUri . "#", $uri . '/', $site_pages['uris'][$child_id], 1));
+                                $site_pages['uris'][$child_id] = Structure_Helper::remove_double_slashes(preg_replace("#" . $prevUri . "#", $uri . '/', (string) $site_pages['uris'][$child_id], 1));
                             }
                         }
 
@@ -1377,7 +1379,7 @@ class Structure extends Channel
                                 $listing_id = $listing['entry_id'];
 
                                 // replaces only first occurrence of $prevUri, makes sure only initial slash is replaced
-                                $site_pages['uris'][$listing_id] = Structure_Helper::remove_double_slashes(preg_replace("#" . $prevUri . "#", $uri . '/', $site_pages['uris'][$listing_id], 1));
+                                $site_pages['uris'][$listing_id] = Structure_Helper::remove_double_slashes(preg_replace("#" . $prevUri . "#", $uri . '/', (string) $site_pages['uris'][$listing_id], 1));
                             }
                         }
                     } else {
@@ -1632,6 +1634,7 @@ class Structure extends Channel
         $uri = $parent_uri . '/' . $uri;
         // ensure beginning and ending slash
         $uri = '/' . trim($uri, '/');
+
         // if double slash, reduce to one
         return str_replace('//', '/', $uri);
     }
@@ -1652,6 +1655,7 @@ class Structure extends Channel
         while (strpos($uri, '//') !== false) {
             $uri = str_replace('//', '/', $uri);
         }
+
         return $uri;
     }
 
@@ -1664,7 +1668,8 @@ class Structure extends Channel
         // if structure_uri is not entered use url_title
         $uri = $uri ? $uri : $url_title;
         // Clean it up TODO replace with EE create URL TITLE?
-        $uri = preg_replace("#[^a-zA-Z0-9_\-\.]+#i", '', $uri);
+        $uri = preg_replace("#[^a-zA-Z0-9_\-\.]+#i", '', (string) $uri);
+
         // Make sure there are no "_" underscores at the beginning or end
         return trim($uri, "_");
     }
@@ -1859,7 +1864,7 @@ class Structure extends Channel
      */
     public function delete_data_by_channel($channel_id)
     {
-        
+
         // Check if channel_id is numeric
         if (!is_numeric($channel_id)) {
             return false;
@@ -2137,7 +2142,7 @@ class Structure extends Channel
 
     public function remove_last_segment($uri)
     {
-        $segments = (explode('/', trim($uri, '/')));
+        $segments = (explode('/', trim((string) $uri, '/')));
         unset($segments[count($segments) - 1]);
 
         return '/' . implode('/', $segments) . '/';

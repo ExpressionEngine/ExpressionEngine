@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -361,11 +362,12 @@ class Api_template_structure extends Api
      */
     public function get_default_template_engine()
     {
-        if(count($this->template_engines) <= 1) {
+        if (count($this->template_engines) <= 1) {
             return '';
         };
 
         $default = ee()->config->item('default_template_engine') ?? null;
+
         return array_key_exists($default, $this->template_engines) ? $default : '';
     }
 
@@ -390,8 +392,8 @@ class Api_template_structure extends Api
         foreach ($this->all_file_extensions() as $extension => $info) {
             // If template ends with extension we are done.  This finds the most specific extension first
             // because all_file_extensions returns a sorted list with longest extensions first
-            $extensionLength = strlen($extension);
-            if (substr_compare($template, $extension, -$extensionLength, $extensionLength, true) === 0) {
+            $extensionLength = strlen((string) $extension);
+            if (substr_compare($template, (string) $extension, -$extensionLength, $extensionLength, true) === 0) {
                 $name = substr($template, 0, -$extensionLength);
                 // Sanitize the name to prevent path traversal attacks
                 // First normalize path separators
@@ -405,7 +407,8 @@ class Api_template_structure extends Api
                 }
                 // Remove any remaining path traversal characters
                 $name = preg_replace('/\.\.+/', '', $name);
-                $name = preg_replace('/[^a-zA-Z0-9_\-\.]/', '', $name);
+                $name = preg_replace('/[^a-zA-Z0-9_\-\.]/', '', (string) $name);
+
                 return [
                     'name' => $name,
                     'type' => $info['type'],

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -50,7 +51,7 @@ class Request
      */
     public function get($key = null, $default = null)
     {
-        return ($key) ? $this->fetch('get', $key, $default): $this->get;
+        return ($key) ? $this->fetch('get', $key, $default) : $this->get;
     }
 
     /**
@@ -156,7 +157,7 @@ class Request
      */
     public function method()
     {
-        return strtoupper($this->server('REQUEST_METHOD', 'GET'));
+        return strtoupper((string) $this->server('REQUEST_METHOD', 'GET'));
     }
 
     /**
@@ -208,13 +209,13 @@ class Request
      */
     public function isEncrypted()
     {
-        if (strcasecmp($this->server('HTTPS', ''), 'on') == 0) {
+        if (strcasecmp((string) $this->server('HTTPS', ''), 'on') == 0) {
             return true;
         }
-        if (strcasecmp($this->server('REQUEST_SCHEME', ''), 'https') == 0) {
+        if (strcasecmp((string) $this->server('REQUEST_SCHEME', ''), 'https') == 0) {
             return true;
         }
-        if (strcasecmp($this->server('HTTP_X_FORWARDED_PROTO', ''), 'https') == 0) {
+        if (strcasecmp((string) $this->server('HTTP_X_FORWARDED_PROTO', ''), 'https') == 0) {
             return true;
         }
 
@@ -280,7 +281,7 @@ class Request
             return array_map([$this, 'trimInput'], $input);
         }
 
-        return trim($input);
+        return trim((string) $input);
     }
 }
 

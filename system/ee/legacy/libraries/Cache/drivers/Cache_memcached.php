@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -402,7 +403,7 @@ class EE_Cache_memcached extends CI_Driver
 
             // Remove other array keys under this namespace
             foreach ($namespace_array as $key => $value) {
-                if (strpos($key, $namespace . Cache::NAMESPACE_SEPARATOR) === 0) {
+                if (strpos((string) $key, $namespace . Cache::NAMESPACE_SEPARATOR) === 0) {
                     unset($namespace_array[$key]);
                 }
             }

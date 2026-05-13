@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -12,8 +13,8 @@ namespace ExpressionEngine\Addons\Rte\Service;
 
 use ExpressionEngine\Library\Rte\RteFilebrowserInterface;
 
-class RedactorService extends AbstractRteService implements RteService {
-
+class RedactorService extends AbstractRteService implements RteService
+{
     public $class = 'rte-textarea redactor-box';
     public $handle;
     protected $settings;
@@ -29,9 +30,9 @@ class RedactorService extends AbstractRteService implements RteService {
             ee()->lang->loadfile('fieldtypes');
             ee()->file_field->loadDragAndDropAssets();
 
-            ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.css" type="text/css" />');
+            ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/fields/rte/' . strtolower((string) static::$type) . '/redactor.min.css" type="text/css" />');
             ee()->cp->add_js_script(['file' => [
-                'fields/rte/' . strtolower(static::$type) . '/redactor.min',
+                'fields/rte/' . strtolower((string) static::$type) . '/redactor.min',
                 'fields/rte/rte']
             ]);
 
@@ -78,7 +79,7 @@ class RedactorService extends AbstractRteService implements RteService {
         }
 
         if (!empty($this->toolset)) {
-            $configHandle = preg_replace('/[^a-z0-9]/i', '_', $this->toolset->toolset_name) . $this->toolset->toolset_id;
+            $configHandle = preg_replace('/[^a-z0-9]/i', '_', (string) $this->toolset->toolset_name) . $this->toolset->toolset_id;
             $config = array_merge($baseConfig, $this->toolset->settings);
         } else {
             $config = $baseConfig;
@@ -132,7 +133,7 @@ class RedactorService extends AbstractRteService implements RteService {
         }
 
         // EE FilePicker is not available on frontend channel forms
-        if (stripos($fqcn, 'filepicker_rtefb') !== false && REQ != 'CP') {
+        if (stripos((string) $fqcn, 'filepicker_rtefb') !== false && REQ != 'CP') {
             $filemanager_key = array_search('filebrowser', $config['toolbar']['plugins']);
             if ($filemanager_key !== false) {
                 $items = $config['toolbar']['plugins'];
@@ -206,59 +207,59 @@ class RedactorService extends AbstractRteService implements RteService {
 
     public function toolbarInputHtml($config)
     {
-            ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.css" type="text/css" />');
+        ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/fields/rte/' . strtolower((string) static::$type) . '/redactor.min.css" type="text/css" />');
 
-            $selection = [];
-            if (is_object($config->settings['toolbar'])) {
-                $selection = (array) $config->settings['toolbar'];
-            } else {
-                $selection = isset($config->settings['toolbar']['buttons']) && is_array($config->settings['toolbar']['buttons']) ? $config->settings['toolbar']['buttons'] : $config->settings['toolbar'];
+        $selection = [];
+        if (is_object($config->settings['toolbar'])) {
+            $selection = (array) $config->settings['toolbar'];
+        } else {
+            $selection = isset($config->settings['toolbar']['buttons']) && is_array($config->settings['toolbar']['buttons']) ? $config->settings['toolbar']['buttons'] : $config->settings['toolbar'];
+        }
+
+        $fullToolbar = array_merge($selection, static::defaultToolbars()['Redactor Full']['buttons']);//merge to get the right order
+        $fullToolset = [];
+        foreach ($fullToolbar as $i => $tool) {
+            if (in_array($tool, static::defaultToolbars()['Redactor Full']['buttons'])) {
+                $fullToolset[$tool] = lang($tool . '_rte');
             }
+        }
 
-            $fullToolbar = array_merge($selection, static::defaultToolbars()['Redactor Full']['buttons']);//merge to get the right order
-            $fullToolset = [];
-            foreach ($fullToolbar as $i => $tool) {
-                if (in_array($tool, static::defaultToolbars()['Redactor Full']['buttons'])) {
-                    $fullToolset[$tool] = lang($tool . '_rte');
-                }
-            }
-
-            return ee('View')->make('rte:redactor-toolbar')->render(
-                [
-                    'buttons' => $fullToolset,
-                    'selection' => $selection,
-                    'type' => 'buttons'
-                ]
-            );
+        return ee('View')->make('rte:redactor-toolbar')->render(
+            [
+                'buttons' => $fullToolset,
+                'selection' => $selection,
+                'type' => 'buttons'
+            ]
+        );
     }
 
     public function pluginsInputHtml($config)
     {
-            $selection = [];
-            if (is_object($config->settings['toolbar'])) {
-                $selection = (array) $config->settings['toolbar'];
-            } else {
-                $selection = isset($config->settings['toolbar']['plugins']) ? $config->settings['toolbar']['plugins'] : $config->settings['toolbar'];
-            }
+        $selection = [];
+        if (is_object($config->settings['toolbar'])) {
+            $selection = (array) $config->settings['toolbar'];
+        } else {
+            $selection = isset($config->settings['toolbar']['plugins']) ? $config->settings['toolbar']['plugins'] : $config->settings['toolbar'];
+        }
 
-            $fullToolbar = array_merge($selection, static::defaultToolbars()['Redactor Full']['plugins']);
-            $fullToolset = [];
-            foreach ($fullToolbar as $i => $tool) {
-                if ($tool == 'limiter') {
-                    continue;//this one one is included based on whether setting is provided
-                }
-                if (in_array($tool, static::defaultToolbars()['Redactor Full']['plugins'])) {
-                    $fullToolset[$tool] = lang($tool . '_rte');
-                }
+        $fullToolbar = array_merge($selection, static::defaultToolbars()['Redactor Full']['plugins']);
+        $fullToolset = [];
+        foreach ($fullToolbar as $i => $tool) {
+            if ($tool == 'limiter') {
+                continue;//this one one is included based on whether setting is provided
             }
+            if (in_array($tool, static::defaultToolbars()['Redactor Full']['plugins'])) {
+                $fullToolset[$tool] = lang($tool . '_rte');
+            }
+        }
 
-            return ee('View')->make('rte:redactor-toolbar')->render(
-                [
-                    'buttons' => $fullToolset,
-                    'selection' => $selection,
-                    'type' => 'plugins'
-                ]
-            );
+        return ee('View')->make('rte:redactor-toolbar')->render(
+            [
+                'buttons' => $fullToolset,
+                'selection' => $selection,
+                'type' => 'plugins'
+            ]
+        );
     }
 
     public static function defaultToolbars()

@@ -61,7 +61,7 @@ class Fluid_field_parser
         // Bail out if there are no fluid field fields present to parse
         if (
             ! preg_match_all(
-                "/" . LD . '\/?(' . preg_quote($pre_parser->prefix()) . '(?:(?:' . implode('|', array_flip($fluid_field_fields)) . '):?))\b([^}{]*)?' . RD . "/",
+                "/" . LD . '\/?(' . preg_quote((string) $pre_parser->prefix()) . '(?:(?:' . implode('|', array_flip($fluid_field_fields)) . '):?))\b([^}{]*)?' . RD . "/",
                 $tagdata,
                 $matches,
                 PREG_SET_ORDER
@@ -247,15 +247,15 @@ class Fluid_field_parser
                     $field_group_id = null;
                     $group_key = $key;
 
-                    if (strpos($key, 'new_field_for_group_') === 0) {
+                    if (strpos((string) $key, 'new_field_for_group_') === 0) {
                         $group_key = str_replace('new_field_for_', '', $key);
-                    } elseif (strpos($key, 'field_') === 0) {
+                    } elseif (strpos((string) $key, 'field_') === 0) {
                         $id = str_replace('field_', '', $key);
                         $group_key = array_key_exists($id, $entry_fluid_field_data) ? "group_{$entry_fluid_field_data[$id]->group}" : $key;
                     }
 
                     foreach (array_keys($value) as $k) {
-                        if (strpos($k, 'field_group_id_') === 0) {
+                        if (strpos((string) $k, 'field_group_id_') === 0) {
                             $field_group_id = (int) str_replace('field_group_id_', '', $k);
 
                             break;
@@ -278,7 +278,7 @@ class Fluid_field_parser
 
                     $field_id = null;
                     foreach (array_keys($value) as $k) {
-                        if (strpos($k, 'field_id_') === 0) {
+                        if (strpos((string) $k, 'field_id_') === 0) {
                             $field_id = (int) str_replace('field_id_', '', $k);
                             $fluid_field = ee('Model')->make('fluid_field:FluidField');
                             $fluid_field->setId("field_id_{$fluid_field_id},{$key}");
@@ -335,9 +335,9 @@ class Fluid_field_parser
             return ($fluid_field->entry_id == $entry_id && $fluid_field->fluid_field_id == $fluid_field_id);
         })
         // Sort by ChannelField->field_order
-        ->sortBy(function ($item) {
-            return $item->ChannelField->field_order;
-        });
+            ->sortBy(function ($item) {
+                return $item->ChannelField->field_order;
+            });
 
         $groups = [];
         foreach ($fluid_field_data as $field) {
@@ -366,7 +366,7 @@ class Fluid_field_parser
         $cond = [];
         foreach (array_keys($vars['var_pair']) as $field) {
             // Must start with the fluid field name
-            if (strpos($field, $fluid_field_name . ':') === 0) {
+            if (strpos((string) $field, $fluid_field_name . ':') === 0) {
                 $cond[$field] = false;
             }
         }
@@ -466,12 +466,12 @@ class Fluid_field_parser
                 // Process Fixed Order parameter {fields fixed_order="field_1|field_2"}
                 $fixed_order = (empty($chunk['params']['fixed_order'] ?? '')) ? null : explode('|', $chunk['params']['fixed_order']);
 
-                if(!empty($fixed_order)) {
+                if (!empty($fixed_order)) {
                     $fields = [];
                     $count = count($fixed_order);
                     $fixed_order = array_flip($fixed_order);
 
-                    foreach($group['fields'] as $field_index => $field) {
+                    foreach ($group['fields'] as $field_index => $field) {
                         $name = $field->ChannelField->field_name;
                         $index = (array_key_exists($name, $fixed_order)) ? $fixed_order[$name] : $count + $field_index;
                         $fields[$index] = $field;
@@ -490,7 +490,7 @@ class Fluid_field_parser
                     // removed from the tagdata
                     $cond[$fluid_field_name . ':' . $field_name] = true;
                     $my_tagdata = ee()->functions->prep_conditionals($chunk['content'], $cond);
-                    $conditionalUsed = strlen($my_tagdata) !== strlen($chunk['content']);
+                    $conditionalUsed = strlen((string) $my_tagdata) !== strlen((string) $chunk['content']);
                     $cond[$fluid_field_name . ':' . $field_name] = false; // Reset for the next pass
 
                     $firstInGroup = ($fieldCount == 0);
@@ -551,7 +551,7 @@ class Fluid_field_parser
             }
 
             // If we didn't have any chunks and our output is empty pass group_tagdata along
-            if(empty($chunks) && empty($group_output)) {
+            if (empty($chunks) && empty($group_output)) {
                 $i += count($group['fields']);
                 $group_output = $group_tagdata;
             }
@@ -565,7 +565,7 @@ class Fluid_field_parser
 
                 // handle tag replacements
                 foreach ($group_tags as $tag => $field) {
-                    if (strpos($group_output, LD . $tag) === false) {
+                    if (strpos((string) $group_output, LD . $tag) === false) {
                         continue;
                     }
 
@@ -610,8 +610,7 @@ class Fluid_field_parser
         $pairs = ee()->api_channel_fields->get_pair_field($tagdata, 'fields');
         $this->replacements = [];
 
-        foreach($pairs as $key => $tag)
-        {
+        foreach ($pairs as $key => $tag) {
             $this->replacements[$key] = $tag[3];
             $tagdata = str_replace($tag[3], "{!-- ff:fields:$key --}", $tagdata);
         }

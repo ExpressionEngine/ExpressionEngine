@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -93,7 +94,7 @@ class DataStore
 
         $prefix = $this->registry->getPrefix($name);
 
-        if (strpos($name, $prefix) !== 0) {
+        if (strpos($name, (string) $prefix) !== 0) {
             $name = $prefix . ':' . $name;
         }
 

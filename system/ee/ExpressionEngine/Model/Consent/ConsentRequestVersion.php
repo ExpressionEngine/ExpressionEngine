@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -96,8 +97,8 @@ class ConsentRequestVersion extends Model
     //when created, associate with all existing cookies for given consent
     public function onAfterInsert()
     {
-        if (strpos($this->ConsentRequest->consent_name, 'ee:cookies_') === 0) {
-            $consentType = substr($this->ConsentRequest->consent_name, 11);
+        if (strpos((string) $this->ConsentRequest->consent_name, 'ee:cookies_') === 0) {
+            $consentType = substr((string) $this->ConsentRequest->consent_name, 11);
             $method = 'is' . ucfirst($consentType);
             $cookieSettings = ee('Model')->get('CookieSetting')->all();
             $cookieIds = [];

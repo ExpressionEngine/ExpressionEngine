@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -93,7 +94,7 @@ abstract class AbstractCategories extends CP_Controller
             ->all();
 
         foreach ($groups as $group) {
-            $group_name = htmlentities($group->group_name, ENT_QUOTES, 'UTF-8');
+            $group_name = htmlentities((string) $group->group_name, ENT_QUOTES, 'UTF-8');
 
             $item = $list->addItem(
                 $group_name,

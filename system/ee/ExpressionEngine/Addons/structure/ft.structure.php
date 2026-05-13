@@ -222,7 +222,7 @@ class Structure_ft extends \EE_Fieldtype
         $closed_parents = array();
 
         foreach ($structure_data as $key => $entry_data) {
-            if (in_array(strtolower($entry_data['status']), $exclude_status_list) || (isset($entry_data['parent_id']) && in_array($entry_data['parent_id'], $closed_parents))) {
+            if (in_array(strtolower((string) $entry_data['status']), $exclude_status_list) || (isset($entry_data['parent_id']) && in_array($entry_data['parent_id'], $closed_parents))) {
                 $closed_parents[] = $entry_data['entry_id'];
                 unset($structure_data[$key]);
             }
@@ -252,7 +252,7 @@ class Structure_ft extends \EE_Fieldtype
             // RESTORED 2017-04-06
             // This was commented out 2015-07-20 to "remove index.php from FieldType Output" but if you don't
             // want "index.php" there, just change your EE's Site Index Page" setting to nothing.
-            return Structure_Helper::remove_double_slashes(trim(ee()->functions->fetch_site_index(0, 0), '/') . $uri);
+            return Structure_Helper::remove_double_slashes(trim((string) ee()->functions->fetch_site_index(0, 0), '/') . $uri);
 
             // return Structure_Helper::remove_double_slashes("/" . $uri);
         }

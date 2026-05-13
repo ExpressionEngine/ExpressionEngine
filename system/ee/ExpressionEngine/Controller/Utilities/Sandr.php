@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -100,13 +101,13 @@ class Sandr extends Utilities
 
         if ($where == 'title') {
             $sql = "UPDATE `exp_channel_titles` SET `{$where}` = REPLACE(`{$where}`, '{$search_escaped}', '{$replace_escaped}')";
-        } elseif ($where == 'preferences' or strncmp($where, 'site_preferences_', 17) == 0) {
+        } elseif ($where == 'preferences' or strncmp((string) $where, 'site_preferences_', 17) == 0) {
             $rows = 0;
 
             if ($where == 'preferences') {
                 $site_id = ee()->config->item('site_id');
             } else {
-                $site_id = substr($where, strlen('site_preferences_'));
+                $site_id = substr((string) $where, strlen('site_preferences_'));
             }
 
             /** -------------------------------------------
@@ -184,38 +185,43 @@ class Sandr extends Utilities
             ee()->config->update_site_prefs(array(), $site_id, $search, $replace);
 
             $rows += 5;
-        } elseif (strncmp($where, 'template_', 9) == 0) {
+        } elseif (strncmp((string) $where, 'template_', 9) == 0) {
             // all templates or a specific group?
             switch ($where) {
                 case 'template_partials':
                     $templates = ee('Model')->get('Snippet')
                         ->search('snippet_contents', $search)
                         ->all();
+
                     break;
 
                 case 'template_variables':
                     $templates = ee('Model')->get('GlobalVariable')
                         ->search('variable_data', $search)
                         ->all();
+
                     break;
 
                 case 'template_system':
                     $templates = ee('Model')->get('SpecialtyTemplate')
                         ->search('template_data', $search)
                         ->all();
+
                     break;
 
                 case 'template_data':
                     $templates = ee('Model')->get('Template')
                         ->search('template_data', $search)
                         ->all();
+
                     break;
 
                 default:
                     $templates = ee('Model')->get('Template')
-                        ->filter('group_id', substr($where, 9))
+                        ->filter('group_id', substr((string) $where, 9))
                         ->search('template_data', $search)
                         ->all();
+
                     break;
             }
 
@@ -223,12 +229,15 @@ class Sandr extends Utilities
                 switch ($where) {
                     case 'template_partials':
                         $template->snippet_contents = str_ireplace($search, $replace, $template->snippet_contents);
+
                         break;
                     case 'template_variables':
                         $template->variable_data = str_ireplace($search, $replace, $template->variable_data);
+
                         break;
                     default:
                         $template->template_data = str_ireplace($search, $replace, $template->template_data);
+
                         break;
                 }
                 $template->edit_date = ee()->localize->now;
@@ -237,7 +246,7 @@ class Sandr extends Utilities
             $templates->save();
 
             return $templates->count();
-        } elseif (strncmp($where, 'field_id_', 9) == 0) {
+        } elseif (strncmp((string) $where, 'field_id_', 9) == 0) {
             $field_id = str_replace('field_id_', '', $where);
             $field = ee('Model')->get('ChannelField', $field_id)->first();
             $sql = "UPDATE `exp_{$field->getDataStorageTable()}` SET `{$where}` = REPLACE(`{$where}`, '{$search_escaped}', '{$replace_escaped}')";

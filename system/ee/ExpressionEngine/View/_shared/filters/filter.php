@@ -1,8 +1,8 @@
 <div class="filter-search-bar__item <?=($value ? 'in-use' : '')?>">
-	<button type="button" class="has-sub filter-bar__button js-dropdown-toggle button button--default button--small" data-filter-label="<?=strtolower(lang($label))?>" title="<?=lang($label)?><?=($value ? ' (' . htmlentities($value, ENT_QUOTES, 'UTF-8') . ')' : '')?>">
+	<button type="button" class="has-sub filter-bar__button js-dropdown-toggle button button--default button--small" data-filter-label="<?=strtolower(lang($label))?>" title="<?=lang($label)?><?=($value ? ' (' . htmlentities((string) $value, ENT_QUOTES, 'UTF-8') . ')' : '')?>">
 		<?=lang($label)?>
 		<?php if ($value): ?>
-		<span class="faded">(<?=htmlentities($value, ENT_QUOTES, 'UTF-8')?>)</span>
+		<span class="faded">(<?=htmlentities((string) $value, ENT_QUOTES, 'UTF-8')?>)</span>
 		<?php endif; ?>
 	</button>
 
@@ -14,8 +14,8 @@
 				<input
 					type="text"
 					name="<?=$name?>"
-					value="<?=htmlentities($custom_value, ENT_QUOTES, 'UTF-8')?>"
-					placeholder="<?=htmlentities($placeholder, ENT_QUOTES, 'UTF-8')?>"
+					value="<?=htmlentities((string) $custom_value, ENT_QUOTES, 'UTF-8')?>"
+					placeholder="<?=htmlentities((string) $placeholder, ENT_QUOTES, 'UTF-8')?>"
 					<?php if ($has_list_filter): ?>
 					data-fuzzy-filter="true"
 					<?php endif; ?>

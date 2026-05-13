@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -508,9 +509,9 @@ class EE_Javascript
             }
         }
 
-        if ($relative === true or strncmp($external_file, 'http://', 7) == 0 or strncmp($external_file, 'https://', 8) == 0) {
+        if ($relative === true or strncmp((string) $external_file, 'http://', 7) == 0 or strncmp((string) $external_file, 'https://', 8) == 0) {
             $str = $this->_open_script($external_file);
-        } elseif (strpos($this->_javascript_location, 'http://') !== false) {
+        } elseif (strpos((string) $this->_javascript_location, 'http://') !== false) {
             $str = $this->_open_script($this->_javascript_location . $external_file);
         } else {
             $str = $this->_open_script(ee()->config->slash_item('base_url') . $this->_javascript_location . $external_file);
@@ -549,7 +550,7 @@ class EE_Javascript
      */
     private function _open_script($src = '')
     {
-        $str = '<script type="text/javascript" charset="' . strtolower(ee()->config->item('charset')) . '"';
+        $str = '<script type="text/javascript" charset="' . strtolower((string) ee()->config->item('charset')) . '"';
         $str .= ($src == '') ? '>' : ' src="' . $src . '">';
 
         return $str;
@@ -640,7 +641,7 @@ class EE_Javascript
             return;
         }
 
-        $sections = explode('.', $var);
+        $sections = explode('.', (string) $var);
         $var_name = array_pop($sections);
 
         $current = & $this->global_vars;
@@ -705,6 +706,7 @@ class EE_Javascript
         if (typeof console === "undefined" || ! console.log) {
             console = { log: function() { return false; }};
         }';
+
         return $this->inline($compiled);
     }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -7,7 +8,6 @@
  * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -93,7 +93,7 @@ abstract class Pro_variables_model extends CI_Model
         $prefix = ee()->db->dbprefix;
 
         // Add prefix to table name if not there
-        if (substr($table, 0, strlen($prefix)) != $prefix) {
+        if (substr((string) $table, 0, strlen((string) $prefix)) != $prefix) {
             $table = $prefix . $table;
         }
 

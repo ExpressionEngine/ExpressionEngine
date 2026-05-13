@@ -5,7 +5,6 @@
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
 */
-
 class Pro
 {
     public function __construct()
@@ -54,7 +53,7 @@ class Pro
                     ->filter('member_id', ee()->session->userdata('member_id'))
                     ->filter('fingerprint', ee()->session->userdata('fingerprint'))
                     ->all();
-                $validated = ee('pro:Mfa')->validateOtp(ee('Security/XSS')->clean(ee('Request')->post('mfa_code')), ee()->session->userdata('unique_id') . md5(ee('Security/XSS')->clean(ee('Request')->post('backup_mfa_code'))));
+                $validated = ee('pro:Mfa')->validateOtp(ee('Security/XSS')->clean(ee('Request')->post('mfa_code')), ee()->session->userdata('unique_id') . md5((string) ee('Security/XSS')->clean(ee('Request')->post('backup_mfa_code'))));
                 if (!$validated) {
                     foreach ($sessions as $session) {
                         $session->mfa_flag = 'show';
@@ -69,7 +68,7 @@ class Pro
                 } else {
                     $member = ee()->session->getMember();
                     $member->enable_mfa = true;
-                    $member->backup_mfa_code = md5(ee('Security/XSS')->clean(ee('Request')->post('backup_mfa_code')));
+                    $member->backup_mfa_code = md5((string) ee('Security/XSS')->clean(ee('Request')->post('backup_mfa_code')));
                     $member->save();
 
                     foreach ($sessions as $session) {
@@ -80,6 +79,7 @@ class Pro
                     $this->redirectBack();
                 }
             }
+
             return ee('pro:Mfa')->formEnableMfa();
         }
         $this->redirectBack();
@@ -98,6 +98,7 @@ class Pro
         if (ee()->config->item('enable_mfa') !== false && ee()->config->item('enable_mfa') !== 'y') {
             return;
         }
+
         return ee('pro:Mfa')->invokeMfadialog();
     }
 
@@ -122,7 +123,7 @@ class Pro
                     ->filter('member_id', ee()->session->userdata('member_id'))
                     ->filter('fingerprint', ee()->session->userdata('fingerprint'))
                     ->all();
-                if (md5(ee('Security/XSS')->clean(ee('Request')->post('backup_mfa_code'))) == $member->backup_mfa_code) {
+                if (md5((string) ee('Security/XSS')->clean(ee('Request')->post('backup_mfa_code'))) == $member->backup_mfa_code) {
                     ee()->session->delete_password_lockout();
                     $member->set(['backup_mfa_code' => '', 'enable_mfa' => false]);
                     $member->save();
@@ -150,6 +151,7 @@ class Pro
                 'content' => ee('pro:Mfa')->form('resetMfa', 'pro:messages/mfa-reset', 'reset'),
                 'url_themes' => URL_THEMES,
             ];
+
             return ee()->output->show_message($vars, false, false, 'mfa_template');
         }
         $this->redirectBack();
@@ -216,6 +218,7 @@ class Pro
                 'content' => ee('pro:Mfa')->form('disableMfa', 'pro:messages/mfa-disable', 'disable'),
                 'url_themes' => URL_THEMES,
             ];
+
             return ee()->output->show_message($vars, false, false, 'mfa_template');
         }
         $this->redirectBack();
@@ -262,6 +265,7 @@ class Pro
                     $this->redirectBack();
                 }
             }
+
             return ee('pro:Mfa')->formValidateMfa();
         }
         $this->redirectBack();
@@ -276,7 +280,7 @@ class Pro
     {
         if (ee()->session->userdata('member_id') != 0 && ee('Request')->get('code') != '') {
             header('Content-Type: image/svg+xml');
-            echo ee('pro:Mfa')->generateQrCode(ee()->session->userdata('unique_id') . md5(ee('Security/XSS')->clean(ee('Request')->get('code'))), 300);
+            echo ee('pro:Mfa')->generateQrCode(ee()->session->userdata('unique_id') . md5((string) ee('Security/XSS')->clean(ee('Request')->get('code'))), 300);
         }
         exit();
     }

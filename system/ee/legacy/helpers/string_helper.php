@@ -35,7 +35,7 @@ if (! defined('BASEPATH')) {
 if (! function_exists('trim_slashes')) {
     function trim_slashes($str)
     {
-        return trim($str, '/');
+        return trim((string) $str, '/');
     }
 }
 
@@ -114,7 +114,7 @@ if (! function_exists('quotes_to_entities')) {
 if (! function_exists('reduce_double_slashes')) {
     function reduce_double_slashes($str)
     {
-        return preg_replace("#([^/:])/+#", "\\1/", $str);
+        return preg_replace("#([^/:])/+#", "\\1/", (string) $str);
     }
 }
 
@@ -138,7 +138,7 @@ if (! function_exists('reduce_double_slashes')) {
 if (! function_exists('reduce_multiples')) {
     function reduce_multiples($str, $character = ',', $trim = false)
     {
-        $str = preg_replace('#' . preg_quote($character, '#') . '{2,}#', $character, $str);
+        $str = preg_replace('#' . preg_quote((string) $character, '#') . '{2,}#', (string) $character, (string) $str);
 
         if ($trim === true) {
             $str = trim($str, $character);
@@ -170,41 +170,41 @@ if (! function_exists('random_string')) {
             case 'nozero':
             case 'alpha':
 
-                    switch ($type) {
-                        case 'alpha':	$pool = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                switch ($type) {
+                    case 'alpha':	$pool = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-                            break;
-                        case 'alnum':	$pool = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                        break;
+                    case 'alnum':	$pool = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-                            break;
-                        case 'numeric':	$pool = '0123456789';
+                        break;
+                    case 'numeric':	$pool = '0123456789';
 
-                            break;
-                        case 'nozero':	$pool = '123456789';
+                        break;
+                    case 'nozero':	$pool = '123456789';
 
-                            break;
-                    }
+                        break;
+                }
 
-                    $pool = str_replace(str_split($antipool), '', $pool);
+                $pool = str_replace(str_split((string) $antipool), '', $pool);
 
-                    $str = '';
-                    for ($i = 0; $i < $len; $i++) {
-                        $str .= substr($pool, random_int(0, strlen($pool) - 1), 1);
-                    }
+                $str = '';
+                for ($i = 0; $i < $len; $i++) {
+                    $str .= substr($pool, random_int(0, strlen($pool) - 1), 1);
+                }
 
-                    return $str;
+                return $str;
 
                 break;
             case 'unique':
             case 'md5':
 
-                        return md5(uniqid(random_int(-PHP_INT_MAX, PHP_INT_MAX)));
+                return md5(uniqid(random_int(-PHP_INT_MAX, PHP_INT_MAX)));
 
                 break;
             case 'encrypt':
             case 'sha1':
 
-                        return sha1(uniqid(random_int(-PHP_INT_MAX, PHP_INT_MAX), true));
+                return sha1(uniqid(random_int(-PHP_INT_MAX, PHP_INT_MAX), true));
 
                 break;
         }
@@ -247,21 +247,21 @@ if (! function_exists('alternator')) {
 if (! function_exists('repeater')) {
     function repeater($data, $num = 1)
     {
-        return (($num > 0) ? str_repeat($data, $num) : '');
+        return (($num > 0) ? str_repeat((string) $data, $num) : '');
     }
 }
 
- /**
- * Unique Marker
- *
- * The template library and some of our modules temporarily replace
- * pieces of code with a random string. These need to be unique per
- * request to avoid potential security issues.
- *
- * @access	public
- * @param	string	marker identifier
- * @return	string
- */
+/**
+* Unique Marker
+*
+* The template library and some of our modules temporarily replace
+* pieces of code with a random string. These need to be unique per
+* request to avoid potential security issues.
+*
+* @access	public
+* @param	string	marker identifier
+* @return	string
+*/
 function unique_marker($ident)
 {
     static $rand;

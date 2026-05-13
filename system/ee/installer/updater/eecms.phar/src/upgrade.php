@@ -111,7 +111,7 @@ class Command
         }
 
         $message = "We could not complete the update because an error has occured:\n\033[0m";
-        $message .= strip_tags($error);
+        $message .= strip_tags((string) $error);
 
         if ($file && $line) {
             $message .= "\n\n" . $file . ':' . $line;

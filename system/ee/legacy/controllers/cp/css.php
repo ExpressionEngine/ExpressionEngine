@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -40,7 +41,7 @@ class Css extends CI_Controller
         $cp_theme = $this->input->get_post('theme');
 
         if ($this->input->get_post('M') == 'third_party' && $package = $this->input->get_post('package')) {
-            $package = strtolower($package);
+            $package = strtolower((string) $package);
 
             $file = $this->input->get_post('file');
             $path = PATH_THIRD . $package . '/';
@@ -91,7 +92,7 @@ class Css extends CI_Controller
         $this->output->set_output(file_get_contents($path . 'css/' . $file . '.css'));
 
         if ($this->config->item('send_headers') == 'y') {
-            @header('Content-Length: ' . strlen($this->output->final_output));
+            @header('Content-Length: ' . strlen((string) $this->output->final_output));
         }
     }
 
@@ -117,7 +118,7 @@ class Css extends CI_Controller
         $this->output->out_type = 'cp_asset';
         $this->output->set_header("Content-Type: text/css");
 
-        $this->output->set_header('Content-Length: ' . strlen($str));
+        $this->output->set_header('Content-Length: ' . strlen((string) $str));
         $this->output->set_output($str);
     }
 }

@@ -7,7 +7,7 @@
 		<div title="<?=$title?>">
 			<?php if ($title): ?>
 				<?=$title?>
-			<?php elseif ($file): $file_info = pathinfo($file->file_name); ?>
+			<?php elseif ($file): $file_info = pathinfo((string) $file->file_name); ?>
 				<?=$file_info['filename']?></b>.<?=$file_info['extension']?>
 			<?php endif ?>
 		</div>

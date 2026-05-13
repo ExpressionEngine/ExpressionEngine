@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -50,8 +51,8 @@ class Grid_parser
 
         if (
             ! preg_match_all(
-                "/" . LD . '\/?(' . preg_quote($pre_parser->prefix()) . '(?:(?:' . implode('|', $sorted_grid_fields) . '):?))\b([^}{]*)?' . RD . "/",
-                $tagdata,
+                "/" . LD . '\/?(' . preg_quote((string) $pre_parser->prefix()) . '(?:(?:' . implode('|', $sorted_grid_fields) . '):?))\b([^}{]*)?' . RD . "/",
+                (string) $tagdata,
                 $matches,
                 PREG_SET_ORDER
             )
@@ -150,8 +151,8 @@ class Grid_parser
         // the Relationships tag pair; a better fix is having a separate parser
         // instance for each instance of the Channel Entries parser but this
         // will have to do for now
-        if (strpos($tagdata, $field_name) === false && strpos($field_name, ':') !== false) {
-            $field_name = substr($field_name, strrpos($field_name, ':') + 1);
+        if (strpos((string) $tagdata, (string) $field_name) === false && strpos((string) $field_name, ':') !== false) {
+            $field_name = substr((string) $field_name, strrpos((string) $field_name, ':') + 1);
             $this->grid_field_names[$field_id][$fluid_field_data_id] = $field_name;
         }
 
@@ -283,11 +284,12 @@ class Grid_parser
         }
 
         if (empty($display_entry_data)) {
-            if (strpos($tagdata, 'if no_results') !== false && preg_match("/" . LD . "if no_results" . RD . "(.*?)" . LD . '\/' . "if" . RD . "/s", $tagdata, $match)) {
+            if (strpos((string) $tagdata, 'if no_results') !== false && preg_match("/" . LD . "if no_results" . RD . "(.*?)" . LD . '\/' . "if" . RD . "/s", (string) $tagdata, $match)) {
                 if (stristr($match[1], LD . 'if')) {
                     $match[0] = ee('Variables/Parser')->getFullTag($tagdata, $match[0], LD . 'if', LD . '/if' . RD);
                 }
-                ee()->TMPL->no_results = substr($match[0], strlen(LD . "if no_results" . RD), -strlen(LD . '/' . "if" . RD));
+                ee()->TMPL->no_results = substr((string) $match[0], strlen(LD . "if no_results" . RD), -strlen(LD . '/' . "if" . RD));
+
                 return ee()->TMPL->no_results();
             }
         }
@@ -396,8 +398,8 @@ class Grid_parser
         // Gather the variables to parse
         if (
             ! preg_match_all(
-                "/" . LD . '?[^\/]((?:(?:' . preg_quote($field_name) . '):?))\b([^}{]*)?' . RD . "/",
-                $tagdata,
+                "/" . LD . '?[^\/]((?:(?:' . preg_quote((string) $field_name) . '):?))\b([^}{]*)?' . RD . "/",
+                (string) $tagdata,
                 $matches,
                 PREG_SET_ORDER
             ) ||
@@ -469,7 +471,7 @@ class Grid_parser
             // Now handle any single variables
             if (
                 isset($column_names[$field['field_name']]) &&
-                strpos($grid_row, $match[0]) !== false
+                strpos((string) $grid_row, $match[0]) !== false
             ) {
                 $column = $column_names[$field['field_name']];
                 $channel_row['col_id_' . $column['col_id']] = $row['col_id_' . $column['col_id']];

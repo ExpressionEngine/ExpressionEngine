@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SimplePie
  *
@@ -163,7 +164,7 @@ class SimplePie_Locator
         $elements = $this->dom->getElementsByTagName('base');
         foreach ($elements as $element) {
             if ($element->hasAttribute('href')) {
-                $base = $this->registry->call('Misc', 'absolutize_url', array(trim($element->getAttribute('href')), $this->http_base));
+                $base = $this->registry->call('Misc', 'absolutize_url', array(trim((string) $element->getAttribute('href')), $this->http_base));
                 if ($base === false) {
                     continue;
                 }
@@ -202,19 +203,19 @@ class SimplePie_Locator
                 break;
             }
             if ($link->hasAttribute('href') && $link->hasAttribute('rel')) {
-                $rel = array_unique($this->registry->call('Misc', 'space_separated_tokens', array(strtolower($link->getAttribute('rel')))));
+                $rel = array_unique($this->registry->call('Misc', 'space_separated_tokens', array(strtolower((string) $link->getAttribute('rel')))));
                 $line = method_exists($link, 'getLineNo') ? $link->getLineNo() : 1;
 
                 if ($this->base_location < $line) {
-                    $href = $this->registry->call('Misc', 'absolutize_url', array(trim($link->getAttribute('href')), $this->base));
+                    $href = $this->registry->call('Misc', 'absolutize_url', array(trim((string) $link->getAttribute('href')), $this->base));
                 } else {
-                    $href = $this->registry->call('Misc', 'absolutize_url', array(trim($link->getAttribute('href')), $this->http_base));
+                    $href = $this->registry->call('Misc', 'absolutize_url', array(trim((string) $link->getAttribute('href')), $this->http_base));
                 }
                 if ($href === false) {
                     continue;
                 }
 
-                if (!in_array($href, $done) && in_array('feed', $rel) || (in_array('alternate', $rel) && !in_array('stylesheet', $rel) && $link->hasAttribute('type') && in_array(strtolower($this->registry->call('Misc', 'parse_mime', array($link->getAttribute('type')))), array('text/html', 'application/rss+xml', 'application/atom+xml'))) && !isset($feeds[$href])) {
+                if (!in_array($href, $done) && in_array('feed', $rel) || (in_array('alternate', $rel) && !in_array('stylesheet', $rel) && $link->hasAttribute('type') && in_array(strtolower((string) $this->registry->call('Misc', 'parse_mime', array($link->getAttribute('type')))), array('text/html', 'application/rss+xml', 'application/atom+xml'))) && !isset($feeds[$href])) {
                     $this->checked_feeds++;
                     $headers = array(
                         'Accept' => 'application/atom+xml, application/rss+xml, application/rdf+xml;q=0.9, application/xml;q=0.8, text/xml;q=0.8, text/html;q=0.7, unknown/unknown;q=0.1, application/unknown;q=0.1, */*;q=0.1',
@@ -240,13 +241,13 @@ class SimplePie_Locator
         $links = $this->dom->getElementsByTagName('a');
         foreach ($links as $link) {
             if ($link->hasAttribute('href')) {
-                $href = trim($link->getAttribute('href'));
+                $href = trim((string) $link->getAttribute('href'));
                 $parsed = $this->registry->call('Misc', 'parse_url', array($href));
-                if ($parsed['scheme'] === '' || preg_match('/^(https?|feed)?$/i', $parsed['scheme'])) {
+                if ($parsed['scheme'] === '' || preg_match('/^(https?|feed)?$/i', (string) $parsed['scheme'])) {
                     if (method_exists($link, 'getLineNo') && $this->base_location < $link->getLineNo()) {
                         $href = $this->registry->call('Misc', 'absolutize_url', array(trim($link->getAttribute('href')), $this->base));
                     } else {
-                        $href = $this->registry->call('Misc', 'absolutize_url', array(trim($link->getAttribute('href')), $this->http_base));
+                        $href = $this->registry->call('Misc', 'absolutize_url', array(trim((string) $link->getAttribute('href')), $this->http_base));
                     }
                     if ($href === false) {
                         continue;
@@ -285,11 +286,11 @@ class SimplePie_Locator
         $xpath = new DOMXpath($this->dom);
         $query = '//a[@rel and @href] | //link[@rel and @href]';
         foreach ($xpath->query($query) as $link) {
-            $href = trim($link->getAttribute('href'));
+            $href = trim((string) $link->getAttribute('href'));
             $parsed = $this->registry->call('Misc', 'parse_url', array($href));
             if (
                 $parsed['scheme'] === '' ||
-                preg_match('/^https?$/i', $parsed['scheme'])
+                preg_match('/^https?$/i', (string) $parsed['scheme'])
             ) {
                 if (method_exists($link, 'getLineNo') && $this->base_location < $link->getLineNo()) {
                     $href =
@@ -304,14 +305,14 @@ class SimplePie_Locator
                         $this->registry->call(
                             'Misc',
                             'absolutize_url',
-                            array(trim($link->getAttribute('href')),
+                            array(trim((string) $link->getAttribute('href')),
                                 $this->http_base)
                         );
                 }
                 if ($href === false) {
                     return null;
                 }
-                $rel_values = explode(' ', strtolower($link->getAttribute('rel')));
+                $rel_values = explode(' ', strtolower((string) $link->getAttribute('rel')));
                 if (in_array($rel, $rel_values)) {
                     return $href;
                 }
@@ -327,7 +328,7 @@ class SimplePie_Locator
             if ($this->checked_feeds === $this->max_checked_feeds) {
                 break;
             }
-            if (in_array(strtolower(strrchr($value, '.')), array('.rss', '.rdf', '.atom', '.xml'))) {
+            if (in_array(strtolower(strrchr((string) $value, '.')), array('.rss', '.rdf', '.atom', '.xml'))) {
                 $this->checked_feeds++;
 
                 $headers = array(
@@ -351,7 +352,7 @@ class SimplePie_Locator
             if ($this->checked_feeds === $this->max_checked_feeds) {
                 break;
             }
-            if (preg_match('/(rss|rdf|atom|xml)/i', $value)) {
+            if (preg_match('/(rss|rdf|atom|xml)/i', (string) $value)) {
                 $this->checked_feeds++;
                 $headers = array(
                     'Accept' => 'application/atom+xml, application/rss+xml, application/rdf+xml;q=0.9, application/xml;q=0.8, text/xml;q=0.8, text/html;q=0.7, unknown/unknown;q=0.1, application/unknown;q=0.1, */*;q=0.1',

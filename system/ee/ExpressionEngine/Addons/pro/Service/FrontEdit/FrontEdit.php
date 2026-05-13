@@ -34,6 +34,7 @@ class FrontEdit
         if (!is_numeric($site_id) || !is_numeric($channel_id) || !is_numeric($entry_id)) {
             return '';
         }
+
         return '{frontedit_link site_id=@' . $site_id . '@ channel_id=@' . $channel_id . '@ entry_id=@' . $entry_id . '@ field_id=@' . $field_id_or_name . '@}';
     }
 
@@ -53,6 +54,7 @@ class FrontEdit
         if (ee('LivePreview')->hasEntryData()) {
             return true;
         }
+
         return false;
     }
 
@@ -72,7 +74,6 @@ class FrontEdit
         if ($this->fronteditIsDisabled()) {
             return $tagdata;
         }
-
 
         $shouldInjectLinks = false;
         //check license status, permissions, etc
@@ -209,7 +210,6 @@ class FrontEdit
                 $iterations++;
             } while (!$allClean && $iterations < 10);
 
-
             // avoid duplicates.
             if (preg_match_all('/\{[\w:]+\:frontedit\}/si', $tagdata, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE)) {
                 $orig_tagdata = $tagdata;
@@ -217,8 +217,8 @@ class FrontEdit
                     $tag = $match[0][0];
                     // Find and strip the edit links that are right after themselves
                     do {
-                        $tagdata = preg_replace('/' . preg_quote($tag) . '\s*' . preg_quote($tag) . '/si', $tag, $tagdata);
-                    } while (strpos($tagdata, $tag . $tag) !== false);
+                        $tagdata = preg_replace('/' . preg_quote($tag) . '\s*' . preg_quote($tag) . '/si', $tag, (string) $tagdata);
+                    } while (strpos((string) $tagdata, $tag . $tag) !== false);
                     // if the link follows itself divided by opening tag, strip the first one
                     // (might be caused by if conditionals)
 
@@ -230,13 +230,14 @@ class FrontEdit
                             if (preg_match('/{' . $substrMatches[1] . '[\}\s]/s', $substrMatches[0], $check)) {
                                 return $substrMatches[0];
                             }
+
                             return preg_replace('/{' . $substrMatches[1] . ':frontedit}/', '', $substrMatches[0]);
                         }, $substrOrig);
                         $tagdata = str_replace($substrOrig, $substr, $tagdata);
                         //there is some tag between, but no closing tag
                         if (
-                            (strpos($substr, '<') === false && strpos($substr, '>') === false) ||
-                            (strpos($substr, '<') !== false && strpos($substr, '>') !== false && strpos($substr, '</') === false)
+                            (strpos((string) $substr, '<') === false && strpos((string) $substr, '>') === false) ||
+                            (strpos((string) $substr, '<') !== false && strpos((string) $substr, '>') !== false && strpos((string) $substr, '</') === false)
                         ) {
                             $tagdata = str_replace($substr, $tag . str_replace($tag, '', $substr), $tagdata);
                         }
@@ -277,16 +278,16 @@ class FrontEdit
                 'site_id' => 'SITE_ID',
                 'modal_form' => 'y',
                 'hide_closer' => 'y',
-                'return' => urlencode(ee()->functions->fetch_current_uri())
+                'return' => urlencode((string) ee()->functions->fetch_current_uri())
             ],
             ee()->config->item('cp_url')
         );
 
         $elementId = "editable-field-FIELD_ID-KEYGEN";
         $actionId = ee('Model')->get('Action')
-                        ->filter('class', 'File')
-                        ->filter('method', 'addonIcon')
-                        ->first();
+            ->filter('class', 'File')
+            ->filter('method', 'addonIcon')
+            ->first();
 
         $pencilUrl = URL_PRO_THEMES . 'img/edit.svg';
 
@@ -376,6 +377,7 @@ class FrontEdit
             '<!-- //disable frontedit -->',
             '<!--//disable frontedit-->'
         ], '', $output);
+
         return $output;
     }
     /**
@@ -410,32 +412,32 @@ class FrontEdit
         /** --------------------------------------
         /**  Parse day
         /** --------------------------------------*/
-        if (!empty($entry_id) && preg_match("#(^|\/)(\d{4}/\d{2}/\d{2})#", $qstring, $match)) {
+        if (!empty($entry_id) && preg_match("#(^|\/)(\d{4}/\d{2}/\d{2})#", (string) $qstring, $match)) {
             $qstring = trim_slashes(str_replace($match[0], '', $qstring));
         }
 
         /** --------------------------------------
         /**  Parse /year/month/
         /** --------------------------------------*/
-        if (!empty($entry_id) && preg_match("#(^|\/)(\d{4}/\d{2})(\/|$)#", $qstring, $match)) {
+        if (!empty($entry_id) && preg_match("#(^|\/)(\d{4}/\d{2})(\/|$)#", (string) $qstring, $match)) {
             $qstring = trim_slashes(str_replace($match[2], '', $qstring));
         }
 
         /** --------------------------------------
         /**  Parse ID indicator
         /** --------------------------------------*/
-        if (!empty($entry_id) && preg_match("#^(\d+)(.*)#", $qstring, $match)) {
+        if (!empty($entry_id) && preg_match("#^(\d+)(.*)#", (string) $qstring, $match)) {
             $seg = (! isset($match[2])) ? '' : $match[2];
             if (substr($seg, 0, 1) == "/" or $seg == '') {
                 $entry_id = $match[1];
-                $qstring = trim_slashes(preg_replace("#^" . $match[1] . "#", '', $qstring));
+                $qstring = trim_slashes(preg_replace("#^" . $match[1] . "#", '', (string) $qstring));
             }
         }
 
         /** --------------------------------------
         /**  Parse page number
         /** --------------------------------------*/
-        if (!empty($entry_id) && preg_match("#^P(\d+)|/P(\d+)#", $qstring, $match)) {
+        if (!empty($entry_id) && preg_match("#^P(\d+)|/P(\d+)#", (string) $qstring, $match)) {
             $qstring = trim_slashes(str_replace($match[0], '', $qstring));
         }
 
@@ -443,7 +445,7 @@ class FrontEdit
         /**  Parse category indicator
         /** --------------------------------------*/
         if (!empty($entry_id)) {
-            if (in_array(ee()->config->item('reserved_category_word'), explode("/", $qstring))) {
+            if (in_array(ee()->config->item('reserved_category_word'), explode("/", (string) $qstring))) {
                 return;
             }
             ee()->load->helper('segment');
@@ -456,16 +458,15 @@ class FrontEdit
         /** --------------------------------------
         /**  Remove "N"
         /** --------------------------------------*/
-
-        if (!empty($entry_id) && preg_match("#^N(\d+)|/N(\d+)#", $qstring, $match)) {
+        if (!empty($entry_id) && preg_match("#^N(\d+)|/N(\d+)#", (string) $qstring, $match)) {
             $qstring = trim_slashes(str_replace($match[0], '', $qstring));
         }
 
         /** --------------------------------------
         /**  Parse URL title
         /** --------------------------------------*/
-        if (!empty($entry_id) && strpos($qstring, '/') !== false) {
-            $xe = explode('/', $qstring);
+        if (!empty($entry_id) && strpos((string) $qstring, '/') !== false) {
+            $xe = explode('/', (string) $qstring);
             $qstring = current($xe);
         }
 
@@ -519,8 +520,8 @@ class FrontEdit
                 $tag = $match[0][0];
                 // Find and strip the edit links that are right after themselves
                 do {
-                    $output = preg_replace('/' . preg_quote($tag) . '\s*' . preg_quote($tag) . '/sUi', $tag, $output);
-                } while (strpos($output, $tag . $tag) !== false);
+                    $output = preg_replace('/' . preg_quote($tag) . '\s*' . preg_quote($tag) . '/sUi', $tag, (string) $output);
+                } while (strpos((string) $output, $tag . $tag) !== false);
             }
         }
 
@@ -561,6 +562,7 @@ class FrontEdit
     private function randomKeyGen()
     {
         $bytes = openssl_random_pseudo_bytes(16);
+
         return bin2hex($bytes);
     }
 }

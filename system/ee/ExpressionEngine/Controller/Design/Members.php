@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -134,7 +135,7 @@ class Members extends AbstractDesignController
             $base_path = ee('Theme')->getUserPath('member/' . ee()->security->sanitize_filename($theme));
 
             // Check if custom templates are in themes folder instead of system folder
-            if (strpos($base_path, PATH_THIRD_THEMES) !== false) {
+            if (strpos((string) $base_path, PATH_THIRD_THEMES) !== false) {
                 ee()->load->library('logger');
                 $version_url = ee()->cp->masked_url(DOC_URL . 'installation/version_notes_4.2.2.html');
 
@@ -169,14 +170,14 @@ class Members extends AbstractDesignController
             $files = (directory_map($base_path, true)) ?: array();
 
             foreach ($files as $file) {
-                if (strpos($file, '.') === false) {
+                if (strpos((string) $file, '.') === false) {
                     continue;
                 }
                 if (! isset($this->template_group_map[$file])) {
                     continue;
                 }
 
-                $human = substr($file, 0, -strlen(strrchr($file, '.')));
+                $human = substr((string) $file, 0, -strlen(strrchr((string) $file, '.')));
                 $edit_url = ee('CP/URL')->make('design/members/edit/' . $theme . '/' . $human);
 
                 $data['profile_' . $this->template_group_map[$file]][] = array(

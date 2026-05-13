@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -133,11 +134,11 @@ class EE_Xmlrpc
 
     public function server($url, $port = 80)
     {
-        if (substr($url, 0, 4) != "http") {
+        if (substr((string) $url, 0, 4) != "http") {
             $url = "http://" . $url;
         }
 
-        $parts = parse_url($url);
+        $parts = parse_url((string) $url);
 
         $path = (! isset($parts['path'])) ? '/' : $parts['path'];
 
@@ -355,7 +356,7 @@ class XML_RPC_Client extends EE_Xmlrpc
         $op .= "Host: {$this->server}$r";
         $op .= "Content-Type: text/xml$r";
         $op .= "User-Agent: {$this->xmlrpcName}$r";
-        $op .= "Content-Length: " . strlen($msg->payload) . "$r$r";
+        $op .= "Content-Length: " . strlen((string) $msg->payload) . "$r$r";
         $op .= $msg->payload;
 
         if (! fputs($fp, $op, strlen($op))) {
@@ -388,7 +389,7 @@ class XML_RPC_Response
         if ($code != 0) {
             // error
             $this->errno = $code;
-            $this->errstr = htmlentities($fstr);
+            $this->errstr = htmlentities((string) $fstr);
         } elseif (! is_object($val)) {
             // programmer error, not an object
             error_log("Invalid type '" . gettype($val) . "' (value: $val) passed to XML_RPC_Response.  Defaulting to empty value.");
@@ -506,7 +507,7 @@ class XML_RPC_Response
     {
         // return a timet in the localtime, or UTC
         $t = 0;
-        if (preg_match('/([0-9]{4})([0-9]{2})([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})/', $time, $regs)) {
+        if (preg_match('/([0-9]{4})([0-9]{2})([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})/', (string) $time, $regs)) {
             if ($utc == 1) {
                 $t = gmmktime($regs[4], $regs[5], $regs[6], $regs[2], $regs[3], $regs[1]);
             } else {
@@ -621,12 +622,12 @@ class XML_RPC_Message extends EE_Xmlrpc
         $this->xh[$parser_name]['isf_reason'] = 0;
 
         xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, true);
-        xml_set_character_data_handler($parser, function($parser, $cdata) {
+        xml_set_character_data_handler($parser, function ($parser, $cdata) {
             return $this->character_data($parser, $cdata);
         });
-        xml_set_element_handler($parser, function($parser, $tag, $attributes) {
+        xml_set_element_handler($parser, function ($parser, $tag, $attributes) {
             return $this->open_tag($parser, $tag, $attributes);
-        }, function($parser, $tag) {
+        }, function ($parser, $tag) {
             return $this->closing_tag($parser, $tag);
         });
 
@@ -880,7 +881,7 @@ class XML_RPC_Message extends EE_Xmlrpc
             case 'ARRAY':
                 $cur_val = array_shift($this->xh[$parser_name]['valuestack']);
                 $this->xh[$parser_name]['value'] = (! isset($cur_val['values'])) ? array() : $cur_val['values'];
-                $this->xh[$parser_name]['vt'] = strtolower($name);
+                $this->xh[$parser_name]['vt'] = strtolower((string) $name);
 
                 break;
             case 'NAME':
@@ -894,7 +895,7 @@ class XML_RPC_Message extends EE_Xmlrpc
             case 'DOUBLE':
             case 'DATETIME.ISO8601':
             case 'BASE64':
-                $this->xh[$parser_name]['vt'] = strtolower($name);
+                $this->xh[$parser_name]['vt'] = strtolower((string) $name);
 
                 if ($name == 'STRING') {
                     $this->xh[$parser_name]['value'] = $this->xh[$parser_name]['ac'];
@@ -902,7 +903,7 @@ class XML_RPC_Message extends EE_Xmlrpc
                     $this->xh[$parser_name]['vt'] = $this->xmlrpcDateTime;
                     $this->xh[$parser_name]['value'] = $this->xh[$parser_name]['ac'];
                 } elseif ($name == 'BASE64') {
-                    $this->xh[$parser_name]['value'] = base64_decode($this->xh[$parser_name]['ac']);
+                    $this->xh[$parser_name]['value'] = base64_decode((string) $this->xh[$parser_name]['ac']);
                 } elseif ($name == 'BOOLEAN') {
                     // Translated BOOLEAN values to TRUE AND FALSE
                     if ($this->xh[$parser_name]['ac'] == '1') {
@@ -913,7 +914,7 @@ class XML_RPC_Message extends EE_Xmlrpc
                 } elseif ($name == 'DOUBLE') {
                     // we have a DOUBLE
                     // we must check that only 0123456789-.<space> are characters here
-                    if (! preg_match('/^[+-]?[eE0-9\t \.]+$/', $this->xh[$parser_name]['ac'])) {
+                    if (! preg_match('/^[+-]?[eE0-9\t \.]+$/', (string) $this->xh[$parser_name]['ac'])) {
                         $this->xh[$parser_name]['value'] = 'ERROR_NON_NUMERIC_FOUND';
                     } else {
                         $this->xh[$parser_name]['value'] = (float) $this->xh[$parser_name]['ac'];
@@ -921,7 +922,7 @@ class XML_RPC_Message extends EE_Xmlrpc
                 } else {
                     // we have an I4/INT
                     // we must check that only 0123456789-<space> are characters here
-                    if (! preg_match('/^[+-]?[0-9\t ]+$/', $this->xh[$parser_name]['ac'])) {
+                    if (! preg_match('/^[+-]?[0-9\t ]+$/', (string) $this->xh[$parser_name]['ac'])) {
                         $this->xh[$parser_name]['value'] = 'ERROR_NON_NUMERIC_FOUND';
                     } else {
                         $this->xh[$parser_name]['value'] = (int) $this->xh[$parser_name]['ac'];
@@ -970,7 +971,7 @@ class XML_RPC_Message extends EE_Xmlrpc
 
                 break;
             case 'METHODNAME':
-                $this->xh[$parser_name]['method'] = ltrim($this->xh[$parser_name]['ac']);
+                $this->xh[$parser_name]['method'] = ltrim((string) $this->xh[$parser_name]['ac']);
 
                 break;
             case 'PARAMS':
@@ -1124,7 +1125,7 @@ class XML_RPC_Values extends EE_Xmlrpc
         }
 
         if ($type == $this->xmlrpcBoolean) {
-            if (strcasecmp($val, 'true') == 0 or $val == 1 or ($val == true && strcasecmp($val, 'false'))) {
+            if (strcasecmp((string) $val, 'true') == 0 or $val == 1 or ($val == true && strcasecmp((string) $val, 'false'))) {
                 $val = 1;
             } else {
                 $val = 0;
@@ -1224,15 +1225,19 @@ class XML_RPC_Values extends EE_Xmlrpc
                 switch ($typ) {
                     case $this->xmlrpcBase64:
                         $rs .= "<{$typ}>" . base64_encode((string) $val) . "</{$typ}>\n";
+
                         break;
                     case $this->xmlrpcBoolean:
                         $rs .= "<{$typ}>" . ((bool) $val ? '1' : '0') . "</{$typ}>\n";
+
                         break;
                     case $this->xmlrpcString:
                         $rs .= "<{$typ}>" . htmlspecialchars((string) $val) . "</{$typ}>\n";
+
                         break;
                     default:
                         $rs .= "<{$typ}>{$val}</{$typ}>\n";
+
                         break;
                 }
                 // no break

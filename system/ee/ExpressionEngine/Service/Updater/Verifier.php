@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -44,7 +45,7 @@ class Verifier
      */
     public function verifyPath($path, $hash_path, $subpath = '', array $exclusions = [])
     {
-        $hashmap = json_decode($this->filesystem->read($hash_path), true);
+        $hashmap = json_decode((string) $this->filesystem->read($hash_path), true);
         $subpath = ltrim($subpath, '/');
 
         $missing_files = [];
@@ -52,13 +53,13 @@ class Verifier
 
         foreach ($hashmap as $file_path => $hash) {
             // If a subpath was specified but the current file is not in that path, skip it
-            if (! empty($subpath) && substr($file_path, 0, strlen($subpath)) !== $subpath) {
+            if (! empty($subpath) && substr((string) $file_path, 0, strlen($subpath)) !== $subpath) {
                 continue;
             }
 
             // Skip paths we don't want to verify
             foreach ($exclusions as $exclude) {
-                if (substr($file_path, 0, strlen($exclude)) === $exclude) {
+                if (substr((string) $file_path, 0, strlen((string) $exclude)) === $exclude) {
                     continue 2;
                 }
             }

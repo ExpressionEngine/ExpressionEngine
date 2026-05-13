@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -51,7 +52,7 @@ class Updater
         foreach ($channels as $channel_id => $lang) {
             if (! isset($valid[$lang])) {
                 // Is the xml language setting the full word
-                $xml_lang = array_search(strtolower($lang), array_map('strtolower', $valid));
+                $xml_lang = array_search(strtolower((string) $lang), array_map('strtolower', $valid));
 
                 if ($xml_lang !== false) {
                     // If there's a valid xml_language, update the channel

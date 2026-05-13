@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -25,10 +26,11 @@ class Dimensions extends EntryManager\Columns\Column
 
     public function renderTableCell($data, $field_id, $file)
     {
-        $dimensions = explode(" ", $file->file_hw_original);
+        $dimensions = explode(" ", (string) $file->file_hw_original);
         if (count($dimensions) > 1 && $dimensions[0] != '') {
             return $dimensions[1] . 'x' . $dimensions[0];
         }
+
         return '';
     }
 

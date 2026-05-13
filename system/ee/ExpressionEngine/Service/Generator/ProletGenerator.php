@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -59,7 +60,7 @@ class ProletGenerator extends AbstractGenerator
     public function build()
     {
         $proletStub = $this->filesystem->read($this->stub('prolet.php'));
-        $proletStub = $this->write('addon', ucfirst($this->addon), $proletStub);
+        $proletStub = $this->write('addon', ucfirst((string) $this->addon), $proletStub);
         $proletStub = $this->write('name', $this->name, $proletStub);
 
         $this->putFile('pro.' . $this->addon . '.php', $proletStub);
@@ -75,6 +76,6 @@ class ProletGenerator extends AbstractGenerator
     {
         $addon = ee('Addon')->get($this->addon);
 
-        return ! (stripos($addon->getIconUrl(), 'default-addon-icon.svg') !== false);
+        return ! (stripos((string) $addon->getIconUrl(), 'default-addon-icon.svg') !== false);
     }
 }

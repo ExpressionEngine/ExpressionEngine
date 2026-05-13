@@ -78,7 +78,7 @@ class DebugTools extends Utilities
         // Loop through the tamplate tags to generate table data
         $data = [];
         foreach ($vars['tags'] as $tag_name => $tag) {
-            $modal_name = str_replace(':', '', trim($tag_name, "{}"));
+            $modal_name = str_replace(':', '', trim((string) $tag_name, "{}"));
             $contents = ee('View')->make('utilities/debug-tools/modals/template_list')->render($tag);
 
             // This generates the modal, and adds it to the DOM
@@ -248,11 +248,11 @@ class DebugTools extends Utilities
         $(document).ready(function () {
             $('[rel=modal-confirm-delete-template-group]').click(function (e) {
                 var modalIs = '.' + $(this).attr('rel');
-        
+
                 $(modalIs + ' .checklist').html(''); // Reset it
                 $(modalIs + ' .checklist').append('<li>' + $(this).data('confirm') + '</li>');
                 $(modalIs + ' input[name=group_id]').val($(this).data('group_id'));
-        
+
                 e.preventDefault();
             })
         });

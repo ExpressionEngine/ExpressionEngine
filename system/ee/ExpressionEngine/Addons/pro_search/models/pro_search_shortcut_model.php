@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -7,7 +8,6 @@
  * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -185,6 +185,7 @@ class Pro_search_shortcut_model extends Pro_search_model
             if (is_string($str) && ! empty($str)) {
                 $str = trim($str);
             }
+
             return $str;
         }, $data);
 
@@ -233,7 +234,7 @@ class Pro_search_shortcut_model extends Pro_search_model
 
         if (! empty($data['shortcut_name'])) {
             // shortcut_name should be url-safe
-            if (preg_match('/^[\w-]+$/', $data['shortcut_name'])) {
+            if (preg_match('/^[\w-]+$/', (string) $data['shortcut_name'])) {
                 // shortcut_name should be unique
                 $query = ee()->db->from($this->table())
                     ->where('shortcut_name', $data['shortcut_name']);

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -22,7 +23,7 @@ class Base64 extends SerializedType
      */
     public static function unserialize($db_data)
     {
-        return strlen($db_data) ? base64_decode($db_data) : '';
+        return strlen((string) $db_data) ? base64_decode((string) $db_data) : '';
     }
 
     /**
@@ -30,7 +31,7 @@ class Base64 extends SerializedType
      */
     public static function serialize($data)
     {
-        return base64_encode($data);
+        return base64_encode((string) $data);
     }
 }
 

@@ -30,14 +30,14 @@ if (! function_exists('sanitize_search_terms')) {
     function sanitize_search_terms($str)
     {
 
-        $str = strip_tags($str);
+        $str = strip_tags((string) $str);
 
         $str = preg_replace("(\s+)", " ", $str);
 
         // Kill naughty stuff...
         $str = ee('Security/XSS')->clean($str);
 
-        return trim($str);
+        return trim((string) $str);
     }
 }
 

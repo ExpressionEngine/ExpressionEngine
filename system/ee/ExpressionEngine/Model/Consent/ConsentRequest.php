@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -104,7 +105,7 @@ class ConsentRequest extends Model
         $log->ConsentRequestVersion = $this->CurrentVersion;
         $log->member_id = ee()->session->userdata('member_id');
         $log->ip_address = ee()->input->ip_address();
-        $log->user_agent = substr(ee()->input->user_agent(), 0, 120);
+        $log->user_agent = substr((string) ee()->input->user_agent(), 0, 120);
         $log->action = $action;
         $log->log_date = ee()->localize->now;
         $log->save();

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -166,7 +167,7 @@ class Pro_table extends Pro_variables_type
      */
     private function get_rows()
     {
-        if (preg_match('/<!--(.*?)-->/', $this->data(), $match) && ($rows = $this->decode($match[1]))) {
+        if (preg_match('/<!--(.*?)-->/', (string) $this->data(), $match) && ($rows = $this->decode($match[1]))) {
             return $rows;
         } else {
             return array();
@@ -186,6 +187,6 @@ class Pro_table extends Pro_variables_type
      */
     private function decode($val)
     {
-        return is_array($val) ? $val : unserialize(base64_decode($val));
+        return is_array($val) ? $val : unserialize(base64_decode((string) $val));
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -15,8 +16,8 @@ namespace ExpressionEngine\Controller\Utilities;
  */
 class ExportEmailAddresses extends Utilities
 {
-    const CACHE_TTL = 300; // 5 mins
-    const PREFIX = 'exprt';
+    public const CACHE_TTL = 300; // 5 mins
+    public const PREFIX = 'exprt';
 
     protected $batch_size = 10;
     protected $validated_batch_size = 5;
@@ -302,7 +303,7 @@ class ExportEmailAddresses extends Utilities
             return false;
         }
 
-        list($box, $domain) = explode('@', $email);
+        list($box, $domain) = explode('@', (string) $email);
 
         if (! isset($this->domains[$domain])) {
             $this->domains[$domain] = checkdnsrr($domain);

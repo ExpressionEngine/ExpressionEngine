@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * This file is part of Aura for PHP.
@@ -148,12 +149,12 @@ class GetoptParser
             }
 
             // long option, short option, or numeric argument?
-            if (! $done && substr($arg, 0, 2) == '--') {
+            if (! $done && substr((string) $arg, 0, 2) == '--') {
                 $this->setLongOptionValue($arg);
-            } elseif (! $done && substr($arg, 0, 1) == '-') {
+            } elseif (! $done && substr((string) $arg, 0, 1) == '-') {
                 $this->setShortFlagValue($arg);
             } else {
-                $this->values[$args ++] = $arg;
+                $this->values[$args++] = $arg;
             }
         }
 
@@ -369,7 +370,7 @@ class GetoptParser
     protected function shortOptionCapturesValue($option)
     {
         $value = reset($this->input);
-        $is_value = ! empty($value) && substr($value, 0, 1) != '-';
+        $is_value = ! empty($value) && substr((string) $value, 0, 1) != '-';
         if ($is_value) {
             $this->setValue($option, array_shift($this->input));
 

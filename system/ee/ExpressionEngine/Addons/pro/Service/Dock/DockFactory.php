@@ -100,8 +100,8 @@ class DockFactory
         $assets = '<style type="text/css">[v-cloak]{display: none;}</style>';
         $assets = '<style type="text/css">@media print {div[id^="ee-pro"],span.eeFrontEdit {display: none !important;}}</style>';
         $assets .= '<div id="ee-44E4F0E59DFA295EB450397CA40D1169" v-cloak></div>';
-        $assets .= '<script type="text/javascript" src="' . URL_PRO_THEMES . 'js/fronteditor.min.js?v=' . $version . '-' . $cacheBuster .'"></script>';
-        $assets .= '<link rel="stylesheet" type="text/css"  media="screen" href="' . URL_PRO_THEMES . 'css/fronteditor.min.css?v=' . $version . '-' . $cacheBuster .'" />';
+        $assets .= '<script type="text/javascript" src="' . URL_PRO_THEMES . 'js/fronteditor.min.js?v=' . $version . '-' . $cacheBuster . '"></script>';
+        $assets .= '<link rel="stylesheet" type="text/css"  media="screen" href="' . URL_PRO_THEMES . 'css/fronteditor.min.css?v=' . $version . '-' . $cacheBuster . '" />';
         $output = ee()->output->add_to_foot($output, $assets);
 
         ee()->load->library('javascript');
@@ -111,7 +111,7 @@ class DockFactory
                 'site_id' => 'SITE_ID',
                 'preview' => 'y',
                 'hide_closer' => 'y',
-                'return' => urlencode(ee()->functions->fetch_current_uri())
+                'return' => urlencode((string) ee()->functions->fetch_current_uri())
             ],
             ee()->config->item('cp_url')
         )->compile();
@@ -161,7 +161,7 @@ class DockFactory
 
         //get some global params for prolets
         $globalParams = [
-            'current_uri' => urlencode(ee()->functions->fetch_current_uri()),
+            'current_uri' => urlencode((string) ee()->functions->fetch_current_uri()),
             'hide_closer' => 'y'
         ];
         if (isset(ee()->session->cache['channel']['entry_ids'])) {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -37,7 +38,7 @@ class Remember
         $this->expiry = (isset($params['remember_me_ttl'])) ? $params['remember_me_ttl'] : $this->expiry;
 
         $this->ip_address = ee()->input->ip_address();
-        $this->user_agent = substr(ee()->input->user_agent(), 0, 120);
+        $this->user_agent = substr((string) ee()->input->user_agent(), 0, 120);
     }
 
     /**

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -108,7 +109,7 @@ abstract class ContentModel extends VariableColumnModel
      */
     public function hasCustomField($name)
     {
-        if (strpos($name, $this->getCustomFieldPrefix()) !== 0) {
+        if (strpos((string) $name, $this->getCustomFieldPrefix()) !== 0) {
             $default_fields = $this->getDefaultFields();
 
             return array_key_exists($name, $default_fields);
@@ -319,7 +320,7 @@ abstract class ContentModel extends VariableColumnModel
                 continue;
             }
 
-            if (strpos($name, 'field_ft_') !== false) {
+            if (strpos((string) $name, 'field_ft_') !== false) {
                 $name = str_replace('field_ft_', 'field_id_', $name);
 
                 if ($this->hasCustomField($name)) {
@@ -329,7 +330,7 @@ abstract class ContentModel extends VariableColumnModel
                 continue;
             }
 
-            if (strpos($name, 'field_dt_') !== false) {
+            if (strpos((string) $name, 'field_dt_') !== false) {
                 $name = str_replace('field_dt_', 'field_id_', $name);
 
                 if ($this->hasCustomField($name)) {

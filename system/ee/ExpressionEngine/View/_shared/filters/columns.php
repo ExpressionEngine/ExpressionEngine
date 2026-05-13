@@ -2,7 +2,7 @@
 	<button type="button" class="filter-bar__button has-sub js-dropdown-toggle button button--default button--small" data-filter-label="columns" title="<?=lang('columns_filter')?>">
 		<?=lang($label)?>
 		<?php if ($value): ?>
-		<span class="faded">(<?=htmlentities($value, ENT_QUOTES, 'UTF-8')?>)</span>
+		<span class="faded">(<?=htmlentities((string) $value, ENT_QUOTES, 'UTF-8')?>)</span>
 		<?php endif; ?>
 	</button>
 

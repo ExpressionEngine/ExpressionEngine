@@ -33,7 +33,7 @@ if (! function_exists('ee_get_encoding')) {
             return 'UTF-8';
         }
 
-        $encoding = strtoupper($encoding);
+        $encoding = strtoupper((string) $encoding);
 
         if ($encoding === '8BIT' || $encoding === 'BINARY') {
             return 'CP850';
@@ -58,19 +58,19 @@ if (! function_exists('ee_mb_strlen')) {
     {
         if (function_exists('mb_strlen')) {
             if (!empty($encoding)) {
-                return mb_strlen($str, $encoding);
+                return mb_strlen((string) $str, $encoding);
             } else {
-                return mb_strlen($str);
+                return mb_strlen((string) $str);
             }
         }
 
         $encoding = ee_get_encoding($encoding);
 
         if ($encoding === 'CP850' || $encoding === 'ASCII' || ! extension_loaded('iconv')) {
-            return strlen($str);
+            return strlen((string) $str);
         }
 
-        return @iconv_strlen($str, $encoding);
+        return @iconv_strlen((string) $str, $encoding);
     }
 }
 
@@ -87,16 +87,16 @@ if (! function_exists('ee_mb_strpos')) {
     {
         if (function_exists('mb_strpos')) {
             if (!empty($encoding)) {
-                return mb_strpos($haystack, $needle, $offset, $encoding);
+                return mb_strpos((string) $haystack, (string) $needle, $offset, $encoding);
             } else {
-                return mb_strpos($haystack, $needle, $offset);
+                return mb_strpos((string) $haystack, (string) $needle, $offset);
             }
         }
 
         $encoding = ee_get_encoding($encoding);
 
         if ($encoding === 'CP850' || $encoding === 'ASCII' || ! extension_loaded('iconv')) {
-            return strpos($haystack, $needle, $offset);
+            return strpos((string) $haystack, (string) $needle, $offset);
         }
 
         $needle = (string) $needle;
@@ -105,7 +105,7 @@ if (! function_exists('ee_mb_strpos')) {
             return false;
         }
 
-        return iconv_strpos($haystack, $needle, $offset, $encoding);
+        return iconv_strpos((string) $haystack, $needle, $offset, $encoding);
     }
 }
 
@@ -122,20 +122,20 @@ if (! function_exists('ee_mb_substr ')) {
     {
         if (function_exists('mb_substr')) {
             if (!empty($encoding)) {
-                return mb_substr($str, $start, $length, $encoding);
+                return mb_substr((string) $str, $start, $length, $encoding);
             } else {
-                return mb_substr($str, $start, $length);
+                return mb_substr((string) $str, $start, $length);
             }
         }
 
         $encoding = ee_get_encoding($encoding);
 
         if ('CP850' === $encoding || 'ASCII' === $encoding || ! extension_loaded('iconv')) {
-            return (string) substr($str, $start, null === $length ? 2147483647 : $length);
+            return (string) substr((string) $str, $start, null === $length ? 2147483647 : $length);
         }
 
         if ($start < 0) {
-            $start = iconv_strlen($str, $encoding) + $start;
+            $start = iconv_strlen((string) $str, $encoding) + $start;
 
             if ($start < 0) {
                 $start = 0;
@@ -145,13 +145,13 @@ if (! function_exists('ee_mb_substr ')) {
         if (null === $length) {
             $length = 2147483647;
         } elseif ($length < 0) {
-            $length = iconv_strlen($str, $encoding) + $length - $start;
+            $length = iconv_strlen((string) $str, $encoding) + $length - $start;
 
             if ($length < 0) {
                 return '';
             }
         }
 
-        return (string) iconv_substr($str, $start, $length, $encoding);
+        return (string) iconv_substr((string) $str, $start, $length, $encoding);
     }
 }

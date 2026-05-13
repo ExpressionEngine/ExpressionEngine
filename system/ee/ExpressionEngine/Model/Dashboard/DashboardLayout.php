@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -109,7 +110,7 @@ class DashboardLayout extends Model
 
                 foreach ($feed->get_items(0, 10) as $item) {
                     $news[] = array(
-                        'title' => strip_tags($item->get_title()),
+                        'title' => strip_tags((string) $item->get_title()),
                         'date' => ee()->localize->format_date(
                             ee()->session->userdata('date_format', ee()->config->item('date_format')),
                             $item->get_date('U')

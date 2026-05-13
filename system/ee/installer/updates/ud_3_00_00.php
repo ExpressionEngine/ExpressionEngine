@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -108,7 +109,7 @@ class Updater
 
         foreach ($installed_modules->result() as $installed_module) {
             $key = array_search(
-                strtolower($installed_module->module_name),
+                strtolower((string) $installed_module->module_name),
                 $required_modules
             );
 
@@ -170,7 +171,7 @@ class Updater
             'comment_word_censoring' => (ee()->config->item('comment_word_censoring') == 'y') ? 'y' : 'n',
             'comment_moderation_override' => (ee()->config->item('comment_moderation_override') == 'y') ? 'y' : 'n',
             // Default this to 0
-            'comment_edit_time_limit' => ($comment_edit_time_limit && ctype_digit($comment_edit_time_limit))
+            'comment_edit_time_limit' => ($comment_edit_time_limit && ctype_digit((string) $comment_edit_time_limit))
                 ? $comment_edit_time_limit : 0
         );
 
@@ -469,7 +470,7 @@ class Updater
                         if (is_numeric($field)) {
                             $field = 'field_id_' . $field;
                         } elseif ($field == 'category') {
-                            foreach (explode('|', $layout['cat_group']) as $cat_group_id) {
+                            foreach (explode('|', (string) $layout['cat_group']) as $cat_group_id) {
                                 $tab['fields'][] = array(
                                     'field' => 'categories[cat_group_id_' . $cat_group_id . ']',
                                     'visible' => $info['visible'],

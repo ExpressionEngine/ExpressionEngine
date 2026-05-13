@@ -36,9 +36,10 @@ class Mfa
             if (!empty($fallback) && strlen($fallback) == 16) {
                 self::$backupCode = $fallback;
             } else {
-                self::$backupCode = strtoupper(random_string('alnum', 16));
+                self::$backupCode = strtoupper((string) random_string('alnum', 16));
             }
         }
+
         return self::$backupCode;
     }
 
@@ -61,6 +62,7 @@ class Mfa
             new SvgImageBackEnd()
         );
         $writer = new Writer($renderer);
+
         return $writer->writeString($str);
     }
 
@@ -74,6 +76,7 @@ class Mfa
     public function validateOtp($input, $secret)
     {
         $totp = TOTP::createFromSecret(Base32::encodeUpper($secret), new InternalClock());
+
         return $totp->verify($input);
     }
 
@@ -129,6 +132,7 @@ class Mfa
             'content' => $this->form('validateMfa', 'pro:messages/mfa'),
             'url_themes' => URL_THEMES,
         ];
+
         return ee()->output->show_message($vars, false, false, 'mfa_template');
     }
 
@@ -147,6 +151,7 @@ class Mfa
             'content' => $this->form('enableMfa', 'pro:messages/mfa-setup', 'confirm', false, $formVars),
             'url_themes' => URL_THEMES,
         ];
+
         return ee()->output->show_message($vars, false, false, 'mfa_template');
     }
 

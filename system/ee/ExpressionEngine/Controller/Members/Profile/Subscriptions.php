@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -50,7 +51,7 @@ class Subscriptions extends Settings
         $subscriptions = ee()->members->get_member_subscriptions($this->member->member_id, $current, $perpage);
 
         foreach ($subscriptions['result_array'] as $hash => $subscription) {
-            if (empty($search) || stristr($subscription['title'], $search) !== false) {
+            if (empty($search) || stristr((string) $subscription['title'], (string) $search) !== false) {
                 $links[] = array(
                     'title' => $subscription['title'],
                     'type' => $subscription['type'],
@@ -58,7 +59,7 @@ class Subscriptions extends Settings
                         'name' => 'selection[]',
                         'value' => $subscription['id'],
                         'data' => array(
-                            'confirm' => lang('subscription') . ': <b>' . htmlentities($subscription['title'], ENT_QUOTES, 'UTF-8') . '</b>'
+                            'confirm' => lang('subscription') . ': <b>' . htmlentities((string) $subscription['title'], ENT_QUOTES, 'UTF-8') . '</b>'
                         )
                     )
                 );
@@ -119,7 +120,7 @@ class Subscriptions extends Settings
 
         foreach ($selection as $id) {
             $char = $id[0];
-            $id = substr($id, 1);
+            $id = substr((string) $id, 1);
             $delete[$type[$char]][] = $id;
         }
 

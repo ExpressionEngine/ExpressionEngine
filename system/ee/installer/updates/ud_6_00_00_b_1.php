@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -119,7 +120,7 @@ class Updater
         foreach ($sites->result_array() as $site) {
             $site_id = $site['site_id'];
             foreach ($prefs as $pref) {
-                $data = unserialize(base64_decode($site[$pref]));
+                $data = unserialize(base64_decode((string) $site[$pref]));
                 foreach ($data as $key => $value) {
                     $key = (isset($rename[$key])) ? $rename[$key] : $key;
 
@@ -286,7 +287,7 @@ class Updater
 
         foreach ($groups->result() as $group) {
             // Short name conversion
-            $short_name = strtolower($group->group_title);
+            $short_name = strtolower((string) $group->group_title);
             $short_name = str_replace(' ', '_', $short_name);
             $short_name = preg_replace('/[^a-z0-9\-\_]/iu', '', $short_name);
 

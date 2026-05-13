@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -61,7 +62,7 @@ class Runtime
      */
     public function read($comment_text)
     {
-        if (preg_match('/^\{!-- ra:(\w+) --\}$/', $comment_text, $matches)) {
+        if (preg_match('/^\{!-- ra:(\w+) --\}$/', (string) $comment_text, $matches)) {
             return $this->get($matches[1]);
         }
 

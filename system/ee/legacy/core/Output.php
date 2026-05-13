@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -91,7 +92,7 @@ class EE_Output
     {
         // We always need to send a content type
 
-        if (ee()->config->item('send_headers') != 'y' && strncasecmp($header, 'content-type', 12) != 0) {
+        if (ee()->config->item('send_headers') != 'y' && strncasecmp((string) $header, 'content-type', 12) != 0) {
             return;
         }
 
@@ -100,7 +101,7 @@ class EE_Output
         // the reduction, causing the browser to hang waiting for more data.
         // We'll just skip content-length in those cases.
 
-        if ($this->_zlib_oc && strncasecmp($header, 'content-length', 14) == 0) {
+        if ($this->_zlib_oc && strncasecmp((string) $header, 'content-length', 14) == 0) {
             return;
         }
 
@@ -152,8 +153,8 @@ class EE_Output
     {
         // If the output data contains closing </body> and </html> tags
         // we will remove them and add them back after we insert the profile data
-        if (preg_match("|</body>.*?</html>|is", $output)) {
-            $output = preg_replace("|</body>.*?</html>|is", '', $output);
+        if (preg_match("|</body>.*?</html>|is", (string) $output)) {
+            $output = preg_replace("|</body>.*?</html>|is", '', (string) $output);
             $output .= $content;
             $output .= '</body></html>';
         } else {
@@ -225,7 +226,7 @@ class EE_Output
                 if (! ee('Response')->hasHeader('Content-Type')) {
                     $this->set_header("Content-Type: text/xml");
                 }
-                $output = trim($output);
+                $output = trim((string) $output);
 
                 break;
             case 'feed':
@@ -319,7 +320,7 @@ class EE_Output
             }
 
             if (! $error_out && extension_loaded('zlib')) {
-                if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) and strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false) {
+                if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) and strpos((string) $_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false) {
                     ob_start('ob_gzhandler');
                 }
             }
@@ -342,7 +343,7 @@ class EE_Output
         }
         if (REQ == 'PAGE' || (REQ == 'ACTION' && ee('LivePreview')->hasEntryData())) {
             if (isset(ee()->TMPL) && is_object(ee()->TMPL) && in_array(ee()->TMPL->template_type, ['webpage'])) {
-                $output = preg_replace("/\{frontedit_link\s+(.*)\}/sU", '', $output);
+                $output = preg_replace("/\{frontedit_link\s+(.*)\}/sU", '', (string) $output);
                 $output = preg_replace("/\<\!--\s*(\/\/\s*)*disable\s*frontedit\s*--\>/sU", '', $output);
             }
         }
@@ -396,7 +397,7 @@ class EE_Output
 
             if (ee()->config->item('debug') == 0 &&
                 $this->remove_unparsed_variables === true) {
-                $output = preg_replace("/" . LD . "[^;\n]+?" . RD . "/", '', $output);
+                $output = preg_replace("/" . LD . "[^;\n]+?" . RD . "/", '', (string) $output);
             }
 
             // Garbage Collection
@@ -429,14 +430,14 @@ class EE_Output
     {
         $request = (! function_exists('getallheaders')) ? array() : @getallheaders();
 
-        if (preg_match("|<ee\:last_update>(.*?)<\/ee\:last_update>|", $output, $matches)) {
+        if (preg_match("|<ee\:last_update>(.*?)<\/ee\:last_update>|", (string) $output, $matches)) {
             $last_update = $matches['1'];
             $output = str_replace($matches['0'], '', $output);
         } else {
             $last_update = ee()->localize->now;
         }
 
-        $output = trim($output);
+        $output = trim((string) $output);
 
         // Check for the 'If-Modified-Since' Header
 
@@ -543,7 +544,7 @@ class EE_Output
 
         if ($data['redirect'] != '') {
             $secure_redirect = ee('Security/XSS')->clean($data['redirect']);
-            $secure_redirect = htmlentities($secure_redirect, ENT_QUOTES, 'UTF-8');
+            $secure_redirect = htmlentities((string) $secure_redirect, ENT_QUOTES, 'UTF-8');
             $js_rate = $data['rate'] * 1000;
 
             $data['meta_refresh'] = "<script type='text/javascript'>setTimeout(function(){document.location='" . $secure_redirect . "'}," . $js_rate . ')</script>';
@@ -557,8 +558,8 @@ class EE_Output
 
             $ltitle = ($refresh_msg == '') ? $data['link']['1'] : $refresh_msg;
 
-            $url = (strtolower($data['link']['0']) == 'javascript:history.go(-1)') ? $data['link']['0'] : ee('Security/XSS')->clean($data['link']['0']);
-            $url = htmlentities($url, ENT_QUOTES, 'UTF-8');
+            $url = (strtolower((string) $data['link']['0']) == 'javascript:history.go(-1)') ? $data['link']['0'] : ee('Security/XSS')->clean($data['link']['0']);
+            $url = htmlentities((string) $url, ENT_QUOTES, 'UTF-8');
 
             $data['link'] = "<a href='" . $url . "'>" . $ltitle . "</a>";
         }
@@ -566,7 +567,7 @@ class EE_Output
         if ($xhtml == true && isset(ee()->session)) {
             ee()->load->library('typography');
 
-            $data['content'] = ee()->typography->parse_type(stripslashes($data['content']), array('text_format' => 'xhtml'));
+            $data['content'] = ee()->typography->parse_type(stripslashes((string) $data['content']), array('text_format' => 'xhtml'));
         }
 
         $template_data = false;
@@ -653,7 +654,7 @@ class EE_Output
     {
         $url = ee()->functions->determine_error_return();
 
-        if($errors instanceof \ExpressionEngine\Service\Validation\Result) {
+        if ($errors instanceof \ExpressionEngine\Service\Validation\Result) {
             $validationErrors = $errors->getFirstErrors();
             $errors = [];
 
@@ -661,7 +662,7 @@ class EE_Output
                 $label = $field;
 
                 // Handle aliased field names
-                if(!empty($aliases) && array_key_exists($field, $aliases)) {
+                if (!empty($aliases) && array_key_exists($field, $aliases)) {
                     $original = $field;
                     $field = $aliases[$field]['field'] ?? $aliases[$field];
                     $label = $aliases[$original]['label'] ?? $field;
@@ -669,40 +670,44 @@ class EE_Output
 
                 // Build error for system error page
                 // or store as field name for inline error display
-                if($url === false) {
+                if ($url === false) {
                     $label = lang($label);
                     $errors[] = "<b>{$label}: </b>{$error}";
-                }else {
+                } else {
                     $errors['error:' . $field] = $error;
                 }
             }
-        }else if(is_array($errors) && $url !== false) {
+        } elseif (is_array($errors) && $url !== false) {
             // Automatically prefix error keys
-            $errors = array_reduce(array_keys($errors), function($carry, $key) use($errors) {
+            $errors = array_reduce(array_keys($errors), function ($carry, $key) use ($errors) {
                 $error = $errors[$key];
-                if(!is_numeric($key) && strpos($key, 'error:') !== 0) {
+                if (!is_numeric($key) && strpos($key, 'error:') !== 0) {
                     $key = "error:$key";
                 }
                 $carry[$key] = $error;
+
                 return $carry;
             }, []);
         }
 
         // Flash errors for redirect
-        if($url !== false) {
+        if ($url !== false) {
             ee()->session->set_flashdata('errors', $errors);
 
             // Save old input values from POST for error redirect.
             // Filter out temporary hashes and sensitive values and any keys found in $_FILES
             $old = array_filter($_POST, function ($key) {
                 $key = strtolower($key);
+
                 return !in_array($key, ['act', 'ret', 'from', 'p', 'site_id', 'csrf', 'csrf_token', 'xid', 'captcha'])
                     && !in_array($key, array_keys($_FILES ?: []))
                     && strpos($key, 'password') === false;
             }, ARRAY_FILTER_USE_KEY);
 
             // Prefix old input variables for template display
-            $old = array_combine(array_map(function($key) {return "old:$key";}, array_keys($old)), $old);
+            $old = array_combine(array_map(function ($key) {
+                return "old:$key";
+            }, array_keys($old)), $old);
 
             ee()->session->set_flashdata('old', $old);
         }
@@ -781,7 +786,7 @@ class EE_Output
 
         if ($statusCode === true) {
             $this->set_status_header(500);
-        } else if ($statusCode === false || (!is_int($statusCode) && !is_bool($statusCode))) {
+        } elseif ($statusCode === false || (!is_int($statusCode) && !is_bool($statusCode))) {
             $this->set_status_header(200);
         } else {
             $this->set_status_header($statusCode);
@@ -821,14 +826,14 @@ class EE_Output
 
             // Remove anything after the semicolon
 
-            if ($pos = strrpos($modified_since, ';') !== false) {
-                $modified_since = substr($modified_since, 0, $pos);
+            if ($pos = strrpos((string) $modified_since, ';') !== false) {
+                $modified_since = substr((string) $modified_since, 0, $pos);
             }
 
             // If the file is in the client cache, we'll
             // send a 304 and be done with it.
 
-            if ($modified_since && (strtotime($modified_since) == $modified)) {
+            if ($modified_since && (strtotime((string) $modified_since) == $modified)) {
                 $this->set_status_header(304);
                 exit;
             }

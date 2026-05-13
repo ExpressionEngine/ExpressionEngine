@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -70,8 +71,7 @@ class EE_XMLparser
 
                 /** -------------------------------------
                 /**  Put child layer into root object
-                /** -------------------------------------*/
-                elseif ($item['type'] == 'close') {
+                /** -------------------------------------*/ elseif ($item['type'] == 'close') {
                     $elements = &$child[count($child) - 1];
                     unset($child[count($child) - 1]);
                 }
@@ -142,7 +142,7 @@ class EE_XMLparser
         } else {  // values are enclosed by a character, e.g.: "value","value2","value3"
             foreach ($lines as $key => $val) {
                 if (! empty($val)) {
-                    preg_match_all("/" . preg_quote($enclosure) . "(.*?)" . preg_quote($enclosure) . "/si", $val, $matches);
+                    preg_match_all("/" . preg_quote((string) $enclosure) . "(.*?)" . preg_quote((string) $enclosure) . "/si", $val, $matches);
                     $data_arr[$key] = $matches[1];
 
                     if (empty($data_arr[$key])) {
@@ -207,7 +207,7 @@ class EE_XMLparser
         $entities = $this->fetch_entity_definitions($xml);
         $xml = ($entities === false) ? $xml : $this->replace_entities($xml, $entities);
 
-        if (xml_parse_into_struct($parser, $xml, $this->tagdata, $this->index) === 0) {
+        if (xml_parse_into_struct($parser, (string) $xml, $this->tagdata, $this->index) === 0) {
             xml_parser_free($parser);
 
             return false;
@@ -225,7 +225,7 @@ class EE_XMLparser
     {
         $entities = array();
 
-        preg_match_all("/\<\!ENTITY\s*([\w-]+)\s*\"(.+)\"/siU", $xml, $matches);
+        preg_match_all("/\<\!ENTITY\s*([\w-]+)\s*\"(.+)\"/siU", (string) $xml, $matches);
 
         if (isset($matches[0][0])) {
             $entities[0] = $matches[1];

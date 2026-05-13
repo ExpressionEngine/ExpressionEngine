@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -30,11 +31,11 @@ class Pro_search_mcp
     // CONSTANTS
     // --------------------------------------------------------------------
 
-    const MAX_WEIGHT = 3;
-    const VIEW_LOG_LIMIT = 25;
-    const PREVIEW_PAD = 50;
-    const PREVIEW_LIMIT = 100;
-    const DEBUG = false;
+    public const MAX_WEIGHT = 3;
+    public const VIEW_LOG_LIMIT = 25;
+    public const PREVIEW_PAD = 50;
+    public const PREVIEW_LIMIT = 100;
+    public const DEBUG = false;
 
     // --------------------------------------------------------------------
     // PROPERTIES
@@ -397,7 +398,7 @@ class Pro_search_mcp
         // Stop Words
         // --------------------------------------
 
-        $words = preg_replace('/\s+/', "\n", ee()->pro_search_settings->get('stop_words'));
+        $words = preg_replace('/\s+/', "\n", (string) ee()->pro_search_settings->get('stop_words'));
         $sections['keywords'][] = array(
             'title' => 'stop_words',
             'desc' => 'stop_words_help',
@@ -413,7 +414,7 @@ class Pro_search_mcp
         // Ignore Words
         // --------------------------------------
 
-        $words = preg_replace('/\s+/', "\n", ee()->pro_search_settings->get('ignore_words'));
+        $words = preg_replace('/\s+/', "\n", (string) ee()->pro_search_settings->get('ignore_words'));
         $sections['keywords'][] = array(
             'title' => 'ignore_words',
             'desc' => 'ignore_words_help',
@@ -450,7 +451,7 @@ class Pro_search_mcp
         foreach ($groups as $id => $name) {
             $children = array();
             foreach ($perms as $perm) {
-                $children[$perm . ':' . $id] = html_entity_decode(lang($perm));
+                $children[$perm . ':' . $id] = html_entity_decode((string) lang($perm));
                 if (in_array($id, (array) ee()->pro_search_settings->get($perm))) {
                     $values[] = $perm . ':' . $id;
                 }
@@ -525,10 +526,10 @@ class Pro_search_mcp
         }
 
         foreach (ee('Request')->post('permissions', []) as $perm) {
-            if (strpos($perm, ':') === false) {
+            if (strpos((string) $perm, ':') === false) {
                 continue;
             }
-            $perm = explode(':', $perm);
+            $perm = explode(':', (string) $perm);
             $settings[ee('Security/XSS')->clean($perm[0])][] = ee('Security/XSS')->clean($perm[1]);
         }
 
@@ -732,7 +733,7 @@ class Pro_search_mcp
                     'name'  => 'collection_id[]',
                     'value' => $id,
                     'data'  => array(
-                        'confirm' => htmlspecialchars($col['collection_label'], ENT_QUOTES)
+                        'confirm' => htmlspecialchars((string) $col['collection_label'], ENT_QUOTES)
                     )
                 );
 
@@ -820,7 +821,7 @@ class Pro_search_mcp
         // Get settings for this collection
         // --------------------------------------
 
-        if (strlen($collection['settings'])) {
+        if (strlen((string) $collection['settings'])) {
             $collection['settings'] = pro_search_decode($collection['settings'], false);
         }
 
@@ -828,7 +829,7 @@ class Pro_search_mcp
         // Set default excerpt data
         // --------------------------------------
 
-        if (! strlen($collection['excerpt'])) {
+        if (! strlen((string) $collection['excerpt'])) {
             $collection['excerpt'] = '0';
         }
 
@@ -836,7 +837,7 @@ class Pro_search_mcp
         // Set default modifier data
         // --------------------------------------
 
-        if (! strlen($collection['modifier'])) {
+        if (! strlen((string) $collection['modifier'])) {
             $collection['modifier'] = '1';
         }
 
@@ -1153,7 +1154,7 @@ class Pro_search_mcp
         // Title shouldn't be empty
         // --------------------------------------
 
-        if (! strlen($_POST['collection_label'])) {
+        if (! strlen((string) $_POST['collection_label'])) {
             $_POST['collection_label'] = lang('new_collection');
         }
 
@@ -1170,7 +1171,7 @@ class Pro_search_mcp
         // --------------------------------------
 
         // It should be filled in
-        if (! ($collection_name = trim(ee()->input->post('collection_name')))) {
+        if (! ($collection_name = trim((string) ee()->input->post('collection_name')))) {
             show_error(lang('collection_name_cannot_be_empty'));
         }
 
@@ -1401,12 +1402,12 @@ class Pro_search_mcp
             // Clean up word
             if ($word = ee()->pro_search_words->clean($find)) {
                 // Add left wildcard
-                if (substr($find, 0, 1) == '*') {
+                if (substr((string) $find, 0, 1) == '*') {
                     $word = '%' . $word;
                 }
 
                 // Add right wildcard
-                if (substr($find, -1) == '*') {
+                if (substr((string) $find, -1) == '*') {
                     $word .= '%';
                 }
 
@@ -1448,7 +1449,7 @@ class Pro_search_mcp
             $word = ee()->pro_search_words->clean($add);
 
             // Valid and no spaces!
-            if (ee()->pro_search_words->is_valid($word) && !preg_match('/\s/', $word)) {
+            if (ee()->pro_search_words->is_valid($word) && !preg_match('/\s/', (string) $word)) {
                 ee()->pro_search_word_model->insert_ignore(array(
                     'site_id'  => $this->site_id,
                     'language' => $lang,
@@ -1692,7 +1693,7 @@ class Pro_search_mcp
         // --------------------------------------
 
         $data['site_id'] = $this->site_id;
-        $data['group_label'] = trim(ee()->input->post('group_label'));
+        $data['group_label'] = trim((string) ee()->input->post('group_label'));
 
         // --------------------------------------
         // Insert/update
@@ -2708,7 +2709,7 @@ class Pro_search_mcp
                     $row[] = sprintf(
                         '<a class="m-link" rel="modal-replace-details" href="%s">%d</a>',
                         $this->mcp_url('replace_details/' . $l['log_id']),
-                        count(array_filter(explode('|', $l['entries'])))
+                        count(array_filter(explode('|', (string) $l['entries'])))
                     );
 
                     // Add to rows
@@ -2790,7 +2791,7 @@ class Pro_search_mcp
 
         $log = ee()->pro_search_replace_log_model->get_one($log_id);
 
-        $entry_ids = array_filter(explode('|', $log['entries']));
+        $entry_ids = array_filter(explode('|', (string) $log['entries']));
 
         // --------------------------------------
         // Get titles for entries
@@ -3157,7 +3158,7 @@ class Pro_search_mcp
             $row = array_merge($row, $params);
 
             // remove =, +, -, @ from the start of keywords
-            $row['keywords'] = preg_replace('/^[\=\+\-\@]+/', '', $row['keywords']);
+            $row['keywords'] = preg_replace('/^[\=\+\-\@]+/', '', (string) $row['keywords']);
 
             $log_row = array();
 

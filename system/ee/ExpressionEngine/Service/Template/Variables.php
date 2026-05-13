@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -228,7 +229,7 @@ abstract class Variables
         $query_string = http_build_query($params);
         $base = ee()->functions->fetch_site_index(0, 0);
 
-        if (strpos($base, '?') === false) {
+        if (strpos((string) $base, '?') === false) {
             $base .= '?';
         } else {
             $base .= '&';

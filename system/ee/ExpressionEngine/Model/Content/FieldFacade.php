@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -79,8 +80,8 @@ class FieldFacade
             $field_name = $this->getShortName();
             $field_id = $this->getId();
 
-            if (strpos($field_name, 'categories[cat_group_id_') === 0) {
-                $field_name = "categories show_group=\"" . rtrim(substr($field_name, 24), ']') . "\"";
+            if (strpos((string) $field_name, 'categories[cat_group_id_') === 0) {
+                $field_name = "categories show_group=\"" . rtrim(substr((string) $field_name, 24), ']') . "\"";
             }
 
             $content_type = (isset($options['content_type'])) ? $options['content_type'] : $this->getContentType();
@@ -98,6 +99,7 @@ class FieldFacade
 
             return ee('View')->make('publish/partials/name_badge_copy')->render($vars);
         }
+
         return '';
     }
 
@@ -145,7 +147,6 @@ class FieldFacade
     {
         return isset($this->metadata['alertText']) ? $this->metadata['alertText'] : null;
     }
-
 
     public function getSettings()
     {
@@ -307,7 +308,7 @@ class FieldFacade
 
         $field_value = $data['field_data'];
         // Check for an "old" value flashed during inline_error handling
-        if(ee()->has('session') && !empty(ee()->session->flashdata('old'))) {
+        if (ee()->has('session') && !empty(ee()->session->flashdata('old'))) {
             $field_value = ee()->session->flashdata('old')["old:{$data['field_name']}"] ?? $field_value;
         }
 
@@ -319,6 +320,7 @@ class FieldFacade
         ee()->lang->load('fieldtypes');
         $rulesList = [];
         $supportedEvaluationRules = [];
+
         try {
             $ft = $this->getNativeField();
         } catch (AddonNotFound $e) {
@@ -552,6 +554,7 @@ class FieldFacade
         }
 
         $field = ee('Model')->get('ChannelField', $this->getId())->first();
+
         return $field->FieldConditionSets;
     }
 

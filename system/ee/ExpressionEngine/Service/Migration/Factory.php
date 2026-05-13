@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -168,7 +169,7 @@ class Factory
 
     public function getClassname()
     {
-        $classname = substr($this->migration->migration, 18);
+        $classname = substr((string) $this->migration->migration, 18);
         $classname = $this->camelCase($classname);
 
         return $classname;
@@ -231,7 +232,7 @@ class Factory
             }
 
             // Filter out the filepath and extension
-            $migrationName = pathinfo($file, PATHINFO_FILENAME);
+            $migrationName = pathinfo((string) $file, PATHINFO_FILENAME);
 
             // This migration has already run
             if (in_array($migrationName, $allExecutedMigrations)) {
@@ -259,7 +260,7 @@ class Factory
         $this->stepsRemaining = $stepsRemaining;
 
         // If all, run core then all addons
-        if (strtolower($type) === 'all') {
+        if (strtolower((string) $type) === 'all') {
             $ranCore = $this->migrateAllByType('core', $migrationGroup, $this->stepsRemaining);
             $ranAddons = $this->migrateAllByType('addons', $migrationGroup, $this->stepsRemaining);
             $ran = array_merge($ran, $ranCore, $ranAddons);
@@ -281,7 +282,7 @@ class Factory
         }
 
         // If set to core, lets change that to ExpressionEngine
-        if (strtolower($type) === 'core') {
+        if (strtolower((string) $type) === 'core') {
             $type = 'ExpressionEngine';
         }
 
@@ -316,7 +317,7 @@ class Factory
         $this->stepsRemaining = $stepsRemaining;
 
         // If all, run addons then core
-        if (strtolower($type) === 'all' || strtolower($type) === 'reset') {
+        if (strtolower((string) $type) === 'all' || strtolower((string) $type) === 'reset') {
             $rolledbackAddons = $this->rollbackAllByType('addons', $this->respectMigrationGroups, $this->stepsRemaining);
             $rolledbackCore = $this->rollbackAllByType('core', $this->respectMigrationGroups, $this->stepsRemaining);
             $rolledback = array_merge($rolledback, $rolledbackAddons, $rolledbackCore);
@@ -339,7 +340,7 @@ class Factory
         }
 
         // If set to core, lets change that to ExpressionEngine
-        if (strtolower($type) === 'core') {
+        if (strtolower((string) $type) === 'core') {
             $type = 'ExpressionEngine';
         }
 
@@ -409,7 +410,7 @@ class Factory
             }
 
             // There is a /database/migrations/ folder for this addon, so lets get the shortname
-            $addon_shortname = explode('/', $name);
+            $addon_shortname = explode('/', (string) $name);
             $addon_shortname = end($addon_shortname);
 
             // now lets get all the new migrations from the shortname
@@ -471,7 +472,7 @@ class Factory
     // These string manipulation functions should be moved, but they are required for migrations
     public function snakeCase($str)
     {
-        $str = strtolower($str);
+        $str = strtolower((string) $str);
         $str = str_replace(['-', ' '], '_', $str);
 
         return $str;
@@ -479,7 +480,7 @@ class Factory
 
     public function camelCase($str)
     {
-        $str = mb_convert_case($str, MB_CASE_TITLE);
+        $str = mb_convert_case((string) $str, MB_CASE_TITLE);
         $str = str_replace(['-', '_', ' '], '', $str);
 
         return $str;
@@ -487,12 +488,12 @@ class Factory
 
     public function endsWith($haystack, $needle)
     {
-        $length = strlen($needle);
+        $length = strlen((string) $needle);
         if (!$length) {
             return true;
         }
 
-        return substr($haystack, -$length) === $needle;
+        return substr((string) $haystack, -$length) === $needle;
     }
 }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -47,10 +48,9 @@ class Export
     {
         $this->zip = new ZipArchive();
 
-        if(empty($file_name)) {
+        if (empty($file_name)) {
             $location = PATH_CACHE . "cset/{$channels[0]->channel_name}.zip";
-        }
-        else {
+        } else {
             $location = PATH_CACHE . "cset/$file_name.zip";
         }
 
@@ -294,7 +294,7 @@ class Export
         }
 
         if ($field->field_list_items) {
-            $result->list_items = explode("\n", trim($field->field_list_items));
+            $result->list_items = explode("\n", trim((string) $field->field_list_items));
         }
 
         if ($field->hasProperty('field_pre_populate')) {
@@ -441,7 +441,7 @@ class Export
             }
 
             foreach ($column as $key => $value) {
-                $simple_key = preg_replace('/^col_/', '', $key);
+                $simple_key = preg_replace('/^col_/', '', (string) $key);
                 $col->$simple_key = $value;
             }
 

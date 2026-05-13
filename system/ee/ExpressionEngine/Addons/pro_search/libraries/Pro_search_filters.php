@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -104,7 +105,7 @@ class Pro_search_filters
                 }
 
                 // Skip if we're trying to load something from low search
-                if (strpos($path, 'low_search') !== false) {
+                if (strpos((string) $path, 'low_search') !== false) {
                     continue;
                 }
 

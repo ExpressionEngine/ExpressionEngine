@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -135,7 +136,7 @@ class MemberFields extends Settings
             $toolbar = array('toolbar_items' => array(
                 'edit' => array(
                     'href' => $edit_url,
-                    'title' => strtolower(lang('edit'))
+                    'title' => strtolower((string) lang('edit'))
                 )
             ));
 
@@ -152,7 +153,7 @@ class MemberFields extends Settings
                     'name' => 'selection[]',
                     'value' => $field->m_field_id,
                     'data' => array(
-                        'confirm' => lang('field') . ': <b>' . htmlentities($field->m_field_name, ENT_QUOTES, 'UTF-8') . '</b>'
+                        'confirm' => lang('field') . ': <b>' . htmlentities((string) $field->m_field_name, ENT_QUOTES, 'UTF-8') . '</b>'
                     )
                 )
             );
@@ -257,7 +258,7 @@ class MemberFields extends Settings
     {
         // Parse out the serialized inputs sent by the JavaScript
         $new_order = array();
-        parse_str(ee()->input->post('order'), $new_order);
+        parse_str((string) ee()->input->post('order'), $new_order);
 
         if (! AJAX_REQUEST or empty($new_order['order'])) {
             show_error(lang('unauthorized_access'), 403);

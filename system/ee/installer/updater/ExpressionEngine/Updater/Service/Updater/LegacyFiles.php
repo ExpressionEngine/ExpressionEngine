@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -45,7 +46,7 @@ class LegacyFiles
      */
     public function addFiles()
     {
-        $version = explode('.', $this->from_version, 2);
+        $version = explode('.', (string) $this->from_version, 2);
         $filesystem = new Filesystem();
 
         if ($filesystem->exists($this->backup_path . 'system_ee/EllisLab')) {

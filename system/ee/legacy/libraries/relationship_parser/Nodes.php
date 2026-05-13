@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -28,12 +29,12 @@ class ParseNode extends EE_TreeNode
         if ($parameter) {
             $this->_entry_id_fn = 'array_intersect';
 
-            if (strncasecmp($parameter, 'not ', 4) == 0) {
+            if (strncasecmp((string) $parameter, 'not ', 4) == 0) {
                 $this->_entry_id_fn = 'array_diff';
-                $parameter = substr($parameter, 4);
+                $parameter = substr((string) $parameter, 4);
             }
 
-            $parameter = trim($parameter, " |\r\n\t");
+            $parameter = trim((string) $parameter, " |\r\n\t");
             $this->_entry_id_opts = explode('|', $parameter);
         }
     }

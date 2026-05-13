@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -35,7 +36,7 @@ class Survey
         $path_info_support = 'n';
 
         if ($query->num_rows() > 0) {
-            $prefs = unserialize(base64_decode($query->row('site_system_preferences')));
+            $prefs = unserialize(base64_decode((string) $query->row('site_system_preferences')));
             $site_url = $prefs['site_url'];
             $path_info_support = ($prefs['force_query_string'] == 'n') ? 'y' : 'n';
         }
@@ -46,9 +47,9 @@ class Survey
         $mysql_info = mysqli_get_server_info(ee()->db->conn_id);
 
         return array(
-            'anon_id' => md5($site_url),
-            'os' => preg_replace("/.*?\((.*?)\).*/", '\\1', $_SERVER['SERVER_SOFTWARE']),
-            'server_software' => preg_replace("/(.*?)\(.*/", '\\1', $_SERVER['SERVER_SOFTWARE']),
+            'anon_id' => md5((string) $site_url),
+            'os' => preg_replace("/.*?\((.*?)\).*/", '\\1', (string) $_SERVER['SERVER_SOFTWARE']),
+            'server_software' => preg_replace("/(.*?)\(.*/", '\\1', (string) $_SERVER['SERVER_SOFTWARE']),
             'php_version' => phpversion(),
             'php_extensions' => json_encode(get_loaded_extensions()),
             'mysql_version' => preg_replace("/(.*?)\-.*/", "\\1", $mysql_info),
@@ -88,7 +89,7 @@ class Survey
         $postdata = '';
 
         foreach ($data as $key => $val) {
-            $postdata .= "&{$key}=" . urlencode(stripslashes($val));
+            $postdata .= "&{$key}=" . urlencode(stripslashes((string) $val));
         }
 
         if (! function_exists('curl_init')) {

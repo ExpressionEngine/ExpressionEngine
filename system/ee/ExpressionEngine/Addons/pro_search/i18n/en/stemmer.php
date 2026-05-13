@@ -67,7 +67,7 @@ class Pro_search_en_stemmer
     private static function step1ab($word)
     {
         // Part a
-        if (substr($word, -1) == 's') {
+        if (substr((string) $word, -1) == 's') {
             self::replace($word, 'sses', 'ss')
             or self::replace($word, 'ies', 'i')
             or self::replace($word, 'ss', 'ss')
@@ -75,13 +75,13 @@ class Pro_search_en_stemmer
         }
 
         // Part b
-        if (substr($word, -2, 1) != 'e' or !self::replace($word, 'eed', 'ee', 0)) { // First rule
+        if (substr((string) $word, -2, 1) != 'e' or !self::replace($word, 'eed', 'ee', 0)) { // First rule
             $v = self::$regex_vowel;
 
             // ing and ed
             if (
-                preg_match("#$v+#", substr($word, 0, -3)) && self::replace($word, 'ing', '')
-                or preg_match("#$v+#", substr($word, 0, -2)) && self::replace($word, 'ed', '')
+                preg_match("#$v+#", substr((string) $word, 0, -3)) && self::replace($word, 'ing', '')
+                or preg_match("#$v+#", substr((string) $word, 0, -2)) && self::replace($word, 'ed', '')
             ) { // Note use of && and OR, for precedence reasons
                 // If one of above two test successful
                 if (
@@ -388,9 +388,9 @@ class Pro_search_en_stemmer
         $v = self::$regex_vowel;
 
         $str = preg_replace("#^$c+#", '', $str);
-        $str = preg_replace("#$v+$#", '', $str);
+        $str = preg_replace("#$v+$#", '', (string) $str);
 
-        preg_match_all("#($v+$c+)#", $str, $matches);
+        preg_match_all("#($v+$c+)#", (string) $str, $matches);
 
         return count($matches[1]);
     }

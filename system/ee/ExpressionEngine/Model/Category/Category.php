@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -209,7 +210,7 @@ class Category extends ContentModel
 
         $usage = [];
         array_walk_recursive($data, function ($item) use (&$usage) {
-            if (! is_string($item) || strpos($item, '{file:') === false ) {
+            if (! is_string($item) || strpos($item, '{file:') === false) {
                 return;
             }
             if (preg_match('/{file\:(\d+)\:url}/', $item, $matches)) {
@@ -230,7 +231,7 @@ class Category extends ContentModel
             }
         }
         $this->_filesNeedTotalRecordsRecount = array_unique(array_merge($this->_filesNeedTotalRecordsRecount, array_keys($usage)));
-        
+
         $entryFiles = ee('Model')->get('File', array_keys($usage))->all();
         $this->getAssociation('CategoryFiles')->set($entryFiles);
     }

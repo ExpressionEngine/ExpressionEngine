@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -42,7 +43,7 @@ class Member_auth extends Member
         // [4] => foo
         preg_match(
             "/" . LD . "(form_declaration" . "(\s+return\s*=\s*(\042|\047)([^\\3]*?)\\3)?)" . RD . "/s",
-            $login_form,
+            (string) $login_form,
             $match
         );
 
@@ -118,10 +119,11 @@ class Member_auth extends Member
 
         if (! $multi && ! ($username && $password)) {
             $key = ($multi === false) ? (empty($username) ? 'username' : 'password') : 'general';
+
             return ee()->output->show_form_error([$key => lang('mbr_form_empty')]);
         }
 
-        if (strlen($password) > PASSWORD_MAX_LENGTH) {
+        if (strlen((string) $password) > PASSWORD_MAX_LENGTH) {
             return ee()->output->show_form_error(['password' => lang('credential_missmatch')]);
         }
 
@@ -146,7 +148,7 @@ class Member_auth extends Member
             $incoming = $this->_do_multi_auth($sites, $multi);
 
             $current_url = ee()->functions->fetch_site_index();
-            $current_search_url = preg_replace('/\/S=.*$/', '', $current_url);
+            $current_search_url = preg_replace('/\/S=.*$/', '', (string) $current_url);
             do {
                 $current_idx = array_search($current_search_url, $sites_array);
                 $current_search_url = str_replace(array_key_first($protocolsReplace), array_shift($protocolsReplace), $current_search_url);
@@ -163,7 +165,7 @@ class Member_auth extends Member
             $incoming = $this->_do_auth($username, $password);
 
             $current_url = ee()->functions->fetch_site_index();
-            $current_search_url = preg_replace('/\/S=.*$/', '', $current_url);
+            $current_search_url = preg_replace('/\/S=.*$/', '', (string) $current_url);
             $current_idx = array_search($current_search_url, $sites_array);
 
             $return_link = reduce_double_slashes(ee()->functions->form_backtrack());
@@ -211,8 +213,8 @@ class Member_auth extends Member
         $uml = ee()->config->item('un_min_len');
         $pml = ee()->config->item('pw_min_len');
 
-        $ulen = strlen($username);
-        $plen = strlen($password);
+        $ulen = strlen((string) $username);
+        $plen = strlen((string) $password);
 
         if ($ulen < $uml or $plen < $pml) {
             $trigger = '';
@@ -251,6 +253,7 @@ class Member_auth extends Member
 
             if (empty($username) or empty($password)) {
                 $key = empty($username) ? 'username' : 'password';
+
                 return ee()->output->show_form_error([$key => lang('mbr_form_empty')]);
             } else {
                 return ee()->output->show_form_error(['general' => lang('invalid_existing_un_pw')]);
@@ -310,7 +313,7 @@ class Member_auth extends Member
 
         // Grab session
         $sess_q = ee()->db->get_where('sessions', array(
-            'user_agent' => substr(ee()->input->user_agent(), 0, 120),
+            'user_agent' => substr((string) ee()->input->user_agent(), 0, 120),
             'login_state' => $login_state
         ));
 
@@ -366,7 +369,7 @@ class Member_auth extends Member
             $orig_idx = $current_idx;
             $next_idx = ($current_idx == '0') ? '1' : '0';
             $return = reduce_double_slashes(ee()->functions->form_backtrack());
-            $return = strtr(base64_encode($return), '/=', '_-');
+            $return = strtr(base64_encode((string) $return), '/=', '_-');
         } elseif ($next_idx == $orig_idx) {
             $next_idx++;
         }
@@ -555,7 +558,7 @@ class Member_auth extends Member
             $site_name = $query->row('board_label') ;
             $board_id = $query->row('board_id') ;
         } else {
-            $site_name = stripslashes(ee()->config->item('site_name'));
+            $site_name = stripslashes((string) ee()->config->item('site_name'));
             $return = ee()->config->item('site_url');
         }
 
@@ -680,7 +683,7 @@ class Member_auth extends Member
         // [4] => foo
         preg_match(
             "/" . LD . "(form_declaration" . "(\s+form_class\s*=\s*(\042|\047)([^\\3]*?)\\3)?)" . RD . "/s",
-            $forgot_form,
+            (string) $forgot_form,
             $match
         );
 
@@ -761,7 +764,7 @@ class Member_auth extends Member
             $site_name = $query->row('board_label') ;
             $board_id = $query->row('board_id') ;
         } else {
-            $site_name = stripslashes(ee()->config->item('site_name'));
+            $site_name = stripslashes((string) ee()->config->item('site_name'));
             $return = ee()->config->item('site_url');
         }
 
@@ -791,7 +794,7 @@ class Member_auth extends Member
             );
 
             // If we have a success return link, go to that, otherwise, output the standard message.
-            ee()->output->show_message($data, true, $return_success_link);	
+            ee()->output->show_message($data, true, $return_success_link);
         }
 
         $member_id = $memberQuery->row('member_id');
@@ -820,7 +823,7 @@ class Member_auth extends Member
 
         // Determine if they have a forgot password member template or if we should use the default.
         if (! empty($protected['password_reset_url'])) {
-            $reset_url = trim(strtolower($protected['password_reset_url']));
+            $reset_url = trim(strtolower((string) $protected['password_reset_url']));
 
             // Make sure it's an actual URL.
             if (substr($reset_url, 0, 4) !== 'http') {
@@ -1009,7 +1012,7 @@ class Member_auth extends Member
 
         // If we're here, the reset code was in the URL properly so make sure it's on the error_link
         // as the native EE backtracker doesn't append querystrings.
-        if (! empty($return_error_link) && strpos($return_error_link, 'id=') === false) {
+        if (! empty($return_error_link) && strpos((string) $return_error_link, 'id=') === false) {
             $return_error_link .= '?id=' . $resetcode;
         }
 
@@ -1059,7 +1062,7 @@ class Member_auth extends Member
         // then we'll use it.
         if (isset(ee()->session->tracker[2])) {
             $seg = (ee()->session->tracker[2] != 'index') ? ee()->session->tracker[2] : '';
-            $site_name = stripslashes(ee()->config->item('site_name'));
+            $site_name = stripslashes((string) ee()->config->item('site_name'));
             $return = reduce_double_slashes(ee()->functions->fetch_site_index() . '/' . $seg);
         }
         // Otherwise, it's entirely possible they are clicking the e-mail link after
@@ -1077,7 +1080,7 @@ class Member_auth extends Member
             $site_name = $forum_query->row('board_label');
             $return = parse_config_variables($forum_query->row('board_forum_url'));
         } else {
-            $site_name = stripslashes(ee()->config->item('site_name'));
+            $site_name = stripslashes((string) ee()->config->item('site_name'));
             $return = ee()->functions->fetch_site_index();
         }
 

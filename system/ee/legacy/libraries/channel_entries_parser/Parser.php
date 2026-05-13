@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -304,7 +305,7 @@ class EE_Channel_data_parser
 
             //  Parse individual variable tags
             foreach ($singles as $key => $val) {
-                if (strpos($tagdata, $key) === false) {
+                if (strpos((string) $tagdata, (string) $key) === false) {
                     continue;
                 }
 
@@ -323,7 +324,7 @@ class EE_Channel_data_parser
             }
 
             // do we need to replace any curly braces that we protected in custom fields?
-            if (strpos($tagdata, unique_marker('channel_bracket_open')) !== false) {
+            if (strpos((string) $tagdata, unique_marker('channel_bracket_open')) !== false) {
                 $tagdata = str_replace(
                     array(unique_marker('channel_bracket_open'), unique_marker('channel_bracket_close')),
                     array('{', '}'),
@@ -409,7 +410,7 @@ class EE_Channel_data_parser
      */
     protected function getModifiedConditionals($tagdata)
     {
-        if (strpos($tagdata, LD . 'if') === false) {
+        if (strpos((string) $tagdata, LD . 'if') === false) {
             return array();
         }
 
@@ -417,7 +418,7 @@ class EE_Channel_data_parser
         $field_names = $prefix . implode('|' . $prefix, $this->_preparser->field_names);
         $modified_conditionals = array();
 
-        if (preg_match_all("/" . preg_quote(LD) . "((if:(else))*if)\s+(($field_names):(\w+))(.*?)" . preg_quote(RD) . "/s", $tagdata, $matches)) {
+        if (preg_match_all("/" . preg_quote(LD) . "((if:(else))*if)\s+(($field_names):(\w+))(.*?)" . preg_quote(RD) . "/s", (string) $tagdata, $matches)) {
             foreach ($matches[5] as $match_key => $field_name) {
                 $modified_conditionals[$field_name][] = $matches[6][$match_key];
             }
@@ -449,7 +450,7 @@ class EE_Channel_data_parser
     {
         $field_names = $this->prefix() . implode('|' . $this->prefix(), $field_names);
 
-        preg_match_all("/" . preg_quote(LD) . "((if:(else))*if)\s+($field_names)(?!:)(\s+|" . preg_quote(RD) . ")/s", $tagdata, $matches);
+        preg_match_all("/" . preg_quote(LD) . "((if:(else))*if)\s+($field_names)(?!:)(\s+|" . preg_quote(RD) . ")/s", (string) $tagdata, $matches);
 
         if (isset($matches[4]) && ! empty($matches[4])) {
             return $matches[4];
@@ -540,7 +541,7 @@ class EE_Channel_data_parser
                             //if the field is conditionally hidden, do not parse
                             if (isset($channel->hidden_fields[$row['entry_id']]) && in_array($value, $channel->hidden_fields[$row['entry_id']])) {
                                 $result = null;
-                            } else if (ee()->api_channel_fields->check_method_exists('replace_' . $modifier)) {
+                            } elseif (ee()->api_channel_fields->check_method_exists('replace_' . $modifier)) {
                                 $result = ee()->api_channel_fields->apply('replace_' . $modifier, array($data, array(), false));
                             } else {
                                 $result = false;

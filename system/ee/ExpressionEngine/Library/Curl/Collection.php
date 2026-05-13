@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -46,7 +47,7 @@ class RequestCollection extends Collection
 
         if (! empty($urls)) {
             $collection = array_map(function ($url) {
-                $method = empty($config['method']) ? 'GetRequest' : ucfirst(strtolower($config['method'])) . 'Request';
+                $method = empty($config['method']) ? 'GetRequest' : ucfirst(strtolower((string) $config['method'])) . 'Request';
                 $request = new $method($url, $config['data']);
 
                 if (isset($config['async']) && $config['async'] === true) {

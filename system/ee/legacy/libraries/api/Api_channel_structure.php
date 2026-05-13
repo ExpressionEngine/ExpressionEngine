@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -291,7 +292,7 @@ class Api_channel_structure extends Api
 
                                 break;
                             case 'deft_category':
-                                if (! isset($cat_group) or count(array_diff(explode('|', $cat_group), explode('|', $query->row('cat_group')))) == 0) {
+                                if (! isset($cat_group) or count(array_diff(explode('|', $cat_group), explode('|', (string) $query->row('cat_group')))) == 0) {
                                     $$key = $val;
                                 }
 

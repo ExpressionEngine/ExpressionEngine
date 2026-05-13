@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -72,7 +73,7 @@ class ZipToSet
     protected function ensureNoPHP($zip)
     {
         for ($i = 0; $i < $zip->numFiles; $i++) {
-            if (stripos($zip->getNameIndex($i), '.php') !== false) {
+            if (stripos((string) $zip->getNameIndex($i), '.php') !== false) {
                 throw new ImportException('Cannot extract archive that contains PHP files.');
             }
         }

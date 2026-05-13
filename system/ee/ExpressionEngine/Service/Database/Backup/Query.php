@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -19,12 +20,12 @@ use Exception;
  */
 class Query
 {
-    const BINARY_TYPE = 1;
-    const STRING_TYPE = 2;
-    const NUMBER_TYPE = 3;
+    public const BINARY_TYPE = 1;
+    public const STRING_TYPE = 2;
+    public const NUMBER_TYPE = 3;
 
-    const TABLE_STRUCTURE = 1;
-    const VIEW_STRUCTURE = 2;
+    public const TABLE_STRUCTURE = 1;
+    public const VIEW_STRUCTURE = 2;
 
     /**
      * @var Database\Query Database Query object
@@ -308,7 +309,7 @@ class Query
 
         foreach ($rows as $row) {
             // We'll assume that each character is roughly a byte
-            $row_length = strlen($row) + 2;
+            $row_length = strlen((string) $row) + 2;
 
             // We check for empty because even if the given row is too large
             // too fit in a query by itself, we have to export it anyway

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -41,7 +42,7 @@ class EE_Extensions
                     // only the last one in will run.
 
                     // force the classname to conform to standard casing
-                    $row['class'] = ucfirst(strtolower($row['class']));
+                    $row['class'] = ucfirst(strtolower((string) $row['class']));
 
                     $this->extensions[$row['hook']][$row['priority']][$row['class']] = array($row['method'], $row['settings'], $row['version']);
 

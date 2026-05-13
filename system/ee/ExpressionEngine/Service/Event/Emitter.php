@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -122,7 +123,7 @@ class Emitter implements Publisher
 
         foreach ($this->subscribers as $subscriber) {
             if (in_array($event, $subscriber->getSubscribedEvents())) {
-                $method = 'on' . ucfirst($event);
+                $method = 'on' . ucfirst((string) $event);
                 call_user_func_array(array($subscriber, $method), $args);
             }
         }

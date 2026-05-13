@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -78,7 +79,7 @@ class Autoloader
                 throw new \Exception("No namespace specified for add-on: {$path}");
             }
 
-            if (strpos($class, $prefix) === 0) {
+            if (strpos($class, (string) $prefix) === 0) {
                 // Are they looking for an EllisLab namespaced class
                 if ($prefix == 'EllisLab\ExpressionEngine' || $prefix == 'EllisLab\Addons') {
                     $el_class = $class;
@@ -93,7 +94,7 @@ class Autoloader
 
                 // From inside to out: Strip off the prefix from the namespace, turn the namespace into
                 // a path, prepend the path prefix, append .php.
-                $class_path = $path . str_replace('\\', '/', substr($class, strlen($prefix))) . '.php';
+                $class_path = $path . str_replace('\\', '/', substr($class, strlen((string) $prefix))) . '.php';
 
                 if (file_exists($class_path)) {
                     require_once $class_path;

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -49,6 +50,7 @@ class Login extends Profile
                     ->addToBody(lang('mfa_required_login_as'))
                     ->now();
                 ee()->view->extra_alerts = ['mfa-required'];
+
                 return ee()->cp->render('settings/page', []);
             }
         }
@@ -213,7 +215,7 @@ class Login extends Profile
             if ($redirect == 'cp_index') {
                 $return_path = $this->member->getCPHomepageURL();
             } elseif ($redirect == 'other' && ! empty($url)) {
-                $return_path = ee('Security/XSS')->clean(strip_tags($url));
+                $return_path = ee('Security/XSS')->clean(strip_tags((string) $url));
             }
         }
 

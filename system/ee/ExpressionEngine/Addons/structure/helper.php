@@ -8,7 +8,7 @@ class Structure_Helper
 {
     public static function remove_double_slashes($str)
     {
-        return preg_replace("#(^|[^:])//+#", "\\1/", $str);
+        return preg_replace("#(^|[^:])//+#", "\\1/", (string) $str);
     }
 
     /**
@@ -29,7 +29,7 @@ class Structure_Helper
 
     public static function get_slug($url)
     {
-        $segments = explode('/', trim($url, '/'));
+        $segments = explode('/', trim((string) $url, '/'));
 
         return end($segments);
     }

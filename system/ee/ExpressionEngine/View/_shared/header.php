@@ -151,7 +151,7 @@ $current_page = ee()->uri->segment(2);
 
                     <h3 class="dropdown__header"><?=lang('quick_links')?></h3>
                     <?php foreach ($cp_quicklinks as $link): ?>
-                    <a class="dropdown__link" href="<?=$link['link']?>"><?=htmlentities($link['title'], ENT_QUOTES, 'UTF-8')?></a>
+                    <a class="dropdown__link" href="<?=$link['link']?>"><?=htmlentities((string) $link['title'], ENT_QUOTES, 'UTF-8')?></a>
                     <?php endforeach ?>
                     <a class="dropdown__link" href="<?=ee('CP/URL')->make('members/profile/quicklinks/create', array('id' => ee()->session->userdata('member_id'), 'url' => ee('CP/URL')->getCurrentUrl()->encode(), 'name' => $cp_page_title))?>"><i class="fal fa-plus fa-sm"></i>  <?=lang('new_link')?></a>
                 </div>

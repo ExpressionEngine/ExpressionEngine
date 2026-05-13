@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -74,7 +75,7 @@ class ChannelLayout extends Model implements LayoutInterface
             if (! (isset($section['id'])
                     && isset($section['name'])
                     && isset($section['fields']))
-                ) {
+            ) {
                 continue;
             }
 
@@ -148,12 +149,12 @@ class ChannelLayout extends Model implements LayoutInterface
         }
 
         foreach ($fields as $field_id => $field) {
-            if (strpos($field_id, 'categories[') === 0) {
+            if (strpos((string) $field_id, 'categories[') === 0) {
                 $tab = $categories_tab;
-            } elseif (strpos($field_id, '__') === false) {
+            } elseif (strpos((string) $field_id, '__') === false) {
                 $tab = $publish_tab;
             } else {
-                list($tab_id, $garbage) = explode('__', $field_id);
+                list($tab_id, $garbage) = explode('__', (string) $field_id);
 
                 try {
                     $tab = $display->getTab($tab_id);

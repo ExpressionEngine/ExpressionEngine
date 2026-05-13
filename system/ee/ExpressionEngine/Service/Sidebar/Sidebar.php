@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -61,7 +62,7 @@ class Sidebar extends AbstractSidebar
             $owner = ee()->uri->segment(4);
         }
         $containerClass = ' secondary-sidebar__' . $owner;
-        $state = json_decode(ee()->input->cookie('secondary_sidebar'));
+        $state = json_decode((string) ee()->input->cookie('secondary_sidebar'));
         if (!empty($state) && isset($state->$owner) && $state->$owner == 1) {
             $containerClass = ' secondary-sidebar__collapsed';
             $this->collapsedState = true;

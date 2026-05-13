@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -436,7 +437,7 @@ class EE_Lang
                 $line = '<label for="' . $label . '">' . $line . "</label>";
             }
 
-            return stripslashes($line);
+            return stripslashes((string) $line);
         }
     }
 
@@ -474,7 +475,7 @@ class EE_Lang
         if (empty($language_name)) {
             $language_name = ee()->session->get_language();
         }
-        $language_name = ucwords($language_name);
+        $language_name = ucwords((string) $language_name);
         if (isset($this->language_codes[$language_name])) {
             return $this->language_codes[$language_name];
         }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -97,9 +98,11 @@ class Extensions extends Utilities
             switch ($info['enabled']) {
                 case true:
                     $status = array('class' => 'enable', 'content' => lang('enabled'));
+
                     break;
                 case false:
                     $status = array('class' => 'disable', 'content' => lang('disabled'));
+
                     break;
             }
 
@@ -151,7 +154,7 @@ class Extensions extends Utilities
             ee()->view->cp_heading = sprintf(
                 lang('search_results_heading'),
                 $vars['table']['total_rows'],
-                htmlspecialchars($vars['table']['search'], ENT_QUOTES, 'UTF-8')
+                htmlspecialchars((string) $vars['table']['search'], ENT_QUOTES, 'UTF-8')
             );
         }
 
@@ -283,7 +286,7 @@ class Extensions extends Utilities
                 continue;
             }
 
-            $class_name = ucfirst($name) . '_ext';
+            $class_name = ucfirst((string) $name) . '_ext';
 
             $data = array(
                 'developer' => $info->getAuthor(),

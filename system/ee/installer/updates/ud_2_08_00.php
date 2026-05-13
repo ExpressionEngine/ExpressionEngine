@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -135,7 +136,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
             ->result_array();
 
         foreach ($sites as $site) {
-            $prefs = unserialize(base64_decode($site['site_system_preferences']));
+            $prefs = unserialize(base64_decode((string) $site['site_system_preferences']));
 
             // Don't run the update query if we don't have to
             $update = false;
@@ -183,7 +184,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
             ->result_array();
 
         foreach ($sites as $site) {
-            $prefs = unserialize(base64_decode($site['site_template_preferences']));
+            $prefs = unserialize(base64_decode((string) $site['site_template_preferences']));
             $prefs['enable_template_routes'] = 'y';
 
             ee()->db->update(
@@ -334,7 +335,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {
-                $system_prefs = base64_decode($row['site_system_preferences']);
+                $system_prefs = base64_decode((string) $row['site_system_preferences']);
                 $system_prefs = unserialize($system_prefs);
 
                 if ($system_prefs['time_format'] == 'us') {
@@ -419,7 +420,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
             ->result_array();
 
         foreach ($sites as $site) {
-            $prefs = unserialize(base64_decode($site['site_system_preferences']));
+            $prefs = unserialize(base64_decode((string) $site['site_system_preferences']));
 
             // Don't run the update query if we don't have to
             $update = false;
@@ -529,7 +530,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
      */
     private function _update_doc_url()
     {
-        if (strpos(ee()->config->item('doc_url'), 'expressionengine.com/user_guide') !== false) {
+        if (strpos((string) ee()->config->item('doc_url'), 'expressionengine.com/user_guide') !== false) {
             ee()->config->_update_config(array(
                 'doc_url' => 'https://docs.expressionengine.com/latest'
             ));

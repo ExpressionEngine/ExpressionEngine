@@ -39,7 +39,7 @@ if (! function_exists('valid_email')) {
 if (! function_exists('send_email')) {
     function send_email($recipient, $subject = 'Test email', $message = 'Hello World')
     {
-        return mail($recipient, $subject, $message);
+        return mail((string) $recipient, (string) $subject, (string) $message);
     }
 }
 

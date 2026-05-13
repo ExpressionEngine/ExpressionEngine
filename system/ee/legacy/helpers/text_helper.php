@@ -17,13 +17,13 @@ if (! defined('BASEPATH')) {
  * Text Helper
  */
 
- /**
- * Convert Accented Foreign Characters to ASCII
- *
- * @access	public
- * @param	string	the text string
- * @return	string
- */
+/**
+* Convert Accented Foreign Characters to ASCII
+*
+* @access	public
+* @param	string	the text string
+* @return	string
+*/
 if (! function_exists('convert_accented_characters')) {
     function convert_accented_characters($match)
     {
@@ -72,13 +72,13 @@ if (! function_exists('convert_accented_characters')) {
 if (! function_exists('word_limiter')) {
     function word_limiter($str, $limit = 100, $end_char = '&#8230;')
     {
-        if (trim($str) == '') {
+        if (trim((string) $str) == '') {
             return $str;
         }
 
-        preg_match('/^\s*+(?:\S++\s*+){1,' . (int) $limit . '}/', $str, $matches);
+        preg_match('/^\s*+(?:\S++\s*+){1,' . (int) $limit . '}/', (string) $str, $matches);
 
-        if (strlen($str) == strlen($matches[0])) {
+        if (strlen((string) $str) == strlen($matches[0])) {
             $end_char = '';
         }
 
@@ -101,7 +101,7 @@ if (! function_exists('word_limiter')) {
 if (! function_exists('character_limiter')) {
     function character_limiter($str, $n = 500, $end_char = '&#8230;')
     {
-        if (strlen($str) < $n) {
+        if (strlen((string) $str) < $n) {
             return $str;
         }
 
@@ -140,7 +140,7 @@ if (! function_exists('ascii_to_entities')) {
         $out = '';
         $temp = array();
 
-        for ($i = 0, $s = strlen($str); $i < $s; $i++) {
+        for ($i = 0, $s = strlen((string) $str); $i < $s; $i++) {
             $ordinal = ord($str[$i]);
 
             if ($ordinal < 128) {
@@ -188,7 +188,7 @@ if (! function_exists('ascii_to_entities')) {
 if (! function_exists('entities_to_ascii')) {
     function entities_to_ascii($str, $all = true)
     {
-        if (preg_match_all('/\&#(\d+)\;/', $str, $matches)) {
+        if (preg_match_all('/\&#(\d+)\;/', (string) $str, $matches)) {
             for ($i = 0, $s = count($matches['0']); $i < $s; $i++) {
                 $digits = $matches['1'][$i];
 
@@ -254,19 +254,19 @@ if (! function_exists('word_censor')) {
 
         foreach ($censored as $badword) {
             if ($replacement != '') {
-                $str = preg_replace("/({$delim})(" . str_replace('\*', '\w*?', preg_quote($badword, '/')) . ")({$delim})/i", "\\1{$replacement}\\3", $str);
+                $str = preg_replace("/({$delim})(" . str_replace('\*', '\w*?', preg_quote((string) $badword, '/')) . ")({$delim})/i", "\\1{$replacement}\\3", (string) $str);
             } else {
                 $str = preg_replace_callback(
-                    "/({$delim})(" . str_replace('\*', '\w*?', preg_quote($badword, '/')) . ")({$delim})/i",
+                    "/({$delim})(" . str_replace('\*', '\w*?', preg_quote((string) $badword, '/')) . ")({$delim})/i",
                     function ($matches) {
                         return $matches[1] . str_repeat('#', strlen($matches[2])) . $matches[3];
                     },
-                    $str
+                    (string) $str
                 );
             }
         }
 
-        return trim($str);
+        return trim((string) $str);
     }
 }
 
@@ -311,9 +311,9 @@ if (! function_exists('highlight_code')) {
         }
 
         // Remove our artificially added PHP, and the syntax highlighting that came with it
-        $str = preg_replace('/<span style="color: #([A-Z0-9]+)">&lt;\?php(&nbsp;| )/i', '<span style="color: #$1">', $str);
-        $str = preg_replace('/(<span style="color: #[A-Z0-9]+">.*?)\?&gt;<\/span>\n<\/span>\n<\/code>/is', "$1</span>\n</span>\n</code>", $str);
-        $str = preg_replace('/<span style="color: #[A-Z0-9]+"\><\/span>/i', '', $str);
+        $str = preg_replace('/<span style="color: #([A-Z0-9]+)">&lt;\?php(&nbsp;| )/i', '<span style="color: #$1">', (string) $str);
+        $str = preg_replace('/(<span style="color: #[A-Z0-9]+">.*?)\?&gt;<\/span>\n<\/span>\n<\/code>/is', "$1</span>\n</span>\n</code>", (string) $str);
+        $str = preg_replace('/<span style="color: #[A-Z0-9]+"\><\/span>/i', '', (string) $str);
 
         // Replace our markers back to PHP tags.
         $str = str_replace(
@@ -346,7 +346,7 @@ if (! function_exists('highlight_phrase')) {
         }
 
         if ($phrase != '') {
-            return preg_replace('/(' . preg_quote($phrase, '/') . ')/i', $tag_open . "\\1" . $tag_close, $str);
+            return preg_replace('/(' . preg_quote((string) $phrase, '/') . ')/i', $tag_open . "\\1" . $tag_close, (string) $str);
         }
 
         return $str;
@@ -374,7 +374,7 @@ if (! function_exists('word_wrap')) {
         }
 
         // Reduce multiple spaces
-        $str = preg_replace("| +|", " ", $str);
+        $str = preg_replace("| +|", " ", (string) $str);
 
         // Standardize newlines
         if (strpos($str, "\r") !== false) {
@@ -459,7 +459,7 @@ if (! function_exists('ellipsize')) {
     function ellipsize($str, $max_length, $position = 1, $ellipsis = '&hellip;')
     {
         // Strip tags
-        $str = trim(strip_tags($str));
+        $str = trim(strip_tags((string) $str));
 
         // Is the string long enough to ellipsize?
         if (strlen($str) <= $max_length) {
@@ -492,7 +492,7 @@ if (! function_exists('formatted_version')) {
     function formatted_version($version)
     {
         // Break any suffix off first.
-        $raw_version = explode('-', $version);
+        $raw_version = explode('-', (string) $version);
 
         $version = explode('.', $raw_version[0]);
 

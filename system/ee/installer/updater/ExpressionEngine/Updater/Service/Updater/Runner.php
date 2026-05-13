@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -313,7 +314,7 @@ class Runner
     public function runStep($step)
     {
         $message = $this->getLanguageForStep($step);
-        if (REQ == 'CLI' && ! empty($message) && strpos($step, '[') === false) {
+        if (REQ == 'CLI' && ! empty($message) && strpos((string) $step, '[') === false) {
             stdout($message . '...', CLI_STDOUT_BOLD);
         }
 
@@ -344,9 +345,9 @@ class Runner
     public function getLanguageForStep($step)
     {
         if ($step) {
-            if (strpos($step, 'backupDatabase') === 0) {
+            if (strpos((string) $step, 'backupDatabase') === 0) {
                 $step = 'backupDatabase';
-            } elseif (strpos($step, 'updateDatabase') === 0) {
+            } elseif (strpos((string) $step, 'updateDatabase') === 0) {
                 $step = 'updateDatabase';
             }
         }

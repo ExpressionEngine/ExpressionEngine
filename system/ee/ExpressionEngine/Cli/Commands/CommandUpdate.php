@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -226,8 +227,8 @@ class CommandUpdate extends Cli
     private function getCurrentVersion()
     {
         $version = ee()->config->item('app_version');
-        $this->currentVersion = (strpos($version, '.') == false)
-            ? $version = implode('.', str_split($version, 1))
+        $this->currentVersion = (strpos((string) $version, '.') == false)
+            ? $version = implode('.', str_split((string) $version, 1))
             : $version;
     }
 
@@ -384,8 +385,8 @@ class CommandUpdate extends Cli
         $next_version = $this->currentVersion;
 
         // For early version 2, we didn't use dots.
-        if (strpos($next_version, '.') == false) {
-            $next_version = implode('.', str_split($next_version, 1));
+        if (strpos((string) $next_version, '.') == false) {
+            $next_version = implode('.', str_split((string) $next_version, 1));
         }
 
         $currentVersionKey = array_search($next_version, $upgradeMap);
@@ -465,7 +466,7 @@ class CommandUpdate extends Cli
         if (version_compare($this->currentVersion, '3.0.0', '<')) {
             if (! ee()->config->item('avatar_path')) {
                 $this->info('command_update_missing_avatar_path_message');
-                $guess = ee()->config->item('base_path') ? rtrim(ee()->config->item('base_path'), '/') . '/images/avatars' : SYSPATH . '../images/avatars';
+                $guess = ee()->config->item('base_path') ? rtrim((string) ee()->config->item('base_path'), '/') . '/images/avatars' : SYSPATH . '../images/avatars';
                 $result = ($this->defaultToYes || $this->confirm('Use ' . $guess . '?'))
                         ? $guess
                         : $this->ask('command_update_enter_full_avatar_path');

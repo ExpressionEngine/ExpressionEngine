@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -179,7 +180,7 @@ class Validator
                 }
 
                 // categories are special case, we'll take care of them separately
-                if (strpos($key, 'categories[cat_group_id_') === 0 && $rule instanceof Rule\Required) {
+                if (strpos((string) $key, 'categories[cat_group_id_') === 0 && $rule instanceof Rule\Required) {
                     continue;
                 }
 

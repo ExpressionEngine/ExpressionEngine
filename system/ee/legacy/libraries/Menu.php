@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -8,7 +9,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-use  ExpressionEngine\Service\Sidebar\Sidebar;
+use ExpressionEngine\Service\Sidebar\Sidebar;
 
 /**
  * Menu
@@ -308,7 +309,7 @@ class EE_Menu
         $tabs = array();
 
         if (isset(ee()->session->userdata['quick_tabs']) && ee()->session->userdata['quick_tabs'] != '') {
-            foreach (explode("\n", ee()->session->userdata['quick_tabs']) as $row) {
+            foreach (explode("\n", (string) ee()->session->userdata['quick_tabs']) as $row) {
                 $x = explode('|', $row);
 
                 $title = (isset($x['0'])) ? $x['0'] : '';

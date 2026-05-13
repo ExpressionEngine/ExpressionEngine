@@ -19,7 +19,7 @@
             $field_name = $field->getName();
             $form = $field->getForm();
 
-            if (strpos($form, 'name="' . $field_name . '"') === false) {
+            if (strpos((string) $form, 'name="' . $field_name . '"') === false) {
                 echo form_hidden($field_name, 1);
             }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -162,7 +163,7 @@ class SyncConditionalFields extends Utilities
                             'type' => 'html',
                             'content' => ee()->load->view('_shared/message', array(
                                 'cp_messages' => [
-                                    'field-instruct' => '<em>'.lang('field_conditions_sync_in_progress_message').'</em>'
+                                    'field-instruct' => '<em>' . lang('field_conditions_sync_in_progress_message') . '</em>'
                                 ]), true)
                         )
                     )
@@ -173,7 +174,7 @@ class SyncConditionalFields extends Utilities
         $base_url = ee('CP/URL')->make('utilities/sync-conditional-fields/sync')->compile();
         $sync_url = ee('CP/URL')->make('utilities/sync-conditional-fields')->compile();
 
-        $return = ee()->input->get('return') ? base64_decode(ee()->input->get('return')) : $sync_url;
+        $return = ee()->input->get('return') ? base64_decode((string) ee()->input->get('return')) : $sync_url;
 
         if ($channelEntryCount === 0) {
             ee()->functions->redirect($return);

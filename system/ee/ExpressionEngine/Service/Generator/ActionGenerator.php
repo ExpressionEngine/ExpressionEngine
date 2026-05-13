@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -53,7 +54,7 @@ class ActionGenerator extends AbstractGenerator
     public function build()
     {
         $actionStub = $this->filesystem->read($this->stub('Actions/ActionStub.php'));
-        $actionStub = $this->write('namespace', ucfirst($this->namespace), $actionStub);
+        $actionStub = $this->write('namespace', ucfirst((string) $this->namespace), $actionStub);
         $actionStub = $this->write('ActionName', $this->ActionName, $actionStub);
 
         $this->putFile('Actions/' . $this->ActionName . '.php', $actionStub);
@@ -67,7 +68,7 @@ class ActionGenerator extends AbstractGenerator
 
         $data = [
             'action' => $this->ActionName,
-            'addon' => ucfirst($this->addon),
+            'addon' => ucfirst((string) $this->addon),
             'csrf_exempt' => $this->csrf_exempt,
         ];
 

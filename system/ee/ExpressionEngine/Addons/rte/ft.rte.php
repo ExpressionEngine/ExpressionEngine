@@ -13,7 +13,6 @@ use ExpressionEngine\Addons\Rte\RteHelper;
 
 class Rte_ft extends EE_Fieldtype
 {
-
     public $has_array_data = true;
 
     public $can_be_cloned = true;
@@ -177,7 +176,7 @@ class Rte_ft extends EE_Fieldtype
         }
 
         // Load proper toolset
-        $serviceName = ucfirst($toolset->toolset_type) . 'Service';
+        $serviceName = ucfirst((string) $toolset->toolset_type) . 'Service';
         $configHandle = ee('rte:' . $serviceName)->init($this->settings, $toolset);
 
         $id = str_replace(array('[', ']'), array('_', ''), $this->field_name);
@@ -234,7 +233,7 @@ class Rte_ft extends EE_Fieldtype
         }
 
         // Load proper toolset
-        $serviceName = ucfirst($toolset->toolset_type) . 'Service';
+        $serviceName = ucfirst((string) $toolset->toolset_type) . 'Service';
         $configHandle = ee('rte:' . $serviceName)->init($this->settings, $toolset);
 
         // get the cache
@@ -324,18 +323,18 @@ class Rte_ft extends EE_Fieldtype
     {
         // Trim out any whitespace/empty tags
         $data = preg_replace('/^(\s|<(\w+)>(&nbsp;|\s)*<\/\2>|<br \/>)*/', '', (string) $data);
-        $data = preg_replace('/(\s|<(\w+)>(&nbsp;|\s)*<\/\2>|<br \/>)*$/', '', $data);
+        $data = preg_replace('/(\s|<(\w+)>(&nbsp;|\s)*<\/\2>|<br \/>)*$/', '', (string) $data);
 
         // Remove any ?cachebuster:X query strings
-        $data = preg_replace('/\?cachebuster:\d+/', '', $data);
+        $data = preg_replace('/\?cachebuster:\d+/', '', (string) $data);
 
         // Entitize curly braces within codeblocks
         $data = preg_replace_callback('/<code>(.*?)<\/code>/s', function ($matches) {
             return str_replace(array("{","}"), array("&#123;","&#125;"), $matches[0]);
-        }, $data);
+        }, (string) $data);
 
         // Remove Firebug 1.5.2+ div
-        $data = preg_replace('/<div firebugversion=(.|\t|\n|\s)*<\\/div>/', '', $data);
+        $data = preg_replace('/<div firebugversion=(.|\t|\n|\s)*<\\/div>/', '', (string) $data);
 
         // Decode double quote entities (&quot;)
         //  - Eventually CKEditor will stop converting these in the first place
@@ -430,11 +429,11 @@ class Rte_ft extends EE_Fieldtype
         } elseif (isset($params['text_only']) && $params['text_only'] == 'yes') {
             // Text only?
             // Strip out the HTML tags
-            $data = preg_replace('/<[^<]+?>/', '', $data);
+            $data = preg_replace('/<[^<]+?>/', '', (string) $data);
         } else {
             // Remove images?
             if (isset($params['remove_images']) && $params['remove_images'] == 'yes') {
-                $data = preg_replace('/<img(.*)>/Ums', '', $data);
+                $data = preg_replace('/<img(.*)>/Ums', '', (string) $data);
             }
         }
 
@@ -613,7 +612,7 @@ class Rte_ft extends EE_Fieldtype
         $images = array();
 
         if ($tagdata) {
-            $p = !empty($params['var_prefix']) ? rtrim($params['var_prefix'], ':') . ':' : '';
+            $p = !empty($params['var_prefix']) ? rtrim((string) $params['var_prefix'], ':') . ':' : '';
         }
 
         // find all the image tags
@@ -705,8 +704,8 @@ class Rte_ft extends EE_Fieldtype
 
         // backspace param
         if (!empty($params['backspace'])) {
-            $chop = strlen($r) - $params['backspace'];
-            $r = substr($r, 0, $chop);
+            $chop = strlen((string) $r) - $params['backspace'];
+            $r = substr((string) $r, 0, $chop);
         }
 
         return $r;

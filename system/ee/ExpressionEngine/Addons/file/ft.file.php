@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -165,6 +166,7 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
                     'cp/publish/entry-list',
                 ),
             ));
+
             return ee()->file_field->dragAndDropField($this->field_name, $data, $allowed_file_dirs, $content_type);
         }
 
@@ -369,6 +371,7 @@ JSC;
         if (! method_exists($this, $fn)) {
             $fn = 'replace_tag';
         }
+
         return $this->$fn($data, $params, $tagdata);
     }
 
@@ -456,7 +459,7 @@ JSC;
 
         $params_copy = $params;
         foreach ($params as $key => $val) {
-            $clean_key = explode(':', $key);
+            $clean_key = explode(':', (string) $key);
             if ($clean_key[0] == 'resize' && isset($clean_key[1])) {
                 $params[$clean_key[1]] = $val;
             }
@@ -468,7 +471,7 @@ JSC;
 
         $params = $params_copy;
         foreach ($params as $key => $val) {
-            $clean_key = explode(':', $key);
+            $clean_key = explode(':', (string) $key);
             if ($clean_key[0] == 'crop' && isset($clean_key[1])) {
                 $params[$clean_key[1]] = $val;
             }
@@ -550,6 +553,7 @@ JSC;
             if (is_null($tagdata)) {
                 return $data; // allow chaining modifiers
             }
+
             return $this->replace_tag($data, $params, $tagdata);
         }
 
@@ -559,7 +563,7 @@ JSC;
             $filename['name'] = $filename['name'] . '_' . $filename['ext'];
             $filename['ext'] = '.' . $function;
         }
-        $new_image = substr($filename['name'], 0, 150) . '_' . $function . '_' . md5(serialize($params)) . $filename['ext'];
+        $new_image = substr((string) $filename['name'], 0, 150) . '_' . $function . '_' . md5(serialize($params)) . $filename['ext'];
         $data['fs_filename'] = $filename['name'] . '_' . $function . $filename['ext'];
 
         $new_image_dir = rtrim($data['model_object']->getBaseServerPath() . $data['model_object']->getSubfoldersPath(), '/') . '/_' . $function . DIRECTORY_SEPARATOR;
@@ -582,6 +586,7 @@ JSC;
                 // if the file does not exist (e.g. we run a local copy without all files)
                 // just return the original URL
                 log_message('debug', $e->getMessage());
+
                 return $data['model_object']->getAbsoluteURL();
             }
             $new = $data['filesystem']->createTempFile();
@@ -751,7 +756,7 @@ JSC;
      */
     public function replace_rot13($data, $params = array(), $tagdata = false)
     {
-        return str_rot13($data['url']);
+        return str_rot13((string) $data['url']);
     }
 
     /**
@@ -795,6 +800,7 @@ JSC;
         if (isset($params['wrap'])) {
             return $this->_wrap_it($data, $params['wrap'], $url);
         }
+
         return $url;
     }
 
@@ -849,6 +855,7 @@ JSC;
                     $data['source_image'] = $data['path:' . $modifier];
                     $data['url'] = $full_path;
                 }
+
                 return $data;
             }
 
@@ -1165,6 +1172,7 @@ JSC;
     {
 
         $modifiers = ['resize', 'crop', 'rotate', 'webp', 'avif', 'resize_crop', 'length', 'raw_content', 'attr_safe', 'limit', 'form_prep', 'rot13', 'encrypt', 'url_slug', 'censor', 'json', 'replace', 'url_encode', 'url_decode'];
+
         return $modifiers;
     }
 
@@ -1186,6 +1194,7 @@ JSC;
                 if ($file->file_name != $file->title) {
                     return $file->file_name . ' ' . $file->title;
                 }
+
                 return $file->file_name;
             } else {
                 return '';
@@ -1193,8 +1202,10 @@ JSC;
         } elseif (preg_match('/^{filedir_(\d+)}/', $data, $matches)) {
             // If the file field is in the "{filedir_n}image.jpg" format
             $file_name = str_replace($matches[0], '', $data);
+
             return $file_name;
         }
+
         return $data;
     }
 }

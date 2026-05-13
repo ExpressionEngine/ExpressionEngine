@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -299,7 +300,7 @@ class EE_Messages_send extends EE_Messages
 
         $this->attachments = array();
 
-        $x = explode("|", ee()->input->get_post('attach'));
+        $x = explode("|", (string) ee()->input->get_post('attach'));
 
         foreach ($x as $val) {
             if ($val != $id) {
@@ -416,7 +417,7 @@ class EE_Messages_send extends EE_Messages
         /** ------------------------------------------*/
         $recipients = $this->convert_recipients(ee()->input->get_post('recipients'), 'array', 'member_id');
 
-        $cc = (trim(ee()->input->get_post('cc')) == '') ? array() : $this->convert_recipients(ee()->input->get_post('cc'), 'array', 'member_id');
+        $cc = (trim((string) ee()->input->get_post('cc')) == '') ? array() : $this->convert_recipients(ee()->input->get_post('cc'), 'array', 'member_id');
 
         $recip_orig = count($recipients);
         $cc_orig = count($cc);
@@ -435,7 +436,7 @@ class EE_Messages_send extends EE_Messages
         /** ------------------------------------------
         /**  Too Big for Its Britches?
         /** ------------------------------------------*/
-        if ($this->max_chars != 0 && strlen(ee()->input->get_post('body')) > $this->max_chars) {
+        if ($this->max_chars != 0 && strlen((string) ee()->input->get_post('body')) > $this->max_chars) {
             $submission_error[] = str_replace('%max%', $this->max_chars, ee()->lang->line('message_too_large'));
         }
 
@@ -482,7 +483,7 @@ class EE_Messages_send extends EE_Messages
         /**  Attachments?
         /** -------------------------------------*/
         if (ee()->input->get_post('attach') !== false && ee()->input->get_post('attach') != '') {
-            $this->attachments = array_map('intval', explode('|', $_POST['attach']));
+            $this->attachments = array_map('intval', explode('|', (string) $_POST['attach']));
         }
 
         /* -------------------------------------
@@ -582,7 +583,7 @@ class EE_Messages_send extends EE_Messages
 
                 $swap = array(
                     'sender_name' => ee()->session->userdata('screen_name'),
-                    'site_name' => stripslashes(ee()->config->item('site_name')),
+                    'site_name' => stripslashes((string) ee()->config->item('site_name')),
                     'site_url' => ee()->config->item('site_url')
                 );
 
@@ -741,7 +742,7 @@ class EE_Messages_send extends EE_Messages
                 }
 
                 $body = ee()->typography->parse_type(
-                    stripslashes(ee('Security/XSS')->clean(ee()->input->get_post('body'))),
+                    stripslashes((string) ee('Security/XSS')->clean(ee()->input->get_post('body'))),
                     array('text_format' => 'none',
                         'html_format' => 'none',
                         'auto_links' => 'n',
@@ -757,7 +758,7 @@ class EE_Messages_send extends EE_Messages
                     'sender_name' => ee()->session->userdata('screen_name'),
                     'message_subject' => $subject,
                     'message_content' => $body,
-                    'site_name' => stripslashes(ee()->config->item('site_name')),
+                    'site_name' => stripslashes((string) ee()->config->item('site_name')),
                     'site_url' => ee()->config->item('site_url')
                 );
 

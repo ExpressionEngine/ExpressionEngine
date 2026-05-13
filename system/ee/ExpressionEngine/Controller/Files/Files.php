@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -169,7 +170,7 @@ class Files extends AbstractFilesController
 
     public function createSubdirectory()
     {
-        $dir_ids = explode('.', ee('Request')->post('upload_location'));
+        $dir_ids = explode('.', (string) ee('Request')->post('upload_location'));
         $upload_destination_id = (int) $dir_ids[0];
         $subdirectory_id = isset($dir_ids[1]) ? (int) $dir_ids[1] : 0;
 
@@ -515,6 +516,7 @@ class Files extends AbstractFilesController
                 ->withTitle(lang('could_not_rename'))
                 ->addToBody(lang('one_rename_at_a_time'))
                 ->defer();
+
             return false;
         }
 
@@ -525,6 +527,7 @@ class Files extends AbstractFilesController
                 ->withTitle(lang('could_not_rename'))
                 ->addToBody(lang('file_not_found'))
                 ->defer();
+
             return false;
         }
 
@@ -577,6 +580,7 @@ class Files extends AbstractFilesController
                 ->withTitle(lang('could_not_rename'))
                 ->addToBody(lang('error_renaming_already_exists'))
                 ->defer();
+
             return false;
         }
 
@@ -608,7 +612,7 @@ class Files extends AbstractFilesController
      */
     private function move()
     {
-        $dir_ids = explode('.', ee('Request')->post('upload_location'));
+        $dir_ids = explode('.', (string) ee('Request')->post('upload_location'));
         $upload_destination_id = (int) $dir_ids[0];
         $subdirectory_id = isset($dir_ids[1]) ? (int) $dir_ids[1] : 0;
         $selected = ee('Request')->post('selection');
@@ -646,31 +650,35 @@ class Files extends AbstractFilesController
             //are they not in target place already?
             if ($file->upload_location_id == $upload_destination_id && $file->directory_id == $subdirectory_id) {
                 $errors[$file->file_name] = lang('error_moving_already_there');
+
                 continue;
             }
 
             //does the file with same name already exist?
             if ($target->getFilesystem()->exists($file->file_name)) {
                 $errors[$file->file_name] = lang('error_moving_already_exists');
+
                 continue;
             }
 
             //moving to self?
             if ($file->isDirectory() && $file->file_id == $subdirectory_id) {
                 $errors[$file->file_name] = lang('error_moving_directory_cannot_be_own_child');
+
                 continue;
             }
 
             //avoid recursion - the directory cannot become child of itself
             if ($file->isDirectory() && in_array($file->file_id, $subdirectoryParents)) {
                 $errors[$file->file_name] = lang('error_moving_directory_cannot_be_own_child');
+
                 continue;
             }
 
             $targetFilesystem = ($file->UploadDestination->id == $targetUploadLocation->id) ? null : $targetUploadLocation->getFilesystem();
             $success = $file->UploadDestination->getFilesystem()->move(
                 $file->getAbsolutePath(),
-                rtrim($targetPath, '\\/') . '/' . $file->file_name,
+                rtrim((string) $targetPath, '\\/') . '/' . $file->file_name,
                 $targetFilesystem
             );
 
@@ -770,15 +778,19 @@ class Files extends AbstractFilesController
         switch ($action) {
             case 'rename':
                 $this->rename(ee()->input->post('selection'));
+
                 break;
             case 'remove':
                 $this->remove(ee()->input->post('selection'));
+
                 break;
             case 'move':
                 $this->move(ee()->input->post('selection'));
+
                 break;
             case 'download':
                 $this->exportFiles(ee()->input->post('selection'));
+
                 break;
             default:
                 return;

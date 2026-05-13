@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -123,7 +124,7 @@ class Templates extends Jumps
 
         if (!empty($searchString)) {
             // Break the search string into individual keywords so we can partially match them.
-            $keywords = explode(' ', $searchString);
+            $keywords = explode(' ', (string) $searchString);
 
             foreach ($keywords as $keyword) {
                 $groups->filter('group_name', 'LIKE', '%' . ee()->db->escape_like_str($keyword) . '%');
@@ -139,7 +140,7 @@ class Templates extends Jumps
 
         if (!empty($searchString)) {
             // Break the search string into individual keywords so we can partially match them.
-            $keywords = explode(' ', $searchString);
+            $keywords = explode(' ', (string) $searchString);
 
             foreach ($keywords as $keyword) {
                 $templates->filter('template_name', 'LIKE', '%' . ee()->db->escape_like_str($keyword) . '%');

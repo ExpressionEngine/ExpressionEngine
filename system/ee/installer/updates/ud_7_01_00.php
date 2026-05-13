@@ -58,7 +58,7 @@ class Updater
         $viewsQuery = ee('db')->select('view_id, columns')->from('entry_manager_views')->get();
         if (!empty($viewsQuery)) {
             foreach ($viewsQuery->result_array() as $row) {
-                if (strpos($row['columns'], 's:') === 0) {
+                if (strpos((string) $row['columns'], 's:') === 0) {
                     ee('db')->where('view_id', $row['view_id'])->update('entry_manager_views', ['columns' => json_encode(unserialize($row['columns']))]);
                 }
             }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -7,7 +8,6 @@
  * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -65,7 +65,7 @@ class Pro_search_filter_categories extends Pro_search_filter
             list($ids, $in) = $this->params->explode($val);
 
             // Match all?
-            $all = (bool) strpos($val, '&');
+            $all = (bool) strpos((string) $val, '&');
 
             // If value is not numeric, get IDs from category names
             if (! pro_array_is_numeric($ids)) {
@@ -152,8 +152,8 @@ class Pro_search_filter_categories extends Pro_search_filter
             ->where_in('site_id', $this->params->site_ids());
 
         // Limit by group ID? Only for category:1="foo|bar"
-        if (strpos($key, ':') !== false) {
-            list($pfx, $group) = explode(':', $key);
+        if (strpos((string) $key, ':') !== false) {
+            list($pfx, $group) = explode(':', (string) $key);
 
             // Only limit if group definition is numeric, so it refers to a group ID
             if (is_numeric($group)) {

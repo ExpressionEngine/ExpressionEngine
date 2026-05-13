@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -26,7 +27,7 @@ class ModuleTab extends Column
     {
         parent::__construct($identifier);
         if (empty($this->tab)) {
-            $module_name = substr($identifier, 4); // strip 'tab_'
+            $module_name = substr((string) $identifier, 4); // strip 'tab_'
             $this->module = ee('Addon')->get($module_name);
 
             if (!$this->module->isInstalled()) {
@@ -51,6 +52,7 @@ class ModuleTab extends Column
         }
 
         return parent::getTableColumnConfig();
+
         return [
             'encode' => false
         ];

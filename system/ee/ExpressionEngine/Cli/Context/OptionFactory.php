@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * This file is part of Aura for PHP.
@@ -116,15 +117,15 @@ class OptionFactory
      */
     protected function setNewOptionParam($option, &$string)
     {
-        if (substr($string, -2) == '::') {
+        if (substr((string) $string, -2) == '::') {
             $option->param = 'optional';
-            $string = substr($string, 0, -2);
-        } elseif (substr($string, -1) == ':') {
+            $string = substr((string) $string, 0, -2);
+        } elseif (substr((string) $string, -1) == ':') {
             $option->param = 'required';
-            $string = substr($string, 0, -1);
+            $string = substr((string) $string, 0, -1);
         }
 
-        $string = rtrim($string, ':');
+        $string = rtrim((string) $string, ':');
     }
 
     /**
@@ -140,9 +141,9 @@ class OptionFactory
      */
     protected function setNewOptionMulti($option, &$string)
     {
-        if (substr($string, -1) == '*') {
+        if (substr((string) $string, -1) == '*') {
             $option->multi = true;
-            $string = substr($string, 0, -1);
+            $string = substr((string) $string, 0, -1);
         }
     }
 
@@ -159,7 +160,7 @@ class OptionFactory
      */
     protected function setNewOptionNameAlias($option, &$string)
     {
-        $names = explode(',', $string);
+        $names = explode(',', (string) $string);
         $option->name = $this->fixOptionName($names[0]);
         if (isset($names[1])) {
             $option->alias = $this->fixOptionName($names[1]);

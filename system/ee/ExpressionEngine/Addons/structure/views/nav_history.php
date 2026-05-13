@@ -31,7 +31,7 @@ foreach ($structure_nav_history as $structure_nav) {
     }
 
     if ($structure_nav->restored_date > 0) {
-        $row_status = 'Restored ' . date('Y-m-d g:ia', strtotime($structure_nav->restored_date));
+        $row_status = 'Restored ' . date('Y-m-d g:ia', strtotime((string) $structure_nav->restored_date));
         $row_status_class = ' restored';
     }
 

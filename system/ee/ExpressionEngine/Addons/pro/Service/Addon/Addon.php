@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ExpressionEngine Pro
  * @link      https://expressionengine.com/
@@ -57,7 +58,7 @@ class Addon extends Core\Addon
         $prolets = $this->get('prolets');
 
         foreach ($this->getFilesMatching('pro.*.php') as $path) {
-            $prolet_name = preg_replace('/pro.(.*?).php/', '$1', basename($path));
+            $prolet_name = preg_replace('/pro.(.*?).php/', '$1', basename((string) $path));
             $names[$prolet_name] = (isset($prolets[$prolet_name]['name'])) ? $prolets[$prolet_name]['name'] : $this->getName();
         }
 
@@ -77,8 +78,8 @@ class Addon extends Core\Addon
 
         foreach ($files as $path) {
             require_once $path;
-            $class = preg_replace('/pro.(.*?).php/', '$1', basename($path));
-            $classes[$class] = $this->getFullyQualified(ucfirst($class) . '_pro');
+            $class = preg_replace('/pro.(.*?).php/', '$1', basename((string) $path));
+            $classes[$class] = $this->getFullyQualified(ucfirst((string) $class) . '_pro');
         }
 
         return $classes;
@@ -93,7 +94,7 @@ class Addon extends Core\Addon
         $widget_source = $this->getProvider()->getPrefix();
         $widgets = [];
         foreach ($this->getFilesMatching('widgets/*.*') as $path) {
-            if (preg_match('/widgets\/(.*).(html|php)/', $path, $matches)) {
+            if (preg_match('/widgets\/(.*).(html|php)/', (string) $path, $matches)) {
                 $widgets[$matches[1] . '.' . $matches[2]] = [
                     'widget_file' => $matches[1],
                     'widget_type' => $matches[2],

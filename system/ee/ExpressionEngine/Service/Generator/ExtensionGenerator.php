@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -42,7 +43,7 @@ class ExtensionGenerator extends AbstractGenerator
     public function build()
     {
         $extStub = $this->filesystem->read($this->stub('ext.slug.php'));
-        $extStub = $this->write('slug_uc', ucfirst($this->addon), $extStub);
+        $extStub = $this->write('slug_uc', ucfirst((string) $this->addon), $extStub);
         $extStub = $this->write('slug', $this->addon, $extStub);
 
         $this->putFile('ext.' . $this->addon . '.php', $extStub);

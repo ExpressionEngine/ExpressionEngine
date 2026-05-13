@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -45,7 +46,7 @@ class Logger extends File
         $text_color = '[1;37m';
 
         if (REQ == 'CLI' && ! empty($message)) {
-            $message = "\033" . $arrow_color . "==> \033" . $text_color . strip_tags($message) . "\033[0m\n";
+            $message = "\033" . $arrow_color . "==> \033" . $text_color . strip_tags((string) $message) . "\033[0m\n";
 
             $stdout = fopen('php://stdout', 'w');
             fwrite($stdout, $message);

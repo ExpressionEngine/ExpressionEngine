@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -132,11 +133,11 @@ class Pro_variables_type
         }
 
         // Old encoded
-        if (substr($var, 0, 3) == 'YTo') {
+        if (substr((string) $var, 0, 3) == 'YTo') {
             $var = str_replace('_', '/', $var);
             $var = @unserialize(base64_decode($var));
         } else {
-            $var = json_decode($var, true);
+            $var = json_decode((string) $var, true);
         }
 
         // Make sure an array is returned
@@ -494,7 +495,7 @@ class Pro_variables_type
             $labels = PVUI::choices($this->settings('options'));
 
             // Empty data? No results
-            if (! strlen($this->data)) {
+            if (! strlen((string) $this->data)) {
                 return ee()->TMPL->no_results();
             }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -7,7 +8,6 @@
  * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -100,12 +100,12 @@ if (! function_exists('pro_strpos_all')) {
     {
         $all = array();
 
-        if ($haystack != null && preg_match_all('#' . preg_quote($needle, '#') . '#', $haystack, $matches)) {
+        if ($haystack != null && preg_match_all('#' . preg_quote((string) $needle, '#') . '#', (string) $haystack, $matches)) {
             $total = count($matches[0]);
             $offset = 0;
 
             while ($total--) {
-                $pos = strpos($haystack, $needle, $offset);
+                $pos = strpos((string) $haystack, (string) $needle, $offset);
                 $all[] = $pos;
                 $offset = $pos + 1;
             }
@@ -128,7 +128,7 @@ if (! function_exists('pro_substr_pad')) {
     function pro_substr_pad($haystack, $pos = array(), $length = 0, $pad = 0)
     {
         $all = array();
-        $haystack_length = strlen($haystack);
+        $haystack_length = strlen((string) $haystack);
 
         foreach ($pos as $p) {
             // account for left padding
@@ -143,7 +143,7 @@ if (! function_exists('pro_substr_pad')) {
                 $l = $haystack_length - $p;
             }
 
-            $all[] = substr($haystack, $p, $l);
+            $all[] = substr((string) $haystack, $p, $l);
         }
 
         return $all;
@@ -160,7 +160,7 @@ if (! function_exists('pro_substr_pad')) {
 if (! function_exists('pro_hilite')) {
     function pro_hilite($haystack, $needle)
     {
-        return preg_replace('#(' . preg_quote($needle, '#') . ')#', '<mark>$1</mark>', $haystack);
+        return preg_replace('#(' . preg_quote((string) $needle, '#') . ')#', '<mark>$1</mark>', (string) $haystack);
     }
 }
 
@@ -224,7 +224,7 @@ if (! function_exists('pro_prep_word_list')) {
     function pro_prep_word_list($str = '')
     {
         $str = ee()->pro_multibyte->strtolower($str);
-        $str = preg_replace('/[^\w\'\s\n]/iu', '', $str);
+        $str = preg_replace('/[^\w\'\s\n]/iu', '', (string) $str);
         $str = array_unique(array_filter(preg_split('/(\s|\n)/', $str)));
         sort($str);
 
@@ -255,12 +255,12 @@ if (! function_exists('pro_format')) {
 
         switch ($format) {
             case 'url':
-                $str = urlencode($str);
+                $str = urlencode((string) $str);
 
                 break;
 
             case 'html':
-                $str = htmlspecialchars($str);
+                $str = htmlspecialchars((string) $str);
                 $str = pro_format($str, 'ee-encode');
 
                 break;
@@ -327,14 +327,14 @@ if (! function_exists('pro_param_string')) {
 if (! function_exists('pro_prep_in_conditionals')) {
     function pro_prep_in_conditionals($tagdata = '')
     {
-        if (preg_match_all('#' . LD . 'if (([\w\-_]+)|((\'|")(.+)\\4)) (NOT)?\s?IN \((.*?)\)' . RD . '#', $tagdata, $matches)) {
+        if (preg_match_all('#' . LD . 'if (([\w\-_]+)|((\'|")(.+)\\4)) (NOT)?\s?IN \((.*?)\)' . RD . '#', (string) $tagdata, $matches)) {
             foreach ($matches[0] as $key => $match) {
                 $left = $matches[1][$key];
                 $operand = $matches[6][$key] ? '!=' : '==';
                 $andor = $matches[6][$key] ? ' AND ' : ' OR ';
                 $items = preg_replace('/(&(amp;)?)+/', '|', $matches[7][$key]);
                 $cond = array();
-                foreach (explode('|', $items) as $right) {
+                foreach (explode('|', (string) $items) as $right) {
                     $tmpl = preg_match('#^(\'|").+\\1$#', $right) ? '%s %s %s' : '%s %s "%s"';
                     $cond[] = sprintf($tmpl, $left, $operand, $right);
                 }
@@ -487,13 +487,13 @@ if (! function_exists('pro_array_get_prefixed')) {
         $vals = array();
 
         // Do we have a prefix?
-        if (is_array($array) && $prefix_length = strlen($prefix)) {
+        if (is_array($array) && $prefix_length = strlen((string) $prefix)) {
             // Loop through array
             foreach ($array as $key => $val) {
                 // Check the prefix
-                if (strpos($key, $prefix) === 0) {
+                if (strpos((string) $key, (string) $prefix) === 0) {
                     if ($strip === true) {
-                        $key = substr($key, $prefix_length);
+                        $key = substr((string) $key, $prefix_length);
                     }
                     $vals[$key] = $val;
                 }
@@ -533,7 +533,7 @@ if (! function_exists('pro_array_add_prefix')) {
 if (! function_exists('pro_param_is_numeric')) {
     function pro_param_is_numeric($str)
     {
-        return preg_match('/^(not\s|=)?(\d+[|&]?)+$/i', $str);
+        return preg_match('/^(not\s|=)?(\d+[|&]?)+$/i', (string) $str);
     }
 }
 
@@ -549,7 +549,7 @@ if (! function_exists('pro_param_is_numeric')) {
 if (! function_exists('pro_by_keywords')) {
     function pro_by_keywords($a, $b)
     {
-        return strcasecmp($a['keywords_clean'], $b['keywords_clean']);
+        return strcasecmp((string) $a['keywords_clean'], (string) $b['keywords_clean']);
     }
 }
 

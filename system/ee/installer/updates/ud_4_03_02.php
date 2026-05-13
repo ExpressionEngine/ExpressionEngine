@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -50,10 +51,10 @@ class Updater
         $member_data_columns = ee()->db->list_fields('member_data');
 
         foreach ($member_data_columns as $column) {
-            if (strncmp('m_field_id_', $column, 11) == 0) {
-                $id_ids[] = substr($column, 11);
-            } elseif (strncmp('m_field_ft_', $column, 11) == 0) {
-                $ft_ids[] = substr($column, 11);
+            if (strncmp('m_field_id_', (string) $column, 11) == 0) {
+                $id_ids[] = substr((string) $column, 11);
+            } elseif (strncmp('m_field_ft_', (string) $column, 11) == 0) {
+                $ft_ids[] = substr((string) $column, 11);
             }
         }
 

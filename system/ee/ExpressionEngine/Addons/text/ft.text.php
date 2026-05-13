@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -349,7 +350,7 @@ class Text_ft extends EE_Fieldtype
         $settings = $data;
 
         if (isset($settings['col_settings']) && ! is_array($settings['col_settings'])) {
-            $settings = json_decode($settings['col_settings'], true);
+            $settings = json_decode((string) $settings['col_settings'], true);
         }
 
         return $this->_get_column_settings(
@@ -424,20 +425,24 @@ class Text_ft extends EE_Fieldtype
         switch ($type) {
             case 'numeric':
                 $data = rtrim(rtrim(sprintf('%F', $data), '0'), '.'); // remove trailing zeros up to decimal point and kill decimal point if no trailing zeros
+
                 break;
             case 'integer':
                 $data = sprintf('%d', $data);
+
                 break;
             case 'decimal':
                 $parts = explode('.', sprintf('%F', $data));
                 $parts[1] = isset($parts[1]) ? rtrim($parts[1], '0') : '';
                 $decimals = ($decimals === false) ? 2 : $decimals;
                 $data = $parts[0] . '.' . str_pad($parts[1], $decimals, '0');
+
                 break;
             default:
                 if ($decimals && ctype_digit(str_replace('.', '', $data))) {
                     $data = number_format($data, $decimals);
                 }
+
                 break;
         }
 

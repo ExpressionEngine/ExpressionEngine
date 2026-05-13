@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SimplePie
  *
@@ -461,7 +462,7 @@ class SimplePie_Enclosure
         if ($this->link !== null) {
             $url = SimplePie_Misc::parse_url($this->link);
             if ($url['path'] !== '') {
-                return pathinfo($url['path'], PATHINFO_EXTENSION);
+                return pathinfo((string) $url['path'], PATHINFO_EXTENSION);
             }
         }
 
@@ -1071,7 +1072,7 @@ class SimplePie_Enclosure
 
         // If we encounter an unsupported mime-type, check the file extension and guess intelligently.
         if (!in_array($type, array_merge($types_flash, $types_fmedia, $types_quicktime, $types_wmedia, $types_mp3))) {
-            switch (strtolower($this->get_extension())) {
+            switch (strtolower((string) $this->get_extension())) {
                 // Audio mime-types
                 case 'aac':
                 case 'adts':
@@ -1126,7 +1127,7 @@ class SimplePie_Enclosure
 
                     break;
 
-                // Video mime-types
+                    // Video mime-types
                 case '3gp':
                 case '3gpp':
                     $type = 'video/3gpp';
@@ -1201,7 +1202,7 @@ class SimplePie_Enclosure
 
                     break;
 
-                // Flash mime-types
+                    // Flash mime-types
                 case 'spl':
                     $type = 'application/futuresplash';
 

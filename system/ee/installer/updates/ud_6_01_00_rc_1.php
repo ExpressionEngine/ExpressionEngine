@@ -164,7 +164,6 @@ class Updater
         }
     }
 
-
     private function updateRte()
     {
         ee()->db->where('name', 'Rte')->update('fieldtypes', ['version' => '2.1.0']);
@@ -186,7 +185,7 @@ class Updater
             ];
             ee()->load->dbforge();
             ee()->dbforge->add_column('rte_toolsets', $fields);
-            
+
             // Then we'll update each of the models with the setting
             $configs = ee('Model')->get('rte:Toolset')->all();
 
@@ -227,7 +226,7 @@ class Updater
             ]
         );
     }
-    
+
     // Add in allow_preview y/n field so that Channels can have live preview disabled as a toggle
     private function _addAllowPreview()
     {

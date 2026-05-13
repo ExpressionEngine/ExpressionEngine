@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -23,27 +24,28 @@ class File extends FileSystemEntity
 {
     public function get__width()
     {
-        $dimensions = explode(" ", $this->getProperty('file_hw_original'));
+        $dimensions = explode(" ", (string) $this->getProperty('file_hw_original'));
 
         return $dimensions[1];
     }
 
     public function get__height()
     {
-        $dimensions = explode(" ", $this->getProperty('file_hw_original'));
+        $dimensions = explode(" ", (string) $this->getProperty('file_hw_original'));
 
         return $dimensions[0];
     }
 
     public function get__title()
     {
-        return \htmlspecialchars((string)$this->getRawProperty('title'));
+        return \htmlspecialchars((string) $this->getRawProperty('title'));
     }
 
     public function get__file_hw_original()
     {
         if (empty($this->file_hw_original) && !empty($this->file_name)) {
             ee()->load->library('filemanager');
+
             try {
                 $image_dimensions = $this->actLocally(function ($path) {
                     return ee()->filemanager->get_image_dimensions($path);
@@ -69,6 +71,7 @@ class File extends FileSystemEntity
         foreach ($fileTypes as $fileType) {
             if (in_array($this->getProperty('mime_type'), $mimes[$fileType])) {
                 $this->setProperty('file_type', $fileType);
+
                 return;
             }
         }

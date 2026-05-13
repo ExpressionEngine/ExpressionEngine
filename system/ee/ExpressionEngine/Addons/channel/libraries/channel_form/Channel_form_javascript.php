@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -51,7 +52,7 @@ class Channel_form_javascript
 
         ee()->output->append_output(file_get_contents($this->js_path . 'channel_form.js'));
 
-        ee()->output->set_header('Content-Length: ' . strlen(ee()->output->get_output()));
+        ee()->output->set_header('Content-Length: ' . strlen((string) ee()->output->get_output()));
     }
 }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -17,7 +18,6 @@ use CP_Controller;
  */
 class Config extends Settings
 {
-
     public function index()
     {
         if (! ee('Permission')->isSuperAdmin()) {
@@ -30,7 +30,7 @@ class Config extends Settings
                 $fields[$key] = ee()->input->post($key);
             }
         }
-        
+
         $config_update = ee()->config->update_site_prefs($fields);
 
         if (!empty($config_update)) {

@@ -72,8 +72,8 @@ if ($deferred) {
         }
         $instructionParams[] = $relatedEntry['instructions'];
         if ($display_status) {
-            $instructionParams[] = array_key_exists($relatedEntry['status'], $statuses) ? $statuses[$relatedEntry['status']] : '';
-            $instructionParams[] = array_key_exists($relatedEntry['status'], $statuses) ? $statuses[$relatedEntry['status']] : '';
+            $instructionParams[] = array_key_exists((string) $relatedEntry['status'], $statuses) ? $statuses[$relatedEntry['status']] : '';
+            $instructionParams[] = array_key_exists((string) $relatedEntry['status'], $statuses) ? $statuses[$relatedEntry['status']] : '';
             $instructionParams[] = $relatedEntry['status'];
         }
         $instructionsRow = vsprintf(

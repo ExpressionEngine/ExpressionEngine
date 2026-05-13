@@ -190,7 +190,7 @@ class PersistentCache
     private static function checkPath()
     {
         // Add a trailing slash to the path if needed
-        self::$cache_path = preg_replace("/(.+?)\/*$/", "\\1/", self::$cache_path);
+        self::$cache_path = preg_replace("/(.+?)\/*$/", "\\1/", (string) self::$cache_path);
 
         // If the generic cache folder doesn't exist, try to create it.
         if (! @is_dir(self::$cache_path)) {

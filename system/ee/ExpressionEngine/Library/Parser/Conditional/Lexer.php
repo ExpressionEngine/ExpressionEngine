@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -65,7 +66,7 @@ class Lexer extends AbstractLexer
      */
     private $tag_depth = 0;
 
-    const COMMENT_PATTERN = "
+    public const COMMENT_PATTERN = "
 		\{!--		# open tag
 		(.*?)		# anything inbetween
 		--\}		# closing tag
@@ -74,7 +75,7 @@ class Lexer extends AbstractLexer
     /**
      * Regex for boolean values
      */
-    const BOOL_PATTERN = "
+    public const BOOL_PATTERN = "
 		\b					# must be its own word
 		(true|false)		# The pattern is case insensitive
 		(?!(-+)?\w)			# simulate \b with -
@@ -83,7 +84,7 @@ class Lexer extends AbstractLexer
     /**
      * Regex for variables
      */
-    const VARIABLE_PATTERN = "
+    public const VARIABLE_PATTERN = "
 		\w*(								# word characters on both ends are ok
 			[a-zA-Z]([\w:-]+\w)?			# we need at least one alpha in there
 			|								# to avoid things like 5-5, and it can't
@@ -94,7 +95,7 @@ class Lexer extends AbstractLexer
     /**
      * Regex for numbers
      */
-    const NUMBER_PATTERN = "
+    public const NUMBER_PATTERN = "
 		(
 			[0-9]*\.[0-9]+					# You must have a number either
 			|								# before or after the dot. The other
@@ -336,7 +337,7 @@ class Lexer extends AbstractLexer
      */
     private function value()
     {
-        if (preg_match($this->compiled_pattern, $this->str, $matches)) {
+        if (preg_match($this->compiled_pattern, (string) $this->str, $matches)) {
             foreach (array_reverse($matches) as $type => $value) {
                 if (is_string($type)) {
                     $this->addToken($type, $value);
@@ -442,7 +443,7 @@ class Lexer extends AbstractLexer
         $pattern = '';
 
         foreach ($this->operators as $operator) {
-            $operator = preg_quote($operator, '/');
+            $operator = preg_quote((string) $operator, '/');
 
             // Special negative lookahead addition for concatenation
             // 1.2 is a number, not two concatenated numbers. To be consistent
@@ -495,7 +496,7 @@ class Lexer extends AbstractLexer
                 }
             }
 
-            // EE PRO: we do not need to do anything here 
+            // EE PRO: we do not need to do anything here
             // since the template is modified after lexemes are built
 
             switch ($type) {

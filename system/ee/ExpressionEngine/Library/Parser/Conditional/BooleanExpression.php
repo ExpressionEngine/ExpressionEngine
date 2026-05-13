@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -17,9 +18,9 @@ use ExpressionEngine\Library\Parser\Conditional\Exception\BooleanExpressionExcep
  */
 class BooleanExpression
 {
-    const NON_ASSOC = 0;
-    const LEFT_ASSOC = 1;
-    const RIGHT_ASSOC = 2;
+    public const NON_ASSOC = 0;
+    public const LEFT_ASSOC = 1;
+    public const RIGHT_ASSOC = 2;
 
     private $tokens;
     private $unary_operators;
@@ -305,7 +306,7 @@ class BooleanExpression
      */
     private function evaluateBinary($op_token, $left, $right)
     {
-        switch (strtoupper($op_token->value())) {
+        switch (strtoupper((string) $op_token->value())) {
             // numbers
             case '^':
             case '**':
@@ -321,7 +322,7 @@ class BooleanExpression
             case '-':
                 return $left - $right;
 
-            // comparisons
+                // comparisons
             case '<>':
             case '!=':
                 return ! $this->equals($left, $right);
@@ -336,7 +337,7 @@ class BooleanExpression
             case '>=':
                 return $left >= $right;
 
-            // boolean logic
+                // boolean logic
             case '&&':
                 return $this->bool($left) && $this->bool($right);
             case '||':
@@ -348,22 +349,26 @@ class BooleanExpression
             case 'OR':
                 return $this->bool($left) or $this->bool($right);
 
-            // strings
+                // strings
             case '.':
                 $left = (string) $left;
                 $right = (string) $right;
+
                 return $left . $right;
             case '^=':
                 $left = (string) $left;
                 $right = (string) $right;
+
                 return strpos($left, $right) === 0;
             case '*=':
                 $left = (string) $left;
                 $right = (string) $right;
+
                 return strpos($left, $right) !== false;
             case '$=':
                 $left = (string) $left;
                 $right = (string) $right;
+
                 return substr($left, -strlen($right)) == $right;
             case '~':
                 $left = (string) $left;

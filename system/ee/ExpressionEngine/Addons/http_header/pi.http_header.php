@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -61,7 +62,7 @@ class Http_header
 
         foreach (ee()->TMPL->tagparams as $key => $value) {
             $set_header = true;
-            $key = strtolower($key);
+            $key = strtolower((string) $key);
             $value = $this->parseTags($value);
 
             if (array_key_exists($key, $allowed_header_fields)) {
@@ -143,6 +144,7 @@ class Http_header
     private function set_content_security_policy($value)
     {
         ee('Response')->setHeader('Content-Security-Policy', $value);
+
         return false;
     }
 
@@ -154,6 +156,7 @@ class Http_header
     private function set_content_security_policy_report_only($value)
     {
         ee('Response')->setHeader('Content-Security-Policy-Report-Only', $value);
+
         return false;
     }
 
@@ -301,6 +304,7 @@ class Http_header
     private function set_strict_transport_security($value)
     {
         ee('Response')->setHeader('Strict-Transport-Security', $value);
+
         return true;
     }
 }

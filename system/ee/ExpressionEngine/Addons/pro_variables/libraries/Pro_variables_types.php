@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -7,7 +8,6 @@
  * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -208,7 +208,7 @@ class Pro_variables_types
 
         // Sort types by alpha
         uasort($this->_types, function ($a, $b) {
-            return strcasecmp($a["name"], $b["name"]);
+            return strcasecmp((string) $a["name"], (string) $b["name"]);
         });
 
         return $this->_types;

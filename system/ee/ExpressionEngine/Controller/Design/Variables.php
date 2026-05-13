@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -97,7 +98,7 @@ class Variables extends AbstractDesignController
         );
 
         if (! array_key_exists($sort_col, $sort_map)) {
-            throw new \Exception("Invalid sort column: " . htmlentities($sort_col));
+            throw new \Exception("Invalid sort column: " . htmlentities((string) $sort_col));
         }
 
         $variable_data = $variables->order($sort_map[$sort_col], $table->sort_dir)
@@ -137,7 +138,7 @@ class Variables extends AbstractDesignController
                     'name' => 'selection[]',
                     'value' => $variable->variable_id,
                     'data' => array(
-                        'confirm' => lang('template_variable') . ': <b>' . htmlentities($variable->variable_name, ENT_QUOTES, 'UTF-8') . '</b>'
+                        'confirm' => lang('template_variable') . ': <b>' . htmlentities((string) $variable->variable_name, ENT_QUOTES, 'UTF-8') . '</b>'
                     )
                 )
 
@@ -251,7 +252,7 @@ class Variables extends AbstractDesignController
             $variable->site_id = ee()->input->post('site_id');
             $variable->variable_name = ee()->input->post('variable_name');
             $variable->variable_data = ee()->input->post('variable_data');
-            
+
             $result = $variable->validate();
 
             if (isset($_POST['ee_fv_field']) && $response = $this->ajaxValidation($result)) {

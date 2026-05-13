@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -110,6 +111,7 @@ class CI_DB_mysqli_connection
             if (isset($this->config[$attr])) {
                 if ($attr === 'MYSQL_ATTR_INIT_COMMAND') {
                     $options[$mysql_init_command_attr] = $this->config[$attr];
+
                     continue;
                 }
 
@@ -235,7 +237,7 @@ class CI_DB_mysqli_connection
     {
         return isset($this->connection);
     }
-    
+
     /**
      * List Indexes
      *
@@ -254,21 +256,23 @@ class CI_DB_mysqli_connection
         // Check to make sure table exists
         if (! ee()->db->table_exists($table)) {
             ee()->logger->updater(__METHOD__ . " failed. Table '" . ee()->db->dbprefix . "$table' does not exist.", true);
+
             return $indexes;
         }
 
         // Get indexes
         $query = ee()->db->query("SHOW INDEX FROM " . ee()->db->dbprefix . "$table");
 
-        if($query->num_rows() == 0) {
+        if ($query->num_rows() == 0) {
             ee()->logger->updater(__METHOD__ . " failed. Unable to get indexes from '" . ee()->db->dbprefix . "$table'.", true);
+
             return $indexes;
         }
 
         foreach ($query->result_array() as $row) {
             $index = [];
             foreach ($row as $column => $value) {
-                $index[strtolower($column)] = $value;
+                $index[strtolower((string) $column)] = $value;
             }
             $indexes[] = $index;
         }
@@ -284,7 +288,7 @@ class CI_DB_mysqli_connection
     private function setEmulatePrepares($query)
     {
         if ($this->mysqlnd) {
-            $on = strncasecmp($query, 'SELECT', 6) != 0;
+            $on = strncasecmp((string) $query, 'SELECT', 6) != 0;
             $this->connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, $on);
         }
     }
@@ -315,10 +319,10 @@ class CI_DB_mysqli_connection
         $find = '/(DEFAULT\s+)?(CHARACTER\s+SET\s+|CHARSET\s*=\s*)\w+(\s+COLLATE\s+\w+)?/';
         $want = "CHARACTER SET {$charset} COLLATE {$collation}";
 
-        if (preg_match($find, $query)) {
-            $query = preg_replace($find, "\\1" . $want, $query);
+        if (preg_match($find, (string) $query)) {
+            $query = preg_replace($find, "\\1" . $want, (string) $query);
         } else {
-            $query = rtrim($query, ';');
+            $query = rtrim((string) $query, ';');
             $query .= ' ' . $want . ';';
         }
 
@@ -330,8 +334,8 @@ class CI_DB_mysqli_connection
         $find = '/ENGINE\s*=\s*(\w+)/';
         $want = "ENGINE=InnoDB";
 
-        if (! preg_match($find, $query)) {
-            $query = rtrim($query, ';');
+        if (! preg_match($find, (string) $query)) {
+            $query = rtrim((string) $query, ';');
             $query .= ' ' . $want . ';';
         }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -40,7 +41,7 @@ class Search extends Logs
 
         if (ee()->input->post('delete')) {
             $this->delete('SearchLog', lang('search_log'));
-            if (strtolower(ee()->input->post('delete')) == 'all') {
+            if (strtolower((string) ee()->input->post('delete')) == 'all') {
                 return ee()->functions->redirect(ee('CP/URL')->make('logs/search'));
             }
         }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -64,7 +65,7 @@ class Response
     public function setHeader($header, $value = null)
     {
         if (! isset($value)) {
-            list($header, $value) = explode(':', $header, 2);
+            list($header, $value) = explode(':', (string) $header, 2);
         }
 
         $this->headers[$header] = $value;
@@ -174,7 +175,7 @@ class Response
 
         return (
             isset($_SERVER[$header]) &&
-            strpos($_SERVER[$header], 'gzip') !== false
+            strpos((string) $_SERVER[$header], 'gzip') !== false
         );
     }
 

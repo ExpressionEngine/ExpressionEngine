@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -27,6 +28,7 @@ class Grid extends Table
     public function defineRow(array $row): Grid
     {
         $this->set('row_definition', $row);
+
         return $this;
     }
 
@@ -47,7 +49,9 @@ class Grid extends Table
         $grid->setBlankRow($this->generateBlankRow());
         $grid->setData($this->generateDataStructure());
         $grid->loadAssets();
-        return ee('View')->make('ee:_shared/table')->render($grid->viewData());;
+
+        return ee('View')->make('ee:_shared/table')->render($grid->viewData());
+        ;
     }
 
     /**
@@ -62,7 +66,7 @@ class Grid extends Table
         }
 
         foreach ($default_rows as $column) {
-            $method = 'generate' . ucfirst($column['type']) . 'Input';
+            $method = 'generate' . ucfirst((string) $column['type']) . 'Input';
             $choices = isset($column['choices']) ? $column['choices'] : [];
             if (method_exists($this, $method)) {
                 $return[] = $this->$method($column['name'], $column);
@@ -94,7 +98,7 @@ class Grid extends Table
             $row_data = [];
             foreach ($row_prototype as $proto_key => $proto_value) {
                 if (isset($value[$proto_value['name']])) {
-                    $method = 'generate' . ucfirst($proto_value['type']) . 'Input';
+                    $method = 'generate' . ucfirst((string) $proto_value['type']) . 'Input';
                     if (method_exists($this, $method)) {
                         $proto_value['value'] = $value[$proto_value['name']];
                         $row_data[] = $this->$method($proto_value['name'], $proto_value);
@@ -181,6 +185,7 @@ class Grid extends Table
     protected function generateCheckboxInput(string $name, array $settings): string
     {
         $checked = element('value', $settings) == 1;
+
         return form_checkbox($name, 1, $checked);
     }
 

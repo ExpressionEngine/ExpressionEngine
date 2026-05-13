@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -220,7 +221,7 @@ class Addons_installer
             show_error(lang('module_can_not_be_found'));
         }
 
-        $class = ucfirst($module) . '_upd';
+        $class = ucfirst((string) $module) . '_upd';
 
         if (! class_exists($class)) {
             require $path;
@@ -248,7 +249,7 @@ class Addons_installer
             show_error(lang('no_extension_id'));
         }
 
-        $class = ucfirst($extension) . '_ext';
+        $class = ucfirst((string) $extension) . '_ext';
 
         if (! $instantiate) {
             return $class;

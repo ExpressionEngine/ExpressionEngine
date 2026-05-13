@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -37,7 +38,7 @@ class VariableFinder
         // Remove annotations for this step to prevent the automatic
         // line-number adjustment in the conditional lexer. The original
         // string will still have them when we actually prep the conditionals.
-        $str = preg_replace('/{!-- ra:(\w+) --}/', '', $str);
+        $str = preg_replace('/{!-- ra:(\w+) --}/', '', (string) $str);
 
         $tags = $this->findInTags($str);
         $vars = $this->findInConditionals($str);
@@ -58,7 +59,7 @@ class VariableFinder
     {
         $regex = $this->wrapRegex(LD, RD);
 
-        if (! preg_match_all($regex, $str, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE)) {
+        if (! preg_match_all($regex, (string) $str, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE)) {
             return array();
         }
 
@@ -67,7 +68,7 @@ class VariableFinder
         foreach ($matches as $match) {
             $offset = $match[0][1];
             $newmatch = [];
-            foreach($match as $tag) {
+            foreach ($match as $tag) {
                 $newmatch[] = $tag[0];
             }
             $tags[] = array($newmatch, $offset, 'tag');
@@ -89,7 +90,7 @@ class VariableFinder
         $variables = array();
 
         foreach ($tokens as $token) {
-            if ($token->type != 'VARIABLE' || ! preg_match($regex, $token, $match)) {
+            if ($token->type != 'VARIABLE' || ! preg_match($regex, (string) $token, $match)) {
                 continue;
             }
 
@@ -112,18 +113,18 @@ class VariableFinder
             $line_offset = $var_line - $line;
 
             for ($i = 0; $i < $line_offset; $i++) {
-                if ($offset >= strlen($str)) {
+                if ($offset >= strlen((string) $str)) {
                     break 2;
                 } elseif ($str[$offset] == "\n") {
                     $offset += 1;
                 } else {
-                    $offset += strcspn($str, "\n", $offset) + 1;
+                    $offset += strcspn((string) $str, "\n", $offset) + 1;
                 }
 
                 $line++;
             }
 
-            $variable[1] = strpos($str, $variable[0][0], $offset);
+            $variable[1] = strpos((string) $str, (string) $variable[0][0], $offset);
         }
 
         return $variables;

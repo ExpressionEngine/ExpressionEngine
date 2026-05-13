@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -59,7 +60,7 @@ class Updater
             ->result_array();
 
         foreach ($sites as $site) {
-            $prefs = unserialize(base64_decode($site['site_system_preferences']));
+            $prefs = unserialize(base64_decode((string) $site['site_system_preferences']));
 
             // Don't run the update query if we don't have to
             $update = false;

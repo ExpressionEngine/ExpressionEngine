@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -107,7 +108,7 @@ class ThemeInstaller
      */
     public function setBasePath($base_path)
     {
-        $this->base_path = rtrim($base_path, '/') . '/';
+        $this->base_path = rtrim((string) $base_path, '/') . '/';
     }
 
     /**
@@ -274,7 +275,7 @@ class ThemeInstaller
                 : 'n';
 
             $refresh = $template_preferences->preferences->refresh;
-            $template->refresh = (is_int($refresh) || ctype_digit($refresh))
+            $template->refresh = (is_int($refresh) || ctype_digit((string) $refresh))
                 ? $refresh
                 : 60;
         }
@@ -336,7 +337,7 @@ class ThemeInstaller
             $upload_destination->server_path = str_replace($this->base_path, '{base_path}', $path);
             $upload_destination->save();
 
-            $this->model_data['upload_destination'][strtolower($upload_destination->name)] = $upload_destination;
+            $this->model_data['upload_destination'][strtolower((string) $upload_destination->name)] = $upload_destination;
 
             foreach (directory_map($path) as $filename) {
                 if (! is_array($filename) && is_file($path . '/' . $filename) && $filename != 'index.html') {

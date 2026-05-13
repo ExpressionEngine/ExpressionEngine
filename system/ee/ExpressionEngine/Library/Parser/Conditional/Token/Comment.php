@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -21,7 +22,7 @@ class Comment extends Token
     {
         parent::__construct('COMMENT', $lexeme);
 
-        $this->value = trim(preg_replace('/^\{!--(.*?)--\}$/', '$1', $lexeme));
+        $this->value = trim((string) preg_replace('/^\{!--(.*?)--\}$/', '$1', (string) $lexeme));
     }
 
     public function canEvaluate()

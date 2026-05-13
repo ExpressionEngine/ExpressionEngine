@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -84,7 +85,7 @@ class Updater
 
             if ($query->num_rows() > 0) {
                 foreach ($query->result_array() as $row) {
-                    $system_prefs = base64_decode($row['site_system_preferences']);
+                    $system_prefs = base64_decode((string) $row['site_system_preferences']);
                     $skip = false;
                     $encode_only = false;
 
@@ -95,7 +96,7 @@ class Updater
                         $skip = true;
 
                         // Try it base64 encoded
-                        $old_pages = base64_decode($row['site_pages']);
+                        $old_pages = base64_decode((string) $row['site_pages']);
                     }
 
                     if ($skip == true && (is_string($old_pages) && substr($old_pages, 0, 2) == 'a:')) {
@@ -153,7 +154,7 @@ class Updater
         $query = ee()->db->get('sites');
 
         foreach ($query->result() as $row) {
-            $settings = unserialize(base64_decode($row->site_channel_preferences));
+            $settings = unserialize(base64_decode((string) $row->site_channel_preferences));
 
             if (isset($settings['enable_image_resizing'])) {
                 unset($settings['enable_image_resizing']);
@@ -188,7 +189,7 @@ class Updater
                 $vals[$key] = $this->array_stripslashes($val);
             }
         } else {
-            $vals = stripslashes($vals);
+            $vals = stripslashes((string) $vals);
         }
 
         return $vals;

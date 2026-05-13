@@ -155,7 +155,7 @@ class Updater
         $records = ee()->db->select('id, cat_group')->get('upload_prefs')->result();
         foreach ($records as $record) {
             if (!empty($record->cat_group)) {
-                $cat_groups = explode('|', $record->cat_group);
+                $cat_groups = explode('|', (string) $record->cat_group);
                 foreach ($cat_groups as $cat_group) {
                     if (!empty($cat_group)) {
                         ee('db')->insert('upload_prefs_category_groups', [
@@ -197,7 +197,7 @@ class Updater
         $records = ee()->db->select('channel_id, cat_group')->get('channels')->result();
         foreach ($records as $record) {
             if (!empty($record->cat_group)) {
-                $cat_groups = explode('|', $record->cat_group);
+                $cat_groups = explode('|', (string) $record->cat_group);
                 foreach ($cat_groups as $cat_group) {
                     if (!empty($cat_group)) {
                         ee('db')->insert('channel_category_groups', [
@@ -505,9 +505,9 @@ class Updater
     private function fixCategoryFieldRecords()
     {
         ee()->db->query(
-            "INSERT INTO exp_category_field_data (cat_id, site_id, group_id) ".
-            "SELECT cat_id, site_id, group_id ".
-            "FROM exp_categories ".
+            "INSERT INTO exp_category_field_data (cat_id, site_id, group_id) " .
+            "SELECT cat_id, site_id, group_id " .
+            "FROM exp_categories " .
             "WHERE cat_id NOT IN (SELECT cat_id FROM exp_category_field_data)"
         );
     }
@@ -515,9 +515,9 @@ class Updater
     private function fixMemberFieldRecords()
     {
         ee()->db->query(
-            "INSERT INTO exp_member_data (member_id) ".
-            "SELECT member_id ".
-            "FROM exp_members ".
+            "INSERT INTO exp_member_data (member_id) " .
+            "SELECT member_id " .
+            "FROM exp_members " .
             "WHERE member_id NOT IN (SELECT member_id FROM exp_member_data)"
         );
     }

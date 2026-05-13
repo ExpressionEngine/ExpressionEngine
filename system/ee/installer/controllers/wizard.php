@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -231,8 +232,8 @@ class Wizard extends CI_Controller
         $this->load->add_theme_cascade(APPPATH . 'views/');
 
         // First try the current directory, if they are running the system with an admin.php file
-        if (strpos($_SERVER['SCRIPT_FILENAME'], EESELF) !== false) {
-            $this->base_path = substr($_SERVER['SCRIPT_FILENAME'], 0, -strlen(EESELF));
+        if (strpos((string) $_SERVER['SCRIPT_FILENAME'], EESELF) !== false) {
+            $this->base_path = substr((string) $_SERVER['SCRIPT_FILENAME'], 0, -strlen(EESELF));
         } else {
             $this->base_path = realpath(SYSPATH . '/../');
         }
@@ -327,10 +328,10 @@ class Wizard extends CI_Controller
 
         // Determine current version
         $this->installed_version = ee()->config->item('app_version');
-        if (strpos($this->installed_version, '.') == false) {
+        if (strpos((string) $this->installed_version, '.') == false) {
             $this->installed_version = implode(
                 '.',
-                str_split($this->installed_version)
+                str_split((string) $this->installed_version)
             );
         }
 
@@ -415,7 +416,7 @@ class Wizard extends CI_Controller
 
         // In 2.10.0, we started putting .'s in the app_verson config. The rest
         // of the code assumes this to be true, so we need to tweak their old config.
-        if (strpos($config['app_version'], '.') === false) {
+        if (strpos((string) $config['app_version'], '.') === false) {
             $cap = $config['app_version'];
             $config['app_version'] = "{$cap[0]}.{$cap[1]}.{$cap[2]}";
         }
@@ -452,7 +453,7 @@ class Wizard extends CI_Controller
                 $host .= $_SERVER['HTTP_HOST'] . '/';
             }
 
-            $self = (! isset($_SERVER['PHP_SELF']) || $_SERVER['PHP_SELF'] == '') ? '' : substr($_SERVER['PHP_SELF'], 1);
+            $self = (! isset($_SERVER['PHP_SELF']) || $_SERVER['PHP_SELF'] == '') ? '' : substr((string) $_SERVER['PHP_SELF'], 1);
 
             // Since the CP access file can be inside or outside of the "system"
             // folder we will do a little test to help us set the site_url item
@@ -643,7 +644,7 @@ class Wizard extends CI_Controller
      */
     private function getDbPrefix()
     {
-        return ($this->userdata['db_prefix'] == '') ? 'exp_' : preg_replace("#([^_])/*$#", "\\1_", $this->userdata['db_prefix']);
+        return ($this->userdata['db_prefix'] == '') ? 'exp_' : preg_replace("#([^_])/*$#", "\\1_", (string) $this->userdata['db_prefix']);
     }
 
     private function serverSupportsUtf8mb4()
@@ -666,8 +667,8 @@ class Wizard extends CI_Controller
         if (is_null($supported)) {
             $client_info = ee('Database')->getConnection()->getNative()->getAttribute(PDO::ATTR_CLIENT_VERSION);
 
-            if (strpos($client_info, 'mysqlnd') === 0) {
-                $msyql_client_version = preg_replace('/^mysqlnd ([\d.]+).*/', '$1', $client_info);
+            if (strpos((string) $client_info, 'mysqlnd') === 0) {
+                $msyql_client_version = preg_replace('/^mysqlnd ([\d.]+).*/', '$1', (string) $client_info);
                 $supported = version_compare($msyql_client_version, '5.0.9', '>=');
             } else {
                 $msyql_client_version = $client_info;
@@ -997,7 +998,7 @@ class Wizard extends CI_Controller
 
         // Build our success links
         $vars['installer_path'] = '/' . SYSDIR . '/installer';
-        $vars['site_url'] = rtrim($this->userdata['site_url'], '/') . '/' . $this->userdata['site_index'];
+        $vars['site_url'] = rtrim((string) $this->userdata['site_url'], '/') . '/' . $this->userdata['site_index'];
 
         // If errors are thrown, this is were we get the "human" names for those modules
         $vars['module_names'] = $this->userdata['modules'];
@@ -1047,8 +1048,8 @@ class Wizard extends CI_Controller
     {
         $db_hostname = $this->userdata['db_hostname'];
 
-        if (strpos($db_hostname, ':') !== false) {
-            list($hostname, $port) = explode(':', $db_hostname);
+        if (strpos((string) $db_hostname, ':') !== false) {
+            list($hostname, $port) = explode(':', (string) $db_hostname);
 
             $this->userdata['db_hostname'] = $hostname;
             $this->userdata['db_port'] = $port;
@@ -1149,7 +1150,7 @@ class Wizard extends CI_Controller
             $host .= $_SERVER['HTTP_HOST'] . '/';
         }
 
-        $self = (! isset($_SERVER['PHP_SELF']) || $_SERVER['PHP_SELF'] == '') ? '' : substr($_SERVER['PHP_SELF'], 1);
+        $self = (! isset($_SERVER['PHP_SELF']) || $_SERVER['PHP_SELF'] == '') ? '' : substr((string) $_SERVER['PHP_SELF'], 1);
         $self = htmlspecialchars($self, ENT_QUOTES);
 
         $this->userdata['cp_url'] = ($self != '') ? $host . $self : $host . EESELF;
@@ -1180,14 +1181,14 @@ class Wizard extends CI_Controller
 
                     // Be a bit more friendly by trimming most inputs, but leave passwords as-is
                     if (! in_array($key, array('db_password', 'password', 'password_confirm'))) {
-                        $this->userdata[$key] = trim($this->userdata[$key]);
+                        $this->userdata[$key] = trim((string) $this->userdata[$key]);
                     }
                 }
             }
         }
 
         // Make sure the site_url has a trailing slash
-        $this->userdata['site_url'] = preg_replace("#([^/])/*$#", "\\1/", $this->userdata['site_url']);
+        $this->userdata['site_url'] = preg_replace("#([^/])/*$#", "\\1/", (string) $this->userdata['site_url']);
     }
 
     /**
@@ -1277,7 +1278,7 @@ class Wizard extends CI_Controller
             $method = $this->config->item('ud_next_step');
 
             if (! method_exists($UD, $method)) {
-                $this->set_output('error', array('error' => str_replace('%x', htmlentities($method), lang('update_step_error'))));
+                $this->set_output('error', array('error' => str_replace('%x', htmlentities((string) $method), lang('update_step_error'))));
 
                 return false;
             }
@@ -1469,7 +1470,7 @@ class Wizard extends CI_Controller
             ? 'src/'
             : 'compressed/';
 
-        $version = explode('.', $this->version, 2);
+        $version = explode('.', (string) $this->version, 2);
         $data = array(
             'title' => $this->title,
             'header' => $this->header,
@@ -1484,7 +1485,7 @@ class Wizard extends CI_Controller
             'version_minor' => $version[1],
             'installed_version' => $this->installed_version,
 
-            'next_version' => substr($this->next_update, 0, 1) . '.' . substr($this->next_update, 1, 1) . '.' . substr($this->next_update, 2, 1),
+            'next_version' => substr((string) $this->next_update, 0, 1) . '.' . substr((string) $this->next_update, 1, 1) . '.' . substr((string) $this->next_update, 2, 1),
             'languages' => $this->languages,
             'theme_url' => $this->set_path('themes'),
 
@@ -1842,7 +1843,7 @@ class Wizard extends CI_Controller
                 $config[$key] = $val;
             }
 
-            if (strpos($data, '{' . $key . '}') !== false) {
+            if (strpos((string) $data, '{' . $key . '}') !== false) {
                 $data = str_replace('{' . $key . '}', (string) $config[$key], $data);
                 unset($config[$key]);
             }
@@ -1913,7 +1914,7 @@ class Wizard extends CI_Controller
         $query = ee()->db->get('modules');
 
         foreach ($query->result() as $row) {
-            $module = strtolower($row->module_name);
+            $module = strtolower((string) $row->module_name);
 
             // Only update first-party modules
             if (! in_array($module, $this->native_modules)) {

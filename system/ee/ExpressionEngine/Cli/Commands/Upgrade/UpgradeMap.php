@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -66,6 +67,7 @@ class UpgradeMap
             usort(self::$versionsSupported, 'version_compare');
             self::$versionsSupported = array_reverse(self::$versionsSupported);
         }
+
         return self::$versionsSupported;
     }
 
@@ -90,12 +92,12 @@ class UpgradeMap
         foreach ($filemap as $filemapKey => &$filemapValue) {
 
             // If it's a file
-            if (strpos($filemapKey, '_file') !== false) {
-                $filemapValue = ltrim($filemapValue, '/');
+            if (strpos((string) $filemapKey, '_file') !== false) {
+                $filemapValue = ltrim((string) $filemapValue, '/');
             } else {
                 // Else, it's a directory and we need to make sure the system is in there
                 // Let's check if it has the system path and a leading slash
-                $filemapValue = ltrim($filemapValue, '/');
+                $filemapValue = ltrim((string) $filemapValue, '/');
             }
         }
 
@@ -182,8 +184,8 @@ class UpgradeMap
     {
 
         // For early EE2 version that didn't use dotted syntax
-        if (strpos($version, '.') == false) {
-            $version = implode('.', str_split($version, 1));
+        if (strpos((string) $version, '.') == false) {
+            $version = implode('.', str_split((string) $version, 1));
         }
 
         return $version;

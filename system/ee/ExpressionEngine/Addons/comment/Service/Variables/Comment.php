@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -221,7 +222,7 @@ class Comment extends Variables
     private function addMemberSearchPath()
     {
         foreach ($this->template_vars as $name => $vars) {
-            if (strncmp($name, 'member_search_path', 18) === 0) {
+            if (strncmp((string) $name, 'member_search_path', 18) === 0) {
                 $path = ee()->functions->extract_path($name);
                 $params = [
                     'result_path' => $path,

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -58,7 +59,7 @@ class Roles extends Column
             }
             $vars = [
                 'label' => $label,
-                'class' => str_replace(' ', '_', strtolower($role->name)),
+                'class' => str_replace(' ', '_', strtolower((string) $role->name)),
                 'styles' => [
                     'background-color' => 'var(--ee-bg-blank)',
                     'border-color' => '#' . $role->highlight,

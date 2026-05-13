@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -81,7 +82,7 @@ class EE_Route
 
         foreach ($this->segments as $segment) {
             if ($segment->hasValue()) {
-                $url[] = urlencode($segment->value());
+                $url[] = urlencode((string) $segment->value());
             }
         }
 
@@ -172,7 +173,7 @@ class EE_Route
     public function parse_route($route)
     {
         // Make sure we have a trailing slash so segments parse correctly
-        $route = trim($route, '/ ');
+        $route = trim((string) $route, '/ ');
         $route = $route . '/';
 
         // Check for xss

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -84,25 +85,25 @@ class File extends ConfigWithDefaults
             return $value;
         }
 
-        switch (strtolower($value)) {
+        switch (strtolower((string) $value)) {
             case 'yes':
             case 'y':
             case 'on':
                 return true;
 
-            break;
+                break;
 
             case 'no':
             case 'n':
             case 'off':
                 return false;
 
-            break;
+                break;
 
             default:
                 return null;
 
-            break;
+                break;
         }
     }
 

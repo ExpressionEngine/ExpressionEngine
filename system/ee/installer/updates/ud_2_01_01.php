@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -27,7 +28,7 @@ class Updater
         $fields_to_alter = array();
 
         foreach ($fields as $field) {
-            if (strncmp($field->name, 'field_id_', 9) == 0 && ($field->type == 'text' or $field->type == 'blob')) {
+            if (strncmp((string) $field->name, 'field_id_', 9) == 0 && ($field->type == 'text' or $field->type == 'blob')) {
                 $fields_to_alter[] = array($field->name, $field->type);
             }
         }
@@ -56,7 +57,7 @@ class Updater
         $values = array(
             'template_name' => 'comments_opened_notification',
             'data_title' => 'New comments have been added',
-            'template_data' => addslashes($this->comments_opened_notification()),
+            'template_data' => addslashes((string) $this->comments_opened_notification()),
         );
 
         $unique = array(

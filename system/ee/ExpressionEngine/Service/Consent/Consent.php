@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -21,7 +22,7 @@ use InvalidArgumentException;
  */
 class Consent
 {
-    const COOKIE_NAME = 'visitor_consents';
+    public const COOKIE_NAME = 'visitor_consents';
 
     /**
      * @var array Cookie data, for visitors
@@ -212,7 +213,7 @@ class Consent
                 return $consents[$grants[$request_ref]->consent_request_id]->isGranted();
             }
         }
-		
+
         return false;
     }
 
@@ -244,7 +245,7 @@ class Consent
             }
         }
 
-        return false;		
+        return false;
     }
 
     /**
@@ -398,7 +399,7 @@ class Consent
                 $this->addon_prefix = $addon->getPrefix();
             }
 
-            return (strpos($request->consent_name, $this->addon_prefix . ':') === 0);
+            return (strpos((string) $request->consent_name, $this->addon_prefix . ':') === 0);
         }
 
         return true;

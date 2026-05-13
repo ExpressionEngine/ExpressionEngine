@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -137,7 +138,7 @@ class Consent
      */
     public function submitConsent()
     {
-        $consent_names = @json_decode(ee('Encrypt')->decode(ee()->input->post('consent_names')), true);
+        $consent_names = @json_decode((string) ee('Encrypt')->decode(ee()->input->post('consent_names')), true);
         $requests = ee('Consent')->getConsentDataFor($consent_names);
 
         if ($requests->count() == 0) {
@@ -193,7 +194,7 @@ class Consent
             ee()->output->throwAuthError();
         }
 
-        $message = sprintf(lang('consent_prefs_saved'), htmlentities($request['title']));
+        $message = sprintf(lang('consent_prefs_saved'), htmlentities((string) $request['title']));
 
         if (AJAX_REQUEST) {
             ee()->output->send_ajax_response(['success' => $message]);
@@ -229,7 +230,7 @@ class Consent
             ee()->output->throwAuthError();
         }
 
-        $message = sprintf(lang('consent_prefs_saved'), htmlentities($request['title']));
+        $message = sprintf(lang('consent_prefs_saved'), htmlentities((string) $request['title']));
 
         if (AJAX_REQUEST) {
             ee()->output->send_ajax_response(['success' => $message]);

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -163,7 +164,7 @@ class Filepicker_mcp
 
         $html = ee('View')->make('ee:files/index')->render($vars) . $newFolderModal;
 
-        if (!empty(ee('Request')->header('ACCEPT')) && strpos(ee('Request')->header('ACCEPT'), '/json') !== false) {
+        if (!empty(ee('Request')->header('ACCEPT')) && strpos((string) ee('Request')->header('ACCEPT'), '/json') !== false) {
             return json_encode([
                 'html' => $html,
                 'url' => $vars['form_url']->compile(),

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -79,7 +80,7 @@ class EE_Functions
     public function create_route($segment, $sess_id = true)
     {
         if (is_array($segment)) {
-            $tag = trim($segment[0], "{}");
+            $tag = trim((string) $segment[0], "{}");
             $segment = $segment[1];
         }
 
@@ -91,7 +92,7 @@ class EE_Functions
         $parts = ee('Variables/Parser')->parseTagParameters($tag);
 
         $template = $parts['route'];
-        $template = trim($template, '"\' ');
+        $template = trim((string) $template, '"\' ');
         list($group, $template) = explode('/', $template);
 
         if (! empty($group) && ! empty($template)) {
@@ -175,8 +176,8 @@ class EE_Functions
     public function create_page_url($base_url, $segment, $trailing_slash = false)
     {
         if (ee()->config->item('force_query_string') == 'y') {
-            if (strpos($base_url, ee()->config->item('index_page') . '/') !== false) {
-                $base_url = rtrim($base_url, '/');
+            if (strpos((string) $base_url, ee()->config->item('index_page') . '/') !== false) {
+                $base_url = rtrim((string) $base_url, '/');
             }
 
             $base_url .= '?';
@@ -201,7 +202,7 @@ class EE_Functions
      */
     public function fetch_current_uri()
     {
-        $url = rtrim(reduce_double_slashes($this->fetch_site_index(1) . ee()->uri->uri_string), '/');
+        $url = rtrim((string) reduce_double_slashes($this->fetch_site_index(1) . ee()->uri->uri_string), '/');
         $url = str_replace(array('"', "'"), array('%22', '%27'), $url);
 
         return $url;
@@ -266,7 +267,7 @@ class EE_Functions
      */
     public function extract_path($str)
     {
-        if (preg_match("#=(.*)#", $str, $match)) {
+        if (preg_match("#=(.*)#", (string) $str, $match)) {
             $match[1] = trim($match[1], '}');
 
             if (isset($this->cached_path[$match[1]])) {
@@ -275,11 +276,11 @@ class EE_Functions
 
             $path = trim_slashes(str_replace(array("'",'"'), "", $match[1]));
 
-            if (substr($path, -6) == 'index/') {
+            if (substr((string) $path, -6) == 'index/') {
                 $path = str_replace('/index', '', $path);
             }
 
-            if (substr($path, -5) == 'index') {
+            if (substr((string) $path, -5) == 'index') {
                 $path = str_replace('/index', '', $path);
             }
 
@@ -306,7 +307,7 @@ class EE_Functions
         }
 
         foreach ($data as $key => $val) {
-            $str = str_replace('{' . $key . '}', (string)$val, $str);
+            $str = str_replace('{' . $key . '}', (string) $val, $str);
         }
 
         return $str;
@@ -357,7 +358,7 @@ class EE_Functions
 
         if (! empty($protected)) {
             // Decrypt and json decode the resulting data.
-            self::$protected_data = json_decode(ee('Encrypt')->decode($protected), true);
+            self::$protected_data = json_decode((string) ee('Encrypt')->decode($protected), true);
 
             // Sanity check that the data decrypted / decoded properly.
             if (! is_array(self::$protected_data)) {
@@ -383,7 +384,7 @@ class EE_Functions
         } elseif (is_numeric($return)) {
             // If the return is a number, it's a reference to how many pages back we have to go.
             $return_link = ee()->functions->form_backtrack($return);
-        } elseif (substr(strtolower($return), 0, 4) === 'http') {
+        } elseif (substr(strtolower((string) $return), 0, 4) === 'http') {
             // If we're using a fully qualified URL, don't modify it.
             $return_link = $return;
         } else {
@@ -400,7 +401,7 @@ class EE_Functions
      */
     public function determine_error_return()
     {
-        if(is_null(self::$protected_data)) {
+        if (is_null(self::$protected_data)) {
             $this->handle_protected();
         }
 
@@ -411,6 +412,7 @@ class EE_Functions
             // If they specified inline errors, return to the page the form submitted from.
             // When the request is handled by an action then "this" page may not be in the tracker
             $offset = (REQ === 'ACTION' && (ee()->session->tracker[0] ?? '') !== 'index') ? 0 : 1;
+
             return ee()->functions->form_backtrack($offset);
         }
 
@@ -556,11 +558,11 @@ class EE_Functions
         }
 
         if ($data['onsubmit'] != '') {
-            $data['onsubmit'] = 'onsubmit="' . trim($data['onsubmit']) . '"';
+            $data['onsubmit'] = 'onsubmit="' . trim((string) $data['onsubmit']) . '"';
         }
 
-        if (substr($data['action'], -1) == '?') {
-            $data['action'] = substr($data['action'], 0, -1);
+        if (substr((string) $data['action'], -1) == '?') {
+            $data['action'] = substr((string) $data['action'], 0, -1);
         }
 
         if (isset(ee()->TMPL)) {
@@ -585,13 +587,13 @@ class EE_Functions
         $data['class'] = ($data['class'] != '') ? 'class="' . $data['class'] . '" ' : '';
         $data['target'] = ($data['target'] != '') ? 'target="' . $data['target'] . '" ' : '';
 
-        if ($data['enctype'] == 'multi' or strtolower($data['enctype']) == 'multipart/form-data') {
+        if ($data['enctype'] == 'multi' or strtolower((string) $data['enctype']) == 'multipart/form-data') {
             $data['enctype'] = 'enctype="multipart/form-data" ';
         }
 
         foreach ($data as $key => $val) {
-            if (strpos($key, 'data-') === 0 || strpos($key, 'aria-') === 0) {
-                $data['data_attributes'] .= ee('Security/XSS')->clean($key) . '="' . htmlentities(ee('Security/XSS')->clean($val), ENT_QUOTES, 'UTF-8') . '" ';
+            if (strpos((string) $key, 'data-') === 0 || strpos((string) $key, 'aria-') === 0) {
+                $data['data_attributes'] .= ee('Security/XSS')->clean($key) . '="' . htmlentities((string) ee('Security/XSS')->clean($val), ENT_QUOTES, 'UTF-8') . '" ';
             }
         }
 
@@ -604,7 +606,6 @@ class EE_Functions
          * Valid HTML Form attributes are determined based on the list in
          * on the config/valid_form_attributes.php file .
          */
-
         $valid_form_attributes = ee()->config->loadFile('valid_form_attributes');
 
         if (isset(ee()->TMPL) && ! empty(ee()->TMPL->tagparams) && ! empty($valid_form_attributes)) {
@@ -612,14 +613,14 @@ class EE_Functions
                 // Ignore the parameter if $key is defined in $deft (and so already being processed by function)
                 // or if the parameter is not in the list of approved attributes
                 // or if the parameter begins with either aria- or data-
-                if (! array_key_exists(strtolower($key), $deft) && in_array(strtolower($key), $valid_form_attributes)) {
+                if (! array_key_exists(strtolower((string) $key), $deft) && in_array(strtolower((string) $key), $valid_form_attributes)) {
                     // Append the key to end of the $_pass_thru variable
                     // If the attribute has a value set then add this value to the key enclosed within an ="" construct
-                    $_pass_thru[$key] = (strlen($val) > 0) ? '="' . htmlentities(ee('Security/XSS')->clean($val), ENT_QUOTES, 'UTF-8') . '"' : '';
+                    $_pass_thru[$key] = (strlen((string) $val) > 0) ? '="' . htmlentities((string) ee('Security/XSS')->clean($val), ENT_QUOTES, 'UTF-8') . '"' : '';
                 }
                 // data- and aria- attributes can also be passed through
-                if (strpos($key, 'data-') === 0 || strpos($key, 'aria-') === 0) {
-                    $data['data_attributes'] .= ee('Security/XSS')->clean(strip_tags($key)) . '="' . htmlentities(ee('Security/XSS')->clean($val), ENT_QUOTES, 'UTF-8') . '" ';
+                if (strpos((string) $key, 'data-') === 0 || strpos((string) $key, 'aria-') === 0) {
+                    $data['data_attributes'] .= ee('Security/XSS')->clean(strip_tags((string) $key)) . '="' . htmlentities((string) ee('Security/XSS')->clean($val), ENT_QUOTES, 'UTF-8') . '" ';
                 }
             }
         }
@@ -674,7 +675,7 @@ class EE_Functions
         }
 
         if (isset($_POST['RET'])) {
-            if (strncmp($_POST['RET'], '-', 1) == 0) {
+            if (strncmp((string) $_POST['RET'], '-', 1) == 0) {
                 $return = str_replace("-", "", $_POST['RET']);
 
                 if (isset(ee()->session->tracker[$return])) {
@@ -683,11 +684,11 @@ class EE_Functions
                     }
                 }
             } else {
-                if (strpos($_POST['RET'], '/') !== false) {
+                if (strpos((string) $_POST['RET'], '/') !== false) {
                     if (
-                        strncasecmp($_POST['RET'], 'http://', 7) == 0 or
-                        strncasecmp($_POST['RET'], 'https://', 8) == 0 or
-                        strncasecmp($_POST['RET'], 'www.', 4) == 0
+                        strncasecmp((string) $_POST['RET'], 'http://', 7) == 0 or
+                        strncasecmp((string) $_POST['RET'], 'https://', 8) == 0 or
+                        strncasecmp((string) $_POST['RET'], 'www.', 4) == 0
                     ) {
                         $ret = $_POST['RET'];
                     } else {
@@ -706,7 +707,7 @@ class EE_Functions
             if (ee()->config->item('website_session_type') != 'c') {
                 $id = ee()->session->session_id('user');
 
-                if ($id != '' && ! stristr($ret, $id)) {
+                if ($id != '' && ! stristr((string) $ret, (string) $id)) {
                     $url = ee()->config->slash_item('site_url');
 
                     $url .= ee()->config->item('site_index');
@@ -752,7 +753,7 @@ class EE_Functions
             return preg_replace("/(eeEncEmail_)\w+/", '\\1' . ee()->functions->random('alpha', 10), ee()->session->cache['functions']['emails'][$str]);
         }
 
-        $email = (is_array($str)) ? trim($str[1]) : trim($str);
+        $email = (is_array($str)) ? trim((string) $str[1]) : trim((string) $str);
 
         $title = '';
         $email = str_replace(array('"', "'"), '', $email);
@@ -781,7 +782,7 @@ class EE_Functions
      */
     public function char_limiter($str, $num = 500)
     {
-        if (strlen($str) < $num) {
+        if (strlen((string) $str) < $num) {
             return $str;
         }
 
@@ -816,11 +817,11 @@ class EE_Functions
      */
     public function word_limiter($str, $num = 100)
     {
-        if (strlen($str) < $num) {
+        if (strlen((string) $str) < $num) {
             return $str;
         }
 
-        $word = preg_split('/\s/u', $str, -1, PREG_SPLIT_NO_EMPTY);
+        $word = preg_split('/\s/u', (string) $str, -1, PREG_SPLIT_NO_EMPTY);
 
         if (count($word) <= $num) {
             return $str;
@@ -911,7 +912,7 @@ class EE_Functions
                     $val = $array_name . '/' . $val;
                 }
 
-                if (substr($val, -4) == '.php') {
+                if (substr((string) $val, -4) == '.php') {
                     if ($val != 'theme_master.php') {
                         $this->template_map[] = $val;
                     }
@@ -993,6 +994,7 @@ class EE_Functions
             if (!$all_sites) {
                 $channels->filter('site_id', ee()->config->item('site_id'));
             }
+
             return $channels->all()->pluck('channel_id');
         }
         if (ee()->session->getMember()) {
@@ -1149,7 +1151,7 @@ class EE_Functions
 
                 if ($field_sqla != '') {
                     foreach ($row as $k => $v) {
-                        if (strpos($k, 'field') !== false) {
+                        if (strpos((string) $k, 'field') !== false) {
                             $this->temp_array[$row['cat_id']][$k] = $v;
                         }
                     }
@@ -1259,7 +1261,7 @@ class EE_Functions
             return '';
         }
 
-        $str = trim($str);
+        $str = trim((string) $str);
         $sql = '';
         $not = '';
 
@@ -1328,7 +1330,7 @@ class EE_Functions
             return '';
         }
 
-        $str = trim($str);
+        $str = trim((string) $str);
 
         if ($prefix != '') {
             $prefix .= '.';
@@ -1349,7 +1351,7 @@ class EE_Functions
                     }
 
                     ee()->db->where($sql);
-                // END MySQL Only
+                    // END MySQL Only
                 } else {
                     if (strncasecmp($parts[0], 'not ', 4) == 0) {
                         $parts[0] = substr($parts[0], 4);
@@ -1370,7 +1372,7 @@ class EE_Functions
                 }
 
                 ee()->db->where($sql);
-            // END MySQL Only
+                // END MySQL Only
             } else {
                 if (strncasecmp($str, 'not ', 4) == 0) {
                     $str = trim(substr($str, 3));
@@ -1407,7 +1409,7 @@ class EE_Functions
         // Find the conditionals.
         // Added a \s in there to make sure it does not match {if:elseif} or {if:else} would would give
         // us a bad array and cause havoc.
-        if (! preg_match_all("/" . $LD . "if(\s.*?)" . $RD . "/s", $modified_str, $eek)) {
+        if (! preg_match_all("/" . $LD . "if(\s.*?)" . $RD . "/s", (string) $modified_str, $eek)) {
             return $var_cond;
         }
 
@@ -1417,8 +1419,8 @@ class EE_Functions
         if (! empty($modified_str)) {
             for ($i = 0; $i < $total_conditionals; $i++) {
                 // Embedded variable fix
-                if ($ld_location = strpos($eek[1][$i], $LD)) {
-                    if (preg_match_all("|" . preg_quote($eek[0][$i]) . "(.*?)" . $RD . "|s", $modified_str, $fix_eek)) {
+                if ($ld_location = strpos($eek[1][$i], (string) $LD)) {
+                    if (preg_match_all("|" . preg_quote($eek[0][$i]) . "(.*?)" . $RD . "|s", (string) $modified_str, $fix_eek)) {
                         if (count($fix_eek) > 0) {
                             $eek[0][$i] = $fix_eek[0][0];
                             $eek[1][$i] .= $RD . $fix_eek[1][0];
@@ -1428,10 +1430,10 @@ class EE_Functions
 
                 $modified_string_length = strlen($eek[1][$i]);
                 $replace_value[$i] = $LD . 'if' . $i;
-                $p1 = strpos($modified_str, $eek[0][$i]);
+                $p1 = strpos((string) $modified_str, $eek[0][$i]);
                 $p2 = $p1 + strlen($replace_value[$i] . $eek[1][$i]) - strlen($i);
-                $p3 = strlen($modified_str);
-                $modified_str = substr($modified_str, 0, $p1) . $replace_value[$i] . $eek[1][$i] . substr($modified_str, $p2, $p3);
+                $p3 = strlen((string) $modified_str);
+                $modified_str = substr((string) $modified_str, 0, $p1) . $replace_value[$i] . $eek[1][$i] . substr((string) $modified_str, $p2, $p3);
             }
         }
 
@@ -1439,10 +1441,10 @@ class EE_Functions
         $closed_position = array();
         for ($t = $i - 1; $t >= 0; $t--) {
             // Find the conditional's start
-            $coordinate = strpos($modified_str, $LD . 'if' . $t);
+            $coordinate = strpos((string) $modified_str, $LD . 'if' . $t);
 
             // Find the shortned string.
-            $shortened = substr($modified_str, $coordinate);
+            $shortened = substr((string) $modified_str, $coordinate);
 
             // Find the conditional's end. Should be first closing tag.
             $closed_position = strpos($shortened, $LD . $slash . 'if' . $RD);
@@ -1451,15 +1453,15 @@ class EE_Functions
             $p1 = $coordinate + $closed_position;
             $p2 = $p1 + strlen($LD . $slash . 'if' . $t . $RD) - 1;
 
-            $modified_str = substr($modified_str, 0, $p1) . $LD . $slash . 'if' . $t . $RD . substr($modified_str, $p2);
+            $modified_str = substr((string) $modified_str, 0, $p1) . $LD . $slash . 'if' . $t . $RD . substr((string) $modified_str, $p2);
         }
 
         // Create Rick's array
         for ($i = 0; $i < $total_conditionals; $i++) {
-            $p1 = strpos($modified_str, $LD . 'if' . $i . ' ');
-            $p2 = strpos($modified_str, $LD . $slash . 'if' . $i . $RD);
+            $p1 = strpos((string) $modified_str, $LD . 'if' . $i . ' ');
+            $p2 = strpos((string) $modified_str, $LD . $slash . 'if' . $i . $RD);
             $length = $p2 - $p1;
-            $text_range = substr($modified_str, $p1, $length);
+            $text_range = substr((string) $modified_str, $p1, $length);
 
             // We use \d here because we want to look for one of the 'marked' conditionals, but
             // not an Advanced Conditional, which would have a colon
@@ -1481,9 +1483,9 @@ class EE_Functions
                 $start = $val[1];
             }
 
-            $open_tag = strpos($float, $val[0]);
+            $open_tag = strpos((string) $float, $val[0]);
 
-            $float = substr($float, $open_tag);
+            $float = substr((string) $float, $open_tag);
 
             $temp = $float;
             $len = 0;
@@ -1514,7 +1516,7 @@ class EE_Functions
 
                     $tagb = preg_replace("/^if/", "", $tag);
 
-                    $field = (! preg_match("#(\S+?)\s*(\!=|==|<|>|<=|>=|<>|%)#s", $tag, $match)) ? trim($tagb) : $match[1];
+                    $field = (! preg_match("#(\S+?)\s*(\!=|==|<|>|<=|>=|<>|%)#s", $tag, $match)) ? trim((string) $tagb) : $match[1];
 
                     // Array prototype:
                     // offset 0: the full opening tag sans delimiters:  if extended
@@ -1574,7 +1576,7 @@ class EE_Functions
 
         // LegacyParser::getFullTag() responsibly preg_quote()s whereas this old method put
         // the impetus on the developer to send a slash-quoted closing tag.
-        $close = stripslashes($close);
+        $close = stripslashes((string) $close);
 
         if ($chunk == '') {
             $chunk = (isset(ee()->TMPL) && is_object(ee()->TMPL)) ? ee()->TMPL->fl_tmpl : '';
@@ -1602,7 +1604,7 @@ class EE_Functions
             return;
         }
 
-        $str = str_replace(' ', '', trim($str, '|'));
+        $str = str_replace(' ', '', trim((string) $str, '|'));
 
         return explode('|', $str);
     }
@@ -1649,7 +1651,7 @@ class EE_Functions
      */
     public function prep_conditional($cond = '')
     {
-        $cond = preg_replace("/^if/", "", $cond);
+        $cond = preg_replace("/^if/", "", (string) $cond);
 
         if (preg_match("/(\S+)\s*(\!=|==|<=|>=|<>|<|>|%)\s*(.+)/", $cond, $match)) {
             $cond = trim($match[1]) . ' ' . trim($match[2]) . ' ' . trim($match[3]);
@@ -1678,7 +1680,7 @@ class EE_Functions
      */
     public function reverse_key_sort($a, $b)
     {
-        return strlen($b) > strlen($a);
+        return strlen((string) $b) > strlen((string) $a);
     }
 
     /**
@@ -1750,7 +1752,7 @@ class EE_Functions
             }
 
             ee()->output->set_status_header(500);
-            ee()->output->fatal_error(nl2br($error));
+            ee()->output->fatal_error(nl2br((string) $error));
 
             exit;
         }

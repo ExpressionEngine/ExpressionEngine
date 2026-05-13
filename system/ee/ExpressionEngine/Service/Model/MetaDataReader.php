@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -205,7 +206,7 @@ class MetaDataReader
      */
     protected function getNamespacePrefix()
     {
-        return substr($this->class, 0, strrpos($this->class, '\\'));
+        return substr((string) $this->class, 0, strrpos((string) $this->class, '\\'));
     }
 }
 

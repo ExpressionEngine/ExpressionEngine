@@ -45,7 +45,7 @@ class Local extends Flysystem\Adapter\Local implements AdapterInterface, Validat
             //throw an exception if root is not valid, but only if it's not validation request
             if ($this->settings['allow_missing'] ?? false) {
                 $this->rootExists = false;
-            }else{
+            } else {
                 throw new \LogicException('The root path ' . $root . ' is not readable.');
             }
         }
@@ -64,7 +64,7 @@ class Local extends Flysystem\Adapter\Local implements AdapterInterface, Validat
                 'fields' => [
                     'url' => [
                         'type' => 'text',
-                        'value' => $settings['url'] ?? (strrpos(ee()->config->item('base_url'), '/', strlen(ee()->config->item('base_url')) - 1 === false) ? '{base_url}/uploads' : '{base_url}uploads'),
+                        'value' => $settings['url'] ?? (strrpos((string) ee()->config->item('base_url'), '/', strlen((string) ee()->config->item('base_url')) - 1 === false) ? '{base_url}/uploads' : '{base_url}uploads'),
                         'required' => true
                     ]
                 ]
@@ -75,7 +75,7 @@ class Local extends Flysystem\Adapter\Local implements AdapterInterface, Validat
                 'fields' => [
                     'server_path' => [
                         'type' => 'text',
-                        'value' => $settings['server_path'] ?? (strrpos(ee()->config->item('base_path'), '/', strlen(ee()->config->item('base_path')) - 1) === false && strrpos(ee()->config->item('base_path'), DIRECTORY_SEPARATOR, strlen(ee()->config->item('base_path')) - 1 === false) ? '{base_path}/uploads' : '{base_path}uploads'),
+                        'value' => $settings['server_path'] ?? (strrpos((string) ee()->config->item('base_path'), '/', strlen((string) ee()->config->item('base_path')) - 1) === false && strrpos((string) ee()->config->item('base_path'), DIRECTORY_SEPARATOR, strlen((string) ee()->config->item('base_path')) - 1 === false) ? '{base_path}/uploads' : '{base_path}uploads'),
                         'required' => true
                     ]
                 ]
@@ -102,7 +102,7 @@ class Local extends Flysystem\Adapter\Local implements AdapterInterface, Validat
      */
     public function validateNotBasePath($key, $value, $params, $rule)
     {
-        $base_path = rtrim(ee()->config->item('base_path'), DIRECTORY_SEPARATOR . '/');
+        $base_path = rtrim((string) ee()->config->item('base_path'), DIRECTORY_SEPARATOR . '/');
         $value = rtrim(str_replace('{base_path}', $base_path, $value), DIRECTORY_SEPARATOR . '/');
 
         if ($value == $base_path) {
@@ -123,6 +123,7 @@ class Local extends Flysystem\Adapter\Local implements AdapterInterface, Validat
         if ((DIRECTORY_SEPARATOR == '/' && strpos($path, '/') === 0) || (DIRECTORY_SEPARATOR == '\\' && strpos($path, ':') === 1)) {
             return $path;
         }
+
         return parent::applyPathPrefix($path);
     }
 
@@ -135,6 +136,7 @@ class Local extends Flysystem\Adapter\Local implements AdapterInterface, Validat
         if (!empty($prefix) && strpos($path, $prefix) === 0) {
             return parent::removePathPrefix($path);
         }
+
         return $path;
     }
 

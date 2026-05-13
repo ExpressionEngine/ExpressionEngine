@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -221,7 +222,7 @@ class Search_model extends CI_Model
         }
 
         if ($data['keywords'] != '') {
-            $pageurl .= AMP . 'keywords=' . base64_encode($data['keywords']);
+            $pageurl .= AMP . 'keywords=' . base64_encode((string) $data['keywords']);
 
             if ($data['search_in'] == 'comments') {
                 // When searching in comments we do not want to search the entry title.
@@ -236,7 +237,7 @@ class Search_model extends CI_Model
                     // LIKE clauses to account for titles that have punctuation
                     // in them that sanitize_search_terms() stripped out
                     $keyword_clauses = array();
-                    preg_match_all('/(?<!")\b\w+\b|(?<=")\b[^"]+/', $data['search_keywords'], $keywords, PREG_PATTERN_ORDER);
+                    preg_match_all('/(?<!")\b\w+\b|(?<=")\b[^"]+/', (string) $data['search_keywords'], $keywords, PREG_PATTERN_ORDER);
                     for ($i = 0; $i < count($keywords[0]); $i++) {
                         $keyword_clauses[] = " exp_channel_titles.title LIKE '%" . $this->db->escape_like_str($keywords[0][$i]) . "%' ";
                     }
@@ -268,11 +269,11 @@ class Search_model extends CI_Model
             }
 
             if ($data['search_in'] == 'everywhere' or $data['search_in'] == 'comments') {
-                if ($data['search_in'] == 'comments' && (substr(strtolower($data['search_keywords']), 0, 3) == 'ip:' or substr(strtolower($data['search_keywords']), 0, 4) == 'mid:')) {
-                    if (substr(strtolower($data['search_keywords']), 0, 3) == 'ip:') {
-                        $where_clause .= " OR (exp_comments.ip_address = '" . $this->db->escape_str(str_replace('_', '.', substr($data['search_keywords'], 3))) . "') ";
-                    } elseif (substr(strtolower($data['search_keywords']), 0, 4) == 'mid:') {
-                        $where_clause .= " OR (exp_comments.author_id = '" . $this->db->escape_str(substr($data['search_keywords'], 4)) . "') ";
+                if ($data['search_in'] == 'comments' && (substr(strtolower((string) $data['search_keywords']), 0, 3) == 'ip:' or substr(strtolower((string) $data['search_keywords']), 0, 4) == 'mid:')) {
+                    if (substr(strtolower((string) $data['search_keywords']), 0, 3) == 'ip:') {
+                        $where_clause .= " OR (exp_comments.ip_address = '" . $this->db->escape_str(str_replace('_', '.', substr((string) $data['search_keywords'], 3))) . "') ";
+                    } elseif (substr(strtolower((string) $data['search_keywords']), 0, 4) == 'mid:') {
+                        $where_clause .= " OR (exp_comments.author_id = '" . $this->db->escape_str(substr((string) $data['search_keywords'], 4)) . "') ";
                     }
                 } else {
                     $where_clause .= " OR (exp_comments.comment LIKE '%" . $this->db->escape_like_str($data['keywords']) . "%') "; // No ASCII conversion here!
@@ -295,19 +296,19 @@ class Search_model extends CI_Model
 
         if ($data['date_range']) {
             //  Is a single number
-            if (ctype_digit($data['date_range'])) {
+            if (ctype_digit((string) $data['date_range'])) {
                 $date_range = time() - ($data['date_range'] * 60 * 60 * 24);
                 $where_clause .= " AND exp_channel_titles.entry_date > $date_range";
 
                 $pageurl .= AMP . 'date_range=' . $data['date_range'];
-            } elseif (strpos($data['date_range'], 'to') !== false) {
+            } elseif (strpos((string) $data['date_range'], 'to') !== false) {
                 // Custom range
-                $ranges = explode('to', $data['date_range']);
+                $ranges = explode('to', (string) $data['date_range']);
 
                 $start = $this->localize->string_to_timestamp(trim($ranges[0]) . ' 00:00');
                 $end = $this->localize->string_to_timestamp(trim($ranges[1]) . ' 23:59');
 
-                if (ctype_digit($start) && ctype_digit($end)) {
+                if (ctype_digit((string) $start) && ctype_digit((string) $end)) {
                     $where_clause .= "AND exp_channel_titles.entry_date >= '" . $start . "' ";
                     $where_clause .= "AND exp_channel_titles.entry_date <=  '" . $end . "' ";
                     $pageurl .= AMP . 'date_range=' . $data['date_range'];
@@ -347,13 +348,13 @@ class Search_model extends CI_Model
                     $func = 'where_in';
 
                     // allow for where_not_in
-                    if (strpos($field, '!=') !== false) {
+                    if (strpos((string) $field, '!=') !== false) {
                         $field = str_replace('!=', '', $field);
                         $func = 'where_not_in';
                     }
                 }
 
-                $this->db->$func(trim($field), $value);
+                $this->db->$func(trim((string) $field), $value);
             }
         }
 

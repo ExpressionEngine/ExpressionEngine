@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -259,7 +260,7 @@ class Consents extends Settings
                     'view' => [
                         'href' => '',
                         'rel' => 'modal-consent-request-' . $version->getId(),
-                        'title' => strtolower(lang('view')),
+                        'title' => strtolower((string) lang('view')),
                         'class' => 'js-modal-link'
                     ]
                 ]

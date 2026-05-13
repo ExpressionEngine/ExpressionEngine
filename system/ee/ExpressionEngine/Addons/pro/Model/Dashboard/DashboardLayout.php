@@ -50,7 +50,7 @@ class DashboardLayout extends Core\DashboardLayout
         }
 
         $widgets = $this->DashboardWidgets;
-        $order = explode('|', $this->order);
+        $order = explode('|', (string) $this->order);
 
         //is this a real saved layout? if not, display all available widgets
         if (!$edit_mode && empty($this->layout_id)) {

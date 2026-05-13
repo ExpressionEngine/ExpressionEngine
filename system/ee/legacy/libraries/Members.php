@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -43,30 +44,30 @@ class Members
 
         switch ($type) {
             case 'avatar':
-                                $edit_image = 'edit_avatar';
-                                $enable_pref = '';
-                                $not_enabled = '';
-                                $remove = 'remove_avatar';
-                                $removed = 'avatar_removed';
-                                $updated = 'avatar_updated';
+                $edit_image = 'edit_avatar';
+                $enable_pref = '';
+                $not_enabled = '';
+                $remove = 'remove_avatar';
+                $removed = 'avatar_removed';
+                $updated = 'avatar_updated';
 
                 break;
             case 'photo':
-                                $edit_image = 'edit_photo';
-                                $enable_pref = 'enable_photos';
-                                $not_enabled = 'photos_not_enabled';
-                                $remove = 'remove_photo';
-                                $removed = 'photo_removed';
-                                $updated = 'photo_updated';
+                $edit_image = 'edit_photo';
+                $enable_pref = 'enable_photos';
+                $not_enabled = 'photos_not_enabled';
+                $remove = 'remove_photo';
+                $removed = 'photo_removed';
+                $updated = 'photo_updated';
 
                 break;
             case 'sig_img':
-                                $edit_image = 'edit_signature';
-                                $enable_pref = 'sig_allow_img_upload';
-                                $not_enabled = 'sig_img_not_enabled';
-                                $remove = 'remove_sig_image';
-                                $removed = 'sig_img_removed';
-                                $updated = 'signature_updated';
+                $edit_image = 'edit_signature';
+                $enable_pref = 'sig_allow_img_upload';
+                $not_enabled = 'sig_img_not_enabled';
+                $remove = 'remove_sig_image';
+                $removed = 'sig_img_removed';
+                $updated = 'signature_updated';
 
                 break;
         }
@@ -96,7 +97,7 @@ class Members
                 $member->set(array('avatar_filename' => '', 'avatar_width' => null, 'avatar_height' => null));
                 $member->save();
 
-                if (strncmp($member->avatar_filename, 'default/', 8) !== 0) {
+                if (strncmp((string) $member->avatar_filename, 'default/', 8) !== 0) {
                     @unlink(ee()->config->slash_item('avatar_path') . $member->avatar_filename);
                 }
             } elseif ($type == 'photo') {
@@ -173,7 +174,7 @@ class Members
             $max_size = (ee()->config->item('sig_img_max_kb') == '' or ee()->config->item('sig_img_max_kb') == 0) ? 50 : ee()->config->item('sig_img_max_kb');
         }
 
-        $max_size = preg_replace("/(\D+)/", "", $max_size);
+        $max_size = preg_replace("/(\D+)/", "", (string) $max_size);
 
         if ($size > $max_size) {
             if (REQ == 'CP') {
@@ -225,7 +226,7 @@ class Members
         }
 
         // Does the image have a file extension?
-        if (strpos($filename, '.') === false) {
+        if (strpos((string) $filename, '.') === false) {
             if (REQ == 'CP') {
                 show_error(lang('invalid_image_type'));
             }
@@ -235,7 +236,7 @@ class Members
 
         // Is it an allowed image type?
 
-        $x = explode('.', $filename);
+        $x = explode('.', (string) $filename);
         $extension = '.' . end($x);
 
         // We'll do a simple extension check now.
@@ -266,8 +267,8 @@ class Members
         if ($type == 'avatar') {
             $old_filename = $member->avatar_filename;
 
-            if (strpos($old_filename, '/') !== false) {
-                $x = explode('/', $old_filename);
+            if (strpos((string) $old_filename, '/') !== false) {
+                $x = explode('/', (string) $old_filename);
                 $old_filename = end($x);
             }
         } elseif ($type == 'photo') {
@@ -429,8 +430,8 @@ class Members
 
                 foreach ($query->result_array() as $row) {
                     // Can have duplicate zeros for comment date- so combine with subscription date
-                    $date_key = str_pad($row['recent_comment_date'], 14, '0', STR_PAD_LEFT) .
-                        str_pad($row['subscription_date'], 14, '0', STR_PAD_LEFT) .
+                    $date_key = str_pad((string) $row['recent_comment_date'], 14, '0', STR_PAD_LEFT) .
+                        str_pad((string) $row['subscription_date'], 14, '0', STR_PAD_LEFT) .
                         'b';
 
                     $result_ids[$date_key] = $row['entry_id'];
@@ -454,8 +455,8 @@ class Members
                 $forum_subscriptions = true;
 
                 foreach ($query->result_array() as $row) {
-                    $date_key = str_pad($row['last_post_date'], 14, '0', STR_PAD_LEFT) .
-                        str_pad($row['subscription_date'], 14, '0', STR_PAD_LEFT) .
+                    $date_key = str_pad((string) $row['last_post_date'], 14, '0', STR_PAD_LEFT) .
+                        str_pad((string) $row['subscription_date'], 14, '0', STR_PAD_LEFT) .
                         'f';
 
                     $result_ids[$date_key] = $row['topic_id'];

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -619,7 +620,7 @@ class Api_channel_entries extends Api
         }
 
         foreach ($dates as $date) {
-            if (! is_numeric($data[$date]) && trim($data[$date])) {
+            if (! is_numeric($data[$date]) && trim((string) $data[$date])) {
                 $data[$date] = ee()->localize->string_to_timestamp($data[$date], true, ee()->localize->get_date_format());
             }
 
@@ -728,7 +729,7 @@ class Api_channel_entries extends Api
                 }
             }
 
-            if (! in_array(strtolower($data['status']), $allowed_statuses)) {
+            if (! in_array(strtolower((string) $data['status']), $allowed_statuses)) {
                 // if there are no valid statuses, set to closed
                 $data['status'] = 'closed';
             }
@@ -746,7 +747,7 @@ class Api_channel_entries extends Api
      */
     public function _validate_url_title($url_title = '', $title = '', $update = false)
     {
-        if (! trim($url_title)) {
+        if (! trim((string) $url_title)) {
             $url_title = $title;
         }
 
@@ -771,7 +772,7 @@ class Api_channel_entries extends Api
 
         // It also cannot be empty
 
-        if (! trim($url_title)) {
+        if (! trim((string) $url_title)) {
             $this->_set_error('unable_to_create_url_title', 'url_title');
         }
 
@@ -995,14 +996,14 @@ class Api_channel_entries extends Api
         $cust_fields = array('entry_id' => $this->entry_id, 'channel_id' => $this->channel_id, 'site_id' => ee()->config->item('site_id'));
 
         foreach ($data as $key => $val) {
-            if (strncmp($key, 'field_offset_', 13) == 0) {
+            if (strncmp((string) $key, 'field_offset_', 13) == 0) {
                 unset($data[$key]);
 
                 continue;
             }
 
-            if (strncmp($key, 'field', 5) == 0) {
-                if (strncmp($key, 'field_id_', 9) == 0 && ! is_numeric($val)) {
+            if (strncmp((string) $key, 'field', 5) == 0) {
+                if (strncmp((string) $key, 'field_id_', 9) == 0 && ! is_numeric($val)) {
                     if (ee()->config->item('auto_convert_high_ascii') == 'y') {
                         $cust_fields[$key] = (is_array($val)) ? $this->_recursive_ascii_to_entities($val) : $val;
                     } else {
@@ -1020,7 +1021,7 @@ class Api_channel_entries extends Api
         $all_fields = ee()->db->field_data('channel_data');
 
         foreach ($all_fields as $field) {
-            if (strncmp($field->name, 'field_id_', 9) == 0) {
+            if (strncmp((string) $field->name, 'field_id_', 9) == 0) {
                 if ($field->type == 'text' or $field->type == 'blob') {
                     if (! isset($cust_fields[$field->name]) or is_null($cust_fields[$field->name])) {
                         $cust_fields[$field->name] = '';
@@ -1108,14 +1109,14 @@ class Api_channel_entries extends Api
         $cust_fields = array('channel_id' => $this->channel_id);
 
         foreach ($data as $key => $val) {
-            if (strncmp($key, 'field_offset_', 13) == 0) {
+            if (strncmp((string) $key, 'field_offset_', 13) == 0) {
                 unset($data[$key]);
 
                 continue;
             }
 
-            if (strncmp($key, 'field', 5) == 0) {
-                if (strncmp($key, 'field_id_', 9) == 0 && ! is_numeric($val)) {
+            if (strncmp((string) $key, 'field', 5) == 0) {
+                if (strncmp((string) $key, 'field_id_', 9) == 0 && ! is_numeric($val)) {
                     if (ee()->config->item('auto_convert_high_ascii') == 'y') {
                         $cust_fields[$key] = (is_array($val)) ? $this->_recursive_ascii_to_entities($val) : $val;
                     } else {
@@ -1156,7 +1157,7 @@ class Api_channel_entries extends Api
                 $all_fields = ee()->db->field_data('channel_data');
 
                 foreach ($all_fields as $field) {
-                    if (strncmp($field->name, 'field_id_', 9) == 0) {
+                    if (strncmp((string) $field->name, 'field_id_', 9) == 0) {
                         if ($field->type == 'text' or $field->type == 'blob') {
                             if (! isset($cust_fields[$field->name]) or is_null($cust_fields[$field->name])) {
                                 $cust_fields[$field->name] = '';

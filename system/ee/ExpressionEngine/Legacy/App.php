@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -151,7 +152,7 @@ class App
         $class = $routing['class'];
         $method = $routing['method'];
 
-        if (class_exists($class) && strncmp($method, '_', 1) != 0) {
+        if (class_exists($class) && strncmp((string) $method, '_', 1) != 0) {
             $controller_methods = array_map(
                 'strtolower',
                 get_class_methods($class)
@@ -166,7 +167,7 @@ class App
                 return $routing;
             }
 
-            if (in_array(strtolower($method), $controller_methods)
+            if (in_array(strtolower((string) $method), $controller_methods)
                 || method_exists($class, '__call')) {
                 return $routing;
             }

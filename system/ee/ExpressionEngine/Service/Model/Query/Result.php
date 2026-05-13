@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -216,7 +217,7 @@ class Result
         $columns = array();
 
         foreach (array_keys($row) as $column) {
-            list($alias, $property) = explode('__', $column);
+            list($alias, $property) = explode('__', (string) $column);
 
             if (! array_key_exists($alias, $columns)) {
                 $columns[$alias] = array();

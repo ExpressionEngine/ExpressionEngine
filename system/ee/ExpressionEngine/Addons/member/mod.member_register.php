@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -30,7 +31,7 @@ class Member_register extends Member
                 'content' => lang('mbr_registration_not_allowed'),
                 'link' => array(
                     ee()->functions->fetch_site_index(),
-                    stripslashes(ee()->config->item('site_name'))
+                    stripslashes((string) ee()->config->item('site_name'))
                 )
             );
 
@@ -38,7 +39,7 @@ class Member_register extends Member
         }
 
         // Fetch the registration form
-        $tagdata = trim(ee()->TMPL->tagdata);
+        $tagdata = trim((string) ee()->TMPL->tagdata);
 
         $reg_form = '';
         if (! empty($tagdata)) {
@@ -61,14 +62,14 @@ class Member_register extends Member
 
         // If not, we'll kill the custom field variables from the template
         if ($query->num_rows() == 0) {
-            $reg_form = preg_replace("/{custom_fields}.*?{\/custom_fields}/s", "", $reg_form);
+            $reg_form = preg_replace("/{custom_fields}.*?{\/custom_fields}/s", "", (string) $reg_form);
         } else {
             // Parse custom field data
 
             // First separate the chunk between the {custom_fields} variable pairs.
             $field_chunk = (preg_match(
                 "/{custom_fields}(.*?){\/custom_fields}/s",
-                $reg_form,
+                (string) $reg_form,
                 $match
             )) ? $match['1'] : '';
 
@@ -106,7 +107,7 @@ class Member_register extends Member
                     $field = $field->getForm();
 
                     $temp = ee()->functions->prep_conditionals($temp, [
-                        'has_error' => !empty($field) && !empty(ee()->session->flashdata('errors')['error:'. $fieldShortname] ?? '')
+                        'has_error' => !empty($field) && !empty(ee()->session->flashdata('errors')['error:' . $fieldShortname] ?? '')
                     ]);
 
                     if (! empty($tagdata)) {
@@ -118,7 +119,7 @@ class Member_register extends Member
                             'required' => get_bool_from_string($row['m_field_required']),
                             'field' => $field,
                             'form:custom_profile_field' => $field,
-                            'error' => ee()->session->flashdata('errors')['error:'. $fieldShortname] ?? '',
+                            'error' => ee()->session->flashdata('errors')['error:' . $fieldShortname] ?? '',
                         ];
 
                         $fields[$fieldShortname] = $field_vars;
@@ -147,12 +148,12 @@ class Member_register extends Member
                 // the two choices are to escape them and use preg_replace() or to
                 // match the pattern and use str_replace().  This way happens
                 // to be faster in this case.
-                if (preg_match("/" . LD . "custom_fields" . RD . ".*?" . LD . "\/custom_fields" . RD . "/s", $reg_form, $match)) {
+                if (preg_match("/" . LD . "custom_fields" . RD . ".*?" . LD . "\/custom_fields" . RD . "/s", (string) $reg_form, $match)) {
                     $reg_form = str_replace($match[0], $str, $reg_form);
                 }
             }
 
-            if (strpos($reg_form, LD . 'field:') !== false) {
+            if (strpos((string) $reg_form, LD . 'field:') !== false) {
                 foreach ($member_fields as $field) {
                     if ($field->m_field_reg === 'y') {
                         $formField = $field->getField();
@@ -164,22 +165,22 @@ class Member_register extends Member
         }
 
         // {if captcha}
-        if (preg_match("/{if captcha}(.+?){\/if}/s", $reg_form, $match)) {
+        if (preg_match("/{if captcha}(.+?){\/if}/s", (string) $reg_form, $match)) {
             if (ee('Captcha')->shouldRequireCaptcha()) {
                 if (ee()->config->item('use_recaptcha') == 'y') {
-                    $reg_form = preg_replace("/{if captcha}.+?{\/if}/s", ee('Captcha')->create(), $reg_form);
+                    $reg_form = preg_replace("/{if captcha}.+?{\/if}/s", (string) ee('Captcha')->create(), (string) $reg_form);
                 } else {
-                    $reg_form = preg_replace("/{if captcha}.+?{\/if}/s", $match['1'], $reg_form);
+                    $reg_form = preg_replace("/{if captcha}.+?{\/if}/s", $match['1'], (string) $reg_form);
 
                     // Bug fix.  Deprecate this later..
                     $reg_form = str_replace('{captcha_word}', '', $reg_form);
 
                     if (! class_exists('Template')) {
-                        $reg_form = preg_replace("/{captcha}/", ee('Captcha')->create(), $reg_form);
+                        $reg_form = preg_replace("/{captcha}/", (string) ee('Captcha')->create(), $reg_form);
                     }
                 }
             } else {
-                $reg_form = preg_replace("/{if captcha}.+?{\/if}/s", "", $reg_form);
+                $reg_form = preg_replace("/{if captcha}.+?{\/if}/s", "", (string) $reg_form);
             }
         }
 
@@ -225,7 +226,7 @@ class Member_register extends Member
         );
 
         // Convert to standard inline_errors parameter
-        if(ee()->TMPL->fetch_param('error_handling') == 'inline') {
+        if (ee()->TMPL->fetch_param('error_handling') == 'inline') {
             ee()->TMPL->tagparams['inline_errors'] = 'yes';
         }
 
@@ -241,7 +242,7 @@ class Member_register extends Member
             ]),
         );
 
-        $data['class'] = (get_bool_from_string(ee()->TMPL->fetch_param('include_assets', 'n') || strpos($reg_form, LD . 'form_assets' . RD) !== false) ? 'ee-cform ' : '');
+        $data['class'] = (get_bool_from_string(ee()->TMPL->fetch_param('include_assets', 'n') || strpos((string) $reg_form, LD . 'form_assets' . RD) !== false) ? 'ee-cform ' : '');
         $data['class'] .= ee()->TMPL->form_class;
 
         if ($this->in_forum === true) {
@@ -259,7 +260,7 @@ class Member_register extends Member
         $close = '</form>';
 
         //make head appear by default
-        if (strpos($reg_form, LD . 'form_assets' . RD) !== false) {
+        if (strpos((string) $reg_form, LD . 'form_assets' . RD) !== false) {
             $reg_form = ee()->TMPL->swap_var_single('form_assets', ee()->channel_form_lib->head, $reg_form);
         } elseif (get_bool_from_string(ee()->TMPL->fetch_param('include_assets'), 'n')) {
             // Head should only be there if the param is there
@@ -357,11 +358,12 @@ class Member_register extends Member
 
         // Setup Custom Member Field Data
         $fields = ee('Model')->get('MemberField')->filter('m_field_reg', 'y')->all()->indexBy('m_field_id');
-        $custom_data = array_reduce($fields, function($carry, $field) {
+        $custom_data = array_reduce($fields, function ($carry, $field) {
             $field_name = 'm_field_id_' . $field->m_field_id;
-            if(isset($_POST[$field_name]) && $_POST[$field_name] != '') {
+            if (isset($_POST[$field_name]) && $_POST[$field_name] != '') {
                 $carry[$field_name] = ee('Security/XSS')->clean(ee('Request')->post($field_name));
             }
+
             return $carry;
         }, []);
 
@@ -462,32 +464,36 @@ class Member_register extends Member
         // Validate Captcha
         if (ee('Captcha')->shouldRequireCaptcha()) {
             $validator->defineRule('requireTermsOfService', function ($key, $value, $params, $rule) {
-                if(empty($value)) {
+                if (empty($value)) {
                     $rule->stop();
+
                     return ee()->config->item('use_recaptcha') == 'y' ? 'recaptcha_required' : 'captcha_required';
                 }
+
                 return true;
             });
             $validator->setRule('captcha', 'requireTermsOfService');
         }
 
         // Validate Terms of Service
-        if(ee()->config->item('require_terms_of_service') == 'y') {
+        if (ee()->config->item('require_terms_of_service') == 'y') {
             $validator->defineRule('requireTermsOfService', function ($key, $value, $params, $rule) {
-                if(empty($value)) {
+                if (empty($value)) {
                     $rule->stop();
+
                     return 'mbr_terms_of_service_required';
                 }
+
                 return true;
             });
             $validator->setRule('accept_terms', 'requireTermsOfService');
         }
 
         // Custom Member field validation
-        foreach($fields as $field) {
+        foreach ($fields as $field) {
             $field_name = 'm_field_id_' . $field->m_field_id;
-            if(array_key_exists($field_name, $custom_data)) {
-                $validator->defineRule("validate_$field_name", function ($key, $value, $params, $rule) use($field, $custom_data, $field_name) {
+            if (array_key_exists($field_name, $custom_data)) {
+                $validator->defineRule("validate_$field_name", function ($key, $value, $params, $rule) use ($field, $custom_data, $field_name) {
                     return $field->getField()->validate($custom_data[$field_name]);
                 });
                 $validator->setRule($field_name, "validate_$field_name");
@@ -506,7 +512,7 @@ class Member_register extends Member
         }
 
         if ($result->failed()) {
-            $aliases = array_reduce($member->getDisplay()->getFields(), function($carry, $field) {
+            $aliases = array_reduce($member->getDisplay()->getFields(), function ($carry, $field) {
                 return array_merge($carry, [
                     $field->getName() => [
                         'field' => $field->getShortName(),
@@ -532,6 +538,7 @@ class Member_register extends Member
 
             if ($query->row('count') == 0) {
                 $captcha_error = ee()->config->item('use_recaptcha') == 'y' ? ee()->lang->line('recaptcha_required') : ee()->lang->line('captcha_incorrect');
+
                 return ee()->output->show_user_error('submission', array($captcha_error), '', $return_error_link);
             }
 
@@ -556,7 +563,7 @@ class Member_register extends Member
 
             $swap = array(
                 'name' => $name,
-                'site_name' => stripslashes(ee()->config->item('site_name')),
+                'site_name' => stripslashes((string) ee()->config->item('site_name')),
                 'control_panel_url' => ee()->config->item('cp_url'),
                 'username' => $data['username'],
                 'email' => $data['email']
@@ -607,7 +614,7 @@ class Member_register extends Member
             $swap = array(
                 'name' => $name,
                 'activation_url' => ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id . '&id=' . $data['authcode'] . $forum_id,
-                'site_name' => stripslashes(ee()->config->item('site_name')),
+                'site_name' => stripslashes((string) ee()->config->item('site_name')),
                 'site_url' => ee()->config->item('site_url'),
                 'username' => $data['username'],
                 'email' => $data['email']
@@ -644,7 +651,7 @@ class Member_register extends Member
             $site_name = $query->row('board_label') ;
             $return = parse_config_variables($query->row('board_forum_url'));
         } else {
-            $site_name = (ee()->config->item('site_name') == '') ? lang('back') : stripslashes(ee()->config->item('site_name'));
+            $site_name = (ee()->config->item('site_name') == '') ? lang('back') : stripslashes((string) ee()->config->item('site_name'));
             $return = ee()->config->item('site_url');
         }
 
@@ -730,7 +737,7 @@ class Member_register extends Member
             $return = parse_config_variables($query->row('board_forum_url'));
         } else {
             $return = ee()->functions->fetch_site_index();
-            $site_name = (ee()->config->item('site_name') == '') ? lang('back') : stripslashes(ee()->config->item('site_name'));
+            $site_name = (ee()->config->item('site_name') == '') ? lang('back') : stripslashes((string) ee()->config->item('site_name'));
         }
 
         // No ID?  Tisk tisk...

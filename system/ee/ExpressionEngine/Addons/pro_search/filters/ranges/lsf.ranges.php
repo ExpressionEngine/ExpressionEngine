@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -7,7 +8,6 @@
  * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -93,7 +93,7 @@ class Pro_search_filter_ranges extends Pro_search_filter
             $param = $key;
 
             // Split key into prefix and the rest of the key
-            list($pfx, $key) = explode(':', $key, 2);
+            list($pfx, $key) = explode(':', (string) $key, 2);
 
             // If key has a colon, it could be grid/matrix OR reverse range
             if (strpos($key, ':')) {
@@ -214,7 +214,7 @@ class Pro_search_filter_ranges extends Pro_search_filter
     private function _add_range($param, $val, $table, $col)
     {
         // Get prefix from param
-        list($pfx, $field) = explode(':', $param, 2);
+        list($pfx, $field) = explode(':', (string) $param, 2);
 
         // Are we excluding this parameter
         $exclude = $this->params->in_param($param, 'exclude');
@@ -236,10 +236,10 @@ class Pro_search_filter_ranges extends Pro_search_filter
         } else {
             // Range
             // Fallback to semi-colon for backward compatibility
-            $char = (strpos($val, ';') !== false) ? ';' : $this->_sep;
+            $char = (strpos((string) $val, ';') !== false) ? ';' : $this->_sep;
 
             // Set from/to vals or point val based on separator
-            foreach (explode($char, $val, 2) as $i => $v) {
+            foreach (explode($char, (string) $val, 2) as $i => $v) {
                 $v = $this->_validate_value($v, $field);
 
                 if (! is_null($v)) {
@@ -266,8 +266,8 @@ class Pro_search_filter_ranges extends Pro_search_filter
         }
 
         // Check field for colons
-        if ($i = strpos($field, ':')) {
-            $field = substr($field, 0, $i);
+        if ($i = strpos((string) $field, ':')) {
+            $field = substr((string) $field, 0, $i);
         }
 
         if ($this->fields->is_date($field) || $this->fields->is_grid($field) || $this->fields->is_matrix($field)) {

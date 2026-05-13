@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -117,7 +118,7 @@ class Routes extends AbstractDesignController
         static $new_route_index = 0;
         $row = array();
 
-        $group_field = ($route->Template) ? htmlentities($route->Template->TemplateGroup->group_name, ENT_QUOTES, 'UTF-8') : '';
+        $group_field = ($route->Template) ? htmlentities((string) $route->Template->TemplateGroup->group_name, ENT_QUOTES, 'UTF-8') : '';
         $new_route_index++;
 
         if ($route->isNew()) {
@@ -142,7 +143,7 @@ class Routes extends AbstractDesignController
             $row['attrs']['row_id'] = $route->Template->template_id;
             $id = 'row_id_' . $route->Template->template_id;
 
-            $template_field = htmlentities($route->Template->template_name, ENT_QUOTES, 'UTF-8');
+            $template_field = htmlentities((string) $route->Template->template_name, ENT_QUOTES, 'UTF-8');
         }
 
         $required = ee('View')->make('_shared/form/field')
@@ -213,16 +214,16 @@ class Routes extends AbstractDesignController
         $order = array_keys($submitted['rows']);
 
         foreach ($submitted['rows'] as $template_id => $data) {
-            $data['route'] = trim($data['route']);
+            $data['route'] = trim((string) $data['route']);
 
             // Let them delete and re-add the same route
             if (in_array($data['route'], $existing_routes->pluck('route')) &&
                 ! in_array($data['route'], $routes->pluck('route')) &&
-                strpos($template_id, 'new_') === 0) {
+                strpos((string) $template_id, 'new_') === 0) {
                 $route = $existing_routes->filter('route', $data['route'])->first();
             }
             // New route all together
-            elseif (strpos($template_id, 'new_') === 0) {
+            elseif (strpos((string) $template_id, 'new_') === 0) {
                 $route = ee('Model')->make('TemplateRoute');
                 $route->Template = ee('Model')->get('Template', $data['template_id'])
                     ->with('TemplateGroup')
@@ -327,7 +328,7 @@ class Routes extends AbstractDesignController
 
         if ($search_query) {
             $templates = $all_templates->all()->filter(function ($template) use ($search_query) {
-                return strpos(strtolower($template->getPath()), strtolower($search_query)) !== false;
+                return strpos(strtolower((string) $template->getPath()), strtolower((string) $search_query)) !== false;
             });
         } else {
             $templates = $all_templates->limit(100)->all();

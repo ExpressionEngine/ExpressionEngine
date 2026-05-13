@@ -140,23 +140,29 @@ class idna_convert
                         case 'ucs4_string':
                         case 'ucs4_array':
                             $this->_api_encoding = $v;
+
                             break;
                         default:
                             $this->_error('Set Parameter: Unknown parameter ' . $v . ' for option ' . $k);
+
                             return false;
                     }
+
                     break;
 
                 case 'overlong':
                     $this->_allow_overlong = ($v) ? true : false;
+
                     break;
 
                 case 'strict':
                     $this->_strict_mode = ($v) ? true : false;
+
                     break;
 
                 default:
                     $this->_error('Set Parameter: Unknown option ' . $k);
+
                     return false;
             }
         }
@@ -182,11 +188,12 @@ class idna_convert
                     break;
                 default:
                     $this->_error('Unknown encoding ' . $one_time_encoding);
+
                     return false;
             }
         }
         // Make sure to drop any newline characters around
-        $input = trim($input);
+        $input = trim((string) $input);
 
         // Negotiate input and try to determine, whether it is a plain string,
         // an email address or something like a complete URL
@@ -200,7 +207,7 @@ class idna_convert
             list($email_pref, $input) = explode('@', $input, 2);
             $arr = explode('.', $input);
             foreach ($arr as $k => $v) {
-                if (preg_match('!^' . preg_quote($this->_punycode_prefix, '!') . '!', $v)) {
+                if (preg_match('!^' . preg_quote((string) $this->_punycode_prefix, '!') . '!', $v)) {
                     $conv = $this->_decode($v);
                     if ($conv) {
                         $arr[$k] = $conv;
@@ -210,7 +217,7 @@ class idna_convert
             $input = join('.', $arr);
             $arr = explode('.', $email_pref);
             foreach ($arr as $k => $v) {
-                if (preg_match('!^' . preg_quote($this->_punycode_prefix, '!') . '!', $v)) {
+                if (preg_match('!^' . preg_quote((string) $this->_punycode_prefix, '!') . '!', $v)) {
                     $conv = $this->_decode($v);
                     if ($conv) {
                         $arr[$k] = $conv;
@@ -263,15 +270,19 @@ class idna_convert
         switch (($one_time_encoding) ? $one_time_encoding : $this->_api_encoding) {
             case 'utf8':
                 return $return;
+
                 break;
             case 'ucs4_string':
                 return $this->_ucs4_to_ucs4_string($this->_utf8_to_ucs4($return));
+
                 break;
             case 'ucs4_array':
                 return $this->_utf8_to_ucs4($return);
+
                 break;
             default:
                 $this->_error('Unsupported output format');
+
                 return false;
         }
     }
@@ -320,8 +331,8 @@ class idna_convert
                 case 0xFF61:
                     $decoded[$k] = 0x2E;
                     // Right, no break here, the above are converted to dots anyway
-                // Stumbling across an anchoring character
-                // no break
+                    // Stumbling across an anchoring character
+                    // no break
                 case 0x2E:
                 case 0x2F:
                 case 0x3A:
@@ -346,7 +357,7 @@ class idna_convert
                         }
                         $last_begin = $k + 1;
                     }
-                }
+            }
         }
         // Catch the rest of the string
         if ($last_begin) {
@@ -387,12 +398,12 @@ class idna_convert
     public function _decode($encoded)
     {
         // We do need to find the Punycode prefix
-        if (!preg_match('!^' . preg_quote($this->_punycode_prefix, '!') . '!', $encoded)) {
+        if (!preg_match('!^' . preg_quote((string) $this->_punycode_prefix, '!') . '!', (string) $encoded)) {
             $this->_error('This is not a punycode string');
 
             return false;
         }
-        $encode_test = preg_replace('!^' . preg_quote($this->_punycode_prefix, '!') . '!', '', $encoded);
+        $encode_test = preg_replace('!^' . preg_quote((string) $this->_punycode_prefix, '!') . '!', '', (string) $encoded);
         // If nothing left after removing the prefix, it is hopeless
         if (!$encode_test) {
             $this->_error('The given encoded string was empty');
@@ -400,16 +411,16 @@ class idna_convert
             return false;
         }
         // Find last occurence of the delimiter
-        $delim_pos = strrpos($encoded, '-');
-        if ($delim_pos > strlen($this->_punycode_prefix)) {
-            for ($k = strlen($this->_punycode_prefix); $k < $delim_pos; ++$k) {
+        $delim_pos = strrpos((string) $encoded, '-');
+        if ($delim_pos > strlen((string) $this->_punycode_prefix)) {
+            for ($k = strlen((string) $this->_punycode_prefix); $k < $delim_pos; ++$k) {
                 $decoded[] = ord($encoded[$k]);
             }
         } else {
             $decoded = array();
         }
         $deco_len = count($decoded);
-        $enco_len = strlen($encoded);
+        $enco_len = strlen((string) $encoded);
 
         // Wandering through the strings; init
         $is_first = true;
@@ -452,7 +463,7 @@ class idna_convert
     public function _encode($decoded)
     {
         // We cannot encode a domain name containing the Punycode prefix
-        $extract = strlen($this->_punycode_prefix);
+        $extract = strlen((string) $this->_punycode_prefix);
         $check_pref = $this->_utf8_to_ucs4($this->_punycode_prefix);
         $check_deco = array_slice($decoded, 0, $extract);
 
@@ -869,7 +880,7 @@ class idna_convert
     {
         $output = array();
         $out_len = 0;
-        $inp_len = strlen($input);
+        $inp_len = strlen((string) $input);
         $mode = 'next';
         $test = 'none';
         for ($k = 0; $k < $inp_len; ++$k) {
@@ -1008,7 +1019,7 @@ class idna_convert
     public function _ucs4_string_to_ucs4($input)
     {
         $output = array();
-        $inp_len = strlen($input);
+        $inp_len = strlen((string) $input);
         // Input length must be dividable by 4
         if ($inp_len % 4) {
             $this->_error('Input UCS4 string is broken');

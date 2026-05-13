@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SimplePie
  *
@@ -190,7 +191,7 @@ class SimplePie_Decode_HTML_Entities
                     static $windows_1252_specials = array(0x0D => "\x0A", 0x80 => "\xE2\x82\xAC", 0x81 => "\xEF\xBF\xBD", 0x82 => "\xE2\x80\x9A", 0x83 => "\xC6\x92", 0x84 => "\xE2\x80\x9E", 0x85 => "\xE2\x80\xA6", 0x86 => "\xE2\x80\xA0", 0x87 => "\xE2\x80\xA1", 0x88 => "\xCB\x86", 0x89 => "\xE2\x80\xB0", 0x8A => "\xC5\xA0", 0x8B => "\xE2\x80\xB9", 0x8C => "\xC5\x92", 0x8D => "\xEF\xBF\xBD", 0x8E => "\xC5\xBD", 0x8F => "\xEF\xBF\xBD", 0x90 => "\xEF\xBF\xBD", 0x91 => "\xE2\x80\x98", 0x92 => "\xE2\x80\x99", 0x93 => "\xE2\x80\x9C", 0x94 => "\xE2\x80\x9D", 0x95 => "\xE2\x80\xA2", 0x96 => "\xE2\x80\x93", 0x97 => "\xE2\x80\x94", 0x98 => "\xCB\x9C", 0x99 => "\xE2\x84\xA2", 0x9A => "\xC5\xA1", 0x9B => "\xE2\x80\xBA", 0x9C => "\xC5\x93", 0x9D => "\xEF\xBF\xBD", 0x9E => "\xC5\xBE", 0x9F => "\xC5\xB8");
 
                     if ($hex) {
-                        $codepoint = hexdec($codepoint);
+                        $codepoint = hexdec((string) $codepoint);
                     } else {
                         $codepoint = intval($codepoint);
                     }
@@ -207,7 +208,7 @@ class SimplePie_Decode_HTML_Entities
 
                     $consumed_length = strlen($this->consumed);
                     $this->data = substr_replace($this->data, $replacement, $this->position - $consumed_length, $consumed_length);
-                    $this->position += strlen($replacement) - $consumed_length;
+                    $this->position += strlen((string) $replacement) - $consumed_length;
                 }
 
                 break;
@@ -591,7 +592,7 @@ class SimplePie_Decode_HTML_Entities
 
                 if ($match !== null) {
                     $this->data = substr_replace($this->data, $entities[$match], $this->position - strlen($consumed) - 1, strlen($match) + 1);
-                    $this->position += strlen($entities[$match]) - strlen($consumed) - 1;
+                    $this->position += strlen((string) $entities[$match]) - strlen($consumed) - 1;
                 }
 
                 break;

@@ -81,24 +81,24 @@ class Structure_core_nav_parser
     {
         $vars_to_parse = array();
 
-        $prefix_length = strlen($prefix);
+        $prefix_length = strlen((string) $prefix);
 
         foreach (ee()->TMPL->var_single as $tag) {
-            if (strncmp($prefix, $tag, $prefix_length) !== 0) {
+            if (strncmp((string) $prefix, (string) $tag, $prefix_length) !== 0) {
                 continue;
             }
 
-            $space = strpos($tag, ' ');
+            $space = strpos((string) $tag, ' ');
 
             if ($space === false) {
                 $name = $tag;
                 $param_string = '';
             } else {
-                $name = substr($tag, 0, $space);
-                $param_string = substr($tag, $space + 1);
+                $name = substr((string) $tag, 0, $space);
+                $param_string = substr((string) $tag, $space + 1);
             }
 
-            $field_name = substr($name, $prefix_length);
+            $field_name = substr((string) $name, $prefix_length);
 
             $modifier = null;
 
@@ -125,25 +125,25 @@ class Structure_core_nav_parser
         }
 
         foreach (ee()->TMPL->var_pair as $tag => $params) {
-            if (strncmp($prefix, $tag, $prefix_length) !== 0) {
+            if (strncmp((string) $prefix, (string) $tag, $prefix_length) !== 0) {
                 continue;
             }
 
-            $space = strpos(' ', $tag);
+            $space = strpos(' ', (string) $tag);
 
             if ($space === false) {
                 $name = $tag;
             } else {
-                $name = substr($tag, 0, $space);
+                $name = substr((string) $tag, 0, $space);
             }
 
-            $field_name = substr($name, $prefix_length);
+            $field_name = substr((string) $name, $prefix_length);
 
             if (! isset($field_names[$field_name])) {
                 continue;
             }
 
-            if (preg_match_all('#{' . preg_quote($tag) . '}(.*?){/' . preg_quote($name) . '}#s', ee()->TMPL->tagdata, $matches)) {
+            if (preg_match_all('#{' . preg_quote((string) $tag) . '}(.*?){/' . preg_quote((string) $name) . '}#s', (string) ee()->TMPL->tagdata, $matches)) {
                 foreach ($matches[1] as $i => $tagdata) {
                     $replace = substr($matches[0][$i], 1, -1);
 
@@ -297,7 +297,7 @@ class Structure_core_nav_parser
         unset($variable_row['__prefix']);
 
         foreach ($row as $key => $value) {
-            if (preg_match('/^field_(id|ft|dt)_/', $key)) {
+            if (preg_match('/^field_(id|ft|dt)_/', (string) $key)) {
                 continue;
             }
 
@@ -376,7 +376,7 @@ class Structure_core_nav_parser
                     continue;
                 }
 
-                $field_settings = @unserialize(base64_decode($field['field_settings']));
+                $field_settings = @unserialize(base64_decode((string) $field['field_settings']));
 
                 if (is_array($field_settings)) {
                     $field_settings = array_merge($field_settings, $field);

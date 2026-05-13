@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -312,7 +313,7 @@ class Channels extends AbstractChannelsController
                     ee()->functions->redirect(
                         ee('CP/URL')->make('utilities/sync-conditional-fields/sync')
                             ->setQueryStringVariable('channel_id', $channel->getId())
-                            ->setQueryStringVariable('return', base64_encode($redirectUrl))
+                            ->setQueryStringVariable('return', base64_encode((string) $redirectUrl))
                             ->compile()
                     );
                 }
@@ -320,7 +321,7 @@ class Channels extends AbstractChannelsController
                 ee()->functions->redirect($redirectUrl);
             } else {
                 // Put cat_group back as an array
-                $_POST['cat_group'] = explode('|', $_POST['cat_group']);
+                $_POST['cat_group'] = explode('|', (string) $_POST['cat_group']);
 
                 $vars['errors'] = $result;
                 ee('CP/Alert')->makeInline('shared-form')
@@ -1617,7 +1618,7 @@ class Channels extends AbstractChannelsController
         } else {
             $role_ids = [];
             foreach ($roles as $value) {
-                if (strpos($value, 'role_id_') === 0) {
+                if (strpos((string) $value, 'role_id_') === 0) {
                     $role_ids[] = str_replace('role_id_', '', $value);
                 }
             }
@@ -1720,8 +1721,8 @@ class Channels extends AbstractChannelsController
                 continue;
             }
 
-            if (strpos($value, 'role_id_') !== 0) {
-                list($permission, $role_id) = explode(':role_id_', $value);
+            if (strpos((string) $value, 'role_id_') !== 0) {
+                list($permission, $role_id) = explode(':role_id_', (string) $value);
 
                 ee('Model')->make('Permission', [
                     'role_id' => $role_id,

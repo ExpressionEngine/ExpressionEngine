@@ -627,13 +627,13 @@ if (! function_exists('function_usable')) {
 if (! function_exists('hash_equals')) {
     function hash_equals($str1, $str2)
     {
-        if (strlen($str1) != strlen($str2)) {
+        if (strlen((string) $str1) != strlen((string) $str2)) {
             return false;
         } else {
             $res = $str1 ^ $str2;
             $ret = 0;
 
-            for ($i = strlen($res) - 1; $i >= 0; $i--) {
+            for ($i = strlen((string) $res) - 1; $i >= 0; $i--) {
                 $ret |= ord($res[$i]);
             }
 
@@ -708,9 +708,12 @@ if (!function_exists('array_key_first')) {
     }
 }
 
-if( !function_exists('array_key_last') ) {
-    function array_key_last(array $array) {
-        if( !empty($array) ) return key(array_slice($array, -1, 1, true));
+if (!function_exists('array_key_last')) {
+    function array_key_last(array $array)
+    {
+        if (!empty($array)) {
+            return key(array_slice($array, -1, 1, true));
+        }
     }
 }
 
@@ -730,8 +733,9 @@ if (!function_exists('tmpfile') && version_compare(PHP_VERSION, '8', '>=')) {
  * https://www.php.net/manual/en/function.str-contains.php
  */
 if (!function_exists('str_contains')) {
-    function str_contains($haystack, $needle) {
-        return $needle !== '' && mb_strpos($haystack, $needle) !== false;
+    function str_contains($haystack, $needle)
+    {
+        return $needle !== '' && mb_strpos((string) $haystack, (string) $needle) !== false;
     }
 }
 

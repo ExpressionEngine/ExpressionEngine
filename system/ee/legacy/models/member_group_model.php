@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -79,8 +80,8 @@ class Member_group_model extends CI_Model
         $data['module'] = array();
         $data['template'] = array();
         foreach ($post as $key => $val) {
-            if (substr($key, 0, strlen($form_site_id . '_channel_id_')) == $form_site_id . '_channel_id_') {
-                $channel_id = substr($key, strlen($form_site_id . '_channel_id_'));
+            if (substr((string) $key, 0, strlen($form_site_id . '_channel_id_')) == $form_site_id . '_channel_id_') {
+                $channel_id = substr((string) $key, strlen($form_site_id . '_channel_id_'));
                 if ($val == 'y') {
                     $data['channel'][$channel_id] = array(
                         'channel_id' => $channel_id,
@@ -89,8 +90,8 @@ class Member_group_model extends CI_Model
                 } else {
                     $data['channel'][$channel_id] = false;
                 }
-            } elseif (substr($key, 0, strlen('module_id_')) == 'module_id_') {
-                $module_id = substr($key, strlen('module_id_'));
+            } elseif (substr((string) $key, 0, strlen('module_id_')) == 'module_id_') {
+                $module_id = substr((string) $key, strlen('module_id_'));
                 if ($val == 'y') {
                     $data['module'][$module_id] = array(
                         'module_id' => $module_id,
@@ -99,8 +100,8 @@ class Member_group_model extends CI_Model
                 } else {
                     $data['module'][$module_id] = false;
                 }
-            } elseif (substr($key, 0, strlen($form_site_id . '_template_id_')) == $form_site_id . '_template_id_') {
-                $template_id = substr($key, strlen($form_site_id . '_template_id_'));
+            } elseif (substr((string) $key, 0, strlen($form_site_id . '_template_id_')) == $form_site_id . '_template_id_') {
+                $template_id = substr((string) $key, strlen($form_site_id . '_template_id_'));
                 if ($val == 'y') {
                     $data['template'][$template_id] = array(
                         'template_group_id' => $template_id,
@@ -109,8 +110,8 @@ class Member_group_model extends CI_Model
                 } else {
                     $data['template'][$template_id] = false;
                 }
-            } elseif (substr($key, 0, strlen($form_site_id . '_')) == $form_site_id . '_') {
-                $data[substr($key, strlen($form_site_id . '_'))] = $post[$key];
+            } elseif (substr((string) $key, 0, strlen($form_site_id . '_')) == $form_site_id . '_') {
+                $data[substr((string) $key, strlen($form_site_id . '_'))] = $post[$key];
             } else {
                 continue;
             }
@@ -164,7 +165,7 @@ class Member_group_model extends CI_Model
         }
 
         foreach ($query->result_array() as $row) {
-            $can_do = explode('|', rtrim($row[$field], '|'));
+            $can_do = explode('|', rtrim((string) $row[$field], '|'));
 
             if ($allow === true) {
                 if (is_numeric($clone_id)) {

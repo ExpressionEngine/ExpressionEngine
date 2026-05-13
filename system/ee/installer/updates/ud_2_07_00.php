@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -163,7 +164,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
         foreach ($query->result_array() as $row) {
             $conf = $row['site_system_preferences'];
-            $data = unserialize(base64_decode($conf));
+            $data = unserialize(base64_decode((string) $conf));
 
             if (isset($data['server_timezone'])) {
                 if (! isset($data['default_site_timezone']) ||
@@ -446,8 +447,8 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
         foreach ($templates as $template) {
             // If there aren't any old tags, then we don't need to continue.
-            if (strpos($template->template_data, LD . 'exp:channel:entry_form') === false
-                && strpos($template->template_data, LD . 'exp:safecracker') === false) {
+            if (strpos((string) $template->template_data, LD . 'exp:channel:entry_form') === false
+                && strpos((string) $template->template_data, LD . 'exp:safecracker') === false) {
                 continue;
             }
 
@@ -520,7 +521,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
             foreach ($sc_fields as &$field) {
                 $field['field_type'] = 'file';
 
-                $settings = unserialize(base64_decode($field['field_settings']));
+                $settings = unserialize(base64_decode((string) $field['field_settings']));
 
                 if (! $settings) {
                     $settings = array();
@@ -698,8 +699,8 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
         foreach ($snippets as $snippet) {
             // If there aren't any related entries tags, then we don't need to continue.
-            if (strpos($snippet->snippet_contents, 'related_entries') === false
-                && strpos($snippet->snippet_contents, 'reverse_related_entries') === false) {
+            if (strpos((string) $snippet->snippet_contents, 'related_entries') === false
+                && strpos((string) $snippet->snippet_contents, 'reverse_related_entries') === false) {
                 continue;
             }
 
@@ -792,7 +793,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
      */
     protected function _text_field_check($data)
     {
-        $settings = unserialize(base64_decode($data));
+        $settings = unserialize(base64_decode((string) $data));
 
         $is_text = true;
 
@@ -930,7 +931,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
             foreach ($data as &$row) {
                 foreach ($row as &$column) {
                     if (! empty($column)) {
-                        $column = htmlspecialchars_decode($column, ENT_QUOTES);
+                        $column = htmlspecialchars_decode((string) $column, ENT_QUOTES);
                     }
                 }
             }

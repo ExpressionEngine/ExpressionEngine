@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -41,7 +42,7 @@ class Ban extends Settings
             $value = ee()->config->item($item);
 
             if ($value != '') {
-                foreach (explode('|', $value) as $line) {
+                foreach (explode('|', (string) $value) as $line) {
                     $values[$item] .= $line . NL;
                 }
             }
@@ -163,7 +164,7 @@ class Ban extends Settings
 
             foreach (array_keys($values) as $item) {
                 $value = ee('Request')->post($item);
-                $value = implode('|', explode(NL, $value));
+                $value = implode('|', explode(NL, (string) $value));
                 $prefs[$item] = $value;
             }
 

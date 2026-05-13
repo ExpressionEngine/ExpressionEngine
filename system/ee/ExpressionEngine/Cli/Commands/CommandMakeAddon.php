@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -122,7 +123,7 @@ class CommandMakeAddon extends Cli
         }
 
         // Lets filter the name to only allow alphanumerics, "-", "_" and spaces
-        $name = preg_replace("/[^A-Za-z0-9 \-_]/", '', $name);
+        $name = preg_replace("/[^A-Za-z0-9 \-_]/", '', (string) $name);
 
         if (empty(trim($name))) {
             $this->fail('command_make_addon_addon_name_required');

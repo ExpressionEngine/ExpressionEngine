@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -256,7 +257,7 @@ class MemberImport extends Utilities
         $group_name = ' -- ';
 
         if (! empty($role)) {
-            $group_name = htmlentities($role->name, ENT_QUOTES, 'UTF-8');
+            $group_name = htmlentities((string) $role->name, ENT_QUOTES, 'UTF-8');
         }
 
         $this->xml_file_name = (! empty($this->xml_file_name)) ? $this->xml_file_name : ee('Encrypt')->decode(ee()->input->post('xml_file_name'));
@@ -280,7 +281,7 @@ class MemberImport extends Utilities
             'added_fields' => $added_fields,
             'xml_file_name' => $data['xml_file_name'],
             'default_role_id' => $group_name,
-            'language' => ($data['language'] == '') ? lang('none') : ucfirst($data['language']),
+            'language' => ($data['language'] == '') ? lang('none') : ucfirst((string) $data['language']),
             'timezones' => $data['timezones'],
             'date_format' => lang($localization_cfg['date_format'][1][$data['date_format']]),
             'time_format' => lang($localization_cfg['time_format'][1][$data['time_format']]),
@@ -488,7 +489,7 @@ class MemberImport extends Utilities
 
                                 break;
                             case 'email':
-                                $value = htmlspecialchars($tag->value);
+                                $value = htmlspecialchars((string) $tag->value);
                                 if (! in_array($value, $e)) {
                                     $e[] = $value;
                                 } else {
@@ -506,7 +507,7 @@ class MemberImport extends Utilities
 
                                 break;
                             case 'avatar_filename':
-                                if (strlen($tag->value) > 120) {
+                                if (strlen((string) $tag->value) > 120) {
                                     $errors[] = array(str_replace("%x", $tag->value, lang('invalid_avatar_filename')));
                                 }
 
@@ -615,7 +616,7 @@ class MemberImport extends Utilities
 
         //  Set our optional default values
         $this->default_fields['role_id'] = ee()->input->post('role_id');
-        $this->default_fields['language'] = (ee()->input->post('language') == lang('none') or ee()->input->post('language') == '') ? 'english' : strtolower(ee()->input->post('language'));
+        $this->default_fields['language'] = (ee()->input->post('language') == lang('none') or ee()->input->post('language') == '') ? 'english' : strtolower((string) ee()->input->post('language'));
         $this->default_fields['timezone'] = ee()->input->post('timezones') ?: null;
         $this->default_fields['date_format'] = ee()->input->post('date_format') ?: null;
         $this->default_fields['time_format'] = ee()->input->post('time_format') ?: null;
@@ -778,6 +779,7 @@ class MemberImport extends Utilities
 
         ee()->view->cp_page_title = lang('custom_fields');
         ee()->cp->set_breadcrumb(ee('CP/URL')->make('utilities/member_import'), lang('member_import'));
+
         return ee()->cp->render('utilities/member-import/custom', $vars);
     }
 

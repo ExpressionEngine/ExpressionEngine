@@ -67,8 +67,8 @@ class Comment
         if ($disabled = ee()->TMPL->fetch_param('disable')) {
             // If we have more than one value, then
             // we need to break them out.
-            if (strpos($disabled, '|') !== false) {
-                foreach (explode('|', $disabled) as $feature) {
+            if (strpos((string) $disabled, '|') !== false) {
+                foreach (explode('|', (string) $disabled) as $feature) {
                     if (isset($enabled_features[$feature])) {
                         $enabled_features[$feature] = false;
                     }
@@ -143,7 +143,7 @@ class Comment
         /**  Do we allow dynamic POST variables to set parameters?
         /** ----------------------------------------------*/
         if (ee()->TMPL->fetch_param('dynamic_parameters') !== false and isset($_POST) and count($_POST) > 0) {
-            foreach (explode('|', ee()->TMPL->fetch_param('dynamic_parameters')) as $var) {
+            foreach (explode('|', (string) ee()->TMPL->fetch_param('dynamic_parameters')) as $var) {
                 if (isset($_POST[$var]) and in_array($var, array('channel', 'limit', 'sort', 'orderby'))) {
                     ee()->TMPL->tagparams[$var] = $_POST[$var];
                 }
@@ -159,19 +159,19 @@ class Comment
         // 2. So it won't confuse the query with an improper proper ID
 
         if (! $dynamic) {
-            if (preg_match("#(^|/)N(\d+)(/|$)#i", $qstring, $match)) {
+            if (preg_match("#(^|/)N(\d+)(/|$)#i", (string) $qstring, $match)) {
                 if ($enabled['pagination']) {
                     $pagination->current_page = $match['2'];
                 }
-                $uristr = trim(reduce_double_slashes(str_replace($match['0'], '/', $uristr)), '/');
+                $uristr = trim((string) reduce_double_slashes(str_replace($match['0'], '/', $uristr)), '/');
             }
         } else {
-            if (preg_match("#(^|/)P(\d+)(/|$)#", $qstring, $match)) {
+            if (preg_match("#(^|/)P(\d+)(/|$)#", (string) $qstring, $match)) {
                 if ($enabled['pagination']) {
                     $pagination->current_page = $match['2'];
                 }
                 $uristr = reduce_double_slashes(str_replace($match['0'], '/', $uristr));
-                $qstring = trim(reduce_double_slashes(str_replace($match['0'], '/', $qstring)), '/');
+                $qstring = trim((string) reduce_double_slashes(str_replace($match['0'], '/', $qstring)), '/');
             }
         }
 
@@ -221,7 +221,7 @@ class Comment
                 }
             } else {
                 // If there is a slash in the entry ID we'll kill everything after it.
-                $entry_id = trim($qstring);
+                $entry_id = trim((string) $qstring);
                 $entry_id = preg_replace("#/.+#", "", $entry_id);
 
                 // Have to choose between id or url title
@@ -420,7 +420,7 @@ class Comment
             $pagination->prefix = (! $dynamic) ? 'N' : 'P';
         }
 
-        $this_sort = ($random) ? 'random' : strtolower($sort);
+        $this_sort = ($random) ? 'random' : strtolower((string) $sort);
         ee()->db->order_by($order_by, $this_sort);
 
         if ($enabled['pagination']) {
@@ -520,7 +520,7 @@ class Comment
         $return = '';
 
         // Custom parse {switch=} until we can use parse_variables()
-        if (preg_match_all("/".LD."(switch\s*=.+?)".RD."/i", ee()->TMPL->tagdata, $matches, PREG_SET_ORDER)) {
+        if (preg_match_all("/" . LD . "(switch\s*=.+?)" . RD . "/i", (string) ee()->TMPL->tagdata, $matches, PREG_SET_ORDER)) {
             foreach ($matches as $match) {
                 $sparam = ee('Variables/Parser')->parseTagParameters($match[1]);
                 if (isset($sparam['switch'])) {
@@ -538,23 +538,25 @@ class Comment
             // 'comment_entries_tagdata' hook.
             //  - Modify and play with the tagdata before everyone else
             //
-            if (ee()->extensions->active_hook('comment_entries_tagdata') === TRUE) {
+            if (ee()->extensions->active_hook('comment_entries_tagdata') === true) {
                 $tagdata = ee()->extensions->call('comment_entries_tagdata', $tagdata, $variables);
-                if (ee()->extensions->end_script === TRUE) return $tagdata;
+                if (ee()->extensions->end_script === true) {
+                    return $tagdata;
+                }
             }
             //
             // -------------------------------------------
 
             $count++;
             foreach ($switch as $key => $val) {
-                $variables[$key] = $switch[$key][($count + count($val) -1) % count($val)];
+                $variables[$key] = $switch[$key][($count + count($val) - 1) % count($val)];
             }
             $return .= ee()->TMPL->parse_variables_row($tagdata, $variables);
         }
-		
+
         if (!empty(ee()->TMPL->fetch_param('backspace'))) {
             $return = substr($return, 0, - (int) ee()->TMPL->fetch_param('backspace'));
-        }		
+        }
 
         if ($enabled['pagination']) {
             return $pagination->render($return);
@@ -614,7 +616,7 @@ class Comment
             return [];
         }
 
-        $cache_key = 'fields_in_use:' . md5(ee()->TMPL->tagdata);
+        $cache_key = 'fields_in_use:' . md5((string) ee()->TMPL->tagdata);
         $fields = ee()->session->cache(__CLASS__, $cache_key) ?: [];
 
         if (! empty($fields)) {
@@ -672,8 +674,8 @@ class Comment
         /** --------------------------------------
         /**  Remove page number
         /** --------------------------------------*/
-        if (preg_match("#(^|/)P(\d+)(/|$)#", $qstring, $match)) {
-            $qstring = trim(reduce_double_slashes(str_replace($match['0'], '/', $qstring)), '/');
+        if (preg_match("#(^|/)P(\d+)(/|$)#", (string) $qstring, $match)) {
+            $qstring = trim((string) reduce_double_slashes(str_replace($match['0'], '/', $qstring)), '/');
         }
 
         // Figure out the right entry ID
@@ -686,7 +688,7 @@ class Comment
             $entry_where = array('url_title' => $url_title);
         } else {
             // If there is a slash in the entry ID we'll kill everything after it.
-            $entry_id = trim($qstring);
+            $entry_id = trim((string) $qstring);
             $entry_id = preg_replace("#/.+#", "", $entry_id);
 
             if (! is_numeric($entry_id)) {
@@ -734,13 +736,13 @@ class Comment
         if ($e_status = ee()->TMPL->fetch_param('entry_status')) {
             $e_status = str_replace('Open', 'open', $e_status);
             $e_status = str_replace('Closed', 'closed', $e_status);
-			
+
             // If they don't specify closed, it defaults to it
             if (! in_array('closed', explode('|', $e_status))) {
                 ee()->db->where('status !=', 'closed');
             }
 
-            ee()->functions->ar_andor_string($e_status, 'status');			
+            ee()->functions->ar_andor_string($e_status, 'status');
         } else {
             ee()->db->where('status !=', 'closed');
         }
@@ -856,7 +858,7 @@ class Comment
         $cond['captcha'] = ee('Captcha')->shouldRequireCaptcha();
 
         if ($cond['captcha'] && ee()->config->item('use_recaptcha') == 'y') {
-            $tagdata = preg_replace("/{if captcha}.+?{\/if}/s", ee('Captcha')->create(), $tagdata);
+            $tagdata = preg_replace("/{if captcha}.+?{\/if}/s", (string) ee('Captcha')->create(), (string) $tagdata);
         }
 
         $tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
@@ -1001,8 +1003,8 @@ class Comment
         );
 
         if (ee('Captcha')->shouldRequireCaptcha()) {
-            if (preg_match("/({captcha})/", $tagdata)) {
-                $tagdata = preg_replace("/{captcha}/", ee('Captcha')->create(), $tagdata);
+            if (preg_match("/({captcha})/", (string) $tagdata)) {
+                $tagdata = preg_replace("/{captcha}/", (string) ee('Captcha')->create(), (string) $tagdata);
             }
         }
 
@@ -1033,13 +1035,13 @@ class Comment
         );
 
         if (ee()->TMPL->fetch_param('name') !== false &&
-            preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('name'), $match)) {
+            preg_match("#^[a-zA-Z0-9_\-]+$#i", (string) ee()->TMPL->fetch_param('name'), $match)) {
             $data['name'] = ee()->TMPL->fetch_param('name');
         }
 
         $res = ee()->functions->form_declaration($data);
 
-        $res .= stripslashes($tagdata);
+        $res .= stripslashes((string) $tagdata);
         $res .= "</form>";
 
         // -------------------------------------------
@@ -1099,8 +1101,8 @@ class Comment
         /**  Check size of comment
         /** -------------------------------------*/
         if ($query->row('comment_max_chars') != '' and $query->row('comment_max_chars') != 0) {
-            if (strlen($_POST['comment']) > $query->row('comment_max_chars')) {
-                $str = str_replace("%n", strlen($_POST['comment']), ee()->lang->line('cmt_too_large'));
+            if (strlen((string) $_POST['comment']) > $query->row('comment_max_chars')) {
+                $str = str_replace("%n", strlen((string) $_POST['comment']), ee()->lang->line('cmt_too_large'));
 
                 $str = str_replace("%x", $query->row('comment_max_chars'), $str);
 
@@ -1220,8 +1222,7 @@ class Comment
 
             /** ----------------------------------------
             /**  parse comment field
-            /** ----------------------------------------*/
-            elseif ($key == 'comment') {
+            /** ----------------------------------------*/ elseif ($key == 'comment') {
                 // -------------------------------------------
                 // 'comment_preview_comment_format' hook.
                 //  - Play with the tagdata contents of the comment preview
@@ -1284,10 +1285,10 @@ class Comment
 
         $preview = (! ee()->input->post('PRV')) ? '' : ee()->input->get_post('PRV');
 
-        if (strpos($preview, '/') === false) {
+        if (strpos((string) $preview, '/') === false) {
             $preview = '';
         } else {
-            $ex = explode("/", $preview);
+            $ex = explode("/", (string) $preview);
 
             if (count($ex) != 2) {
                 $preview = '';
@@ -1330,7 +1331,7 @@ class Comment
         ee()->lang->loadfile('comment');
 
         //  No comment- let's end it here
-        if (trim($_POST['comment']) == '') {
+        if (trim((string) $_POST['comment']) == '') {
             return ee()->output->show_form_error(['comment' => ee()->lang->line('cmt_missing_comment')], 'submission');
         }
 
@@ -1582,7 +1583,7 @@ class Comment
             /** ----------------------------------------
             /**  Missing name?
             /** ----------------------------------------*/
-            if (trim($_POST['name']) == '') {
+            if (trim((string) $_POST['name']) == '') {
                 $error['name'] = ee()->lang->line('cmt_missing_name');
             }
 
@@ -1623,8 +1624,8 @@ class Comment
         /**  Is comment too big?
         /** ----------------------------------------*/
         if ($query->row('comment_max_chars') != '' and $query->row('comment_max_chars') != 0) {
-            if (strlen($_POST['comment']) > $query->row('comment_max_chars')) {
-                $str = str_replace("%n", strlen($_POST['comment']), ee()->lang->line('cmt_too_large'));
+            if (strlen((string) $_POST['comment']) > $query->row('comment_max_chars')) {
+                $str = str_replace("%n", strlen((string) $_POST['comment']), ee()->lang->line('cmt_too_large'));
 
                 $str = str_replace("%x", $query->row('comment_max_chars'), $str);
 
@@ -1645,6 +1646,7 @@ class Comment
         if (ee('Captcha')->shouldRequireCaptcha()) {
             if (! isset($_POST['captcha']) or $_POST['captcha'] == '') {
                 $captcha_error = ee()->config->item('use_recaptcha') == 'y' ? ee()->lang->line('recaptcha_required') : ee()->lang->line('captcha_required');
+
                 return ee()->output->show_form_error(['captcha' => $captcha_error], 'submission');
             } else {
                 $captcha_error = ee()->config->item('use_recaptcha') == 'y' ? ee()->lang->line('recaptcha_required') : ee()->lang->line('captcha_incorrect');
@@ -1707,7 +1709,7 @@ class Comment
         // -------------------------------------------
 
         $RET = ee('Encrypt')->decode($_POST['RET'], ee()->config->item('session_crypt_key'));
-        $return_link = (! stristr($RET, 'http://') && ! stristr($RET, 'https://')) ? ee()->functions->create_url($RET) : $RET;
+        $return_link = (! stristr((string) $RET, 'http://') && ! stristr((string) $RET, 'https://')) ? ee()->functions->create_url($RET) : $RET;
 
         //  Insert data
         $comment = ee('Model')->make('Comment', $data)->save();
@@ -1822,7 +1824,7 @@ class Comment
 
         // Bleh- really need a conditional for if they are subscribed
 
-        $sub_link = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id . '&entry_id=' . $entry_id . '&ret=' . ee()->uri->uri_string() .'&csrf_token=' . CSRF_TOKEN;
+        $sub_link = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id . '&entry_id=' . $entry_id . '&ret=' . ee()->uri->uri_string() . '&csrf_token=' . CSRF_TOKEN;
         $unsub_link = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id . '&entry_id=' . $entry_id . '&type=unsubscribe' . '&ret=' . ee()->uri->uri_string() . '&csrf_token=' . CSRF_TOKEN;
 
         $data[] = array('subscribe_link' => $sub_link, 'unsubscribe_link' => $unsub_link, 'subscribed' => $subscribed);
@@ -1907,7 +1909,7 @@ class Comment
      */
     public function comment_subscribe()
     {
-        if (!bool_config_item('disable_csrf_protection') && ee()->input->get('csrf_token')!==CSRF_TOKEN) {
+        if (!bool_config_item('disable_csrf_protection') && ee()->input->get('csrf_token') !== CSRF_TOKEN) {
             show_error(lang('unauthorized_access'));
         }
         ee()->lang->loadfile('comment');
@@ -1973,7 +1975,7 @@ class Comment
 
         if (! $ret) {
             $return_link = array($redirect,
-                stripslashes(ee()->config->item('site_name')));
+                stripslashes((string) ee()->config->item('site_name')));
         } else {
             $return_link = array($redirect,
                 ee()->lang->line('cmt_return_to_comments'));
@@ -2004,7 +2006,7 @@ class Comment
         /*
         This check is needed because otherwise, links could be created to CSRF and edit comments.
         */
-        if (!bool_config_item('disable_csrf_protection') && ee()->input->get('csrf_token')!==CSRF_TOKEN) {
+        if (!bool_config_item('disable_csrf_protection') && ee()->input->get('csrf_token') !== CSRF_TOKEN) {
             show_error(lang('unauthorized_access'));
         }
 
@@ -2188,7 +2190,7 @@ CMT_EDIT_SCR;
 
         if (ee()->config->item('send_headers') == 'y') {
             ee()->output->send_cache_headers(strtotime(APP_BUILD));
-            ee()->output->set_header('Content-Length: ' . strlen($script));
+            ee()->output->set_header('Content-Length: ' . strlen((string) $script));
         }
 
         exit($script);
@@ -2218,7 +2220,7 @@ CMT_EDIT_SCR;
     {
         $entry_id = false;
         $qstring = ee()->uri->query_string;
-        $qstring_hash = md5($qstring);
+        $qstring_hash = md5((string) $qstring);
 
         if (isset(ee()->session->cache['comment']['entry_id'][$qstring_hash])) {
             return ee()->session->cache['comment']['entry_id'][$qstring_hash];
@@ -2229,13 +2231,13 @@ CMT_EDIT_SCR;
         } elseif (ee()->TMPL->fetch_param('url_title')) {
             $entry_seg = ee()->TMPL->fetch_param('url_title');
         } else {
-            if (preg_match("#(^|/)P(\d+)(/|$)#", $qstring, $match)) {
-                $qstring = trim(ee()->functions->remove_double_slashes(str_replace($match['0'], '/', $qstring)), '/');
+            if (preg_match("#(^|/)P(\d+)(/|$)#", (string) $qstring, $match)) {
+                $qstring = trim((string) ee()->functions->remove_double_slashes(str_replace($match['0'], '/', $qstring)), '/');
             }
 
             // Figure out the right entry ID
             // If there is a slash in the entry ID we'll kill everything after it.
-            $entry_seg = trim($qstring);
+            $entry_seg = trim((string) $qstring);
             $entry_seg = preg_replace("#/.+#", "", $entry_seg);
         }
 

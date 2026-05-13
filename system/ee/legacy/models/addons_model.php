@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -77,8 +78,8 @@ class Addons_model extends CI_Model
         // first party plugins
         if (($map = directory_map(PATH_ADDONS, true)) !== false) {
             foreach ($map as $file) {
-                if (strncasecmp($file, 'pi.', 3) == 0 && substr($file, -$ext_len) == '.php' && strlen($file) > strlen('pi..php')) {
-                    $name = substr($file, 3, -$ext_len);
+                if (strncasecmp((string) $file, 'pi.', 3) == 0 && substr((string) $file, -$ext_len) == '.php' && strlen((string) $file) > strlen('pi..php')) {
+                    $name = substr((string) $file, 3, -$ext_len);
 
                     if ($plugin_name && $name != $plugin_name) {
                         continue;
@@ -104,10 +105,10 @@ class Addons_model extends CI_Model
                     if (is_array($file)) {
                         // we're only interested in the top level files for the addon
                         continue;
-                    } elseif (strncasecmp($file, 'pi.', 3) == 0 &&
-                            substr($file, -$ext_len) == '.php' &&
-                            strlen($file) > strlen('pi..php')) {
-                        if (! class_exists(ucfirst($pkg_name))) {
+                    } elseif (strncasecmp((string) $file, 'pi.', 3) == 0 &&
+                            substr((string) $file, -$ext_len) == '.php' &&
+                            strlen((string) $file) > strlen('pi..php')) {
+                        if (! class_exists(ucfirst((string) $pkg_name))) {
                             if ($plugin_name && $pkg_name != $plugin_name) {
                                 continue;
                             }
@@ -123,7 +124,7 @@ class Addons_model extends CI_Model
         }
 
         foreach ($plugins as $plugin) {
-            $class_name = ucfirst($plugin['name']);
+            $class_name = ucfirst((string) $plugin['name']);
 
             if (! class_exists($class_name)) {
                 include($plugin['path']);
@@ -231,7 +232,7 @@ class Addons_model extends CI_Model
 
         if (! isset($_installed[$module_name])) {
             $this->db->from("modules");
-            $this->db->where("module_name", ucfirst(strtolower($module_name)));
+            $this->db->where("module_name", ucfirst(strtolower((string) $module_name)));
             $_installed[$module_name] = ($this->db->count_all_results() > 0) ? true : false;
         }
 
@@ -275,7 +276,7 @@ class Addons_model extends CI_Model
 
         if (! isset($_installed[$ft_name])) {
             $this->db->from("fieldtypes");
-            $this->db->where("name", strtolower($ft_name));
+            $this->db->where("name", strtolower((string) $ft_name));
             $_installed[$ft_name] = ($this->db->count_all_results() > 0) ? true : false;
         }
 

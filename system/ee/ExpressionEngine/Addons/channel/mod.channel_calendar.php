@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -38,13 +39,13 @@ class Channel_calendar extends Channel
             $year = ee()->TMPL->fetch_param('year');
             $month = ee()->TMPL->fetch_param('month');
 
-            if (strlen($month) == 1) {
+            if (strlen((string) $month) == 1) {
                 $month = '0' . $month;
             }
         } else {
             // Month/year in query string
 
-            if (preg_match("#(\d{4}/\d{2})#", ee()->uri->query_string, $match)) {
+            if (preg_match("#(\d{4}/\d{2})#", (string) ee()->uri->query_string, $match)) {
                 $ex = explode('/', $match['1']);
 
                 $time = gmmktime(0, 0, 0, $ex['1'], 01, $ex['0']);
@@ -62,13 +63,13 @@ class Channel_calendar extends Channel
         /** ----------------------------------------
         /**  Set Unix timestamp for the given month/year
         /** ----------------------------------------*/
-        $date = gmmktime(12, 0, 0, (int)$month, 1, (int)$year);
+        $date = gmmktime(12, 0, 0, (int) $month, 1, (int) $year);
 
         /** ----------------------------------------
         /**  Determine the total days in the month
         /** ----------------------------------------*/
         ee()->load->library('calendar');
-        $adjusted_date = ee()->calendar->adjust_date((int)$month, (int)$year);
+        $adjusted_date = ee()->calendar->adjust_date((int) $month, (int) $year);
 
         $month = $adjusted_date['month'];
         $year = $adjusted_date['year'];
@@ -112,13 +113,13 @@ class Channel_calendar extends Channel
 
         // This variables points to the previous month
 
-        if (preg_match_all("#" . LD . "previous_path=(.+?)" . RD . "#", ee()->TMPL->tagdata, $matches)) {
+        if (preg_match_all("#" . LD . "previous_path=(.+?)" . RD . "#", (string) ee()->TMPL->tagdata, $matches)) {
             $adjusted_date = ee()->calendar->adjust_date($month - 1, $year, true);
 
             foreach ($matches['1'] as $match) {
                 $path = ee()->functions->create_url($match) . '/' . $adjusted_date['year'] . '/' . $adjusted_date['month'];
 
-                ee()->TMPL->tagdata = preg_replace("#" . LD . "previous_path=.+?" . RD . "#", $path, ee()->TMPL->tagdata, 1);
+                ee()->TMPL->tagdata = preg_replace("#" . LD . "previous_path=.+?" . RD . "#", $path, (string) ee()->TMPL->tagdata, 1);
             }
         }
 
@@ -128,13 +129,13 @@ class Channel_calendar extends Channel
 
         // This variables points to the next month
 
-        if (preg_match_all("#" . LD . "next_path=(.+?)" . RD . "#", ee()->TMPL->tagdata, $matches)) {
+        if (preg_match_all("#" . LD . "next_path=(.+?)" . RD . "#", (string) ee()->TMPL->tagdata, $matches)) {
             $adjusted_date = ee()->calendar->adjust_date($month + 1, $year, true);
 
             foreach ($matches['1'] as $match) {
                 $path = ee()->functions->create_url($match) . '/' . $adjusted_date['year'] . '/' . $adjusted_date['month'];
 
-                ee()->TMPL->tagdata = preg_replace("#" . LD . "next_path=.+?" . RD . "#", $path, ee()->TMPL->tagdata, 1);
+                ee()->TMPL->tagdata = preg_replace("#" . LD . "next_path=.+?" . RD . "#", $path, (string) ee()->TMPL->tagdata, 1);
             }
         }
 
@@ -196,10 +197,10 @@ class Channel_calendar extends Channel
             $day_names_l[] = (! ee()->lang->line($val)) ? $val : ee()->lang->line($val);
         }
 
-        if (preg_match("/" . LD . "calendar_heading" . RD . "(.*?)" . LD . '\/' . "calendar_heading" . RD . "/s", ee()->TMPL->tagdata, $match)) {
+        if (preg_match("/" . LD . "calendar_heading" . RD . "(.*?)" . LD . '\/' . "calendar_heading" . RD . "/s", (string) ee()->TMPL->tagdata, $match)) {
             $temp = '';
 
-            for ($i = 0; $i < 7; $i ++) {
+            for ($i = 0; $i < 7; $i++) {
                 $temp .= str_replace(
                     array(LD . 'lang:weekday_abrev' . RD,
                         LD . 'lang:weekday_short' . RD,
@@ -211,7 +212,7 @@ class Channel_calendar extends Channel
                 );
             }
 
-            ee()->TMPL->tagdata = preg_replace("/" . LD . "calendar_heading" . RD . ".*?" . LD . '\/' . "calendar_heading" . RD . "/s", trim($temp), ee()->TMPL->tagdata);
+            ee()->TMPL->tagdata = preg_replace("/" . LD . "calendar_heading" . RD . ".*?" . LD . '\/' . "calendar_heading" . RD . "/s", trim($temp), (string) ee()->TMPL->tagdata);
         }
 
         /** ----------------------------------------
@@ -245,7 +246,7 @@ class Channel_calendar extends Channel
         $if_blank = '';
         $if_blank_m = '43HDueie4q7pa8dAAseit6';
 
-        if (preg_match("/" . LD . "calendar_rows" . RD . "(.*?)" . LD . '\/' . "calendar_rows" . RD . "/s", ee()->TMPL->tagdata, $match)) {
+        if (preg_match("/" . LD . "calendar_rows" . RD . "(.*?)" . LD . '\/' . "calendar_rows" . RD . "/s", (string) ee()->TMPL->tagdata, $match)) {
             $row_chunk = trim($match['1']);
 
             //  Fetch all the entry_date variable
@@ -264,7 +265,7 @@ class Channel_calendar extends Channel
 
             foreach (ee()->TMPL->var_cond as $key => $val) {
                 if ($val['3'] == 'today') {
-                    $if_today = trim($val['2']);
+                    $if_today = trim((string) $val['2']);
 
                     $row_chunk = str_replace($val['1'], $if_today_m, $row_chunk);
 
@@ -272,7 +273,7 @@ class Channel_calendar extends Channel
                 }
 
                 if ($val['3'] == 'entries') {
-                    $if_entries = trim($val['2']);
+                    $if_entries = trim((string) $val['2']);
 
                     $row_chunk = str_replace($val['1'], $if_entries_m, $row_chunk);
 
@@ -280,7 +281,7 @@ class Channel_calendar extends Channel
                 }
 
                 if ($val['3'] == 'not_entries') {
-                    $if_not_entries = trim($val['2']);
+                    $if_not_entries = trim((string) $val['2']);
 
                     $row_chunk = str_replace($val['1'], $if_not_entries_m, $row_chunk);
 
@@ -288,7 +289,7 @@ class Channel_calendar extends Channel
                 }
 
                 if ($val['3'] == 'blank') {
-                    $if_blank = trim($val['2']);
+                    $if_blank = trim((string) $val['2']);
 
                     $row_chunk = str_replace($val['1'], $if_blank_m, $row_chunk);
 
@@ -302,7 +303,7 @@ class Channel_calendar extends Channel
                 }
             }
 
-            ee()->TMPL->tagdata = preg_replace("/" . LD . "calendar_rows" . RD . ".*?" . LD . '\/' . "calendar_rows" . RD . "/s", $row_chunk_m, ee()->TMPL->tagdata);
+            ee()->TMPL->tagdata = preg_replace("/" . LD . "calendar_rows" . RD . ".*?" . LD . '\/' . "calendar_rows" . RD . "/s", $row_chunk_m, (string) ee()->TMPL->tagdata);
         }
 
         /** ----------------------------------------
@@ -316,7 +317,7 @@ class Channel_calendar extends Channel
         $switch_c = '';
 
         if (ee()->TMPL->fetch_param('switch')) {
-            $x = explode("|", ee()->TMPL->fetch_param('switch'));
+            $x = explode("|", (string) ee()->TMPL->fetch_param('switch'));
 
             if (count($x) == 2) {
                 $switch_t = $x['0'];
@@ -339,7 +340,7 @@ class Channel_calendar extends Channel
             $this->fetch_custom_channel_fields();
         }
 
-        $this->build_sql_query('/' . $year . '/' . str_pad($month, 2, 0, STR_PAD_LEFT) . '/');
+        $this->build_sql_query('/' . $year . '/' . str_pad((string) $month, 2, 0, STR_PAD_LEFT) . '/');
 
         if ($this->sql != '') {
             $query = ee()->db->query($this->sql);
@@ -392,7 +393,7 @@ class Channel_calendar extends Channel
                         /** ----------------------------------------
                         /**  parse permalink
                         /** ----------------------------------------*/
-                        if (strncmp($key, 'permalink', 9) == 0) {
+                        if (strncmp((string) $key, 'permalink', 9) == 0) {
                             if (ee()->functions->extract_path($key) != '' and ee()->functions->extract_path($key) != 'SITE_INDEX') {
                                 $path = ee()->functions->extract_path($key) . '/' . $row['entry_id'];
                             } else {
@@ -405,7 +406,7 @@ class Channel_calendar extends Channel
                         /** ----------------------------------------
                         /**  parse title permalink
                         /** ----------------------------------------*/
-                        if (strncmp($key, 'title_permalink', 15) == 0 or strncmp($key, 'url_title_path', 14) == 0) {
+                        if (strncmp((string) $key, 'title_permalink', 15) == 0 or strncmp((string) $key, 'url_title_path', 14) == 0) {
                             if (ee()->functions->extract_path($key) != '' and ee()->functions->extract_path($key) != 'SITE_INDEX') {
                                 $path = ee()->functions->extract_path($key) . '/' . $row['url_title'];
                             } else {
@@ -447,14 +448,14 @@ class Channel_calendar extends Channel
                         /** ----------------------------------------
                         /**  profile path
                         /** ----------------------------------------*/
-                        if (strncmp($key, 'profile_path', 12) == 0) {
+                        if (strncmp((string) $key, 'profile_path', 12) == 0) {
                             $profile_path[$key] = ee()->functions->create_url(ee()->functions->extract_path($key) . '/' . $row['member_id']);
                         }
 
                         /** ----------------------------------------
                         /**  parse comment_path
                         /** ----------------------------------------*/
-                        if (strncmp($key, 'comment_path', 12) == 0 or strncmp($key, 'entry_id_path', 13) == 0) {
+                        if (strncmp((string) $key, 'comment_path', 12) == 0 or strncmp((string) $key, 'entry_id_path', 13) == 0) {
                             $id_path[$key] = ee()->functions->create_url(ee()->functions->extract_path($key) . '/' . $row['entry_id']);
                         }
 
@@ -468,7 +469,7 @@ class Channel_calendar extends Channel
                         /** ----------------------------------------
                         /**  {day_path}
                         /** ----------------------------------------*/
-                        if (strncmp($key, 'day_path', 8) == 0) {
+                        if (strncmp((string) $key, 'day_path', 8) == 0) {
                             $formatted_date_path = ee()->localize->format_date('%Y/%m/%d', $row['entry_date']);
 
                             if (ee()->functions->extract_path($key) != ''
@@ -487,8 +488,8 @@ class Channel_calendar extends Channel
                     /** ----------------------------------------*/
                     $d = ee()->localize->format_date('%d', $row['entry_date']);
 
-                    if (substr($d, 0, 1) == '0') {
-                        $d = substr($d, 1);
+                    if (substr((string) $d, 0, 1) == '0') {
+                        $d = substr((string) $d, 1);
                     }
 
                     $data[$d][] = array(

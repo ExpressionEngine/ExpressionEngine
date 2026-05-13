@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -78,7 +79,7 @@ class CommandClearCaches extends Cli
 
         ee()->functions->clear_caching($type);
 
-        $this->info(ucfirst($type) . lang('command_cache_clear_caches_cleared'));
+        $this->info(ucfirst((string) $type) . lang('command_cache_clear_caches_cleared'));
     }
 
     /**

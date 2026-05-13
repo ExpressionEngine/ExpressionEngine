@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -32,7 +33,7 @@ class Directory extends Filesystem
      */
     protected function normalize($path)
     {
-        if ($path == '..' || strpos($path, '../') !== false) {
+        if ($path == '..' || strpos((string) $path, '../') !== false) {
             throw new FilesystemException('Attempting to access file outside of directory.');
         }
 
@@ -49,14 +50,14 @@ class Directory extends Filesystem
     public function getUrl($filename = null)
     {
         if (empty($this->url)) {
-            if(!method_exists($this->getBaseAdapter(), 'getBaseUrl')) {
+            if (!method_exists($this->getBaseAdapter(), 'getBaseUrl')) {
                 throw new \Exception('No directory URL given.');
             }
 
             $this->url = $this->getBaseAdapter()->getBaseUrl();
         }
 
-        $url = rtrim($this->url, '/') . '/';
+        $url = rtrim((string) $this->url, '/') . '/';
 
         if (! isset($filename)) {
             return $url;

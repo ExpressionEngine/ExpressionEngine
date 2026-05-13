@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -100,7 +101,7 @@ class Api
      */
     public function _set_error($error_msg)
     {
-        $this->errors[] = (ee()->lang->line($error_msg) != '') ? ee()->lang->line($error_msg) : str_replace('_', ' ', ucfirst($error_msg));
+        $this->errors[] = (ee()->lang->line($error_msg) != '') ? ee()->lang->line($error_msg) : str_replace('_', ' ', ucfirst((string) $error_msg));
     }
 
     /**
@@ -114,7 +115,7 @@ class Api
      */
     public function make_url_safe($str)
     {
-        return preg_replace("/[^a-zA-Z0-9_\-\.]+$/i", '', $str);
+        return preg_replace("/[^a-zA-Z0-9_\-\.]+$/i", '', (string) $str);
     }
 
     /**
@@ -127,7 +128,7 @@ class Api
      */
     public function is_url_safe($str)
     {
-        return preg_match("/^[a-zA-Z0-9_\-\.]+$/i", $str) ? true : false;
+        return preg_match("/^[a-zA-Z0-9_\-\.]+$/i", (string) $str) ? true : false;
     }
 
     /**
@@ -167,7 +168,7 @@ class Api
         }
 
         // Field is limited to 75 characters, so trim url_title before querying
-        $url_title = substr($url_title, 0, 75);
+        $url_title = substr((string) $url_title, 0, 75);
 
         if ($self_id != '') {
             ee()->db->where(array($self_field . ' !=' => $self_id));
@@ -196,8 +197,8 @@ class Api
                 }
 
                 ee()->db->select("{$url_title_field}, MID({$url_title_field}, " . (strlen($url_title) + 1) . ") + 1 AS next_suffix", false);
-                ee()->db->where("{$url_title_field} LIKE '" . preg_quote(ee()->db->escape_str($url_title)) . "%'");
-                ee()->db->where("{$url_title_field} REGEXP('^" . preg_quote(ee()->db->escape_str($url_title)) . "[0-9]*$')");
+                ee()->db->where("{$url_title_field} LIKE '" . preg_quote((string) ee()->db->escape_str($url_title)) . "%'");
+                ee()->db->where("{$url_title_field} REGEXP('^" . preg_quote((string) ee()->db->escape_str($url_title)) . "[0-9]*$')");
                 ee()->db->where(array($type_field => $type_id));
                 ee()->db->order_by('next_suffix', 'DESC');
                 ee()->db->limit(1);

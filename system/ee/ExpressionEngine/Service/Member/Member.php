@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -89,8 +90,8 @@ class Member
         if (empty($password)) {
             return $rank;
         }
-        $length = strlen($password);
-        $passwordArray = str_split($password);
+        $length = strlen((string) $password);
+        $passwordArray = str_split((string) $password);
         $charsCount = [
             'upper' => 0,
             'lower' => 0,
@@ -253,7 +254,7 @@ class Member
                 $foundDictionaryWord = '';
                 foreach ($word_file as $word) {
                     $word = trim($word);
-                    if (stripos($password, $word) !== false && strlen($word) > strlen($foundDictionaryWord)) {
+                    if (stripos((string) $password, $word) !== false && strlen($word) > strlen($foundDictionaryWord)) {
                         $foundDictionaryWord = $word;
                     }
                 }
@@ -274,7 +275,7 @@ class Member
         if (ee()->config->item('require_secure_passwords') == 'y' || ee()->config->item('password_security_policy') == 'basic') {
             $count = array('uc' => 0, 'lc' => 0, 'num' => 0);
 
-            $pass = preg_quote($password, "/");
+            $pass = preg_quote((string) $password, "/");
 
             $len = strlen($pass);
 

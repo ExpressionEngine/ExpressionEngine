@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -43,12 +44,12 @@ class PrepMajorUpgrade
     public function isMajorUpgrade($update_version_major = null)
     {
         $app_ver = defined('APP_VER') ? APP_VER : ee()->config->item('app_version');
-        $version_major = (int) explode('.', $app_ver, 2)[0];
+        $version_major = (int) explode('.', (string) $app_ver, 2)[0];
 
         if (empty($update_version_major)) {
             ee()->load->library('el_pings');
             $version_file = ee()->el_pings->get_version_info();
-            $update_version_major = (int) explode('.', $version_file['latest_version'], 2)[0];
+            $update_version_major = (int) explode('.', (string) $version_file['latest_version'], 2)[0];
         }
 
         // Is the upcoming release a major version?

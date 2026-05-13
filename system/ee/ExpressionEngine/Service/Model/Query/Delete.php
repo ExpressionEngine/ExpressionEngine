@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -374,7 +375,7 @@ class Delete extends Query
 
     protected function splitAlias($string)
     {
-        $string = trim($string);
+        $string = trim((string) $string);
         $parts = preg_split('/\s+AS\s+/i', $string);
 
         if (! isset($parts[1])) {

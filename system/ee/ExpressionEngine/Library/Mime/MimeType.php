@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -48,7 +49,7 @@ class MimeType
             if (is_array($extra_mimes)) {
                 $this->addMimeTypes($extra_mimes);
             } else {
-                $this->addMimeTypes(explode('|', $extra_mimes));
+                $this->addMimeTypes(explode('|', (string) $extra_mimes));
             }
         }
     }
@@ -156,7 +157,7 @@ class MimeType
         }
 
         // Set a default
-        $mime = !is_null($mime) ? $mime :  'application/octet-stream';
+        $mime = !is_null($mime) ? $mime : 'application/octet-stream';
 
         // try another method to get mime
         if ($mime == 'application/octet-stream') {
@@ -226,6 +227,7 @@ class MimeType
             if ((strpos($file, '<?xml') !== 0 && strpos($file, '<svg') !== 0) || strpos($file, '<svg') === false) {
                 return false;
             }
+
             return true;
         }
 
@@ -235,11 +237,13 @@ class MimeType
                 $file = fopen($path, 'r');
                 $first = fread($file, 4);
                 fclose($file);
+
                 return $first === "\x00\x00\x01\x00";
             } catch (\Exception $e) {
                 if (DEBUG) {
                     show_error($e->getMessage());
                 }
+
                 return false;
             }
         }
@@ -284,6 +288,7 @@ class MimeType
         if ($this->memberExcludedFromWhitelistRestrictions()) {
             return true;
         }
+
         return $this->isSafeForUpload($this->ofFile($path));
     }
 
@@ -299,6 +304,7 @@ class MimeType
         if ($this->memberExcludedFromWhitelistRestrictions()) {
             return true;
         }
+
         return in_array($mime, $this->whitelist, true);
     }
 

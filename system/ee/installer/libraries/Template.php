@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -206,7 +207,7 @@ class Installer_Template
         $this->reverse_related_data = array();
         $this->related_id = null;
 
-        if (preg_match_all("/" . LD . "related_entries\s+id\s*=\s*[\"\'](.+?)[\"\']" . RD . "(.+?)" . LD . '\/' . "related_entries" . RD . "/is", $chunk, $matches)) {
+        if (preg_match_all("/" . LD . "related_entries\s+id\s*=\s*[\"\'](.+?)[\"\']" . RD . "(.+?)" . LD . '\/' . "related_entries" . RD . "/is", (string) $chunk, $matches)) {
             $no_rel_content = '';
 
             for ($j = 0; $j < count($matches[0]); $j++) {
@@ -240,7 +241,7 @@ class Installer_Template
             }
         }
 
-        if (preg_match_all("/" . LD . "reverse_related_entries\s*(.*?)" . RD . "(.+?)" . LD . '\/' . "reverse_related_entries" . RD . "/is", $chunk, $matches)) {
+        if (preg_match_all("/" . LD . "reverse_related_entries\s*(.*?)" . RD . "(.+?)" . LD . '\/' . "reverse_related_entries" . RD . "/is", (string) $chunk, $matches)) {
             for ($j = 0; $j < count($matches[0]); $j++) {
                 $rand = ee()->functions->random('alnum', 8);
                 $marker = LD . 'REV_REL[' . $rand . ']REV_REL' . RD;

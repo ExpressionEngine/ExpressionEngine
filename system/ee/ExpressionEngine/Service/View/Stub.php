@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -120,17 +121,18 @@ class Stub extends View
         $view = $this->make($view)->disable($disable);
 
         // Special case for variable modifiers
-        if(array_key_exists('modifiers', $vars) && is_array($vars['modifiers'])) {
-            $vars['modifiers_string'] = trim(array_reduce(array_keys($vars['modifiers']), function($carry, $modifier) use($vars) {
+        if (array_key_exists('modifiers', $vars) && is_array($vars['modifiers'])) {
+            $vars['modifiers_string'] = trim(array_reduce(array_keys($vars['modifiers']), function ($carry, $modifier) use ($vars) {
                 $usePrefix = count($vars['modifiers']) > 1;
                 $parameters = $vars['modifiers'][$modifier];
-                $parameterString = array_reduce(array_keys($parameters), function($carry, $parameter) use($parameters, $usePrefix, $modifier) {
+                $parameterString = array_reduce(array_keys($parameters), function ($carry, $parameter) use ($parameters, $usePrefix, $modifier) {
                     return $carry .= (($usePrefix) ? "$modifier:$parameter" : $parameter) . "='{$parameters[$parameter]}'";
                 }, '');
                 $carry .= ":$modifier $parameterString";
+
                 return $carry;
             }, ''));
-        }else{
+        } else {
             $vars['modifiers_string'] = '';
         }
 
@@ -216,19 +218,19 @@ class Stub extends View
         ]));
 
         foreach ($paths as $path) {
-            $path = rtrim($path, '/');
-            foreach($fileNames as $fileName) {
+            $path = rtrim((string) $path, '/');
+            foreach ($fileNames as $fileName) {
                 $fileName = ltrim($fileName, '/');
                 $files = [
                     "$path/$fileName.php",
                     "$path/$fileName"
                 ];
                 // Check with and without the .php extension
-                foreach($files as $file) {
+                foreach ($files as $file) {
                     if ((strpos($file, '..') == false) && file_exists($file) && !is_dir($file)) {
                         // check for template engine agreement modify this stub's engine if the file differs
                         $engine = $this->getEngineFromPath($file);
-                        if($this->templateEngine != $engine) {
+                        if ($this->templateEngine != $engine) {
                             $this->templateEngine = $engine;
                         }
 
@@ -243,18 +245,18 @@ class Stub extends View
 
     protected function getEngineFromPath($path)
     {
-        $path = rtrim($path, '.php');
+        $path = rtrim((string) $path, '.php');
         $info = ee()->api_template_structure->get_template_file_info($path);
 
-        if(!is_null($info)) {
+        if (!is_null($info)) {
             return $info['engine'];
         }
 
         $engines = array_filter(array_keys(ee()->api_template_structure->get_template_engines()));
 
-        foreach($engines as $engine) {
-            $extensionLength = strlen($engine);
-            if (substr_compare($path, $engine, -$extensionLength) === 0) {
+        foreach ($engines as $engine) {
+            $extensionLength = strlen((string) $engine);
+            if (substr_compare($path, (string) $engine, -$extensionLength) === 0) {
                 return $engine;
             }
         }

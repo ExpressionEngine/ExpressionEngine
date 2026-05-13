@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -45,7 +46,7 @@ class EE_Route_segment_part
     public function validate($val)
     {
         $regex = "/" . $this->validator() . "/i";
-        $result = preg_match($regex, $val);
+        $result = preg_match($regex, (string) $val);
 
         if ($result === false) {
             throw new Exception(lang('validation_failed'));

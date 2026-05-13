@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -296,7 +297,7 @@ class Pro_search
         // --------------------------------------
 
         if ($remember = ee()->TMPL->fetch_param('remember')) {
-            foreach (explode('|', $remember) as $key) {
+            foreach (explode('|', (string) $remember) as $key) {
                 $params[$key] = $this->params->get($key);
             }
         }
@@ -569,7 +570,7 @@ class Pro_search
             ($orderby = ee()->TMPL->fetch_param('orderby', 'sort_order')) &&
             in_array($orderby, $select)
         ) {
-            $sort = strtolower(ee()->TMPL->fetch_param('sort', 'asc'));
+            $sort = strtolower((string) ee()->TMPL->fetch_param('sort', 'asc'));
 
             if (! in_array($sort, array('asc', 'desc'))) {
                 $sort = 'asc';
@@ -614,7 +615,7 @@ class Pro_search
             $urls[$var] = array();
 
             // Read out the parameters so we can override them
-            if (preg_match_all("/([\w\-:]+)\s*=\s*('|\")(.+?)\\2/", $var, $matches)) {
+            if (preg_match_all("/([\w\-:]+)\s*=\s*('|\")(.+?)\\2/", (string) $var, $matches)) {
                 foreach ($matches[0] as $i => $val) {
                     $urls[$var][$matches[1][$i]] = $matches[3][$i];
                 }
@@ -728,7 +729,7 @@ class Pro_search
 
         if (
             $this->params->get('log_search') == 'yes' &&
-            ! preg_match('#/P\d+/?$#', ee()->uri->uri_string())
+            ! preg_match('#/P\d+/?$#', (string) ee()->uri->uri_string())
         ) {
             // Will set log_id to NULL if not logged, purposely
             $this->log_id = $this->_log_search($this->params->get());
@@ -743,8 +744,8 @@ class Pro_search
 
         $obs = $this->params->get('orderby_sort');
 
-        if ($obs && strpos($obs, '|') !== false) {
-            $obs = explode('|', $obs, 2);
+        if ($obs && strpos((string) $obs, '|') !== false) {
+            $obs = explode('|', (string) $obs, 2);
             $this->params->set('orderby', $obs[0]);
             $this->params->set('sort', $obs[1]);
         }
@@ -760,7 +761,7 @@ class Pro_search
 
         //disable entry sql caching if using filters
         $enable_sql_caching = ee()->config->item('enable_sql_caching');
-        if(count(ee()->pro_search_filters->names()) >= 1 && ee()->config->item('enable_sql_caching') == 'y') {
+        if (count(ee()->pro_search_filters->names()) >= 1 && ee()->config->item('enable_sql_caching') == 'y') {
             ee()->config->config['enable_sql_caching'] = 'n';
         }
 
@@ -908,7 +909,7 @@ class Pro_search
         }
 
         //enable anew if needed
-        if($enable_sql_caching != ee()->config->item('enable_sql_caching')) {
+        if ($enable_sql_caching != ee()->config->item('enable_sql_caching')) {
             ee()->config->config['enable_sql_caching'] = $enable_sql_caching;
         }
 
@@ -1196,8 +1197,8 @@ class Pro_search
             $val = pro_format($val, 'ee-decode');
 
             // Check for toggle values
-            if (substr($key, 0, 7) == 'toggle:') {
-                $toggle[substr($key, 7)] = $val;
+            if (substr((string) $key, 0, 7) == 'toggle:') {
+                $toggle[substr((string) $key, 7)] = $val;
 
                 continue;
             }
@@ -1378,7 +1379,7 @@ class Pro_search
                 'total_suggestions'  => $total,
                 'suggestion'         => $word,
                 'suggestion:upper'   => ee()->pro_multibyte->strtoupper($word),
-                'suggestion:ucfirst' => ucfirst($word)
+                'suggestion:ucfirst' => ucfirst((string) $word)
             );
         }
 
@@ -1504,7 +1505,7 @@ class Pro_search
 
         // Make sure the IDs
         if (! is_array($ids)) {
-            $ids = preg_split('/\D+/', $ids, 0, PREG_SPLIT_NO_EMPTY);
+            $ids = preg_split('/\D+/', (string) $ids, 0, PREG_SPLIT_NO_EMPTY);
         }
 
         // Filter the ids, bail out if we end up empty
@@ -1588,7 +1589,6 @@ class Pro_search
             // Clean again to be sure
             $data = array_filter($data, 'pro_not_empty');
         }
-
 
         // --------------------------------------
         // Check for required parameter
@@ -1721,6 +1721,7 @@ class Pro_search
                 if (isset($data['result_page']) && $this->_is_external_result_page($data['result_page'])) {
                     unset($data['result_page']);
                 }
+
                 continue;
             }
 
@@ -1749,7 +1750,7 @@ class Pro_search
               : $this->settings->get('default_result_page');
 
         // Remove trailing slash
-        $page = rtrim($page, '/');
+        $page = rtrim((string) $page, '/');
 
         // --------------------------------------
         // Hash in the result page?
@@ -1819,7 +1820,7 @@ class Pro_search
         // --------------------------------------
 
         if ($protocol) {
-            $url = preg_replace('/^https?/', $protocol, $url);
+            $url = preg_replace('/^https?/', (string) $protocol, (string) $url);
         }
 
         return $url . $qs . $hash;
@@ -1993,7 +1994,7 @@ class Pro_search
         $close = '/if';
 
         // Check if there is a custom no_results conditional
-        if (strpos($td, $open) !== false && preg_match('#' . LD . $open . RD . '(.*?)' . LD . $close . RD . '#s', $td, $match)) {
+        if (strpos((string) $td, $open) !== false && preg_match('#' . LD . $open . RD . '(.*?)' . LD . $close . RD . '#s', (string) $td, $match)) {
             $this->_log("Prepping {$open} conditional");
 
             // Check if there are conditionals inside of that
@@ -2002,7 +2003,7 @@ class Pro_search
             }
 
             // Set template's no_results data to found chunk
-            ee()->TMPL->no_results = substr($match[0], strlen(LD . $open . RD), -strlen(LD . $close . RD));
+            ee()->TMPL->no_results = substr((string) $match[0], strlen(LD . $open . RD), -strlen(LD . $close . RD));
 
             // Remove no_results conditional from tagdata
             $td = str_replace($match[0], '', $td);
@@ -2023,7 +2024,7 @@ class Pro_search
         }
 
         // Check if there are pro_search vars present
-        if (strpos($tagdata, $this->settings->prefix) !== false) {
+        if (strpos((string) $tagdata, (string) $this->settings->prefix) !== false) {
             $this->_log('Found pro_search variables in no_results block, calling filters to parse');
 
             $vars = ee('Variables/Parser')->extractVariables($tagdata);
@@ -2164,7 +2165,7 @@ class Pro_search
         $replace = LD . 'exp:pro_search:url %s="%s"';
         $param = ($this->settings->get('encode_query') == 'y') ? 'query' : 'query_string';
 
-        if (strpos($haystack, $needle) !== false) {
+        if (strpos((string) $haystack, $needle) !== false) {
             // Make sure the query's an array
             $query = is_array($this->params->query) ? $this->params->query : array();
 
@@ -2213,13 +2214,13 @@ class Pro_search
             $url = ee()->config->site_url($uri->uri_string());
 
             // Strip away pagination segment
-            $url = preg_replace('#/P\d+/?$#', '', $url);
+            $url = preg_replace('#/P\d+/?$#', '', (string) $url);
 
             // Make it safe
             $url = preg_quote($url, '#');
 
             // Now find all similar URLs in tagdata without the var next to it
-            $tagdata = preg_replace("#(['\"])({$url}(/P\d+)?/?)\\1#", "$1$2{$var}$1", $tagdata);
+            $tagdata = preg_replace("#(['\"])({$url}(/P\d+)?/?)\\1#", "$1$2{$var}$1", (string) $tagdata);
         }
 
         // Get the query string

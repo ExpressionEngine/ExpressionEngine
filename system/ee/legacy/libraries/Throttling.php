@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -124,14 +125,15 @@ class EE_Throttling
         $type = ((ee()->config->item('banishment_type') == 'redirect' and ee()->config->item('banishment_url') == '') or (ee()->config->item('banishment_type') == 'message' and ee()->config->item('banishment_message') == '')) ? '404' : ee()->config->item('banishment_type');
 
         switch ($type) {
-            case 'redirect':	$loc = (strncasecmp(ee()->config->item('banishment_url'), 'http://', 7) != 0) ? 'http://' . ee()->config->item('banishment_url') : ee()->config->item('banishment_url');
-                                header("location:$loc");
+            case 'redirect':	$loc = (strncasecmp((string) ee()->config->item('banishment_url'), 'http://', 7) != 0) ? 'http://' . ee()->config->item('banishment_url') : ee()->config->item('banishment_url');
+                header("location:$loc");
 
                 break;
             case 'message':	echo ee()->config->item('banishment_message');
 
                 break;
-            default:	header("Status: 404 Not Found"); echo "Status: 404 Not Found";
+            default:	header("Status: 404 Not Found");
+                echo "Status: 404 Not Found";
 
                 break;
         }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -64,7 +65,7 @@ class Sets extends AbstractChannelsController
                     ->now();
 
                 $vars['errors'] = $errors;
-            } elseif (strtolower(pathinfo($set_file['name'], PATHINFO_EXTENSION)) !== 'zip') {
+            } elseif (strtolower(pathinfo((string) $set_file['name'], PATHINFO_EXTENSION)) !== 'zip') {
                 ee('CP/Alert')->makeInline('shared-form')
                     ->asIssue()
                     ->withTitle(lang('channel_set_filetype_error'))
@@ -137,7 +138,7 @@ class Sets extends AbstractChannelsController
         );
 
         // no path or unacceptable path? abort!
-        if (! $set_path || strpos($set_path, '..') !== false || ! file_exists($set_path)) {
+        if (! $set_path || strpos((string) $set_path, '..') !== false || ! file_exists($set_path)) {
             ee('CP/Alert')->makeInline('shared-form')
                 ->asIssue()
                 ->withTitle(lang('channel_set_upload_error'))

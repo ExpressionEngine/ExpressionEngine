@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -17,7 +18,7 @@ class Tokenizer
 {
     public $ngram;
     public $pattern;
-    
+
     /**
      * __construct
      *
@@ -44,9 +45,9 @@ class Tokenizer
     public function tokenize($string)
     {
         if (! empty($this->pattern)) {
-            $tokens = preg_split("/{$this->pattern}/i", $string);
+            $tokens = preg_split("/{$this->pattern}/i", (string) $string);
         } else {
-            $tokens = str_split($string);
+            $tokens = str_split((string) $string);
         }
 
         $tokens = array_filter($tokens);

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -51,7 +52,7 @@ class EE_Channel_category_parser implements EE_Channel_parser_component
     {
         $cat_chunk = array();
 
-        if (preg_match_all("/" . LD . $prefix . "categories(.*?)" . RD . "(.*?)" . LD . '\/' . $prefix . 'categories' . RD . "/s", $tagdata, $matches)) {
+        if (preg_match_all("/" . LD . $prefix . "categories(.*?)" . RD . "(.*?)" . LD . '\/' . $prefix . 'categories' . RD . "/s", (string) $tagdata, $matches)) {
             for ($j = 0; $j < count($matches[0]); $j++) {
                 $cat_chunk[] = array(
                     $matches[2][$j],
@@ -85,7 +86,7 @@ class EE_Channel_category_parser implements EE_Channel_parser_component
         // Check to see if the category chunks still exist; if not, check
         // the tagdata in case they've been modified since pre-processing
         foreach ($cat_chunk as $chunk) {
-            if (strpos($tagdata, $chunk[2]) === false) {
+            if (strpos((string) $tagdata, (string) $chunk[2]) === false) {
                 $cat_chunk = $this->_get_cat_chunks($tagdata, $prefix);
 
                 $obj->preparsed()->set_once_data($this, $cat_chunk);
@@ -143,16 +144,16 @@ class EE_Channel_category_parser implements EE_Channel_parser_component
                 foreach ($filtered_categories as $k => $v) {
                     $temp = $catval[0];
 
-                    if (preg_match_all("#" . LD . "path=(.+?)" . RD . "#", $temp, $matches)) {
+                    if (preg_match_all("#" . LD . "path=(.+?)" . RD . "#", (string) $temp, $matches)) {
                         foreach ($matches[1] as $match) {
                             if ($obj->channel()->use_category_names == true) {
-                                $temp = preg_replace("#" . LD . "path=.+?" . RD . "#", reduce_double_slashes(ee()->functions->create_url($match) . '/' . $obj->channel()->reserved_cat_segment . '/' . $v[6]), $temp, 1);
+                                $temp = preg_replace("#" . LD . "path=.+?" . RD . "#", (string) reduce_double_slashes(ee()->functions->create_url($match) . '/' . $obj->channel()->reserved_cat_segment . '/' . $v[6]), (string) $temp, 1);
                             } else {
-                                $temp = preg_replace("#" . LD . "path=.+?" . RD . "#", reduce_double_slashes(ee()->functions->create_url($match) . '/C' . $v[0]), $temp, 1);
+                                $temp = preg_replace("#" . LD . "path=.+?" . RD . "#", (string) reduce_double_slashes(ee()->functions->create_url($match) . '/C' . $v[0]), (string) $temp, 1);
                             }
                         }
                     } else {
-                        $temp = preg_replace("#" . LD . "path=.+?" . RD . "#", ee()->functions->create_url("SITE_INDEX"), $temp);
+                        $temp = preg_replace("#" . LD . "path=.+?" . RD . "#", (string) ee()->functions->create_url("SITE_INDEX"), (string) $temp);
                     }
 
                     // super confusing, so documenting this legacy array here:
@@ -215,15 +216,15 @@ class EE_Channel_category_parser implements EE_Channel_parser_component
         } else {
             $replacement = '';
 
-            if (strpos($tagdata, 'if no_results') !== false
-                && preg_match('/' . LD . 'if no_results' . RD . '(.*?)' . LD . '\/if' . RD . '/s', $tagdata, $match)) {
+            if (strpos((string) $tagdata, 'if no_results') !== false
+                && preg_match('/' . LD . 'if no_results' . RD . '(.*?)' . LD . '\/if' . RD . '/s', (string) $tagdata, $match)) {
                 $replacement = $match[1];
             }
 
             $tagdata = preg_replace(
                 '/{' . $tagname . '[^}]*}(.+?){\/' . $tagname . '[^}]*}/is',
                 $replacement,
-                $tagdata
+                (string) $tagdata
             );
         }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -28,7 +29,7 @@ class Collection extends CoreCollection
      */
     public function __get($key)
     {
-        if (ucfirst($key) != $key) {
+        if (ucfirst((string) $key) != $key) {
             throw new InvalidArgumentException('Trying to get a non-relationship property on a collection. Did you mean `pluck()`?');
         }
 
@@ -213,7 +214,7 @@ class Collection extends CoreCollection
                     return ! in_array($m->$k, $v);
                 };
             default:
-                throw new InvalidArgumentException('Not a valid operator: ' . htmlentities($operator));
+                throw new InvalidArgumentException('Not a valid operator: ' . htmlentities((string) $operator));
         }
     }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -116,7 +117,7 @@ class View
      */
     public function head_title($title)
     {
-        return '<title>' . strip_tags($title) . ' | ExpressionEngine</title>' . PHP_EOL;
+        return '<title>' . strip_tags((string) $title) . ' | ExpressionEngine</title>' . PHP_EOL;
     }
 
     /**
@@ -263,7 +264,7 @@ class View
      */
     protected function _get_theme_from_path($path)
     {
-        $path = '/' . trim($path, '/');
+        $path = '/' . trim((string) $path, '/');
 
         $theme_name = ltrim(strrchr($path, '/'), '/');
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -7,7 +8,6 @@
  * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -80,9 +80,9 @@ class Pro_search_filter_field_search extends Pro_search_filter
             if ($this->fields->is_native($key)) {
                 // (URL) Title search
                 $queries[$native_table][] = $this->fields->sql($native_table . '.' . $key, $val);
-            } elseif (strpos($key, ':')) {
+            } elseif (strpos((string) $key, ':')) {
                 // Search grid or matrix cols
-                list($field_name, $col_name) = explode(':', $key, 2);
+                list($field_name, $col_name) = explode(':', (string) $key, 2);
 
                 // Skip invalid fields
                 if (! ($field_id = $this->fields->id($field_name))) {

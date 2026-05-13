@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -42,10 +43,10 @@ class Updater
         $warning = false;
         $directories = array();
         // Get all of the file upload directories and see if any are using themes/ee
-        $upload_destinations =  ee('db')->from('upload_prefs')->get();
+        $upload_destinations = ee('db')->from('upload_prefs')->get();
 
         foreach ($upload_destinations->result() as $upload) {
-            if (strpos($upload->server_path, 'themes/ee/site/default/asset/img/') !== false) {
+            if (strpos((string) $upload->server_path, 'themes/ee/site/default/asset/img/') !== false) {
                 $warning = true;
                 $directories[$upload->server_path] = $upload->name;
             }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -64,7 +65,7 @@ class Email
         );
 
         if ($cond['captcha'] && ee()->config->item('use_recaptcha') == 'y') {
-            $tagdata = preg_replace("/{if captcha}.+?{\/if}/s", ee('Captcha')->create(), $tagdata);
+            $tagdata = preg_replace("/{if captcha}.+?{\/if}/s", (string) ee('Captcha')->create(), (string) $tagdata);
         }
 
         $tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
@@ -78,7 +79,7 @@ class Email
             if (in_array($key, array('message', 'name', 'to', 'from', 'subject', 'required'))) {
                 // Adding slashes since they removed in _setup_form
                 $var = addslashes(
-                    form_prep(
+                    (string) form_prep(
                         ee()->functions->encode_ee_tags(
                             ee()->input->post($key, true),
                             true
@@ -105,7 +106,7 @@ class Email
             }
 
             // {current_time}
-            if (strncmp($key, 'current_time', 12) == 0) {
+            if (strncmp((string) $key, 'current_time', 12) == 0) {
                 $tagdata = ee()->TMPL->swap_var_single($key, ee()->localize->format_date($val), $tagdata);
             }
 
@@ -258,7 +259,7 @@ class Email
         // was accessed through the Pages module
         $qstring = (empty(ee()->uri->page_query_string)) ? ee()->uri->query_string : ee()->uri->page_query_string;
 
-        if (preg_match("#/P(\d+)#", $qstring, $match)) {
+        if (preg_match("#/P(\d+)#", (string) $qstring, $match)) {
             $current_page = $match['1'];
 
             $qstring = reduce_double_slashes(str_replace($match[0], '', $qstring));
@@ -267,7 +268,7 @@ class Email
         // Remove "N"
         // The recent comments feature uses "N" as the URL indicator
         // It needs to be removed if presenst
-        if (preg_match("#/N(\d+)#", $qstring, $match)) {
+        if (preg_match("#/N(\d+)#", (string) $qstring, $match)) {
             $qstring = reduce_double_slashes(str_replace($match[0], '', $qstring));
         }
 
@@ -282,7 +283,7 @@ class Email
                 return $tagdata;
             }
         } else { // Else Do the Default Channel Processing
-            $entry_id = trim($qstring);
+            $entry_id = trim((string) $qstring);
 
             // If there is a slash in the entry ID we'll kill everything after it.
             $entry_id = preg_replace("#/.+#", "", $entry_id);
@@ -351,7 +352,7 @@ class Email
         $cond['captcha'] = ($this->use_captchas == 'y') ? true : false;
 
         if ($cond['captcha'] && ee()->config->item('use_recaptcha') == 'y') {
-            $tagdata = preg_replace("/{if captcha}.+?{\/if}/s", ee('Captcha')->create(), $tagdata);
+            $tagdata = preg_replace("/{if captcha}.+?{\/if}/s", (string) ee('Captcha')->create(), (string) $tagdata);
         }
 
         $tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
@@ -363,7 +364,7 @@ class Email
         foreach ($default as $key) {
             // Adding slashes since they removed in _setup_form
             $var = addslashes(
-                form_prep(
+                (string) form_prep(
                     ee()->functions->encode_ee_tags(
                         ee()->input->post($key, true),
                         true
@@ -484,7 +485,7 @@ class Email
                     $_POST[$val] = $this->_decrypt($_POST[$val]);
                 }
 
-                $_POST[$val] = ee('Security/XSS')->clean(trim(stripslashes($_POST[$val])));
+                $_POST[$val] = ee('Security/XSS')->clean(trim(stripslashes((string) $_POST[$val])));
             }
         }
 
@@ -493,7 +494,7 @@ class Email
             'name');
 
         foreach ($clean as $val) {
-            $_POST[$val] = strip_tags($_POST[$val]);
+            $_POST[$val] = strip_tags((string) $_POST[$val]);
         }
 
         ee()->lang->loadfile('email');
@@ -518,6 +519,7 @@ class Email
         // If no recipients, bounce them back
         if ($_POST['recipients'] == '' && $_POST['to'] == '') {
             $key = (empty($_POST['recipients'])) ? 'recipients' : 'to';
+
             return ee()->output->show_form_error([$key =>lang('em_no_valid_recipients')]);
         }
 
@@ -609,6 +611,7 @@ class Email
         if ($this->use_captchas == 'y') {
             if (! isset($_POST['captcha']) or $_POST['captcha'] == '') {
                 $captcha_error = ee()->config->item('use_recaptcha') == 'y' ? ee()->lang->line('recaptcha_required') : ee()->lang->line('captcha_required');
+
                 return ee()->output->show_form_error(['captcha' => $captcha_error]);
             }
 
@@ -619,6 +622,7 @@ class Email
 
             if ($query->row('count') == 0) {
                 $captcha_error = ee()->config->item('use_recaptcha') == 'y' ? ee()->lang->line('recaptcha_required') : ee()->lang->line('captcha_incorrect');
+
                 return ee()->output->show_form_error(['captcha' => $captcha_error], 'submission');
             }
 
@@ -682,14 +686,14 @@ class Email
     {
         // Define a few settings
         if (isset($data['allow_html']) && $data['allow_html'] == 'y' &&
-            strlen(strip_tags($message)) != strlen($message)) {
+            strlen(strip_tags((string) $message)) != strlen((string) $message)) {
             $mail_type = 'html';
         } else {
             $mail_type = 'text';
         }
 
         // Return Variables
-        $x = explode('|', $_POST['RET']);
+        $x = explode('|', (string) $_POST['RET']);
         unset($_POST['RET']);
 
         if (is_numeric($x['0'])) {
@@ -704,7 +708,7 @@ class Email
             }
         }
 
-        $site_name = (ee()->config->item('site_name') == '') ? lang('back') : stripslashes(ee()->config->item('site_name'));
+        $site_name = (ee()->config->item('site_name') == '') ? lang('back') : stripslashes((string) ee()->config->item('site_name'));
 
         $return_name = (! isset($x['1']) or $x['1'] == '') ? $site_name : $x['1'];
 
@@ -720,10 +724,10 @@ class Email
         // add attachments, if authorized
         if (! empty($_FILES) && isset($_POST['allow_attachments'])
              && get_bool_from_string(
-                    // decrypted text will be "allow_attachments_[y/n]"
-                    substr($this->_decrypt($_POST['allow_attachments']), -1)
+                 // decrypted text will be "allow_attachments_[y/n]"
+                 substr($this->_decrypt($_POST['allow_attachments']), -1)
              )
-            ) {
+        ) {
             if (isset($_FILES['attachment']['name']) && isset($_FILES['attachment']['tmp_name'])) {
                 ee()->email->attach($_FILES['attachment']['tmp_name'], '', $_FILES['attachment']['name']);
             }
@@ -833,7 +837,7 @@ class Email
     public function validate_recipients($str)
     {
         // Remove white space and replace with comma
-        $recipients = preg_replace("/\s*(\S+)\s*/", "\\1,", $str);
+        $recipients = preg_replace("/\s*(\S+)\s*/", "\\1,", (string) $str);
 
         // Remove any existing doubles
         $recipients = str_replace(",,", ",", $recipients);
@@ -854,7 +858,7 @@ class Email
         ee()->load->helper('email');
 
         foreach ($emails as $email) {
-            if (trim($email) == '') {
+            if (trim((string) $email) == '') {
                 continue;
             }
 
@@ -928,7 +932,7 @@ class Email
 
         $name = ee()->TMPL->fetch_param('name', false);
 
-        if ($name && preg_match("#^[a-zA-Z0-9_\-]+$#i", $name, $match)) {
+        if ($name && preg_match("#^[a-zA-Z0-9_\-]+$#i", (string) $name, $match)) {
             $data['name'] = $name;
         }
 

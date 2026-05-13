@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -53,7 +54,7 @@ class ModelGenerator extends AbstractGenerator
         $modelStub = $this->filesystem->read($this->stub('model.php'));
         $modelStub = $this->write('namespace', $this->namespace, $modelStub);
         $modelStub = $this->write('class', $this->className, $modelStub);
-        $modelStub = $this->write('addon', strtolower($this->addon), $modelStub);
+        $modelStub = $this->write('addon', strtolower((string) $this->addon), $modelStub);
 
         $this->putFile($this->className . '.php', $modelStub, 'Model');
 
@@ -76,13 +77,13 @@ class ModelGenerator extends AbstractGenerator
         // The addon setup has the models array
         if (array_key_exists('models', $addonSetupArray)) {
             $pattern = "/(models)([^=]+)(=>\s)(array\(|\[)([^\S]*)([\s])([\s\S]*)$/";
-            $addonSetupFile = preg_replace($pattern, "$1$2$3$4\n$modelStub$5$6$7", $addonSetupFile);
+            $addonSetupFile = preg_replace($pattern, "$1$2$3$4\n$modelStub$5$6$7", (string) $addonSetupFile);
             $this->filesystem->write($this->addonPath . 'addon.setup.php', $addonSetupFile, true);
         } else { // The addon setup does not have the models array
             $modelsStub = $this->filesystem->read($this->stub('model.addon.php'));
             $modelsStub = $this->write('model_data', $modelStub, $modelsStub);
             $pattern = '/(,)([^,]+)$/';
-            $addonSetupFile = preg_replace($pattern, ",\n    $modelsStub $2", $addonSetupFile);
+            $addonSetupFile = preg_replace($pattern, ",\n    $modelsStub $2", (string) $addonSetupFile);
             $this->filesystem->write($this->addonPath . 'addon.setup.php', $addonSetupFile, true);
         }
     }

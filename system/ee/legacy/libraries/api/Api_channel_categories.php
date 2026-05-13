@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -65,7 +66,7 @@ class Api_channel_categories extends Api
         $group_ids = $group_id;
 
         if (! is_array($group_id)) {
-            $group_ids = explode('|', $group_id);
+            $group_ids = explode('|', (string) $group_id);
         }
 
         $catarray = array();
@@ -302,7 +303,7 @@ class Api_channel_categories extends Api
     {
         if (ee('Permission')->can('admin_channels') or ee('Permission')->can('edit_categories')) {
             if (! is_array($cat_group)) {
-                $cat_group = explode('|', $cat_group);
+                $cat_group = explode('|', (string) $cat_group);
             }
 
             ee()->load->model('category_model');

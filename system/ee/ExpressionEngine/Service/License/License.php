@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -118,10 +119,10 @@ class License
         }
 
         $this->signed_data = $license['data'];
-        $this->data = json_decode($license['data'], true);
+        $this->data = json_decode((string) $license['data'], true);
 
         if (isset($license['signature'])) {
-            $this->signature = base64_decode($license['signature']);
+            $this->signature = base64_decode((string) $license['signature']);
         }
     }
 

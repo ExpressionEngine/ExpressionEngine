@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -39,10 +40,10 @@ class Document implements Iterator
     public function __construct($text, $tokenizer, $clean = true)
     {
         if ($clean === true) {
-            $text = preg_replace("/[^a-zA-Z0-9\s]/", "", $text);
+            $text = preg_replace("/[^a-zA-Z0-9\s]/", "", (string) $text);
         }
 
-        $text = trim($text);
+        $text = trim((string) $text);
         $this->tokenizer = $tokenizer;
         $this->text = $text;
         $this->frequency = $this->calculateFrequency($text);
@@ -96,7 +97,7 @@ class Document implements Iterator
         $max = 0;
 
         foreach ($words as $word) {
-            $word = strtolower($word);
+            $word = strtolower((string) $word);
 
             if (isset($count[$word])) {
                 $count[$word]++;

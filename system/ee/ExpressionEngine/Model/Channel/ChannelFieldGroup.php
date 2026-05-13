@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -125,7 +126,7 @@ class ChannelFieldGroup extends Model
     public function onBeforeValidate()
     {
         if (empty($this->getProperty('short_name')) && !empty($this->getProperty('group_name'))) {
-            $this->setProperty('short_name', substr('field_group_' . preg_replace('/\s+/', '_', strtolower($this->getProperty('group_name'))), 0, 50));
+            $this->setProperty('short_name', substr('field_group_' . preg_replace('/\s+/', '_', strtolower((string) $this->getProperty('group_name'))), 0, 50));
         }
     }
 
@@ -169,6 +170,7 @@ class ChannelFieldGroup extends Model
 
             return ee('View')->make('publish/partials/name_badge_copy')->render($vars);
         }
+
         return '';
     }
 }

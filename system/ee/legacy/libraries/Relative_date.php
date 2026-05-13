@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -155,7 +156,7 @@ class Relative_date_object
             $unit = end($this->_calculated_units);
             reset($this->_calculated_units);
 
-            $str = $this->less_than . ' ' . $this->singular . ' ' . lang(rtrim($unit, 's'));
+            $str = $this->less_than . ' ' . $this->singular . ' ' . lang(rtrim((string) $unit, 's'));
         } else {
             if (is_numeric($depth) and $depth > 0) {
                 // Check to see if we need to round the smallest displayed unit

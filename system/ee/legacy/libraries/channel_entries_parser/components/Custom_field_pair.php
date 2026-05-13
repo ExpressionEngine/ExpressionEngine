@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -93,7 +94,7 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
         // fields were removed from the tagdata.
         foreach ($pfield_chunks[$site_id] as $tag_name => $chunks) {
             foreach ($chunks as $chk_data) {
-                if (strpos($tagdata, $chk_data[3]) === false) {
+                if (strpos((string) $tagdata, (string) $chk_data[3]) === false) {
                     $pfield_chunks[$site_id][$tag_name] = ee()->api_channel_fields->get_pair_field(
                         $tagdata,
                         $tag_name,
@@ -110,7 +111,7 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
         $pfield_chunk = $pfield_chunks[$site_id];
 
         foreach ($pfield_chunk as $tag_name => $chunks) {
-            $field_name = preg_replace('/^' . $prefix . '/', '', $tag_name);
+            $field_name = preg_replace('/^' . $prefix . '/', '', (string) $tag_name);
             $field_name = substr($field_name, strpos($field_name, ' '));
             $field_id = $cfields[$field_name];
 

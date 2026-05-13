@@ -9,7 +9,7 @@
  */
 
 use Michelf\MarkdownExtra;
-use  ExpressionEngine\Core\Autoloader;
+use ExpressionEngine\Core\Autoloader;
 
 /**
  * Core Typography
@@ -75,8 +75,8 @@ class EE_Typography
     private $quote_marker = null;
 
     // tag bracket constants for use in Safe HTML / BBcode parsing
-    const HTML_BRACKETS = 1;
-    const BBCODE_BRACKETS = 2;
+    public const HTML_BRACKETS = 1;
+    public const BBCODE_BRACKETS = 2;
 
     /**
      * Constructor
@@ -250,20 +250,20 @@ class EE_Typography
         }
 
         // Standardize Newlines to make matching easier
-        if (strpos($str, "\r") !== false) {
+        if (strpos((string) $str, "\r") !== false) {
             $str = str_replace(array("\r\n", "\r"), "\n", $str);
         }
 
         // Reduce line breaks.  If there are more than two consecutive linebreaks
         // we'll compress them down to a maximum of two since there's no benefit to more.
         if ($reduce_linebreaks === true) {
-            $str = preg_replace("/\n\n+/", "\n\n", $str);
+            $str = preg_replace("/\n\n+/", "\n\n", (string) $str);
         }
 
         // HTML comment tags don't conform to patterns of normal tags, so pull them out separately, only if needed
         $html_comments = array();
-        if (strpos($str, '<!--') !== false) {
-            if (preg_match_all("#(<!\-\-.*?\-\->)#s", $str, $matches)) {
+        if (strpos((string) $str, '<!--') !== false) {
+            if (preg_match_all("#(<!\-\-.*?\-\->)#s", (string) $str, $matches)) {
                 for ($i = 0, $total = count($matches[0]); $i < $total; $i++) {
                     $html_comments[] = $matches[0][$i];
                     $str = str_replace($matches[0][$i], '{@HC' . $i . '}', $str);
@@ -273,12 +273,12 @@ class EE_Typography
 
         // match and yank <pre> tags if they exist.  It's cheaper to do this separately since most content will
         // not contain <pre> tags, and it keeps the PCRE patterns below simpler and faster
-        if (strpos($str, '<pre') !== false) {
-            $str = preg_replace_callback("#<pre.*?>.*?</pre>#si", array($this, '_protect_characters'), $str);
+        if (strpos((string) $str, '<pre') !== false) {
+            $str = preg_replace_callback("#<pre.*?>.*?</pre>#si", array($this, '_protect_characters'), (string) $str);
         }
 
         // Convert quotes within tags to temporary markers.
-        $str = preg_replace_callback("#<.+?>#si", array($this, '_protect_characters'), $str);
+        $str = preg_replace_callback("#<.+?>#si", array($this, '_protect_characters'), (string) $str);
 
         // Do the same with braces if necessary
         if ($this->protect_braced_quotes === true) {
@@ -357,7 +357,7 @@ class EE_Typography
             // remove surrounding paragraph tags, but only if there's an opening paragraph tag
             // otherwise HTML comments at the ends of paragraphs will have the closing tag removed
             // if '<p>{@HC1}' then replace <p>{@HC1}</p> with the comment, else replace only {@HC1} with the comment
-            $str = preg_replace('#(?(?=<p>\{@HC' . $i . '\})<p>\{@HC' . $i . '\}(\s*</p>)|\{@HC' . $i . '\})#s', $html_comments[$i], $str);
+            $str = preg_replace('#(?(?=<p>\{@HC' . $i . '\})<p>\{@HC' . $i . '\}(\s*</p>)|\{@HC' . $i . '\})#s', $html_comments[$i], (string) $str);
         }
 
         // Final clean up
@@ -404,7 +404,7 @@ class EE_Typography
             $table['#<p></p>#'] = '<p>&nbsp;</p>';
         }
 
-        return preg_replace(array_keys($table), $table, $str);
+        return preg_replace(array_keys($table), $table, (string) $str);
     }
 
     /**
@@ -467,7 +467,7 @@ class EE_Typography
             );
         }
 
-        return preg_replace(array_keys($table), $table, $str);
+        return preg_replace(array_keys($table), $table, (string) $str);
     }
 
     /**
@@ -485,7 +485,7 @@ class EE_Typography
             return $str;
         }
 
-        if (strpos($str, "\n") === false && ! in_array($this->last_block_element, $this->inner_block_required)) {
+        if (strpos((string) $str, "\n") === false && ! in_array($this->last_block_element, $this->inner_block_required)) {
             return $str;
         }
 
@@ -536,7 +536,7 @@ class EE_Typography
      */
     public function nl2br_except_pre($str)
     {
-        $ex = explode("pre>", $str);
+        $ex = explode("pre>", (string) $str);
         $ct = count($ex);
 
         $newstr = "";
@@ -562,7 +562,7 @@ class EE_Typography
      */
     public function parse_file_paths($str)
     {
-        if ($this->parse_images == false or (strpos($str, '{filedir_') === false && strpos($str, '{file:') === false)) {
+        if ($this->parse_images == false or (strpos((string) $str, '{filedir_') === false && strpos((string) $str, '{file:') === false)) {
             return $str;
         }
 
@@ -606,7 +606,7 @@ class EE_Typography
 
         // Handle single line paragraphs
         if ($this->single_line_pgfs != true) {
-            if ($this->text_format == 'xhtml' and strpos($str, "\r") === false and strpos($str, "\n") === false) {
+            if ($this->text_format == 'xhtml' and strpos((string) $str, "\r") === false and strpos((string) $str, "\n") === false) {
                 $this->text_format = 'lite';
             }
         }
@@ -649,8 +649,8 @@ class EE_Typography
         // be formatted as redirects, to prevent the control panel address from
         // showing up in referrer logs except when sending emails, where we
         // don't want created links piped through the site
-        if (REQ == 'CP' && $this->bbencode_links && strpos($str, 'href=') !== false) {
-            $str = preg_replace("#<a\s+(.*?)href=(\042|\047)([^\\2]*?)\\2(.*?)\>(.*?)</a>#si", "[url=\"\\3\"\\1\\4]\\5[/url]", $str);
+        if (REQ == 'CP' && $this->bbencode_links && strpos((string) $str, 'href=') !== false) {
+            $str = preg_replace("#<a\s+(.*?)href=(\042|\047)([^\\2]*?)\\2(.*?)\>(.*?)</a>#si", "[url=\"\\3\"\\1\\4]\\5[/url]", (string) $str);
         }
 
         //  Decode BBCode
@@ -712,7 +712,7 @@ class EE_Typography
 
         // Decode {encode=...} only in the CP since the template parser handles
         // this for page requets
-        if (REQ == 'CP' && strpos($str, '{encode=') !== false) {
+        if (REQ == 'CP' && strpos((string) $str, '{encode=') !== false) {
             ee()->load->library('template', null, 'TMPL');
             $str = ee()->TMPL->parse_encode_email($str);
         }
@@ -796,7 +796,7 @@ class EE_Typography
             ee()->load->library('template', null, 'TMPL');
         }
 
-        $plugin = ucfirst($this->text_format);
+        $plugin = ucfirst((string) $this->text_format);
 
         if (! class_exists($plugin)) {
             if (in_array($this->text_format, ee()->core->native_plugins)) {
@@ -931,22 +931,22 @@ class EE_Typography
         );
 
         foreach ($js as $val) {
-            if (stristr($str, $val) !== false) {
-                $str = preg_replace("/<img src\s*=(.+?)" . $val . "\s*\=.+?\>/i", "<img src=\\1 />", $str);
+            if (stristr((string) $str, $val) !== false) {
+                $str = preg_replace("/<img src\s*=(.+?)" . $val . "\s*\=.+?\>/i", "<img src=\\1 />", (string) $str);
                 $str = preg_replace("/<a href\s*=(.+?)" . $val . "\s*\=.+?\>/i", "<a href=\\1>", $str);
             }
         }
 
         // Turn <br /> tags into newlines
 
-        if (stristr($str, '<br') !== false) {
-            $str = preg_replace("#<br>|<br />#i", "\n", $str);
+        if (stristr((string) $str, '<br') !== false) {
+            $str = preg_replace("#<br>|<br />#i", "\n", (string) $str);
         }
 
         // Strip paragraph tags
 
-        if (stristr($str, '<p') !== false) {
-            $str = preg_replace("#<(/)?pre[^>]*?>#i", "<$1pre>", $str);
+        if (stristr((string) $str, '<p') !== false) {
+            $str = preg_replace("#<(/)?pre[^>]*?>#i", "<$1pre>", (string) $str);
             $str = preg_replace("#<p>|<p(?!re)[^>]*?" . ">|</p>#i", "", preg_replace("#<\/p><p(?!re)[^>]*?" . ">#i", "\n", $str));
         }
 
@@ -963,8 +963,8 @@ class EE_Typography
                         $str
                     );
                 }
-            } elseif (stristr($str, $val . '>') !== false) {
-                $str = preg_replace("#<" . $val . ">(.+?)</" . $val . ">#si", "[$val]\\1[/$val]", $str);
+            } elseif (stristr((string) $str, $val . '>') !== false) {
+                $str = preg_replace("#<" . $val . ">(.+?)</" . $val . ">#si", "[$val]\\1[/$val]", (string) $str);
             }
         }
 
@@ -976,8 +976,8 @@ class EE_Typography
         // preg_replace("#<a\s+href=[\"'](\S+?)[\"'](.*?)\>(.*?)</a>#si",
         // "[url=\"\\1\"\\2]\\3[/url]", $str);
 
-        if (stristr($str, '<a') !== false) {
-            $str = preg_replace("#<a\s+(.*?)href=(\042|\047)([^\\2]*?)\\2(.*?)\>(.*?)</a>#si", "[url=\"\\3\"\\1\\4]\\5[/url]", $str);
+        if (stristr((string) $str, '<a') !== false) {
+            $str = preg_replace("#<a\s+(.*?)href=(\042|\047)([^\\2]*?)\\2(.*?)\>(.*?)</a>#si", "[url=\"\\3\"\\1\\4]\\5[/url]", (string) $str);
         }
 
         // Convert image tags BBCode
@@ -1016,7 +1016,7 @@ class EE_Typography
             // only keep the ones we allow, ditch the rest
             if (in_array($p_match[1], $allowed_attributes)) {
                 $attr_content = htmlspecialchars(
-                    ee('Security/XSS')->clean($p_match[3]),
+                    (string) ee('Security/XSS')->clean($p_match[3]),
                     ENT_QUOTES,
                     'UTF-8'
                 );
@@ -1135,12 +1135,12 @@ class EE_Typography
         }
 
         // Replace tabs with spaces
-        if (strpos($str, "\t") !== false) {
-            $str = preg_replace("/^\t/m", "    ", $str);
+        if (strpos((string) $str, "\t") !== false) {
+            $str = preg_replace("/^\t/m", "    ", (string) $str);
         }
 
         // Now process tab indented code blocks
-        if (strpos($str, '    ') !== false) {
+        if (strpos((string) $str, '    ') !== false) {
             $str = preg_replace_callback(
                 '/
 				# Must be beginning of line OR file
@@ -1161,7 +1161,7 @@ class EE_Typography
                         $matches[0]
                     );
                 },
-                $str
+                (string) $str
             );
         }
 
@@ -1207,11 +1207,11 @@ class EE_Typography
 			  \)
 			)
 			}xs',
-            $str,
+            (string) $str,
             $link_matches,
             $options
         )
-            ) {
+        ) {
             return $link_matches;
         }
 
@@ -1306,7 +1306,7 @@ class EE_Typography
             $str,
             $link_matches
         )
-            ) {
+        ) {
             return $str;
         }
 
@@ -1324,7 +1324,7 @@ class EE_Typography
             if (empty($link_matches[4][$key])) {
                 $title = '';
             } else {
-                if (strpos($link_matches[4][$key], '"') !== false) {
+                if (strpos((string) $link_matches[4][$key], '"') !== false) {
                     $title = ' (' . $link_matches[4][$key] . ')';
                 } else {
                     $title = ' "' . $link_matches[4][$key] . '"';
@@ -1435,7 +1435,7 @@ class EE_Typography
                 $angle_bracket_url = isset($match[3]) && $match[3][0] !== '';
                 $url_match = $angle_bracket_url ? $match[3] : $match[4];
                 $url = $url_match[0];
-                $protocol_relative_url = strpos($url, '//') === 0;
+                $protocol_relative_url = strpos((string) $url, '//') === 0;
                 $decoded_url = str_replace(' ', '%20', $this->decodeIDN($url));
 
                 // decodeIDN() adds a temporary scheme for parsing; Markdown links preserve this form.
@@ -1443,7 +1443,7 @@ class EE_Typography
                     $decoded_url = preg_replace('#^https?:#i', '', $decoded_url);
                 }
 
-                $str = substr_replace($str, $decoded_url, $url_match[1], strlen($url));
+                $str = substr_replace($str, $decoded_url, $url_match[1], strlen((string) $url));
             }
         }
 
@@ -1512,22 +1512,22 @@ class EE_Typography
         // Edit: Added a check for the trailing 6 characters for an edgecase
         // where the inner url was valid, but did not exactly match the other:
         // [url=http://www.iblamepaul.com]www.iblamepaul.com[/url] ;) -pk
-        $str = preg_replace_callback("#(^|\s|\(|..\])((http(s?)://)|(www\.))(\w+[^\s\)\<\[]+)(.{0,6})#im", array(&$this, 'auto_linker_callback'), $str);
+        $str = preg_replace_callback("#(^|\s|\(|..\])((http(s?)://)|(www\.))(\w+[^\s\)\<\[]+)(.{0,6})#im", array(&$this, 'auto_linker_callback'), (string) $str);
 
         // Auto link email
-        if (strpos($str, '@') !== false) {
+        if (strpos((string) $str, '@') !== false) {
             // special treatment if it's in a mailto link
-            if (strpos($str, 'mailto:') !== false) {
+            if (strpos((string) $str, 'mailto:') !== false) {
                 $email_no_captures = '[a-zA-Z0-9_\.\-]+@[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-\.]*';
-                $str = preg_replace('/<a\s+[^<>]*?href=(\042|\047)mailto:(' . $email_no_captures . ')\\1[^<>]*?>([^<]*)<\/a>/i', '[email=\\2]\\3[/email]', $str);
+                $str = preg_replace('/<a\s+[^<>]*?href=(\042|\047)mailto:(' . $email_no_captures . ')\\1[^<>]*?>([^<]*)<\/a>/i', '[email=\\2]\\3[/email]', (string) $str);
             }
 
-            $str = preg_replace("/(^|\s|\(|\>)([a-zA-Z0-9_\.\-]+)@([a-zA-Z0-9\-]+)\.([a-zA-Z0-9\-\.]*)/i", "\\1[email]\\2@\\3.\\4[/email]", $str);
+            $str = preg_replace("/(^|\s|\(|\>)([a-zA-Z0-9_\.\-]+)@([a-zA-Z0-9\-]+)\.([a-zA-Z0-9\-\.]*)/i", "\\1[email]\\2@\\3.\\4[/email]", (string) $str);
         }
 
         // Clear period(s) from the end of emails
-        if (strpos($str, 'email]') !== false) {
-            $str = preg_replace("|(\.+)\[\/email\]|i ", "[/email]\\1", $str);
+        if (strpos((string) $str, 'email]') !== false) {
+            $str = preg_replace("|(\.+)\[\/email\]|i ", "[/email]\\1", (string) $str);
         }
 
         // UnProtect URLs that are already in [url] BBCode
@@ -1542,10 +1542,10 @@ class EE_Typography
     public function auto_linker_callback($matches)
     {
         //  If it is in BBCode, then we do not auto link
-        if (strtolower($matches[1]) == 'mg]' or
-            strtolower($matches[1]) == 'rl]' or
-            strtolower($matches[7]) == '[/url]'
-            ) {
+        if (strtolower((string) $matches[1]) == 'mg]' or
+            strtolower((string) $matches[1]) == 'rl]' or
+            strtolower((string) $matches[7]) == '[/url]'
+        ) {
             return $matches['0'];
         }
 
@@ -1554,7 +1554,7 @@ class EE_Typography
         /** -----------------------------------*/
         $end = '';
 
-        if (preg_match("/^(.+?)([\.\,\?\!\:\;]+)$/", $matches['6'], $punc_match)) {
+        if (preg_match("/^(.+?)([\.\,\?\!\:\;]+)$/", (string) $matches['6'], $punc_match)) {
             $end = $punc_match[2];
             $matches[6] = $punc_match[1];
         }
@@ -1593,7 +1593,7 @@ class EE_Typography
                 && $matches = $this->matchFullTags($key, $str, self::BBCODE_BRACKETS)) {
                 foreach ($matches as $tag_match) {
                     // If there's any evidence of XSS then don't add anything
-                    if (stripos($tag_match[0], '[removed]') !== false) {
+                    if (stripos((string) $tag_match[0], '[removed]') !== false) {
                         $str = str_replace($tag_match[0], '', $str);
                     } else {
                         $str = str_replace(
@@ -1749,7 +1749,7 @@ class EE_Typography
 
             if ($this->allow_img_url == 'y') {
                 $str = preg_replace_callback("/\[img\](.*?)\[\/img\]/i", array($this, "image_sanitize"), $str);
-            // $str = preg_replace("/\[img\](.*?)\[\/img\]/i", "<img src=\\1 />", $str);
+                // $str = preg_replace("/\[img\](.*?)\[\/img\]/i", "<img src=\\1 />", $str);
             } elseif ($this->auto_links == 'y' && $this->html_format != 'none') {
                 if (preg_match_all("/\[img\](.*?)\[\/img\]/is", $str, $matches)) {
                     for ($i = 0, $s = count($matches['0']); $i < $s; ++$i) {
@@ -1763,29 +1763,29 @@ class EE_Typography
 
         // Add quotes back to image tag if missing
 
-        if (strpos($str, '<img src=') !== false) {
-            $str = preg_replace("/<img src=([^\"\'\s]+)(.*?)\/\>/i", "<img src=\"\\1\" \\2/>", $str);
+        if (strpos((string) $str, '<img src=') !== false) {
+            $str = preg_replace("/<img src=([^\"\'\s]+)(.*?)\/\>/i", "<img src=\"\\1\" \\2/>", (string) $str);
         }
 
         /** -------------------------------------
         /**  Decode color tags
         /** -------------------------------------*/
-        if (strpos($str, '[color=') !== false) {
+        if (strpos((string) $str, '[color=') !== false) {
             $str = preg_replace_callback(
                 "/\[color=(.*?)\](.*?)\[\/color\]/si",
                 array($this, 'cleanBBCodeAttributesColor'),
-                $str
+                (string) $str
             );
         }
 
         /** -------------------------------------
         /**  Decode size tags
         /** -------------------------------------*/
-        if (strpos($str, '[size=') !== false) {
+        if (strpos((string) $str, '[size=') !== false) {
             $str = preg_replace_callback(
                 "/\[size=(.*?)\](.*?)\[\/size\]/si",
                 array($this, 'cleanBBCodeAttributesSize'),
-                $str
+                (string) $str
             );
         }
 
@@ -1795,11 +1795,11 @@ class EE_Typography
 
         // [style=class_name]stuff..[/style]
 
-        if (strpos($str, '[style=') !== false) {
+        if (strpos((string) $str, '[style=') !== false) {
             $str = preg_replace_callback(
                 "/\[style=(.*?)\](.*?)\[\/style\]/si",
                 array($this, 'cleanBBCodeAttributesStyle'),
-                $str
+                (string) $str
             );
         }
 
@@ -1809,11 +1809,11 @@ class EE_Typography
 
         // [quote author="Brett" date="11231189803874"]...[/quote]
 
-        if (stripos($str, '[quote ') !== false) {
+        if (stripos((string) $str, '[quote ') !== false) {
             $str = preg_replace_callback(
                 '/\[quote\s+author="(.*?)"\s+date="(.*?)"]/si',
                 array($this, 'cleanBBCodeAttributesQuote'),
-                $str
+                (string) $str
             );
         }
 
@@ -1850,7 +1850,7 @@ class EE_Typography
      **/
     private function cleanBBCodeAttributesQuote($matches)
     {
-        $author = htmlentities($matches[1], ENT_QUOTES, 'UTF-8');
+        $author = htmlentities((string) $matches[1], ENT_QUOTES, 'UTF-8');
         $date = filter_var($matches[2], FILTER_SANITIZE_NUMBER_INT);
 
         return "<blockquote author=\"{$author}\" date=\"{$date}\">";
@@ -1900,7 +1900,7 @@ class EE_Typography
     private function cleanBBCodeAttributesColor($matches)
     {
         return '<span style="color:' .
-            preg_replace('/[^a-z]/is', '', $matches[1]) .
+            preg_replace('/[^a-z]/is', '', (string) $matches[1]) .
             ';">' .
             $matches[2] .
             '</span>';
@@ -1915,7 +1915,7 @@ class EE_Typography
     private function cleanBBCodeAttributesStyle($matches)
     {
         return '<span class="' .
-            preg_replace('/[^ \w\-]/is', '', $matches[1]) .
+            preg_replace('/[^ \w\-]/is', '', (string) $matches[1]) .
             '">' .
             $matches[2] .
             '</span>';
@@ -1945,8 +1945,8 @@ class EE_Typography
      */
     public function image_sanitize($matches)
     {
-        if (strpos($matches[1], $this->safe_img_src_end)) {
-            list($url, $extra) = explode($this->safe_img_src_end, $matches[1]);
+        if (strpos((string) $matches[1], (string) $this->safe_img_src_end)) {
+            list($url, $extra) = explode($this->safe_img_src_end, (string) $matches[1]);
         } else {
             $url = $matches[1];
             $extra = '';
@@ -1974,13 +1974,13 @@ class EE_Typography
      */
     public function decode_emails($str)
     {
-        if (strpos($str, '[email') === false) {
+        if (strpos((string) $str, '[email') === false) {
             return $str;
         }
 
         // [email=your@yoursite]email[/email]
 
-        $str = preg_replace_callback("/\[email=(.*?)\](.*?)\[\/email\]/is", array($this, "create_mailto"), $str);
+        $str = preg_replace_callback("/\[email=(.*?)\](.*?)\[\/email\]/is", array($this, "create_mailto"), (string) $str);
 
         // [email]joe@xyz.com[/email]
 
@@ -1994,12 +1994,12 @@ class EE_Typography
      */
     public function create_mailto($matches)
     {
-        if (($space = strpos($matches['1'], ' ')) != false) {
-            $matches['1'] = substr($matches['1'], 0, $space);
+        if (($space = strpos((string) $matches['1'], ' ')) != false) {
+            $matches['1'] = substr((string) $matches['1'], 0, $space);
         }
 
         // get rid of surrounding quotes
-        $matches['1'] = preg_replace(array('/(^"|\')/', '/("|\'$)/'), '', $matches['1']);
+        $matches['1'] = preg_replace(array('/(^"|\')/', '/("|\'$)/'), '', (string) $matches['1']);
 
         $title = (! isset($matches['2'])) ? $matches['1'] : $matches['2'];
 
@@ -2034,8 +2034,8 @@ class EE_Typography
      */
     public function strip_images($str)
     {
-        if (strpos($str, '<img') !== false) {
-            $str = preg_replace("#<img\s+.*?src\s*=\s*[\"'](.+?)[\"'].*?\>#", "\\1", $str);
+        if (strpos((string) $str, '<img') !== false) {
+            $str = preg_replace("#<img\s+.*?src\s*=\s*[\"'](.+?)[\"'].*?\>#", "\\1", (string) $str);
             $str = preg_replace("#<img\s+.*?src\s*=\s*(.+?)\s*\>#", "\\1", $str);
         }
 
@@ -2101,7 +2101,7 @@ class EE_Typography
 
         // No [code] tags?  No reason to live.  Goodbye cruel world...
 
-        if (! preg_match_all("/\[code\](.+?)\[\/code\]/si", $str, $matches)) {
+        if (! preg_match_all("/\[code\](.+?)\[\/code\]/si", (string) $str, $matches)) {
             return $str;
         }
 
@@ -2133,8 +2133,8 @@ class EE_Typography
 
             // Remove our artificially added PHP, and the syntax highlighting that came with it
             $temp = preg_replace('/<span style="color: #([A-Z0-9]+)">&lt;\?php(&nbsp;| )/i', '<span style="color: #$1">', $temp);
-            $temp = preg_replace('/(<span style="color: #[A-Z0-9]+">.*?)\?&gt;<\/span>\n<\/span>\n<\/code>/is', "$1</span>\n</span>\n</code>", $temp);
-            $temp = preg_replace('/<span style="color: #[A-Z0-9]+"\><\/span>/i', '', $temp);
+            $temp = preg_replace('/(<span style="color: #[A-Z0-9]+">.*?)\?&gt;<\/span>\n<\/span>\n<\/code>/is', "$1</span>\n</span>\n</code>", (string) $temp);
+            $temp = preg_replace('/<span style="color: #[A-Z0-9]+"\><\/span>/i', '', (string) $temp);
 
             // Replace our markers back to PHP tags.
 
@@ -2165,11 +2165,11 @@ class EE_Typography
      */
     public function convert_ampersands($str)
     {
-        if (strpos($str, '&') === false) {
+        if (strpos((string) $str, '&') === false) {
             return $str;
         }
 
-        $str = preg_replace("/&#(\d+);/", "AMP14TX903DVGHY4QW\\1;", $str);
+        $str = preg_replace("/&#(\d+);/", "AMP14TX903DVGHY4QW\\1;", (string) $str);
         $str = preg_replace("/&(\w+);/", "AMP14TX903DVGHY4QT\\1;", $str);
 
         return str_replace(array("&","AMP14TX903DVGHY4QW","AMP14TX903DVGHY4QT"), array("&amp;", "&#","&"), $str);
@@ -2203,8 +2203,8 @@ class EE_Typography
             );
         }
 
-        for ($i = 0; $i < strlen($email); $i++) {
-            $bit[] .= " " . ord(substr($email, $i, 1));
+        for ($i = 0; $i < strlen((string) $email); $i++) {
+            $bit[] .= " " . ord(substr((string) $email, $i, 1));
         }
 
         $temp = array();
@@ -2213,7 +2213,7 @@ class EE_Typography
             $bit[] = '\"';
             $bit[] = '>';
 
-            for ($i = 0; $i < strlen($title); $i++) {
+            for ($i = 0; $i < strlen((string) $title); $i++) {
                 $ordinal = ord($title[$i]);
 
                 if ($ordinal < 128) {

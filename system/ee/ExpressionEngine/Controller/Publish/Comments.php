@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -75,7 +76,7 @@ class Comments extends AbstractPublishController
             $comments->filter('status', '!=', 's');
         }
 
-        $search_value = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
+        $search_value = htmlentities((string) ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
         if (! empty($search_value)) {
             $base_url->setQueryStringVariable('filter_by_keyword', $search_value);
             $comments->filter('comment', 'LIKE', '%' . ee()->db->escape_like_str($search_value) . '%');
@@ -221,7 +222,7 @@ class Comments extends AbstractPublishController
             $comments->filter('status', '!=', 's');
         }
 
-        $search_value = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
+        $search_value = htmlentities((string) ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
         if (! empty($search_value)) {
             $base_url->setQueryStringVariable('filter_by_keyword', $search_value);
             $comments->filter('comment', 'LIKE', '%' . ee()->db->escape_like_str($search_value) . '%');
@@ -609,7 +610,7 @@ class Comments extends AbstractPublishController
                     'name' => 'selection[]',
                     'value' => $comment->comment_id,
                     'data' => array(
-                        'confirm' => lang('comment') . ': <b>' . htmlentities(ellipsize($comment->comment, 50), ENT_QUOTES, 'UTF-8') . '</b>'
+                        'confirm' => lang('comment') . ': <b>' . htmlentities((string) ellipsize($comment->comment, 50), ENT_QUOTES, 'UTF-8') . '</b>'
                     )
                 )
             );

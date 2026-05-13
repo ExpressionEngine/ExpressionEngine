@@ -213,7 +213,7 @@ class Structure_ext
     {
         $structure_uri = '';
         if (!empty($data['structure__parent_id'])) {
-            $structure_uri = (!empty($this->site_pages['uris'][$data['structure__parent_id']])) ? rtrim($this->site_pages['uris'][$data['structure__parent_id']], '/') . '/' : '';
+            $structure_uri = (!empty($this->site_pages['uris'][$data['structure__parent_id']])) ? rtrim((string) $this->site_pages['uris'][$data['structure__parent_id']], '/') . '/' : '';
         }
 
         $structure_uri .= (!empty($data['structure__uri'])) ? $data['structure__uri'] : $uri;
@@ -391,7 +391,7 @@ class Structure_ext
         $trailing_slash = isset($settings['add_trailing_slash']) && $settings['add_trailing_slash'] === 'y' ? '/' : null;
 
         // If this is a live-preview request, we have to process things slightly differently.
-        if (REQ === 'CP' && strpos($this->uri, 'cp/publish/preview') !== false) {
+        if (REQ === 'CP' && strpos((string) $this->uri, 'cp/publish/preview') !== false) {
             $isLivePreviewRequest = true;
         } elseif (REQ == 'ACTION') {
             $action_id = ee()->db->select('action_id')
@@ -424,7 +424,7 @@ class Structure_ext
                 $this->parent_id = ee()->input->post('structure__parent_id');
 
                 if (!empty($this->site_pages['uris'][$this->parent_id])) {
-                    $this->uri = rtrim($this->site_pages['uris'][$this->parent_id], '/') . '/' . ltrim($this->uri, '/');
+                    $this->uri = rtrim((string) $this->site_pages['uris'][$this->parent_id], '/') . '/' . ltrim((string) $this->uri, '/');
                 }
             }
 
@@ -439,10 +439,10 @@ class Structure_ext
 
             $this->_create_global_vars(true);
 
-        // ee()->uri->_set_uri_string($original_uri);
-        // ee()->uri->segments = array();
-        // ee()->uri->_explode_segments();
-        // ee()->uri->_reindex_segments();
+            // ee()->uri->_set_uri_string($original_uri);
+            // ee()->uri->segments = array();
+            // ee()->uri->_explode_segments();
+            // ee()->uri->_reindex_segments();
         } elseif ((REQ == 'PAGE' || REQ == 'ACTION') && array_key_exists('uris', $this->site_pages) && is_array($this->site_pages['uris']) && count($this->site_pages['uris']) > 0) {
             // -------------------------------------------
             //  Sanitize the URL for pagination and other bypasses
@@ -453,7 +453,7 @@ class Structure_ext
             //  Set all other class variables
             // -------------------------------------------
 
-            $this->entry_id = array_search(strtolower($this->uri), array_map('strtolower', $this->site_pages['uris']));
+            $this->entry_id = array_search(strtolower((string) $this->uri), array_map('strtolower', $this->site_pages['uris']));
             $this->parent_id = $this->sql->get_parent_id($this->entry_id, null);
             $this->segment_1 = ee()->uri->segment(1) ? '/' . ee()->uri->segment(1) : false;
 
@@ -475,7 +475,7 @@ class Structure_ext
 
     public function channel_module_create_pagination($ee_obj)
     {
-        $segment_array = explode('/', ee()->uri->uri_string);
+        $segment_array = explode('/', (string) ee()->uri->uri_string);
         $segment_count = count($segment_array);
         $last_segment = $segment_array[$segment_count - 1];
 
@@ -568,7 +568,7 @@ class Structure_ext
 
     public function core_template_route($uri_string)
     {
-        $segment_array = explode('/', $uri_string);
+        $segment_array = explode('/', (string) $uri_string);
         $segment_count = count($segment_array);
         $last_segment = $segment_array[$segment_count - 1];
 
@@ -793,7 +793,7 @@ class Structure_ext
         }
 
         // page_url_for
-        $final_template = preg_replace_callback("({structure:page_url_for:(\d{1,})})", array(&$this, '_parse_tag_url_for'), $final_template);
+        $final_template = preg_replace_callback("({structure:page_url_for:(\d{1,})})", array(&$this, '_parse_tag_url_for'), (string) $final_template);
 
         // page_uri_for
         $final_template = preg_replace_callback("({structure:page_uri_for:(\d{1,})})", array(&$this, '_parse_tag_uri_for'), $final_template);
@@ -984,7 +984,7 @@ class Structure_ext
     public function _is_search()
     {
         $qstring = ee()->uri->query_string;
-        $string_array = explode("/", $qstring);
+        $string_array = explode("/", (string) $qstring);
 
         $search_id_key = count($string_array) - 2;
         $search_id = array_key_exists($search_id_key, $string_array) ? $string_array[$search_id_key] : false;
@@ -1013,9 +1013,9 @@ class Structure_ext
 
         // Check for pagination
         $pagination_segment = false;
-        if (preg_match("/^P\d/", $last_segment) && $this->_is_search() === false) {
+        if (preg_match("/^P\d/", (string) $last_segment) && $this->_is_search() === false) {
             $pagination_segment = $segment_count;
-            $pagination_page = substr($last_segment, 1);
+            $pagination_page = substr((string) $last_segment, 1);
 
             ee()->config->_global_vars['structure_pagination_segment'] = $pagination_segment; // {structure_pagination_segment}
             ee()->config->_global_vars['structure_pagination_page'] = $pagination_page; // {structure_pagination_page}
@@ -1023,7 +1023,7 @@ class Structure_ext
 
             // Clean and dirty laundry, thanks to Freebie's cleverness
             $clean_array = array();
-            $dirty_array = explode('/', ee()->uri->uri_string);
+            $dirty_array = explode('/', (string) ee()->uri->uri_string);
 
             // move any segments that don't match patterns to clean array
             foreach ($dirty_array as $segment) {

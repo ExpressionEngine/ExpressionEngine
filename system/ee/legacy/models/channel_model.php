@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -481,7 +482,7 @@ class Channel_model extends CI_Model
 
         // Trivial case, we don't have special IS_EMPTY handling.
         if (strpos($terms, 'IS_EMPTY') === false) {
-            $no_is_empty = substr(ee()->functions->sql_andor_string(($not ? 'not ' . $terms : $terms), $col_name), 3) . ' ';
+            $no_is_empty = substr((string) ee()->functions->sql_andor_string(($not ? 'not ' . $terms : $terms), $col_name), 3) . ' ';
 
             if ($not) {
                 $no_is_empty = '(' . $no_is_empty . ' OR (' . $site_id . $col_name . ' IS NULL)) ';
@@ -505,7 +506,7 @@ class Channel_model extends CI_Model
             // but may come back to it.
             $add_search = ee()->functions->sql_andor_string(($not ? 'not ' . $terms : $terms), $col_name);
             // remove the first AND output by ee()->functions->sql_andor_string() so we can parenthesize this clause
-            $add_search = '(' . $site_id . substr($add_search, 3) . ')';
+            $add_search = '(' . $site_id . substr((string) $add_search, 3) . ')';
 
             $conj = ($add_search != '' && ! $not) ? 'OR' : 'AND';
         }

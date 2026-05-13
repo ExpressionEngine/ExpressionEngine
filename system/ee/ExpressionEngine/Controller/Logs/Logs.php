@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -104,7 +105,7 @@ class Logs extends CP_Controller
         $id = ee()->input->post('delete');
 
         $flashdata = false;
-        if (strtolower($id) == 'all') {
+        if (strtolower((string) $id) == 'all') {
             $id = null;
             $flashdata = true;
         }

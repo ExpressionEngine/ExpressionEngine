@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -153,7 +154,7 @@ class EE_Image_lib
             return false;
         }
 
-        $this->image_library = ($this->image_library) ? strtolower($this->image_library) : 'gd2';
+        $this->image_library = ($this->image_library) ? strtolower((string) $this->image_library) : 'gd2';
 
         /*
          * Set the full server path
@@ -187,7 +188,7 @@ class EE_Image_lib
             $this->dest_image = $this->source_image;
             $this->dest_folder = $this->source_folder;
         } else {
-            if (strpos($this->new_image, DIRECTORY_SEPARATOR) === false && strpos($this->new_image, '/') === false) {
+            if (strpos((string) $this->new_image, DIRECTORY_SEPARATOR) === false && strpos((string) $this->new_image, '/') === false) {
                 $this->dest_folder = $this->source_folder;
                 $this->dest_image = $this->new_image;
             } else {
@@ -199,7 +200,7 @@ class EE_Image_lib
                 ) {
                     $this->dest_folder = dirname($full_dest_path) . '/';
                     $this->dest_image = basename($full_dest_path);
-                // Is there a file name?
+                    // Is there a file name?
                 } elseif (! preg_match("#\.(jpg|jpeg|gif|png|webp)$#i", $full_dest_path)) {
                     $filenameInPathPosition = strrpos($full_dest_path, $this->source_image);
                     if ($filenameInPathPosition == (strlen($full_dest_path) - strlen($this->source_image))) {
@@ -279,13 +280,13 @@ class EE_Image_lib
 
         // Watermark-related Stuff...
         if ($this->wm_font_color != '') {
-            if (strlen($this->wm_font_color) == 6) {
+            if (strlen((string) $this->wm_font_color) == 6) {
                 $this->wm_font_color = '#' . $this->wm_font_color;
             }
         }
 
         if ($this->wm_shadow_color != '') {
-            if (strlen($this->wm_shadow_color) == 6) {
+            if (strlen((string) $this->wm_shadow_color) == 6) {
                 $this->wm_shadow_color = '#' . $this->wm_shadow_color;
             }
         }
@@ -535,8 +536,8 @@ class EE_Image_lib
             return false;
         }
 
-        if (! preg_match("/convert$/i", $this->library_path)) {
-            $this->library_path = rtrim($this->library_path, '/') . '/';
+        if (! preg_match("/convert$/i", (string) $this->library_path)) {
+            $this->library_path = rtrim((string) $this->library_path, '/') . '/';
 
             $this->library_path .= 'convert';
         }
@@ -545,7 +546,7 @@ class EE_Image_lib
         $cmd = $this->library_path . " -quality " . (int) $this->quality;
 
         if ($action == 'crop') {
-            $cmd .= " -crop " . (int) $this->width . "x" . (int) $this->height . "+" . (int) $this->x_axis . "+" . (int) $this->y_axis . " " . escapeshellarg($this->full_src_path) . " " . escapeshellarg($this->full_dst_path) . " 2>&1";
+            $cmd .= " -crop " . (int) $this->width . "x" . (int) $this->height . "+" . (int) $this->x_axis . "+" . (int) $this->y_axis . " " . escapeshellarg((string) $this->full_src_path) . " " . escapeshellarg((string) $this->full_dst_path) . " 2>&1";
         } elseif ($action == 'rotate') {
             switch ($this->rotation_angle) {
                 case 'hor': $angle = '-flop';
@@ -559,9 +560,9 @@ class EE_Image_lib
                     break;
             }
 
-            $cmd .= " " . $angle . " " . escapeshellarg($this->full_src_path) . " " . escapeshellarg($this->full_dst_path) . " 2>&1";
+            $cmd .= " " . $angle . " " . escapeshellarg((string) $this->full_src_path) . " " . escapeshellarg((string) $this->full_dst_path) . " 2>&1";
         } else {  // Resize
-            $cmd .= " -resize " . (int) $this->width . "x" . (int) $this->height . " " . escapeshellarg($this->full_src_path) . " " . escapeshellarg($this->full_dst_path) . " 2>&1";
+            $cmd .= " -resize " . (int) $this->width . "x" . (int) $this->height . " " . escapeshellarg((string) $this->full_src_path) . " " . escapeshellarg((string) $this->full_dst_path) . " 2>&1";
         }
 
         $retval = 1;
@@ -647,7 +648,7 @@ class EE_Image_lib
             $cmd_inner = 'pnmscale -xysize ' . (int) $this->width . ' ' . (int) $this->height;
         }
 
-        $cmd = $this->library_path . $cmd_in . ' ' . escapeshellarg($this->full_src_path) . ' | ' . $cmd_inner . ' | ' . $cmd_out . ' > ' . escapeshellarg($this->dest_folder . 'netpbm.tmp');
+        $cmd = $this->library_path . $cmd_in . ' ' . escapeshellarg((string) $this->full_src_path) . ' | ' . $cmd_inner . ' | ' . $cmd_out . ' > ' . escapeshellarg($this->dest_folder . 'netpbm.tmp');
 
         $retval = 1;
 
@@ -904,8 +905,8 @@ class EE_Image_lib
         // applied bottom and right when aligned bottom
         // right.
 
-        $this->wm_vrt_alignment = strtoupper(substr($this->wm_vrt_alignment, 0, 1));
-        $this->wm_hor_alignment = strtoupper(substr($this->wm_hor_alignment, 0, 1));
+        $this->wm_vrt_alignment = strtoupper(substr((string) $this->wm_vrt_alignment, 0, 1));
+        $this->wm_hor_alignment = strtoupper(substr((string) $this->wm_hor_alignment, 0, 1));
 
         $x_padding = $this->wm_padding;
         $y_padding = $this->wm_padding;
@@ -1034,8 +1035,8 @@ class EE_Image_lib
         // applied bottom and right when aligned bottom
         // right.
 
-        $this->wm_vrt_alignment = strtoupper(substr($this->wm_vrt_alignment, 0, 1));
-        $this->wm_hor_alignment = strtoupper(substr($this->wm_hor_alignment, 0, 1));
+        $this->wm_vrt_alignment = strtoupper(substr((string) $this->wm_vrt_alignment, 0, 1));
+        $this->wm_hor_alignment = strtoupper(substr((string) $this->wm_hor_alignment, 0, 1));
 
         $x_padding = $this->wm_padding;
         $y_padding = $this->wm_padding;
@@ -1097,16 +1098,16 @@ class EE_Image_lib
                 break;
             case "R":
                 if ($this->wm_use_drop_shadow) {
-                    $x_shad += ($this->orig_width - $fontwidth * strlen($this->wm_text));
+                    $x_shad += ($this->orig_width - $fontwidth * strlen((string) $this->wm_text));
                 }
-                $x_axis += ($this->orig_width - $fontwidth * strlen($this->wm_text));
+                $x_axis += ($this->orig_width - $fontwidth * strlen((string) $this->wm_text));
 
                 break;
             case "C":
                 if ($this->wm_use_drop_shadow) {
-                    $x_shad += floor(($this->orig_width - $fontwidth * strlen($this->wm_text)) / 2);
+                    $x_shad += floor(($this->orig_width - $fontwidth * strlen((string) $this->wm_text)) / 2);
                 }
-                $x_axis += floor(($this->orig_width - $fontwidth * strlen($this->wm_text)) / 2);
+                $x_axis += floor(($this->orig_width - $fontwidth * strlen((string) $this->wm_text)) / 2);
 
                 break;
         }
@@ -1114,14 +1115,14 @@ class EE_Image_lib
         //  Add the text to the source image
         if ($this->wm_use_truetype) {
             if ($this->wm_use_drop_shadow) {
-                imagettftext($src_img, $this->wm_font_size, 0, $x_shad, $y_shad, $drp_color, $this->wm_font_path, $this->wm_text);
+                imagettftext($src_img, $this->wm_font_size, 0, $x_shad, $y_shad, $drp_color, $this->wm_font_path, (string) $this->wm_text);
             }
-            imagettftext($src_img, $this->wm_font_size, 0, $x_axis, $y_axis, $txt_color, $this->wm_font_path, $this->wm_text);
+            imagettftext($src_img, $this->wm_font_size, 0, $x_axis, $y_axis, $txt_color, $this->wm_font_path, (string) $this->wm_text);
         } else {
             if ($this->wm_use_drop_shadow) {
-                imagestring($src_img, $this->wm_font_size, $x_shad, $y_shad, $this->wm_text, $drp_color);
+                imagestring($src_img, $this->wm_font_size, $x_shad, $y_shad, (string) $this->wm_text, $drp_color);
             }
-            imagestring($src_img, $this->wm_font_size, $x_axis, $y_axis, $this->wm_text, $txt_color);
+            imagestring($src_img, $this->wm_font_size, $x_axis, $y_axis, (string) $this->wm_text, $txt_color);
         }
 
         //  Output the final image
@@ -1514,8 +1515,8 @@ class EE_Image_lib
      */
     public function explode_name($source_image)
     {
-        $ext = strrchr($source_image, '.');
-        $name = ($ext === false) ? $source_image : substr($source_image, 0, -strlen($ext));
+        $ext = strrchr((string) $source_image, '.');
+        $name = ($ext === false) ? $source_image : substr((string) $source_image, 0, -strlen($ext));
 
         return array('ext' => $ext, 'name' => $name);
     }
@@ -1541,7 +1542,7 @@ class EE_Image_lib
     {
         if (function_exists('gd_info')) {
             $gd_version = @gd_info();
-            $gd_version = preg_replace("/\D/", "", $gd_version['GD Version']);
+            $gd_version = preg_replace("/\D/", "", (string) $gd_version['GD Version']);
 
             return $gd_version;
         }

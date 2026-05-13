@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -51,7 +52,7 @@ class EE_Logger
             $action = implode("\n", $action);
         }
 
-        if (trim($action) == '') {
+        if (trim((string) $action) == '') {
             return;
         }
 
@@ -323,7 +324,7 @@ class EE_Logger
             $template->template_data = preg_replace(
                 $regex,
                 $replacement,
-                $template->template_data
+                (string) $template->template_data
             );
 
             // Only save if the template data changed
@@ -348,7 +349,7 @@ class EE_Logger
             $snippet->snippet_contents = preg_replace(
                 $regex,
                 $replacement,
-                $snippet->snippet_contents
+                (string) $snippet->snippet_contents
             );
 
             // Only save if the snippet data changed

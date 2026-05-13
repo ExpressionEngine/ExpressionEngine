@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -459,11 +460,11 @@ class Pro_variables_upd
         foreach ($query->result_array() as $row) {
             // strip off prefix
             if (! empty($settings['prefix'])) {
-                $row['var_name'] = preg_replace('#^' . preg_quote($settings['prefix']) . '_#', '', $row['var_name']);
+                $row['var_name'] = preg_replace('#^' . preg_quote((string) $settings['prefix']) . '_#', '', (string) $row['var_name']);
             }
 
             // Get faux group name
-            $tmp = explode('_', $row['var_name'], 2);
+            $tmp = explode('_', (string) $row['var_name'], 2);
             $group = $tmp[0];
             unset($tmp);
 
@@ -498,7 +499,7 @@ class Pro_variables_upd
         // Only update variables if prefix was filled in
         if (! empty($settings['prefix'])) {
             // Get prefix length
-            $length = strlen($settings['prefix']);
+            $length = strlen((string) $settings['prefix']);
             $prefix = ee()->db->escape_str($settings['prefix']);
 
             // Get vars with prefix

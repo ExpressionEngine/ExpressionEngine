@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -89,7 +90,7 @@ class Ignore extends Profile
                             'name' => 'selection[]',
                             'value' => $member->member_id,
                             'data' => array(
-                                'confirm' => lang('member') . ': <b>' . htmlentities($member->screen_name, ENT_QUOTES, 'UTF-8') . '</b>'
+                                'confirm' => lang('member') . ': <b>' . htmlentities((string) $member->screen_name, ENT_QUOTES, 'UTF-8') . '</b>'
                             )
                         )
                     ),

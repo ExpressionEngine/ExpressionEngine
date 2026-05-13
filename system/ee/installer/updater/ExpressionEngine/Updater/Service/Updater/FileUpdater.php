@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -82,7 +83,7 @@ class FileUpdater
         // We'll only backup one theme folder, they _should_ all be the same
         // across sites
         $theme_path = array_values($this->configs['theme_paths'])[0];
-        $theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
+        $theme_path = rtrim((string) $theme_path, DIRECTORY_SEPARATOR) . '/ee/';
 
         $this->move($theme_path, $this->getBackupsPath() . 'themes_ee/');
     }
@@ -107,7 +108,7 @@ class FileUpdater
             $this->logger->log('Multiple theme paths detected, copying new themes folders into place');
 
             foreach ($this->configs['theme_paths'] as $theme_path) {
-                $theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
+                $theme_path = rtrim((string) $theme_path, DIRECTORY_SEPARATOR) . '/ee/';
 
                 $this->copy($new_themes_dir, $theme_path);
             }
@@ -115,7 +116,7 @@ class FileUpdater
         // Otherwise, just move the themes to the one themes folder
         else {
             $theme_path = array_values($this->configs['theme_paths'])[0];
-            $theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
+            $theme_path = rtrim((string) $theme_path, DIRECTORY_SEPARATOR) . '/ee/';
 
             $this->move($new_themes_dir, $theme_path);
         }
@@ -131,7 +132,7 @@ class FileUpdater
         $this->verifyFiles(SYSPATH . 'ee/', 'system/ee');
 
         foreach ($this->configs['theme_paths'] as $theme_path) {
-            $theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
+            $theme_path = rtrim((string) $theme_path, DIRECTORY_SEPARATOR) . '/ee/';
             $this->verifyFiles($theme_path, 'themes/ee');
         }
 
@@ -177,7 +178,7 @@ class FileUpdater
         // copied to them before
         if (count($this->configs['theme_paths']) > 1) {
             foreach ($this->configs['theme_paths'] as $theme_path) {
-                $theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
+                $theme_path = rtrim((string) $theme_path, DIRECTORY_SEPARATOR) . '/ee/';
 
                 $this->delete($theme_path);
             }
@@ -185,7 +186,7 @@ class FileUpdater
         // Otherwise, move the themes folder back to the archive folder
         else {
             $theme_path = $this->configs['theme_paths'][0];
-            $theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
+            $theme_path = rtrim((string) $theme_path, DIRECTORY_SEPARATOR) . '/ee/';
 
             $this->move($theme_path, $new_themes_dir);
         }
@@ -199,7 +200,7 @@ class FileUpdater
         // Copy themes backup to each theme folder (copy because there may be
         // multiple theme locations)
         foreach ($this->configs['theme_paths'] as $theme_path) {
-            $theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
+            $theme_path = rtrim((string) $theme_path, DIRECTORY_SEPARATOR) . '/ee/';
 
             $this->copy($this->getBackupsPath() . 'themes_ee/', $theme_path);
         }
@@ -331,7 +332,7 @@ class FileUpdater
             throw new UpdaterException('Cannot find ' . $configs_path, 17);
         }
 
-        return json_decode($this->filesystem->read($configs_path), true);
+        return json_decode((string) $this->filesystem->read($configs_path), true);
     }
 }
 

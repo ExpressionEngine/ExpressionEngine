@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -78,7 +79,7 @@ class Watermarks extends AbstractFilesController
                     'name' => 'watermarks[]',
                     'value' => $watermark->getId(),
                     'data' => array(
-                        'confirm' => lang('watermark') . ': <b>' . htmlentities($watermark->wm_name, ENT_QUOTES, 'UTF-8') . '</b>'
+                        'confirm' => lang('watermark') . ': <b>' . htmlentities((string) $watermark->wm_name, ENT_QUOTES, 'UTF-8') . '</b>'
                     ),
                     // Cannot delete default group
                     'disabled' => ($watermark->wm_name == 'Default') ? 'disabled' : null

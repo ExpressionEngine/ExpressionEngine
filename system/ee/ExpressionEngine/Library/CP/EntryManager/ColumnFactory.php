@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -53,9 +54,9 @@ class ColumnFactory
         if (isset(static::$standard_columns[$identifier])) {
             $class = static::$standard_columns[$identifier];
             self::$instances[$identifier] = new $class($identifier);
-        } elseif (strpos($identifier, 'field_id_') === 0 && $field = self::getCompatibleField($identifier)) {
+        } elseif (strpos((string) $identifier, 'field_id_') === 0 && $field = self::getCompatibleField($identifier)) {
             self::$instances[$identifier] = new Columns\CustomField($identifier, $field);
-        } elseif (strpos($identifier, 'tab_') === 0) {
+        } elseif (strpos((string) $identifier, 'tab_') === 0) {
             self::$instances[$identifier] = new Columns\ModuleTab($identifier);
         } else {
             return null;
@@ -81,6 +82,7 @@ class ColumnFactory
         foreach ($columns as $column) {
             $availableColumns[$column->getTableColumnIdentifier()] = $column;
         }
+
         return $availableColumns;
     }
 
@@ -151,6 +153,7 @@ class ColumnFactory
             if (strpos($tab, 'tab_') !== 0) {
                 $tab = 'tab_' . $tab;
             }
+
             return self::getColumn($tab);
         }, self::getCompatibleTabs());
     }
@@ -224,7 +227,7 @@ class ColumnFactory
                         ee()->load->add_package_path($modulePath);
                         if ($module->hasTab()) {
                             include_once($modulePath . '/tab.' . $module_name . '.php');
-                            $class_name = ucfirst($module_name) . '_tab';
+                            $class_name = ucfirst((string) $module_name) . '_tab';
                             $OBJ = new $class_name();
                             if (method_exists($OBJ, 'renderTableCell') === true) {
                                 $tabs[] = 'tab_' . $module_name;
@@ -291,6 +294,6 @@ class ColumnFactory
      */
     private static function getClassNameForFieldtype($fieldtype)
     {
-        return ucfirst($fieldtype) . '_ft';
+        return ucfirst((string) $fieldtype) . '_ft';
     }
 }

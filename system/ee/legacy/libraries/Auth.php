@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -322,7 +323,7 @@ class Auth
     {
         // Even for md5, collisions usually happen above 1024 bits, so
         // we artifically limit their password to reasonable size.
-        if (! $password or strlen($password) > PASSWORD_MAX_LENGTH) {
+        if (! $password or strlen((string) $password) > PASSWORD_MAX_LENGTH) {
             return false;
         }
 
@@ -331,7 +332,7 @@ class Auth
         if ($h_byte_size === false || $h_byte_size == self::BCRYPT_HASH_LENGTH) {
             return [
                 'salt' => '',
-                'password' => password_hash($password, PASSWORD_BCRYPT)
+                'password' => password_hash((string) $password, PASSWORD_BCRYPT)
             ];
         } elseif (! isset($this->hash_algos[$h_byte_size])) {
             // What are they feeding us? This can happen if
@@ -350,7 +351,7 @@ class Auth
             for ($i = 0; $i < $h_byte_size; $i++) {
                 $salt .= chr(mt_rand(33, 126));
             }
-        } elseif (strlen($salt) !== $h_byte_size) {
+        } elseif (strlen((string) $salt) !== $h_byte_size) {
             // they passed us a salt that isn't the right length,
             // this can happen if old code resets a new password
             // ignore it
@@ -359,7 +360,7 @@ class Auth
 
         return array(
             'salt' => $salt,
-            'password' => hash($this->hash_algos[$h_byte_size], $salt . $password)
+            'password' => hash((string) $this->hash_algos[$h_byte_size], $salt . $password)
         );
     }
 
@@ -433,6 +434,7 @@ class Auth
             } else {
                 $error = lang('not_authorized');
             }
+
             return ee()->output->show_user_error('general', $error);
         }
 
@@ -443,7 +445,7 @@ class Auth
         $h_byte_size = strlen($m_pass);
 
         // Bcrypt hash
-        if ($h_byte_size == self::BCRYPT_HASH_LENGTH && ! password_verify($password, $m_pass)) {
+        if ($h_byte_size == self::BCRYPT_HASH_LENGTH && ! password_verify((string) $password, $m_pass)) {
             return false;
         } elseif ($h_byte_size != self::BCRYPT_HASH_LENGTH) {
             $hashed_pair = $this->hash_password($password, $m_salt, $h_byte_size);
@@ -509,10 +511,10 @@ class Auth
         // ----------------------------------------------------------------
 
         if (! isset($user) or ! isset($pass) or (empty($user) && empty($pass))) {
-            if (isset($_SERVER['HTTP_AUTHORIZATION']) && substr($_SERVER['HTTP_AUTHORIZATION'], 0, 6) == 'Basic ') {
-                list($user, $pass) = explode(':', base64_decode(substr($_SERVER['HTTP_AUTHORIZATION'], 6)));
-            } elseif (! empty($_ENV) && isset($_ENV['HTTP_AUTHORIZATION']) && substr($_ENV['HTTP_AUTHORIZATION'], 0, 6) == 'Basic ') {
-                list($user, $pass) = explode(':', base64_decode(substr($_ENV['HTTP_AUTHORIZATION'], 6)));
+            if (isset($_SERVER['HTTP_AUTHORIZATION']) && substr((string) $_SERVER['HTTP_AUTHORIZATION'], 0, 6) == 'Basic ') {
+                list($user, $pass) = explode(':', base64_decode(substr((string) $_SERVER['HTTP_AUTHORIZATION'], 6)));
+            } elseif (! empty($_ENV) && isset($_ENV['HTTP_AUTHORIZATION']) && substr((string) $_ENV['HTTP_AUTHORIZATION'], 0, 6) == 'Basic ') {
+                list($user, $pass) = explode(':', base64_decode(substr((string) $_ENV['HTTP_AUTHORIZATION'], 6)));
             } elseif (@getenv('HTTP_AUTHORIZATION') && substr(getenv('HTTP_AUTHORIZATION'), 0, 6) == 'Basic ') {
                 list($user, $pass) = explode(':', base64_decode(substr(getenv('HTTP_AUTHORIZATION'), 6)));
             }
@@ -522,8 +524,8 @@ class Auth
         // ----------------------------------------------------------------
 
         if (! isset($user) or ! isset($pass) or (empty($user) && empty($pass))) {
-            if (! empty($_ENV) && isset($_ENV['Authorization']) && substr($_ENV['Authorization'], 0, 6) == 'Basic ') {
-                list($user, $pass) = explode(':', base64_decode(substr($_ENV['Authorization'], 6)));
+            if (! empty($_ENV) && isset($_ENV['Authorization']) && substr((string) $_ENV['Authorization'], 0, 6) == 'Basic ') {
+                list($user, $pass) = explode(':', base64_decode(substr((string) $_ENV['Authorization'], 6)));
             } elseif (@getenv('Authorization') && substr(getenv('Authorization'), 0, 6) == 'Basic ') {
                 list($user, $pass) = explode(':', base64_decode(substr(getenv('Authorization'), 6)));
             }

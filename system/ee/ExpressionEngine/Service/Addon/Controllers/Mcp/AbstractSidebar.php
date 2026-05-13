@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -143,7 +144,7 @@ abstract class AbstractSidebar
                 $item = $currentItem->addItem($sidebarItem['title'], $sidebarItem['cp_url']);
                 $this->folders[$sidebarItem['route_path']] = $currentItem;
 
-            // If the item is a list, create it that way
+                // If the item is a list, create it that way
             } elseif ($sidebarItem['sidebar_is_list']) {
                 $header = $this->sidebar->addHeader(lang($sidebarItem['title']));
                 $currentItem = $header->addBasicList();
@@ -222,7 +223,7 @@ abstract class AbstractSidebar
             // Loop through each route file in that directory
             $contents = ee('Filesystem')->getDirectoryContents($routeLocation['path']);
             foreach ($contents as $c) {
-                $class = $routeLocation['namespace'] . substr(basename($c), 0, -4);
+                $class = $routeLocation['namespace'] . substr(basename((string) $c), 0, -4);
 
                 if (class_exists($class) && is_subclass_of($class, 'ExpressionEngine\Service\Addon\Controllers\Mcp\AbstractRoute')) {
                     $routes[] = $class;

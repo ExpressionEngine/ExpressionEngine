@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -55,7 +56,7 @@ class Tfidf implements Vectorizer
         $this->stop_words = $stop_words;
 
         foreach ($stop_words as $key => $word) {
-            $stop_words[$key] = " " . trim($word) . " ";
+            $stop_words[$key] = " " . trim((string) $word) . " ";
         }
 
         foreach ($source as $text) {

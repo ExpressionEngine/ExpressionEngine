@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -28,7 +29,7 @@ class ViewType
         $views = ['list', 'thumb'];
         $viewtype_prefs = [];
         if (ee()->input->cookie('viewtype')) {
-            $viewtype_prefs = json_decode(ee()->input->cookie('viewtype'), true);
+            $viewtype_prefs = json_decode((string) ee()->input->cookie('viewtype'), true);
 
             // Cookie was not valid JSON - we can assume it was from before we made this change
             if (json_last_error() !== JSON_ERROR_NONE) {
@@ -61,7 +62,7 @@ class ViewType
     private function rebuildViewtypeFromSerializedCookie()
     {
         $regex = '/"(?P<destination>[A-z_0-9\-]*)";s:[4,5]:"(?P<viewtype>list|thumb)"/';
-        $matchCount = preg_match_all($regex, ee()->input->cookie('viewtype'), $matches);
+        $matchCount = preg_match_all($regex, (string) ee()->input->cookie('viewtype'), $matches);
 
         // If there are no matches, return
         if ($matchCount == 0) {

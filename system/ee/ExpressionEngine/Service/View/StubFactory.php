@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -43,8 +44,8 @@ class StubFactory
     {
         $provider = $this->provider;
 
-        if (strpos($path, ':')) {
-            $parts = explode(':', $path, 3);
+        if (strpos((string) $path, ':')) {
+            $parts = explode(':', (string) $path, 3);
             $prefix = $parts[0];
             if (isset($parts[2])) {
                 $generatorFolder = $parts[1]; //adding leading slash as that makes building full path easier

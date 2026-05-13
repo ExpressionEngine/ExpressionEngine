@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -93,7 +94,7 @@ class EE_Channel_header_and_footer_parser implements EE_Channel_parser_component
                 // date()'s week variable 'W' starts weeks on Monday per ISO-8601.
                 // By default we start weeks on Sunday, so we need to do a little dance for
                 // entries made on Sundays to make sure they get placed in the right week heading
-                if (strtolower(ee()->TMPL->fetch_param('start_day')) != 'monday' && ee()->localize->format_date('%w', $data['entry_date']) == 0) {
+                if (strtolower((string) ee()->TMPL->fetch_param('start_day')) != 'monday' && ee()->localize->format_date('%w', $data['entry_date']) == 0) {
                     // add 7 days to toss us into the next ISO-8601 week
                     $temp_date = strtotime('+1 week', $temp_date);
                 }
@@ -169,7 +170,7 @@ class EE_Channel_header_and_footer_parser implements EE_Channel_parser_component
                 $temp_date_compare = (isset($query_result[$data['count']]['entry_date'])) ? $query_result[$data['count']]['entry_date'] : '';
 
                 // We adjust for date()'s week variable 'W' Monday start
-                if (strtolower(ee()->TMPL->fetch_param('start_day')) != 'monday') {
+                if (strtolower((string) ee()->TMPL->fetch_param('start_day')) != 'monday') {
                     if (ee()->localize->format_date('%w', $temp_date) == 0) {
                         // add 7 days to toss us into the next ISO-8601 week
                         $temp_date = strtotime('+1 week', $temp_date);

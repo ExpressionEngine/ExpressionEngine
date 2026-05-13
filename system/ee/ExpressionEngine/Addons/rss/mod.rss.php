@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -68,13 +69,13 @@ class Rss
 
         // Check for 'diff -e' request
         if (isset($request['A-IM']) && stristr($request['A-IM'], 'diffe') !== false) {
-            $items_start = strpos(ee()->TMPL->tagdata, '{exp:channel:entries');
+            $items_start = strpos((string) ee()->TMPL->tagdata, '{exp:channel:entries');
 
             if ($items_start !== false) {
                 // We add three, for three line breaks added later in the script
                 $diffe_request = count(preg_split(
                     "/(\r\n)|(\r)|(\n)/",
-                    trim(substr(ee()->TMPL->tagdata, 0, $items_start))
+                    trim(substr((string) ee()->TMPL->tagdata, 0, $items_start))
                 )) + 3;
             }
         }
@@ -110,20 +111,20 @@ class Rss
 
         if (preg_match_all(
             "/{exp:channel:entries.+?{" . '\/' . "exp:channel:entries}/s",
-            ee()->TMPL->tagdata,
+            (string) ee()->TMPL->tagdata,
             $matches
         )) {
             for ($i = 0; $i < count($matches[0]); $i++) {
                 ee()->TMPL->tagdata = str_replace($matches[0][$i], $marker . $i, ee()->TMPL->tagdata);
 
                 // Remove limit if we have a start_on and dynamic_start
-                if ($start_on != '' && stristr($matches[0][$i], 'dynamic_start="yes"')) {
-                    $matches[0][$i] = preg_replace("/limit=[\"\'][0-9]{1,5}[\"\']/", '', $matches[0][$i]);
+                if ($start_on != '' && stristr((string) $matches[0][$i], 'dynamic_start="yes"')) {
+                    $matches[0][$i] = preg_replace("/limit=[\"\'][0-9]{1,5}[\"\']/", '', (string) $matches[0][$i]);
                 }
 
                 // Replace dynamic_start="on" parameter with start_on="" param
                 $start_on_switch = ($start_on != '') ? 'start_on="' . $start_on . '"' : '';
-                $matches[0][$i] = preg_replace("/dynamic_start\s*=\s*[\"|']yes[\"|']/i", $start_on_switch, $matches[0][$i]);
+                $matches[0][$i] = preg_replace("/dynamic_start\s*=\s*[\"|']yes[\"|']/i", $start_on_switch, (string) $matches[0][$i]);
 
                 $chunks[$marker . $i] = $matches[0][$i];
             }
@@ -175,7 +176,7 @@ class Rss
             $diff_top = ($start_on != '' && $diffe_request !== false) ? "1," . ($diffe_request - 1) . "c\n" : '';
 
             // Last Update Time
-            ee()->TMPL->tagdata = '<ee:last_update>' . $last_update . "</ee:last_update>\n\n" . $diff_top . trim(ee()->TMPL->tagdata);
+            ee()->TMPL->tagdata = '<ee:last_update>' . $last_update . "</ee:last_update>\n\n" . $diff_top . trim((string) ee()->TMPL->tagdata);
 
             // Diffe stuff before items
             if ($diffe_request !== false) {
@@ -189,7 +190,7 @@ class Rss
         }
 
         // 'ed' input mode is terminated by entering a single period  (.) on a line
-        ee()->TMPL->tagdata = ($diffe_request !== false) ? trim(ee()->TMPL->tagdata) . "\n.\n" : trim(ee()->TMPL->tagdata);
+        ee()->TMPL->tagdata = ($diffe_request !== false) ? trim((string) ee()->TMPL->tagdata) . "\n.\n" : trim((string) ee()->TMPL->tagdata);
 
         return ee()->TMPL->tagdata;
     }
@@ -244,7 +245,7 @@ class Rss
 
             $status_str = ee()->functions->sql_andor_string($status, 'exp_channel_titles.status');
 
-            if (stristr($status_str, "'closed'") === false) {
+            if (stristr((string) $status_str, "'closed'") === false) {
                 $status_str .= " AND exp_channel_titles.status != 'closed' ";
             }
 
@@ -315,12 +316,12 @@ class Rss
 
         $empty_feed = '';
 
-        if (preg_match("/" . LD . "if empty_feed" . RD . "(.*?)" . LD . '\/' . "if" . RD . "/s", ee()->TMPL->tagdata, $match)) {
+        if (preg_match("/" . LD . "if empty_feed" . RD . "(.*?)" . LD . '\/' . "if" . RD . "/s", (string) ee()->TMPL->tagdata, $match)) {
             if (stristr($match[1], LD . 'if')) {
                 $match[0] = ee('Variables/Parser')->getFullTag(ee()->TMPL->tagdata, $match[0], LD . 'if', LD . '/if' . RD);
             }
 
-            $empty_feed = substr($match[0], strlen(LD . "if empty_feed" . RD), -strlen(LD . '/' . "if" . RD));
+            $empty_feed = substr((string) $match[0], strlen(LD . "if empty_feed" . RD), -strlen(LD . '/' . "if" . RD));
 
             $empty_feed = str_replace(LD . 'error' . RD, $error, $empty_feed);
         }

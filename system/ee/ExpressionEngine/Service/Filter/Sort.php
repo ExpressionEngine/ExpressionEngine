@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -63,7 +64,7 @@ class Sort extends Filter
         $url->removeQueryStringVariable('sort_dir');
         foreach ($this->options as $show => $label) {
             $url = clone $url;
-            $sort = explode('|', $show);
+            $sort = explode('|', (string) $show);
             $sort_col = $sort[0];
             $sort_dir = $sort[1];
             $url->addQueryStringVariables(['sort_col' => $sort_col, 'sort_dir' => $sort_dir]);

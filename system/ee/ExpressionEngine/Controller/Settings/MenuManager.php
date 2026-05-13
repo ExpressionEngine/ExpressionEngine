@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -107,7 +108,7 @@ class MenuManager extends Settings
                 'name' => 'menu_sets[]',
                 'value' => $set->getId(),
                 'data' => array(
-                    'confirm' => lang('menu_set') . ': <b>' . htmlentities($set->name, ENT_QUOTES, 'UTF-8') . '</b>'
+                    'confirm' => lang('menu_set') . ': <b>' . htmlentities((string) $set->name, ENT_QUOTES, 'UTF-8') . '</b>'
                 )
             );
 
@@ -234,19 +235,19 @@ class MenuManager extends Settings
                 if (defined('CLONING_MODE') && CLONING_MODE === true && $kids->count() == 0) {
                     $kids = ee('Model')->get('MenuItem')->with('Children')
                         ->filter('set_id', $originalSetId)->all()
-                        ->map(function($kid) use($set) {
+                        ->map(function ($kid) use ($set) {
                             $kid->setId(null);
                             $kid->set_id = $set->getId();
                             $kid->markAsDirty();
 
                             // If the menu item has children we also need to copy those and
                             // associate them with their freshly copied parents, a joyful reunion
-                            if(!empty($childIds = $kid->Children->getIds())) {
+                            if (!empty($childIds = $kid->Children->getIds())) {
                                 $kid->getAssociation('Children')->reload();
-                                $kid->on('afterInsert', function() use($kid, $childIds) {
+                                $kid->on('afterInsert', function () use ($kid, $childIds) {
                                     $children = ee('Model')->get('MenuItem')
                                         ->filter('item_id', 'IN', $childIds)->all()
-                                        ->map(function($child) use($kid) {
+                                        ->map(function ($child) use ($kid) {
                                             $child->setId(null);
                                             $child->parent_id = $kid->getId();
                                             $child->markAsDirty();
@@ -257,6 +258,7 @@ class MenuManager extends Settings
                                     (new Collection($children))->save();
                                 });
                             }
+
                             return $kid;
                         });
 
@@ -268,7 +270,7 @@ class MenuManager extends Settings
                 ee('CP/Alert')->makeInline('shared-form')
                     ->asSuccess()
                     ->withTitle(lang('menu_set_' . $alert_key))
-                    ->addToBody(sprintf(lang('menu_set_' . $alert_key . '_desc'), htmlentities($set->name)))
+                    ->addToBody(sprintf(lang('menu_set_' . $alert_key . '_desc'), htmlentities((string) $set->name)))
                     ->defer();
             }
 
@@ -717,13 +719,13 @@ class MenuManager extends Settings
         $cp_url = ee()->config->item('cp_url');
         $base_url = ee()->config->item('base_url');
 
-        if (strpos($url, $cp_url) === 0) {
+        if (strpos($url, (string) $cp_url) === 0) {
             $url = str_replace($cp_url, '', $url);
         }
 
         // not a cp url - treat as external
         if (strpos($url, '://') !== false) {
-            if (strpos($url, $base_url) === 0) {
+            if (strpos($url, (string) $base_url) === 0) {
                 return $url;
             }
 
@@ -764,7 +766,7 @@ class MenuManager extends Settings
         $i = 1;
 
         foreach ($post['rows'] as $row_id => $columns) {
-            if (strpos($row_id, 'row_id_') !== false) {
+            if (strpos((string) $row_id, 'row_id_') !== false) {
                 $sub = $children[str_replace('row_id_', '', $row_id)];
                 $sub->type = 'link';
                 $sub->name = $columns['name'];
@@ -797,7 +799,7 @@ class MenuManager extends Settings
             ->pluck('class');
 
         foreach ($addons as $prefix => $addon) {
-            $baseClass = ucfirst($addon->getPrefix());
+            $baseClass = ucfirst((string) $addon->getPrefix());
             if ($addon->hasExtension()) {
                 $class = $baseClass . '_ext';
 

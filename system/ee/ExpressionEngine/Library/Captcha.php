@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -53,6 +54,7 @@ class Captcha
             $js .= "<script async src=\"https://www.google.com/recaptcha/api.js?render=" . $key . "\"></script>";
             $js .= '<script type="text/javascript" src="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/recaptcha.js"></script>';
             $js .= "<input type=\"hidden\" name=\"captcha\" style=\"display: none\" id=\"eeReCaptcha\" value=\"\">";
+
             return $js;
         }
 
@@ -95,7 +97,7 @@ class Captcha
             return false;
         }
 
-        if (substr($img_url, -1) != '/') {
+        if (substr((string) $img_url, -1) != '/') {
             $img_url .= '/';
         }
 
@@ -142,7 +144,7 @@ class Captcha
         $this->cached_captcha = $word;
 
         // Determine angle and position
-        $length = strlen($word);
+        $length = strlen((string) $word);
         $angle = ($length >= 6) ? rand(-($length - 6), ($length - 6)) : 0;
         $x_axis = rand(6, (int) (360 / $length) - 16);
         $y_axis = ($angle >= 0) ? rand($img_height, $img_width) : rand(6, $img_height);
@@ -193,9 +195,9 @@ class Captcha
 
         if ($use_font == false or ! function_exists('imagettftext')) {
             $font_size = 5;
-            ImageString($im, $font_size, $x_axis, $img_height / 3.8, $word, $text_color);
+            ImageString($im, $font_size, $x_axis, $img_height / 3.8, (string) $word, $text_color);
         } else {
-            imagettftext($im, $font_size, $angle, $x_axis, $img_height / 1.5, $text_color, $font_path, $word);
+            imagettftext($im, $font_size, $angle, $x_axis, $img_height / 1.5, $text_color, $font_path, (string) $word);
         }
 
         // Create the border

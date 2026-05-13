@@ -60,6 +60,7 @@ class Structure_tab
         if (!empty($uri)) {
             return '<a href="' . Structure_Helper::remove_double_slashes(ee()->functions->fetch_site_index(0, 0) . $uri) . '" target="_blank"><i class="fal fa-link"></i></a>';
         }
+
         return '';
     }
 
@@ -530,7 +531,7 @@ class Structure_tab
             if (!empty($entry_id) && array_key_exists($entry_id, $site_pages['uris'])) {
                 // get old uri
                 $site_pages_uri = $site_pages['uris'][$entry_id];
-                $uri_pieces = explode('/', $site_pages_uri);
+                $uri_pieces = explode('/', (string) $site_pages_uri);
                 $uri_pieces = array_filter($uri_pieces);
                 $uri = end($uri_pieces);
             } elseif (!empty($channel_entry->url_title)) {
@@ -747,6 +748,7 @@ class Structure_tab
             // If we have an entry then this entry and its descendants cannot used as its own parent
             if ($entry_id && (array_key_exists($eid, $exclude) || array_key_exists($entry['parent_id'], $exclude))) {
                 $exclude[$eid] = null; // in case we match on parent_id add the entry_id to exclusions
+
                 continue;
             }
             // Add faux indent with "--" double dashes
@@ -828,7 +830,7 @@ class Structure_tab
             unset($uris[$entry_id]);
         }
         //ensure leading slash is present
-        $value = '/' . trim($values['uri'], '/');
+        $value = '/' . trim((string) $values['uri'], '/');
 
         $word_separator = ee()->config->item('word_separator') != "dash" ? '_' : '-';
         while (in_array($value, $uris)) {

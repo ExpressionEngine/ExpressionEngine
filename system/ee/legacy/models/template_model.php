@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -302,7 +303,7 @@ class Template_model extends CI_Model
             return false;
         } else {
             flock($fp, LOCK_EX);
-            fwrite($fp, $template->template_data);
+            fwrite($fp, (string) $template->template_data);
             flock($fp, LOCK_UN);
             fclose($fp);
 
@@ -737,7 +738,7 @@ class Template_model extends CI_Model
      */
     public function get_snippet($snippet, $by_name = false)
     {
-        if (ctype_digit($snippet) && $by_name === false) {
+        if (ctype_digit((string) $snippet) && $by_name === false) {
             $this->db->where('snippet_id', $snippet);
         } else {
             $this->db->where('snippet_name', $snippet);

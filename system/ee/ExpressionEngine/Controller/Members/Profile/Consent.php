@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -88,7 +89,7 @@ class Consent extends Settings
         $vars['requests'] = $requests;
 
         foreach ($requests as $request) {
-            if (bool_config_item('require_cookie_consent') !== true && strpos($request->consent_name, 'ee:cookies_') === 0) {
+            if (bool_config_item('require_cookie_consent') !== true && strpos((string) $request->consent_name, 'ee:cookies_') === 0) {
                 continue;
             }
 
@@ -97,7 +98,7 @@ class Consent extends Settings
                     'view' => [
                         'href' => '',
                         'rel' => 'modal-consent-request-' . $request->getId(),
-                        'title' => strtolower(lang('view')),
+                        'title' => strtolower((string) lang('view')),
                         'class' => 'js-modal-link'
                     ]
                 ]

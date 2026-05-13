@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -129,7 +130,7 @@ class Template extends Settings
 
         if ($search_query) {
             $templates = $templates->all()->filter(function ($template) use ($search_query) {
-                return strpos(strtolower($template->getPath()), strtolower($search_query)) !== false;
+                return strpos(strtolower((string) $template->getPath()), strtolower((string) $search_query)) !== false;
             });
         } else {
             $templates = $templates->limit(100)->all();

@@ -74,7 +74,7 @@ if (REQ == 'CP') {
             $attributes = 'method="post"';
         }
 
-        $action = (strpos($action, '://') === false) ? ee()->config->site_url($action) : $action;
+        $action = (strpos((string) $action, '://') === false) ? ee()->config->site_url($action) : $action;
 
         $form = '<form action="' . $action . '"';
 
@@ -108,7 +108,7 @@ if (REQ == 'CP') {
      */
     function form_yes_no_toggle($name, $value)
     {
-        $insertion_point = strcspn($name, '['); // add y/n flag before arrays
+        $insertion_point = strcspn((string) $name, '['); // add y/n flag before arrays
         $name_no = substr_replace($name, '_n', $insertion_point, 0);
         $name_yes = substr_replace($name, '_y', $insertion_point, 0);
 
@@ -151,12 +151,12 @@ function form_preference($name, $details)
             }
 
             break;
-        // Multi Select
+            // Multi Select
         case 'ms':
             $pref = form_multiselect($name . '[]', $details['value'], $details['selected'], 'id="' . $name . '" size="8"');
 
             break;
-        // Radio
+            // Radio
         case 'r':
             if (is_array($details['value'])) {
                 foreach ($details['value'] as $options) {
@@ -167,29 +167,29 @@ function form_preference($name, $details)
             }
 
             break;
-        // Textarea
+            // Textarea
         case 't':
             $pref = form_textarea($details['value']);
 
             break;
-        // Input
+            // Input
         case 'i':
             $pref = form_input(array_merge($details['value'], array('id' => $name, 'class' => 'input fullfield', 'size' => 20, 'maxlength' => 120)));
 
             break;
-        // Password
+            // Password
         case 'p':
             $pref = form_password(array_merge($details['value'], array('id' => $name, 'class' => 'input fullfield', 'size' => 20, 'maxlength' => PASSWORD_MAX_LENGTH)));
 
             break;
-        // Checkbox
+            // Checkbox
         case 'c':
             foreach ((array) $details['value'] as $options) {
                 $pref .= form_checkbox($options) . NBS . lang($options['label'], $options['id']) . NBS . NBS . NBS . NBS;
             }
 
             break;
-        // Pass the raw value through
+            // Pass the raw value through
         case 'v':
             $pref = $details['value'];
 
@@ -233,7 +233,7 @@ function cp_form_submit($value, $work_text, $name = null, $invalid = false, $des
         $name = ' name="' . $name . '"';
     }
     $shortcut = '';
-    if (stripos($value, lang('save')) !== false) {
+    if (stripos($value, (string) lang('save')) !== false) {
         $shortcut = ' data-shortcut="s"';
     }
 
@@ -466,7 +466,7 @@ if (! function_exists('form_textarea')) {
 if (! function_exists('form_multiselect')) {
     function form_multiselect($name = '', $options = array(), $selected = array(), $extra = '', $form_prep = true)
     {
-        if (! strpos($extra, 'multiple')) {
+        if (! strpos((string) $extra, 'multiple')) {
             $extra .= ' multiple="multiple"';
         }
 
@@ -1058,7 +1058,7 @@ if (! function_exists('_attributes_to_string')) {
             }
 
             if ($formtag == true and strpos($attributes, 'accept-charset=') === false) {
-                $attributes .= ' accept-charset="' . strtolower(config_item('charset')) . '"';
+                $attributes .= ' accept-charset="' . strtolower((string) config_item('charset')) . '"';
             }
 
             return ' ' . $attributes;
@@ -1076,7 +1076,7 @@ if (! function_exists('_attributes_to_string')) {
             }
 
             if (! isset($attributes['accept-charset']) and $formtag === true) {
-                $atts .= ' accept-charset="' . strtolower(config_item('charset')) . '"';
+                $atts .= ' accept-charset="' . strtolower((string) config_item('charset')) . '"';
             }
 
             foreach ($attributes as $key => $val) {

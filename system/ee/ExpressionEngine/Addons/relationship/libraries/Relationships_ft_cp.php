@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -101,13 +102,13 @@ class Relationships_ft_cp
 
         $results = $query->get()->result_array();
 
-        $hierarchyGroups = array_reduce($results, function($carry, $row) {
+        $hierarchyGroups = array_reduce($results, function ($carry, $row) {
             // $key = "{$row['group_id']}_{$row['parent_id']}";
-            if(!array_key_exists($row['group_id'], $carry)) {
+            if (!array_key_exists($row['group_id'], $carry)) {
                 $carry[$row['group_id']] = [];
             }
 
-            if(!array_key_exists($row['parent_id'], $carry[$row['group_id']])) {
+            if (!array_key_exists($row['parent_id'], $carry[$row['group_id']])) {
                 $carry[$row['group_id']][$row['parent_id']] = [];
             }
 
@@ -121,7 +122,7 @@ class Relationships_ft_cp
         $this->all_categories = array(
             '--' => array(
                 'name' => lang('any_category'),
-                'children' => array_merge(...array_map(function($hierarchy) use($categories) {
+                'children' => array_merge(...array_map(function ($hierarchy) use ($categories) {
                     return $this->buildCategoryList(0, $hierarchy, $categories);
                 }, $hierarchyGroups))
             )
@@ -372,7 +373,7 @@ class Relationship_settings_form
         $rename = preg_grep('/^' . $this->_prefix . '.*/i', array_keys($data));
 
         foreach ($rename as $key) {
-            $new_key = substr($key, strlen($this->_prefix));
+            $new_key = substr((string) $key, strlen((string) $this->_prefix));
             $data[$new_key] = $data[$key];
             unset($data[$key]);
         }

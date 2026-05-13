@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -128,7 +129,7 @@ class Member_memberlist extends Member
         /** ---------------------------------
         /**  Does the recipient accept email?
         /** ---------------------------------*/
-        $query = ee()->db->query("SELECT email, screen_name, accept_user_email FROM exp_members WHERE member_id = '" .  ee()->db->escape_str($member_id) . "'");
+        $query = ee()->db->query("SELECT email, screen_name, accept_user_email FROM exp_members WHERE member_id = '" . ee()->db->escape_str($member_id) . "'");
 
         if ($query->num_rows() == 0) {
             return false;
@@ -144,7 +145,7 @@ class Member_memberlist extends Member
             );
         }
 
-        $message = stripslashes($_POST['message']) . "\n\n";
+        $message = stripslashes((string) $_POST['message']) . "\n\n";
         $message .= ee()->lang->line('mbr_email_forwarding') . "\n";
         $message .= ee()->config->item('site_url') . "\n";
         $message .= ee()->lang->line('mbr_email_forwarding_cont');
@@ -155,7 +156,7 @@ class Member_memberlist extends Member
         ee()->load->library('email');
         ee()->email->wordwrap = true;
         ee()->email->from(ee()->session->userdata['email']);
-        ee()->email->subject(stripslashes($_POST['subject']));
+        ee()->email->subject(stripslashes((string) $_POST['subject']));
         ee()->email->message($message);
 
         if (isset($_POST['self_copy'])) {
@@ -241,7 +242,7 @@ class Member_memberlist extends Member
         /** ----------------------------------------*/
 
         // Fetch the template tag data
-        $tagdata = trim(ee()->TMPL->tagdata);
+        $tagdata = trim((string) ee()->TMPL->tagdata);
         $result_page = null;
 
         // If there is tag data, it's a tag pair, otherwise it's a single tag which means it's a legacy speciality template.
@@ -257,17 +258,17 @@ class Member_memberlist extends Member
         $var_cond = ee()->functions->assign_conditional_variables($template, '/');
 
         // Find out if we have sub-tag data for our `member_rows` tag. If not, use the legacy speciality template.
-        if (strpos($template, '{/member_rows}') !== false) {
+        if (strpos((string) $template, '{/member_rows}') !== false) {
 
             $member_rows_opening = ee('Variables/Parser')->getFullTag($template, 'member_rows');
             $member_rows_tag_length = strlen(LD . $member_rows_opening);
 
             // Find the starting and ending position of our subtag and calculate the difference so we can grab it.
-            $member_rows_start = strpos($template, LD . $member_rows_opening) + $member_rows_tag_length;
-            $member_rows_end = strpos($template, LD . '/member_rows' . RD);
+            $member_rows_start = strpos((string) $template, LD . $member_rows_opening) + $member_rows_tag_length;
+            $member_rows_end = strpos((string) $template, LD . '/member_rows' . RD);
             $member_rows_diff = $member_rows_end - $member_rows_start;
 
-            $memberlist_rows = substr($template, $member_rows_start, $member_rows_diff);
+            $memberlist_rows = substr((string) $template, $member_rows_start, $member_rows_diff);
         } else {
             $memberlist_rows = $this->_load_element('memberlist_rows');
         }
@@ -317,7 +318,7 @@ class Member_memberlist extends Member
 
         $sort_order = (! in_array(ee()->input->post('sort_order'), $sort_orders)) ? ee()->config->item('memberlist_sort_order') : ee()->input->post('sort_order');
 
-        if (in_array(strtolower(ee()->TMPL->fetch_param('sort')), ['asc', 'desc'])) {
+        if (in_array(strtolower((string) ee()->TMPL->fetch_param('sort')), ['asc', 'desc'])) {
             $sort_order = ee()->TMPL->fetch_param('sort');
         }
 
@@ -371,7 +372,7 @@ class Member_memberlist extends Member
         /** ----------------------------------------*/
 
         // Redirect for old URI styles
-        if (preg_match('/^([0-9]{1,})\-([0-9a-z_]{1,})\-([0-9a-z]{1,})\-([0-9]{1,})\-([0-9]{1,})/i', $this->cur_id, $matches)) {
+        if (preg_match('/^([0-9]{1,})\-([0-9a-z_]{1,})\-([0-9a-z]{1,})\-([0-9]{1,})\-([0-9]{1,})/i', (string) $this->cur_id, $matches)) {
             $group_id = $matches[1];
             $order_by = $matches[2];
             $sort_order = $matches[3];
@@ -382,7 +383,7 @@ class Member_memberlist extends Member
         }
 
         $path = '';
-        if (preg_match('#/?G([0-9]+)/(.*?)/(.*?)/L([0-9]+)(?:/|\Z)#', ee()->uri->query_string, $matches)) {
+        if (preg_match('#/?G([0-9]+)/(.*?)/(.*?)/L([0-9]+)(?:/|\Z)#', (string) ee()->uri->query_string, $matches)) {
             $group_id = $matches[1];
             $order_by = $matches[2];
             $sort_order = $matches[3];
@@ -448,7 +449,7 @@ class Member_memberlist extends Member
         // Pagination or No Pagination & Forum
         // Pagination & Forum
 
-        for ($i = 3; $i <= 5; ++ $i) {
+        for ($i = 3; $i <= 5; ++$i) {
             if (isset(ee()->uri->segments[$i]) && strlen(ee()->uri->segments[$i]) == 1 && preg_match("/[A-Z]{1}/", ee()->uri->segments[$i])) {
                 $first_letter = ee()->uri->segments[$i];
                 $sql .= " AND m.screen_name LIKE '{$first_letter}%' ";
@@ -550,8 +551,8 @@ class Member_memberlist extends Member
                     /** ----------------------------------------*/
                     $cond = ee()->functions->prep_conditional($val['0']);
 
-                    $lcond = substr($cond, 0, strpos($cond, ' '));
-                    $rcond = substr($cond, strpos($cond, ' '));
+                    $lcond = substr((string) $cond, 0, strpos((string) $cond, ' '));
+                    $rcond = substr((string) $cond, strpos((string) $cond, ' '));
 
                     /** ----------------------------------------
                     /**  Parse conditions in standard fields
@@ -566,15 +567,14 @@ class Member_memberlist extends Member
                         eval("\$result = " . $cond . ";");
 
                         if ($result) {
-                            $temp = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "\\1", $temp);
+                            $temp = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "\\1", (string) $temp);
                         } else {
-                            $temp = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "", $temp);
+                            $temp = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "", (string) $temp);
                         }
                     }
                     /** ------------------------------------------
                     /**  Parse conditions in custom member fields
-                    /** ------------------------------------------*/
-                    elseif (isset($fields[$val['3']])) {
+                    /** ------------------------------------------*/ elseif (isset($fields[$val['3']])) {
                         if (array_key_exists('m_field_id_' . $fields[$val['3']], $row)) {
                             $v = $row['m_field_id_' . $fields[$val['3']]];
 
@@ -585,9 +585,9 @@ class Member_memberlist extends Member
                             eval("\$result = " . $cond . ";");
 
                             if ($result) {
-                                $temp = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "\\1", $temp);
+                                $temp = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "\\1", (string) $temp);
                             } else {
-                                $temp = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "", $temp);
+                                $temp = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "", (string) $temp);
                             }
                         }
                     }
@@ -595,7 +595,7 @@ class Member_memberlist extends Member
                     /** ----------------------------------------
                     /**  {if accept_email}
                     /** ----------------------------------------*/
-                    if (preg_match("/^if\s+accept_email.*/i", $val['0'])) {
+                    if (preg_match("/^if\s+accept_email.*/i", (string) $val['0'])) {
                         if ($row['accept_user_email'] == 'n') {
                             $temp = $this->_deny_if('accept_email', $temp);
                         } else {
@@ -606,7 +606,7 @@ class Member_memberlist extends Member
                     /** ----------------------------------------
                     /**  {if avatar}
                     /** ----------------------------------------*/
-                    if (preg_match("/^if\s+avatar.*/i", $val['0'])) {
+                    if (preg_match("/^if\s+avatar.*/i", (string) $val['0'])) {
                         $avatar_path = $member->getAvatarUrl();
                         $avatar_width = $row['avatar_width'];
                         $avatar_height = $row['avatar_height'];
@@ -641,7 +641,6 @@ class Member_memberlist extends Member
                     'last_forum_post_date',
                 ];
 
-
                 if (!is_null(ee()->TMPL->template_engine)) {
                     $variables['avatar_path'] = $member->getAvatarUrl();
                 }
@@ -649,12 +648,12 @@ class Member_memberlist extends Member
                 foreach ($this->var_single as $key => $val) {
                     // var_single may contain keys with variable parameters like `join_date format="Y/m/d`
                     // so we need to extract just the variable name for matching dates and retrieving data
-                    $variable = current(explode(' ', $key));
+                    $variable = current(explode(' ', (string) $key));
 
-                    if(in_array($variable, $dates)) {
+                    if (in_array($variable, $dates)) {
                         $date = $variables[$variable];
                         $temp = $this->_var_swap_single($key, ($date > 0) ? ee()->localize->format_date($val, $date) : '--', $temp);
-                    }else if (array_key_exists($variable, $variables)) {
+                    } elseif (array_key_exists($variable, $variables)) {
                         $temp = $this->_var_swap_single($key, $variables[$variable], $temp);
                     }
 
@@ -781,8 +780,7 @@ class Member_memberlist extends Member
 
         $optionVariables['custom_profile_field_options'] = $profile_options;
 
-        foreach($optionVariables as $variable => $value)
-        {
+        foreach ($optionVariables as $variable => $value) {
             $template = str_replace(LD . $variable . RD, $value, $template);
         }
 
@@ -974,9 +972,9 @@ class Member_memberlist extends Member
         $search_array = array();
 
         foreach ($_POST as $key => $value) {
-            if (substr($key, 0, 13) == 'search_field_' && isset($_POST['search_keywords_' . substr($key, 13)])) {
-                if (in_array($value, $valid) && trim($_POST['search_keywords_' . substr($key, 13)]) != '') {
-                    $search_array[] = array($value, trim($_POST['search_keywords_' . substr($key, 13)]));
+            if (substr((string) $key, 0, 13) == 'search_field_' && isset($_POST['search_keywords_' . substr((string) $key, 13)])) {
+                if (in_array($value, $valid) && trim((string) $_POST['search_keywords_' . substr((string) $key, 13)]) != '') {
+                    $search_array[] = array($value, trim((string) $_POST['search_keywords_' . substr((string) $key, 13)]));
                 }
             }
         }
@@ -1014,8 +1012,8 @@ class Member_memberlist extends Member
         }
 
         foreach ($search_array as $search) {
-            if (substr($search['0'], 0, 11) == 'm_field_id_' && is_numeric(substr($search['0'], 11))) {
-                $fields[] = $custom_fields[substr($search['0'], 11)];
+            if (substr((string) $search['0'], 0, 11) == 'm_field_id_' && is_numeric(substr((string) $search['0'], 11))) {
+                $fields[] = $custom_fields[substr((string) $search['0'], 11)];
 
                 $sql .= "AND md." . $search['0'] . " LIKE '%" . ee()->db->escape_like_str($search['1']) . "%' ";
             } else {
@@ -1041,7 +1039,7 @@ class Member_memberlist extends Member
                     }
 
                     // Make sure it's an actual URL.
-                    if (substr($return_link, 0, 4) !== 'http') {
+                    if (substr((string) $return_link, 0, 4) !== 'http') {
                         $return_link = ee()->functions->create_url($return_link);
                     }
 
@@ -1050,7 +1048,7 @@ class Member_memberlist extends Member
                 }
             }
 
-            if(ee()->functions->determine_error_return() !== false) {
+            if (ee()->functions->determine_error_return() !== false) {
                 return ee()->output->show_form_error(['no_results' => ee()->lang->line('search_no_result')]);
             }
 
@@ -1089,7 +1087,7 @@ class Member_memberlist extends Member
             }
 
             // Make sure it's an actual URL.
-            if (substr($return_link, 0, 4) !== 'http') {
+            if (substr((string) $return_link, 0, 4) !== 'http') {
                 $return_link = ee()->functions->create_url($return_link);
             }
 

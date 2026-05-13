@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -32,7 +33,7 @@ class Link
 
         if (is_a($url, 'ExpressionEngine\Library\CP\URL')) {
             $url = $url->compile();
-        } elseif (strpos($url, '://') === false && strpos($url, $base) !== 0) {
+        } elseif (strpos((string) $url, '://') === false && strpos((string) $url, (string) $base) !== 0) {
             $url = ee('CP/URL')->make($url)->compile();
         }
 

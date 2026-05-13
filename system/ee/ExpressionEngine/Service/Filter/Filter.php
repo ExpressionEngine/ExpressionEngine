@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -102,11 +103,11 @@ abstract class Filter
 
         if (is_array($value)) {
             return array_map(function ($value) {
-                return htmlentities($value, ENT_NOQUOTES, 'UTF-8');
+                return htmlentities((string) $value, ENT_NOQUOTES, 'UTF-8');
             }, $value);
         }
 
-        return is_null($value) ? null : htmlentities($value, ENT_NOQUOTES, 'UTF-8');
+        return is_null($value) ? null : htmlentities((string) $value, ENT_NOQUOTES, 'UTF-8');
     }
 
     /**
@@ -233,10 +234,10 @@ abstract class Filter
             $url = clone $base_url;
             $url->setQueryStringVariable($this->name, $show);
 
-            if(is_array($label) && isset($label['label'])) {
-                $label['label'] = htmlentities($label['label'], ENT_QUOTES, 'UTF-8');
+            if (is_array($label) && isset($label['label'])) {
+                $label['label'] = htmlentities((string) $label['label'], ENT_QUOTES, 'UTF-8');
             } else {
-                $label = htmlentities($label, ENT_QUOTES, 'UTF-8');
+                $label = htmlentities((string) $label, ENT_QUOTES, 'UTF-8');
             }
 
             $compiled = $url->compile();

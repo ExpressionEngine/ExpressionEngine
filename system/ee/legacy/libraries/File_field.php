@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -74,7 +75,7 @@ class File_field
         }
 
         // Get the thumbnail
-        $thumb_info = ee()->filemanager->get_thumb(rawurldecode($vars['filename']), $vars['upload_location_id']);
+        $thumb_info = ee()->filemanager->get_thumb(rawurldecode((string) $vars['filename']), $vars['upload_location_id']);
         $vars['thumb'] = $thumb_info['thumb'];
         $vars['alt'] = $vars['filename'];
 
@@ -88,7 +89,7 @@ class File_field
         }
 
         // Create the hidden fields for the file and directory
-        $vars['hidden'] = form_hidden($field_name . '_hidden_file', rawurldecode($vars['filename']));
+        $vars['hidden'] = form_hidden($field_name . '_hidden_file', rawurldecode((string) $vars['filename']));
         $vars['hidden'] .= form_hidden($field_name . '_hidden_dir', $vars['upload_location_id']);
 
         // Create a standard file upload field and dropdown for folks
@@ -644,8 +645,8 @@ class File_field
             // Query based on file ID
             if (is_numeric($file_reference)) {
                 $query = ee('Model')->get('File')
-                ->with('UploadDestination')
-                ->filter('file_id', '=', $file_reference);
+                    ->with('UploadDestination')
+                    ->filter('file_id', '=', $file_reference);
 
                 if ($dir_id) {
                     $query->filter('upload_location_id', '=', $dir_id);
@@ -716,6 +717,7 @@ class File_field
                     'upload_location_id' => '',
                     'file_hw_original' => ''
                 );
+
                 return $file;
             }
         } elseif (empty($file) and empty($data)) {
@@ -733,7 +735,7 @@ class File_field
 
         // save the file name for use in the file system as well as the URL
         $fs_file_name = $file['file_name'];
-        $file['file_name'] = rawurlencode($file['file_name']);
+        $file['file_name'] = rawurlencode((string) $file['file_name']);
 
         // Set additional data based on what we've gathered
         $file['raw_output'] = $data;
@@ -746,6 +748,7 @@ class File_field
             $file['url'] = $file['model_object']->getAbsoluteURL();
         } else {
             $filesystem = $upload_dir->getFilesystem();
+
             try {
                 $file['path'] = $filesystem->getUrl();
                 $file['url'] = $filesystem->getUrl($file['file_name']);
@@ -755,7 +758,7 @@ class File_field
             }
         }
 
-        $dimensions = explode(" ", $file['file_hw_original']);
+        $dimensions = explode(" ", (string) $file['file_hw_original']);
 
         $file['width'] = isset($dimensions[1]) ? $dimensions[1] : '';
         $file['height'] = isset($dimensions[0]) ? $dimensions[0] : '';

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -67,7 +68,7 @@ class Metaweblog_api_mcp
                 'name' => 'selection[]',
                 'value' => $metaweblog->metaweblog_id,
                 'data' => array(
-                    'confirm' => lang('metaweblog') . ': <b>' . htmlentities($metaweblog->metaweblog_pref_name, ENT_QUOTES, 'UTF-8') . '</b>'
+                    'confirm' => lang('metaweblog') . ': <b>' . htmlentities((string) $metaweblog->metaweblog_pref_name, ENT_QUOTES, 'UTF-8') . '</b>'
                 )
             );
 

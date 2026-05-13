@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -7,7 +8,6 @@
  * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -179,7 +179,7 @@ class Pro_search_filter_keywords extends Pro_search_filter
 
         if (
             ($score = $this->params->get('keywords:score', $this->params->get('min_score'))) &&
-            preg_match('/^([<>]?=?)?([\d\.]+)$/', $score, $match)
+            preg_match('/^([<>]?=?)?([\d\.]+)$/', (string) $score, $match)
         ) {
             // Get the matches
             list(, $a, $b) = $match;
@@ -217,7 +217,7 @@ class Pro_search_filter_keywords extends Pro_search_filter
         if (
             ($match = $this->params->get('keywords:match')) &&
             ($field = $this->fields->name($match)) &&
-            ($rawKeywords = addslashes($this->params->get('keywords')))
+            ($rawKeywords = addslashes((string) $this->params->get('keywords')))
         ) {
             $join = $this->fields->table($match);
             $select[] = "IF({$field} = '{$rawKeywords}', 1, 0) AS `match`";
@@ -363,13 +363,13 @@ class Pro_search_filter_keywords extends Pro_search_filter
             $this->_log('Ordering results by score');
             uasort($this->_results, array($this, '_by_score'));
             $this->_fixed = true;
-        } elseif (substr($orderby, 0, strlen($prefix)) == $prefix) {
+        } elseif (substr((string) $orderby, 0, strlen($prefix)) == $prefix) {
             $this->_log('Ordering results by collection order');
             // An array to map collection names to IDs
             $map = pro_flatten_results($this->_collections, 'collection_id', 'collection_name');
 
             // Set the _colorder to the given order
-            foreach (explode(',', substr($orderby, strlen($prefix))) as $col) {
+            foreach (explode(',', substr((string) $orderby, strlen($prefix))) as $col) {
                 if (! array_key_exists($col, $map)) {
                     continue;
                 }
@@ -519,7 +519,7 @@ class Pro_search_filter_keywords extends Pro_search_filter
             $this->params->set('orderby', preg_replace("/^{$match[1]}\|?/", '', $orderby));
 
             if ($sort = $this->params->get('sort')) {
-                $this->params->set('sort', preg_replace('/^(asc|desc)\|?/i', '', $sort));
+                $this->params->set('sort', preg_replace('/^(asc|desc)\|?/i', '', (string) $sort));
             }
         }
     }
@@ -606,7 +606,7 @@ class Pro_search_filter_keywords extends Pro_search_filter
 
         $words = str_replace('|', ' ', $words);
         $words = preg_replace('/\s{2,}/', ' ', $words);
-        $words = trim($words);
+        $words = trim((string) $words);
 
         // --------------------------------------
         // Alter keywords based on mode
@@ -929,7 +929,7 @@ class Pro_search_filter_keywords extends Pro_search_filter
         // Given sound
         // --------------------------------------
 
-        $soundex = soundex($term->raw);
+        $soundex = soundex((string) $term->raw);
 
         // --------------------------------------
         // If we don't have a dirty variant, bail out
@@ -1083,9 +1083,9 @@ class Pro_search_filter_keywords extends Pro_search_filter
 
             // Check occurrence of each word in index_text
             // Added score is number of occurrences / total words / number of keywords * 100
-            if ($found = preg_match_all($this->_get_pattern(), $row->index_text, $m)) {
+            if ($found = preg_match_all($this->_get_pattern(), (string) $row->index_text, $m)) {
                 // Removes weight
-                $text = preg_replace('/^\|\s(.+?)\s\|.*$/miu', '$1', $row->index_text);
+                $text = preg_replace('/^\|\s(.+?)\s\|.*$/miu', '$1', (string) $row->index_text);
                 $text = str_replace(NL, ' ', $text);
 
                 // Safe word count
@@ -1228,7 +1228,7 @@ class Pro_search_filter_keywords extends Pro_search_filter
         // No excerpt var in tagdata? No need to proceed.
         // -------------------------------------------
 
-        if (strpos(ee()->TMPL->tagdata, $pfx . 'excerpt') === false) {
+        if (strpos((string) ee()->TMPL->tagdata, $pfx . 'excerpt') === false) {
             return $rows;
         }
 
@@ -1299,7 +1299,7 @@ class Pro_search_filter_keywords extends Pro_search_filter
 
                 if (ee()->pro_search_settings->get('title_hilite') == 'y') {
                     // Remove entities for better matching
-                    $row['title'] = html_entity_decode($row['title'], ENT_QUOTES, 'UTF-8');
+                    $row['title'] = html_entity_decode((string) $row['title'], ENT_QUOTES, 'UTF-8');
                     $row['title'] = htmlspecialchars($row['title']);
                     $row['title'] = $this->_highlight($row['title']);
                 }
@@ -1415,7 +1415,7 @@ class Pro_search_filter_keywords extends Pro_search_filter
             $marker = '[[__KEYWORD__]]';
 
             // Replace the keywords with the markers...
-            $tmp = preg_replace($this->_get_pattern(), $marker, $str);
+            $tmp = preg_replace($this->_get_pattern(), $marker, (string) $str);
 
             // ...so we can accurately get the position of the first keyword
             $pos = ee()->pro_multibyte->strpos($tmp, $marker);
@@ -1427,8 +1427,8 @@ class Pro_search_filter_keywords extends Pro_search_filter
             );
 
             // Left and right words
-            $left_words = explode(' ', $left);
-            $right_words = explode(' ', $right);
+            $left_words = explode(' ', (string) $left);
+            $right_words = explode(' ', (string) $right);
 
             // If we have a split, check the left part
             // Amount of words to put on the left
@@ -1469,7 +1469,7 @@ class Pro_search_filter_keywords extends Pro_search_filter
     {
         if ($tag = ee()->pro_search_settings->get('excerpt_hilite')) {
             // Case insensitive replace
-            $str = preg_replace($this->_get_pattern(), "<{$tag}>$1</{$tag}>", $str);
+            $str = preg_replace($this->_get_pattern(), "<{$tag}>$1</{$tag}>", (string) $str);
         }
 
         return $str;
@@ -1526,7 +1526,7 @@ class Pro_search_filter_keywords extends Pro_search_filter
         $str = ee()->typography->parse_type($str, $options);
 
         // Strip again and trim it
-        $str = trim(strip_tags($str));
+        $str = trim(strip_tags((string) $str));
 
         // Remove non-breaking spaces
         $str = str_replace('&nbsp;', ' ', $str);

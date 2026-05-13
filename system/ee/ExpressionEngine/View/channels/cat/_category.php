@@ -15,7 +15,7 @@
 		<?php if ($can_delete_categories): ?>
 		<div class="list-item__checkbox">
 			<label class="hidden" for="cat_cb_<?=$category->data->cat_id?>"><?=lang('select') . ' ' . $category->data->cat_name?></label>
-			<input id="cat_cb_<?=$category->data->cat_id?>" type="checkbox" name="categories[]" value="<?=$category->data->cat_id?>" data-confirm="<?=lang('category') . ': <b>' . htmlentities($category->data->cat_name, ENT_QUOTES, 'UTF-8') . '</b>'?>">
+			<input id="cat_cb_<?=$category->data->cat_id?>" type="checkbox" name="categories[]" value="<?=$category->data->cat_id?>" data-confirm="<?=lang('category') . ': <b>' . htmlentities((string) $category->data->cat_name, ENT_QUOTES, 'UTF-8') . '</b>'?>">
 		</div>
 		<?php endif; ?>
 	</div>

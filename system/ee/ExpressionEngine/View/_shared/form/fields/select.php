@@ -80,7 +80,7 @@ if ($count <= $too_many
                 $disabled = in_array($key, $disabled_choices) ? ' disabled' : ''; ?>
 
 				<label class="checkbox-label" <?php if ($checked): ?> class="act"<?php endif ?>>
-					<input type="<?=($multi) ? 'checkbox' : 'radio'?>" name="<?=$field_name?>" value="<?=htmlentities($key, ENT_QUOTES, 'UTF-8')?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=isset($attrs) ? $attrs : ''?><?=$disabled?>>
+					<input type="<?=($multi) ? 'checkbox' : 'radio'?>" name="<?=$field_name?>" value="<?=htmlentities((string) $key, ENT_QUOTES, 'UTF-8')?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=isset($attrs) ? $attrs : ''?><?=$disabled?>>
 					<div class="checkbox-label__text">
 					<?=$label?>
 						<?php if ($instructions): ?><i><?=$instructions?></i><?php endif ?>

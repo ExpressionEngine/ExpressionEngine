@@ -29,7 +29,7 @@
 			<?php foreach ($layout->getTabs() as $index => $tab): ?>
 				<?php
                 $icon = '';
-                if (strpos($tab->id, 'custom_') !== false) {
+                if (strpos((string) $tab->id, 'custom_') !== false) {
                     $icon = '<i class="tab-edit"></i><i class="tab-remove">';
                 } else {
                     if ($tab->isVisible()) {

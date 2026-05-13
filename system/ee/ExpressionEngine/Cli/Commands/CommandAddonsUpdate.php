@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -95,7 +96,7 @@ class CommandAddonsUpdate extends Cli
             $addon->updateConsentRequests();
 
             if ($addon->hasModule() && $addon->hasInstaller()) {
-                $module = ee('Model')->get('Module')->filter('module_name', ucfirst($addon->getPrefix()))->first();
+                $module = ee('Model')->get('Module')->filter('module_name', ucfirst((string) $addon->getPrefix()))->first();
                 $class = $addon->getInstallerClass();
                 $UPD = new $class();
                 if ($UPD->update($module->module_version) !== false) {
@@ -143,10 +144,10 @@ class CommandAddonsUpdate extends Cli
                 $class = $addon->getExtensionClass();
                 $EXT = new $class();
                 $EXT->update_extension($version);
-                ee()->extensions->version_numbers[ucfirst($addon->getPrefix()) . '_ext'] = $version;
+                ee()->extensions->version_numbers[ucfirst((string) $addon->getPrefix()) . '_ext'] = $version;
 
                 $model = ee('Model')->get('Extension')
-                    ->filter('class', ucfirst($addon->getPrefix()) . '_ext')
+                    ->filter('class', ucfirst((string) $addon->getPrefix()) . '_ext')
                     ->all();
                 $model->version = $version;
                 $model->save();

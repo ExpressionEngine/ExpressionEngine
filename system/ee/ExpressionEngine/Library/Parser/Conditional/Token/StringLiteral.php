@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -20,7 +21,7 @@ class StringLiteral extends Token
         parent::__construct('STRING', $lexeme);
 
         // if there's a comment in the literal string, it needs to go
-        $lexeme = preg_replace('/^\{!--.*?--\}$/', '', $lexeme);
+        $lexeme = preg_replace('/^\{!--.*?--\}$/', '', (string) $lexeme);
         $this->value = preg_replace('/\s+/', ' ', $lexeme);
     }
 
@@ -28,7 +29,7 @@ class StringLiteral extends Token
     {
         // Remove regex quantifiers like {2} or {2,4} so they're not considered
         // unparsed variables
-        $value = preg_replace('/\{\d+,?\d*\}/', '', $this->value);
+        $value = preg_replace('/\{\d+,?\d*\}/', '', (string) $this->value);
 
         return (stristr($value, LD) === false);
     }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -108,7 +109,7 @@ class El_pings
                     ]
                 )->exec();
 
-                $version_file = json_decode($version_file, true);
+                $version_file = json_decode((string) $version_file, true);
             } catch (\Exception $e) {
                 // don't scare the user with whatever random error, but store it for debugging
                 $version_file = [
@@ -271,10 +272,10 @@ class El_pings
     private function decodeChunked($str)
     {
         for ($res = ''; !empty($str); $str = trim($str)) {
-            $pos = strpos($str, "\r\n");
-            $len = hexdec(substr($str, 0, $pos));
-            $res .= substr($str, $pos + 2, $len);
-            $str = substr($str, $pos + 2 + $len);
+            $pos = strpos((string) $str, "\r\n");
+            $len = hexdec(substr((string) $str, 0, $pos));
+            $res .= substr((string) $str, $pos + 2, $len);
+            $str = substr((string) $str, $pos + 2 + $len);
         }
 
         return $res;

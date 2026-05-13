@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -57,7 +58,7 @@ class EE_Log
             return false;
         }
 
-        $level = strtoupper($level);
+        $level = strtoupper((string) $level);
 
         if (! isset($this->_levels[$level]) or ($this->_levels[$level] > $this->_threshold)) {
             return false;

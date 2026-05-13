@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -7,7 +8,6 @@
  * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -17,7 +17,7 @@ if (! defined('BASEPATH')) {
  */
 class Pro_search_fields
 {
-    const NATIVE_TABLE = 'channel_titles';
+    public const NATIVE_TABLE = 'channel_titles';
 
     /**
      * Native string fields
@@ -195,7 +195,7 @@ class Pro_search_fields
     public function __call($fn, $args)
     {
         // Valid calls are is_foo
-        if (! preg_match('/^is_([a-z_]+)$/', $fn, $match)) {
+        if (! preg_match('/^is_([a-z_]+)$/', (string) $fn, $match)) {
             throw new Exception($fn . ' is not a valid method in ' . __CLASS__, 1);
         }
 
@@ -388,37 +388,37 @@ class Pro_search_fields
         $sep = '|';
 
         // Exact matches
-        if (substr($val, 0, 1) == '=') {
-            $val = substr($val, 1);
+        if (substr((string) $val, 0, 1) == '=') {
+            $val = substr((string) $val, 1);
             $exact = true;
         }
 
         // Starts with matches
-        if (substr($val, 0, 1) == '^') {
-            $val = substr($val, 1);
+        if (substr((string) $val, 0, 1) == '^') {
+            $val = substr((string) $val, 1);
             $starts = true;
         }
 
         // Ends with matches
-        if (substr($val, -1) == '$') {
-            $val = rtrim($val, '$');
+        if (substr((string) $val, -1) == '$') {
+            $val = rtrim((string) $val, '$');
             $ends = true;
         }
 
         // All items? -> && instead of |
-        if (strpos($val, '&&') !== false) {
+        if (strpos((string) $val, '&&') !== false) {
             $all = true;
             $sep = '&&';
         }
 
         // Excluding?
-        if (substr($val, 0, 4) == 'not ') {
-            $val = substr($val, 4);
+        if (substr((string) $val, 0, 4) == 'not ') {
+            $val = substr((string) $val, 4);
             $exclude = true;
         }
 
         // Explode it
-        $items = explode($sep, $val);
+        $items = explode($sep, (string) $val);
 
         // Init sql for where clause
         $sql = array();

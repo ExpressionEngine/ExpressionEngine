@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -13,10 +14,10 @@
  */
 class Relationship_model extends CI_Model
 {
-    const CHILD = 1;
-    const PARENT = 2;
-    const SIBLING = 3;
-    const GRID = 4;
+    public const CHILD = 1;
+    public const PARENT = 2;
+    public const SIBLING = 3;
+    public const GRID = 4;
 
     protected $_table = 'relationships';
 
@@ -52,13 +53,13 @@ class Relationship_model extends CI_Model
                 $relative_child = 'L0.parent_id';
                 $relative_parent = 'L0.child_id';
 
-                    break;
+                break;
             case 'siblings':
                 $type = self::SIBLING;
                 $relative_child = 'L0.child_id';
                 $relative_parent = 'S.child_id';
 
-                    break;
+                break;
             default:
                 $type = self::CHILD;
                 $relative_child = 'L0.child_id';
@@ -210,7 +211,7 @@ class Relationship_model extends CI_Model
 
                 return $this->overrideGridRelationships($result, $data, array_keys($grid_field_ids), $fluid_field_data_id);
             } elseif ($fluid_field_data_id && ! is_int($fluid_field_data_id)) {
-                list($fluid_field, $field_id) = explode(',', $fluid_field_data_id);
+                list($fluid_field, $field_id) = explode(',', (string) $fluid_field_data_id);
                 $data = reset($data[$fluid_field]['fields'][$field_id]);
 
                 foreach (array_keys($data) as $rel_field) {
@@ -242,7 +243,7 @@ class Relationship_model extends CI_Model
     private function overrideGridRelationships($result, $data, $grid_field_ids, $fluid_field_data_id = 0)
     {
         if ($fluid_field_data_id) {
-            list($fluid_field, $sub_field_id) = explode(',', $fluid_field_data_id);
+            list($fluid_field, $sub_field_id) = explode(',', (string) $fluid_field_data_id);
             $data = isset($data[$fluid_field]['fields'][$sub_field_id]) ? reset($data[$fluid_field]['fields'][$sub_field_id]) : [];
         }
 
@@ -270,8 +271,8 @@ class Relationship_model extends CI_Model
                                 'L0_field' => $col_id,
                                 'L0_grid_field_id' => $field_id,
                                 'L0_grid_col_id' => $col_id,
-                                'L0_grid_row_id' => crc32($row_id),
-                                'L0_parent' => crc32($row_id),
+                                'L0_grid_row_id' => crc32((string) $row_id),
+                                'L0_parent' => crc32((string) $row_id),
                                 'L0_id' => (int) $id,
                                 'order' => $order + 1,
                             ];

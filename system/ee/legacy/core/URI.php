@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -74,7 +75,7 @@ class EE_URI
             $val = $_GET[$key];
             unset($_GET[$key]);
 
-            $x = explode('/', $val);
+            $x = explode('/', (string) $val);
 
             // Set the session ID
             $this->session_id = array_shift($x);
@@ -86,7 +87,7 @@ class EE_URI
             }
         }
 
-        $protocol = strtoupper($this->config->item('uri_protocol')) ?: 'AUTO';
+        $protocol = strtoupper((string) $this->config->item('uri_protocol')) ?: 'AUTO';
 
         if ($protocol == 'AUTO') {
             // Let's try the REQUEST_URI first, this will work in most situations
@@ -99,7 +100,7 @@ class EE_URI
             // Is there a PATH_INFO variable?
             // Note: some servers seem to have trouble with getenv() so we'll test it two ways
             $path = (isset($_SERVER['PATH_INFO'])) ? $_SERVER['PATH_INFO'] : @getenv('PATH_INFO');
-            if (trim($path, '/') != '' && $path != "/" . EESELF) {
+            if (trim((string) $path, '/') != '' && $path != "/" . EESELF) {
                 $this->_set_uri_string($path);
 
                 return;
@@ -107,14 +108,14 @@ class EE_URI
 
             // No PATH_INFO?... What about QUERY_STRING?
             $path = (isset($_SERVER['QUERY_STRING'])) ? $_SERVER['QUERY_STRING'] : @getenv('QUERY_STRING');
-            if (trim($path, '/') != '') {
+            if (trim((string) $path, '/') != '') {
                 $this->_set_uri_string($path);
 
                 return;
             }
 
             // As a last ditch effort lets try using the $_GET array
-            if (is_array($_GET) && count($_GET) == 1 && trim(key($_GET), '/') != '') {
+            if (is_array($_GET) && count($_GET) == 1 && trim((string) key($_GET), '/') != '') {
                 $this->_set_uri_string(key($_GET));
 
                 return;
@@ -159,7 +160,7 @@ class EE_URI
         $zero_index = 0;
 
         // Turn the URI segments into an array
-        $segs = explode("/", preg_replace("|/*(.+?)/*$|", "\\1", $this->uri_string));
+        $segs = explode("/", (string) preg_replace("|/*(.+?)/*$|", "\\1", (string) $this->uri_string));
 
         // Is there a session ID in the first segment?
         // If so we will extract it and remove the data from the URI and the segment arrays
@@ -204,7 +205,7 @@ class EE_URI
         // Does the URI contain the css request? If so, assign it as a GET variable.
         // This only happens when the "force query string" preference is set.
         if (substr($segs[$zero_index], 0, 2) == 'css=') {
-            $_GET['css'] = substr($this->uri_string, 4);
+            $_GET['css'] = substr((string) $this->uri_string, 4);
 
             // Remove css= from the first segment
             $segs[$zero_index] = substr($segs[$zero_index], 4);
@@ -233,10 +234,10 @@ class EE_URI
         } elseif (! isset($this->segments[2])) {
             $this->query_string = $this->segments[1];
         } else {
-            $this->query_string = preg_replace("|" . '/' . preg_quote($this->segments[0]) . '/' . preg_quote($this->segments[1]) . "|", '', $this->uri_string);
+            $this->query_string = preg_replace("|" . '/' . preg_quote((string) $this->segments[0]) . '/' . preg_quote($this->segments[1]) . "|", '', $this->uri_string);
         }
 
-        $this->query_string = trim($this->query_string, '/');
+        $this->query_string = trim((string) $this->query_string, '/');
     }
 
     /**
@@ -369,10 +370,10 @@ class EE_URI
 
             $uri = $_SERVER['REQUEST_URI'];
 
-            if (strpos($uri, $_SERVER['SCRIPT_NAME']) === 0) {
-                $uri = substr($uri, strlen($_SERVER['SCRIPT_NAME']));
-            } elseif (strpos($uri, dirname($_SERVER['SCRIPT_NAME'])) === 0) {
-                $uri = substr($uri, strlen(dirname($_SERVER['SCRIPT_NAME'])));
+            if (strpos((string) $uri, (string) $_SERVER['SCRIPT_NAME']) === 0) {
+                $uri = substr((string) $uri, strlen((string) $_SERVER['SCRIPT_NAME']));
+            } elseif (strpos((string) $uri, dirname((string) $_SERVER['SCRIPT_NAME'])) === 0) {
+                $uri = substr((string) $uri, strlen(dirname((string) $_SERVER['SCRIPT_NAME'])));
             }
         } elseif ($uri_protocol == 'QUERY_STRING') {
             $uri = (isset($_SERVER['QUERY_STRING'])) ? $_SERVER['QUERY_STRING'] : @getenv('QUERY_STRING');
@@ -382,11 +383,11 @@ class EE_URI
         // in the query string (Nginx) a correct URI is found, and also fixes
         // the QUERY_STRING server var and $_GET array.
 
-        if (strncmp($uri, '?/', 2) === 0) {
-            $uri = substr($uri, 2);
+        if (strncmp((string) $uri, '?/', 2) === 0) {
+            $uri = substr((string) $uri, 2);
         }
 
-        $parts = preg_split('#\?#i', $uri, 2);
+        $parts = preg_split('#\?#i', (string) $uri, 2);
         $uri = $parts[0];
 
         // If we're using QUERY_STRING, we may be steamrolling ACTION URIs
@@ -417,7 +418,7 @@ class EE_URI
             return '/';
         }
 
-        $parsed_url = parse_url($uri);
+        $parsed_url = parse_url((string) $uri);
 
         foreach (array('scheme', 'host', 'port', 'user', 'pass') as $component) {
             if (isset($parsed_url[$component])) {
@@ -440,7 +441,7 @@ class EE_URI
     public function _remove_url_suffix()
     {
         if ($this->config->item('url_suffix') != "") {
-            $this->uri_string = preg_replace("|" . preg_quote($this->config->item('url_suffix')) . "$|", "", $this->uri_string);
+            $this->uri_string = preg_replace("|" . preg_quote((string) $this->config->item('url_suffix')) . "$|", "", (string) $this->uri_string);
         }
     }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -30,8 +31,8 @@ if (empty($el_config__emoji_map)) {
     foreach ($emoji as $em) {
         $el_config__emoji_map[$em->short_name] = $em;
 
-        if (strpos($em->unified, '-')) {
-            $el_config__emoji_map[$em->short_name]->html_entity = '&#x' . implode(';&#x', explode('-', $em->unified)) . ';';
+        if (strpos((string) $em->unified, '-')) {
+            $el_config__emoji_map[$em->short_name]->html_entity = '&#x' . implode(';&#x', explode('-', (string) $em->unified)) . ';';
         } else {
             $el_config__emoji_map[$em->short_name]->html_entity = '&#x' . $em->unified . ';';
         }

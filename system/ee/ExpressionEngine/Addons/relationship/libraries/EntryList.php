@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -117,10 +118,10 @@ class EntryList
 
             foreach ($limit_authors as $author) {
                 switch ($author[0]) {
-                    case 'g': $roles[] = substr($author, 2);
+                    case 'g': $roles[] = substr((string) $author, 2);
 
                         break;
-                    case 'm': $members[] = substr($author, 2);
+                    case 'm': $members[] = substr((string) $author, 2);
 
                         break;
                 }

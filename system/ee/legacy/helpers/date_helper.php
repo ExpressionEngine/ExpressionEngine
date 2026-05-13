@@ -28,7 +28,7 @@ if (! defined('BASEPATH')) {
 if (! function_exists('now')) {
     function now()
     {
-        if (strtolower(ee()->config->item('time_reference')) == 'gmt') {
+        if (strtolower((string) ee()->config->item('time_reference')) == 'gmt') {
             $now = time();
             $system_time = mktime(gmdate("H", $now), gmdate("i", $now), gmdate("s", $now), gmdate("m", $now), gmdate("d", $now), gmdate("Y", $now));
 
@@ -72,7 +72,7 @@ if (! function_exists('mdate')) {
             $time = now();
         }
 
-        $datestr = str_replace('%\\', '', preg_replace("/([a-z]+?){1}/i", "\\\\\\1", $datestr));
+        $datestr = str_replace('%\\', '', preg_replace("/([a-z]+?){1}/i", "\\\\\\1", (string) $datestr));
 
         return date($datestr, $time);
     }
@@ -374,14 +374,14 @@ if (! function_exists('human_to_unix')) {
             return false;
         }
 
-        $datestr = trim($datestr);
+        $datestr = trim((string) $datestr);
         $datestr = preg_replace("/\040+/", ' ', $datestr);
 
-        if (! preg_match('/^[0-9]{2,4}\-[0-9]{1,2}\-[0-9]{1,2}\s[0-9]{1,2}:[0-9]{1,2}(?::[0-9]{1,2})?(?:\s[AP]M)?$/i', $datestr)) {
+        if (! preg_match('/^[0-9]{2,4}\-[0-9]{1,2}\-[0-9]{1,2}\s[0-9]{1,2}:[0-9]{1,2}(?::[0-9]{1,2})?(?:\s[AP]M)?$/i', (string) $datestr)) {
             return false;
         }
 
-        $split = explode(' ', $datestr);
+        $split = explode(' ', (string) $datestr);
 
         $ex = explode("-", $split['0']);
 

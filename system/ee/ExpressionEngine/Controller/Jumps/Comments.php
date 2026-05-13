@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -60,14 +61,13 @@ class Comments extends Jumps
         $this->sendResponse($response);
     }
 
-
     private function loadEntries($searchString = false)
     {
         $entries = ee('Model')->get('ChannelEntry')->fields('entry_id', 'title')->filter('comment_total', '>', 0);
 
         if (!empty($searchString)) {
             // Break the search string into individual keywords so we can partially match them.
-            $keywords = explode(' ', $searchString);
+            $keywords = explode(' ', (string) $searchString);
 
             foreach ($keywords as $keyword) {
                 $entries->filter('title', 'LIKE', '%' . ee()->db->escape_like_str($keyword) . '%');

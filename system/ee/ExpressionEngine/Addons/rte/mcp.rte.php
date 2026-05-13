@@ -255,7 +255,7 @@ class Rte_mcp
             $jsonError = false;
             if ($settings['rte_advanced_config'] == 'y' && !empty($settings['rte_config_json'])) {
                 //override with JSON
-                $json = json_decode($settings['rte_config_json']);
+                $json = json_decode((string) $settings['rte_config_json']);
                 if (empty($json)) {
                     $jsonError = true;
                     $settings['toolbar'] = $settings[$toolsetType . '_toolbar'];
@@ -316,7 +316,7 @@ class Rte_mcp
             ($toolset_id = (int) ee('Request')->get('toolset_id'))
             && ($config = ee('Model')->get('rte:Toolset')->filter('toolset_id', '==', $toolset_id)->first())
         ) {
-            $config->settings = array_merge(ee('rte:' . ucfirst($config->toolset_type) . 'Service')->defaultConfigSettings(), $config->settings);
+            $config->settings = array_merge(ee('rte:' . ucfirst((string) $config->toolset_type) . 'Service')->defaultConfigSettings(), $config->settings);
 
             // Clone a config?
             if (ee('Request')->get('clone') == 'y') {
@@ -331,7 +331,7 @@ class Rte_mcp
                 'toolset_id' => '',
                 'toolset_type' => $toolsetType,
                 'toolset_name' => '',
-                'settings' => ee('rte:' . ucfirst($toolsetType) . 'Service')->defaultConfigSettings(),
+                'settings' => ee('rte:' . ucfirst((string) $toolsetType) . 'Service')->defaultConfigSettings(),
             ));
         }
 

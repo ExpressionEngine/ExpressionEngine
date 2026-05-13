@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -233,9 +234,9 @@ class Select extends Query
             $found = false;
             // if we need just some fields, get their IDs
             foreach ($fields as $field) {
-                if (($pos = strpos($field, 'field_id_')) !== false) {
+                if (($pos = strpos((string) $field, 'field_id_')) !== false) {
                     $found = true;
-                    $requestedFieldIds[] = substr($field, $pos + 9);
+                    $requestedFieldIds[] = substr((string) $field, $pos + 9);
                 }
             }
 
@@ -371,7 +372,7 @@ class Select extends Query
         // JOIN in a single query. In such cases we can simply search each of the
         // tables individually and build up a list of primary keys to filter on
         foreach ($this->builder->getSearch() as $field => $words) {
-            if (strpos($field, $column_prefix . 'field_id') === 0) {
+            if (strpos((string) $field, $column_prefix . 'field_id') === 0) {
                 $field_ids[] = str_replace($column_prefix . 'field_id_', '', $field);
             }
         }
@@ -439,7 +440,7 @@ class Select extends Query
         foreach ($this->builder->getOrders() as $order) {
             $field = $order[0];
 
-            if (strpos($field, $column_prefix . 'field_id') === 0) {
+            if (strpos((string) $field, $column_prefix . 'field_id') === 0) {
                 $field_ids[] = str_replace($column_prefix . 'field_id_', '', $field);
             }
         }
@@ -479,7 +480,7 @@ class Select extends Query
                 $field_ids = array_merge($field_ids, $this->getFieldIdsFromFilters($nested, $column_prefix));
             } else {
                 $field = $filter[0];
-                if (strpos($field, $column_prefix . 'field_id') === 0) {
+                if (strpos((string) $field, $column_prefix . 'field_id') === 0) {
                     $field_ids[] = str_replace($column_prefix . 'field_id_', '', $field);
                 }
             }
@@ -496,10 +497,10 @@ class Select extends Query
         $fields = array();
 
         foreach ($this->builder->getFields() as $field) {
-            if (strpos($field, '.') === false) {
+            if (strpos((string) $field, '.') === false) {
                 $alias = $this->root_alias;
             } else {
-                list($alias, $field) = explode('.', $field, 2);
+                list($alias, $field) = explode('.', (string) $field, 2);
             }
 
             $alias = str_replace(':', '_m_', $alias);
@@ -538,7 +539,7 @@ class Select extends Query
                 } elseif ($connective == 'or') {
                     $query->or_start_group();
                 } else {
-                    throw new LogicException('Invalid filter group connective: ' . htmlentities($connective));
+                    throw new LogicException('Invalid filter group connective: ' . htmlentities((string) $connective));
                 }
 
                 $this->applyFilters($query, $nested);
@@ -691,11 +692,11 @@ class Select extends Query
      */
     protected function translateProperty($property)
     {
-        if (($bracketPos = strpos($property, '(')) !== false && in_array(substr($property, 0, $bracketPos), $this->reservedMysqlFunctions, true)) {
+        if (($bracketPos = strpos((string) $property, '(')) !== false && in_array(substr((string) $property, 0, $bracketPos), $this->reservedMysqlFunctions, true)) {
             return $property;
         }
 
-        if (strpos($property, '.') === false) {
+        if (strpos((string) $property, '.') === false) {
             $alias = $this->root_alias;
 
             if ($property == $alias) {
@@ -705,7 +706,7 @@ class Select extends Query
                 $property = $meta->getPrimaryKey();
             }
         } else {
-            list($alias, $property) = explode('.', $property);
+            list($alias, $property) = explode('.', (string) $property);
             $alias = str_replace(':', '_m_', $alias);
         }
 
@@ -770,7 +771,7 @@ class Select extends Query
      */
     protected function splitAlias($string)
     {
-        $string = trim($string);
+        $string = trim((string) $string);
         $parts = preg_split('/\s+AS\s+/i', $string);
 
         if (! isset($parts[1])) {

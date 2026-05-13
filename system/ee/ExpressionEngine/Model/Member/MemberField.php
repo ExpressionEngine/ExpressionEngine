@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -184,7 +185,7 @@ class MemberField extends FieldModel
 
     private function prefix($key)
     {
-        if (substr($key, 0, 2) !== 'm_') {
+        if (substr((string) $key, 0, 2) !== 'm_') {
             $key = "m_" . $key;
         }
 
@@ -196,7 +197,7 @@ class MemberField extends FieldModel
      */
     public function validateUniqueAmongFieldGroups($key, $value, array $params = array())
     {
-        $key = (strpos($key, 'm_') === 0) ? substr($key, 2) : $key;
+        $key = (strpos((string) $key, 'm_') === 0) ? substr((string) $key, 2) : $key;
 
         // check channel field groups
         $unique = $this->getModelFacade()
@@ -205,7 +206,7 @@ class MemberField extends FieldModel
 
         foreach ($params as $field) {
             $unique->filter(
-                ((strpos($field, 'm_') === 0) ? substr($field, 2) : $field),
+                ((strpos((string) $field, 'm_') === 0) ? substr((string) $field, 2) : $field),
                 $this->getProperty($field)
             );
         }
@@ -221,7 +222,7 @@ class MemberField extends FieldModel
 
         foreach ($params as $field) {
             $unique->filter(
-                ((strpos($field, 'm_') === 0) ? substr($field, 2) : $field),
+                ((strpos((string) $field, 'm_') === 0) ? substr((string) $field, 2) : $field),
                 $this->getProperty($field)
             );
         }

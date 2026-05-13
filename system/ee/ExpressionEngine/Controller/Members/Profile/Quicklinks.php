@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -178,7 +179,7 @@ class Quicklinks extends Settings
      */
     public function order()
     {
-        parse_str(ee()->input->post('order'), $order);
+        parse_str((string) ee()->input->post('order'), $order);
         $order = $order['order'];
         $position = 1;
 
@@ -327,18 +328,18 @@ class Quicklinks extends Settings
             $toolbar = array('toolbar_items' => array(
                 'edit' => array(
                     'href' => $edit_url,
-                    'title' => strtolower(lang('edit'))
+                    'title' => strtolower((string) lang('edit'))
                 )
             ));
 
             $links[] = array(
-                '<a href="' . $edit_url . '">' . htmlentities($quicklink['title'], ENT_QUOTES, 'UTF-8') . '</a>' . form_hidden('order[]', $quicklink['order']),
+                '<a href="' . $edit_url . '">' . htmlentities((string) $quicklink['title'], ENT_QUOTES, 'UTF-8') . '</a>' . form_hidden('order[]', $quicklink['order']),
                 $toolbar,
                 array(
                     'name' => 'selection[]',
                     'value' => $quicklink['order'],
                     'data' => array(
-                        'confirm' => lang('quick_link') . ': <b>' . htmlentities($quicklink['title'], ENT_QUOTES, 'UTF-8') . '</b>'
+                        'confirm' => lang('quick_link') . ': <b>' . htmlentities((string) $quicklink['title'], ENT_QUOTES, 'UTF-8') . '</b>'
                     )
                 )
             );

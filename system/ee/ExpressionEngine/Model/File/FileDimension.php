@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -119,7 +120,7 @@ class FileDimension extends Model
         ee()->load->library('image_lib');
         ee()->image_lib->clear();
 
-        $original_dimensions = explode(" ", $file->file_hw_original);
+        $original_dimensions = explode(" ", (string) $file->file_hw_original);
 
         // We do math on these values, so we'll coerce them into integers
         // now. Empty strings ('') turn into 0.
@@ -246,7 +247,7 @@ class FileDimension extends Model
      */
     public function getAbsoluteURL()
     {
-        return $this->UploadDestination->getFilesystem()->getUrl('_' . rawurlencode($this->short_name) . '/');
+        return $this->UploadDestination->getFilesystem()->getUrl('_' . rawurlencode((string) $this->short_name) . '/');
     }
 }
 

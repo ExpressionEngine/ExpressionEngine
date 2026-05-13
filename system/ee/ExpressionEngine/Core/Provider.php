@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -69,7 +70,7 @@ class Provider extends InjectionBindingDecorator
         // Set the call location
         if (defined('REQ') && REQ === 'CLI') {
             $this->setCallLocation('CLI');
-        } else if (defined('REQ') && REQ === 'CP') {
+        } elseif (defined('REQ') && REQ === 'CP') {
             $this->setCallLocation('CP');
         }
 
@@ -86,7 +87,7 @@ class Provider extends InjectionBindingDecorator
      */
     public function setConfigPath($path)
     {
-        $this->config_path = rtrim($path, '/');
+        $this->config_path = rtrim((string) $path, '/');
     }
 
     /**
@@ -272,7 +273,7 @@ class Provider extends InjectionBindingDecorator
             foreach ($aliases as $origClassName => $aliasClassName) {
                 if (is_numeric($origClassName)) {
                     $origClassName = $aliasClassName;
-                    if (strpos($aliasClassName, 'ExpressionEngine\Addons') === 0) {
+                    if (strpos((string) $aliasClassName, 'ExpressionEngine\Addons') === 0) {
                         $replace_once = 1;
                         $aliasClassName = str_replace('ExpressionEngine\Addons', 'Addons', $aliasClassName, $replace_once);
                     }
@@ -340,7 +341,7 @@ class Provider extends InjectionBindingDecorator
                 };
             }
 
-            if (strpos($name, ':') !== false) {
+            if (strpos((string) $name, ':') !== false) {
                 throw new \Exception("Service names cannot contain ':'. ({$name})");
             }
 
@@ -348,7 +349,7 @@ class Provider extends InjectionBindingDecorator
         }
 
         foreach ($this->getSingletons() as $name => $closure) {
-            if (strpos($name, ':') !== false) {
+            if (strpos((string) $name, ':') !== false) {
                 throw new \Exception("Service names cannot contain ':'. ({$name})");
             }
 
@@ -366,7 +367,6 @@ class Provider extends InjectionBindingDecorator
             }
         }
     }
-
 
     /**
      * Registers cookie settings in memory and database
@@ -410,22 +410,25 @@ class Provider extends InjectionBindingDecorator
                         case 'pro':
                         case 'comment':
                             ee()->lang->load($cookieParams['cookie_provider']);
+
                             break;
-                        // core EE
+                            // core EE
                         case 'ee':
                             ee()->lang->load('core');
+
                             break;
-                        // third-party add-ons
+                            // third-party add-ons
                         default:
                             ee()->lang->loadfile($cookieParams['cookie_provider'], $cookieParams['cookie_provider'], false);
+
                             break;
                     }
 
                     $cookieSettings->cookie_title = (lang('cookie_' . $cookie_name) != 'cookie_' . $cookie_name) ? lang('cookie_' . $cookie_name) : lang($cookie_name);
                     if (!empty($builtinCookieSettings) && isset($builtinCookieSettings[$cookie_name])) {
                         if (isset($builtinCookieSettings[$cookie_name]['description'])) {
-                            if (strpos($builtinCookieSettings[$cookie_name]['description'], 'lang:') === 0) {
-                                $cookieSettings->cookie_description = lang(substr($builtinCookieSettings[$cookie_name]['description'], 5));
+                            if (strpos((string) $builtinCookieSettings[$cookie_name]['description'], 'lang:') === 0) {
+                                $cookieSettings->cookie_description = lang(substr((string) $builtinCookieSettings[$cookie_name]['description'], 5));
                             } else {
                                 $cookieSettings->cookie_description = $builtinCookieSettings[$cookie_name]['description'];
                             }

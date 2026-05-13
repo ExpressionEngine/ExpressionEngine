@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -38,7 +39,7 @@ abstract class Request
         }
 
         foreach ($data as $key => $val) {
-            if (substr($key, 0, 7) == "CURLOPT") {
+            if (substr((string) $key, 0, 7) == "CURLOPT") {
                 $this->config[constant($key)] = $val;
             }
         }
@@ -126,7 +127,7 @@ abstract class Request
                 if (!empty($value)) {
                     // Please note.. this is only lowercase key.. not value
                     // lowercase value will kill the code ee signiture one click download check.
-                    $this->headersLowercase[strtolower($key)] = $value;
+                    $this->headersLowercase[strtolower((string) $key)] = $value;
                 }
             }
         }

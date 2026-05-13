@@ -2,7 +2,7 @@
     <thead>
         <tr>
         <?php foreach ($cols as $col) : ?>
-            <th scope="col"><?=htmlspecialchars($col)?></th>
+            <th scope="col"><?=htmlspecialchars((string) $col)?></th>
         <?php endforeach; ?>
         </tr>
     </thead>

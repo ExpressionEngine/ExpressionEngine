@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -29,7 +30,7 @@ class Jumps extends CP_Controller
         if (! AJAX_REQUEST) {
             $this->invalidRequest();
         }
-        
+
         // Dummy method to make sure it doesn't come up as a 404.
         // Is validated by the `checkRequestSegments()` in the constructor.
     }
@@ -42,10 +43,10 @@ class Jumps extends CP_Controller
 
         $contents = "
         EE.cp.jumpMenuURL = '" . ee('CP/URL', 'JUMPTARGET')->compile() . "';
-        EE.cp.JumpMenuCommands = " . json_encode($jumpMenuItems) .";";
+        EE.cp.JumpMenuCommands = " . json_encode($jumpMenuItems) . ";";
 
-        $finfo = ee()->cache->file->get_metadata('jumpmenu/' . md5(ee()->session->getMember()->getId()));
-        ee()->javascript_loader->set_headers('jumpmenu', $finfo['mtime']); 
+        $finfo = ee()->cache->file->get_metadata('jumpmenu/' . md5((string) ee()->session->getMember()->getId()));
+        ee()->javascript_loader->set_headers('jumpmenu', $finfo['mtime']);
         ee()->output->set_header('Content-Length: ' . strlen($contents));
         ee()->output->set_output($contents);
     }
@@ -55,7 +56,7 @@ class Jumps extends CP_Controller
         if (! AJAX_REQUEST) {
             $this->invalidRequest();
         }
-        
+
         if (!ee('Permission')->can('access_addons')) {
             $this->sendResponse([]);
         }
@@ -76,7 +77,7 @@ class Jumps extends CP_Controller
             $this->invalidMethod();
         }
 
-        $searchKeywords = explode(' ', ee()->input->post('searchString'));
+        $searchKeywords = explode(' ', (string) ee()->input->post('searchString'));
 
         $items = $jumpMenu->{$method}($searchKeywords);
 

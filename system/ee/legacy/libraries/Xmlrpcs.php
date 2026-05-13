@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -160,12 +161,12 @@ class EE_Xmlrpcs extends EE_Xmlrpc
         $parser_object->xh[$parser_name]['method'] = '';
 
         xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, true);
-        xml_set_character_data_handler($parser, function($parser, $cdata) {
+        xml_set_character_data_handler($parser, function ($parser, $cdata) {
             return $this->character_data($parser, $cdata);
         });
-        xml_set_element_handler($parser, function($parser, $tag, $attributes) {
+        xml_set_element_handler($parser, function ($parser, $tag, $attributes) {
             return $this->open_tag($parser, $tag, $attributes);
-        }, function($parser, $tag) {
+        }, function ($parser, $tag) {
             return $this->closing_tag($parser, $tag);
         });
         //xml_set_default_handler($parser, 'default_handler');
@@ -231,7 +232,7 @@ class EE_Xmlrpcs extends EE_Xmlrpc
         $methName = $m->method_name;
 
         // Check to see if it is a system call
-        $system_call = (strncmp($methName, 'system', 5) == 0) ? true : false;
+        $system_call = (strncmp((string) $methName, 'system', 5) == 0) ? true : false;
 
         if ($this->xss_clean == false) {
             $m->xss_clean = false;

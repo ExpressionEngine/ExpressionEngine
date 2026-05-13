@@ -48,7 +48,7 @@ class Entries_pro extends Prolet\AbstractProlet
     public function index()
     {
         ee()->lang->loadfile('content');
-        
+
         $vars = array();
         $vars['channels_exist'] = true;
 
@@ -93,7 +93,7 @@ class Entries_pro extends Prolet\AbstractProlet
 
         $vars['filters'] = $filters->renderEntryFilters($base_url);
         $vars['filters_search'] = $filters->renderSearch($base_url);
-        $vars['search_value'] = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
+        $vars['search_value'] = htmlentities((string) ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
 
         $base_url->addQueryStringVariables(
             array_filter(
@@ -296,7 +296,6 @@ class Entries_pro extends Prolet\AbstractProlet
 
         return $rawOutput;
 
-        
     }
 
 }

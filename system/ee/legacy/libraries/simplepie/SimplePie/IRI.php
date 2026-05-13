@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SimplePie
  *
@@ -150,7 +151,7 @@ class SimplePie_IRI
         if (method_exists($this, 'set_' . $name)) {
             call_user_func(array($this, 'set_' . $name), $value);
         } elseif (
-               $name === 'iauthority'
+            $name === 'iauthority'
             || $name === 'iuserinfo'
             || $name === 'ihost'
             || $name === 'ipath'
@@ -414,7 +415,7 @@ class SimplePie_IRI
         $string = preg_replace_callback('/(?:%[A-Fa-f0-9]{2})+/', array($this, 'remove_iunreserved_percent_encoded'), $string);
 
         // Replace invalid percent characters
-        $string = preg_replace('/%(?![A-Fa-f0-9]{2})/', '%25', $string);
+        $string = preg_replace('/%(?![A-Fa-f0-9]{2})/', '%25', (string) $string);
 
         // Add unreserved and % to $extra_chars (the latter is safe because all
         // pct-encoded sections are now valid).
@@ -422,8 +423,8 @@ class SimplePie_IRI
 
         // Now replace any bytes that aren't allowed with their pct-encoded versions
         $position = 0;
-        $strlen = strlen($string);
-        while (($position += strspn($string, $extra_chars, $position)) < $strlen) {
+        $strlen = strlen((string) $string);
+        while (($position += strspn((string) $string, $extra_chars, $position)) < $strlen) {
             $value = ord($string[$position]);
 
             // Start position
@@ -495,13 +496,13 @@ class SimplePie_IRI
                 || $character >= 0xFDD0 && $character <= 0xFDEF
                 || (
                     // Everything else not in ucschar
-                       $character > 0xD7FF && $character < 0xF900
+                    $character > 0xD7FF && $character < 0xF900
                     || $character < 0xA0
                     || $character > 0xEFFFD
                 )
                 && (
                     // Everything not in iprivate, if it applies
-                       !$iprivate
+                    !$iprivate
                     || $character < 0xE000
                     || $character > 0x10FFFD
                 )
@@ -536,7 +537,7 @@ class SimplePie_IRI
     {
         // As we just have valid percent encoded sequences we can just explode
         // and ignore the first member of the returned array (an empty string).
-        $bytes = explode('%', $match[0]);
+        $bytes = explode('%', (string) $match[0]);
 
         // Initialize the new string (this is what will be returned) and that
         // there are no bytes remaining in the current sequence (unsurprising
@@ -725,13 +726,13 @@ class SimplePie_IRI
             return true;
         } elseif (isset($cache[$iri])) {
             list($this->scheme,
-                 $this->iuserinfo,
-                 $this->ihost,
-                 $this->port,
-                 $this->ipath,
-                 $this->iquery,
-                 $this->ifragment,
-                 $return) = $cache[$iri];
+                $this->iuserinfo,
+                $this->ihost,
+                $this->port,
+                $this->ipath,
+                $this->iquery,
+                $this->ifragment,
+                $return) = $cache[$iri];
 
             return $return;
         } else {
@@ -808,9 +809,9 @@ class SimplePie_IRI
             return true;
         } elseif (isset($cache[$authority])) {
             list($this->iuserinfo,
-                 $this->ihost,
-                 $this->port,
-                 $return) = $cache[$authority];
+                $this->ihost,
+                $this->port,
+                $return) = $cache[$authority];
 
             return $return;
         } else {
@@ -1016,8 +1017,8 @@ class SimplePie_IRI
         }
 
         $position = 0;
-        $strlen = strlen($string);
-        while (($position += strcspn($string, $non_ascii, $position)) < $strlen) {
+        $strlen = strlen((string) $string);
+        while (($position += strcspn((string) $string, (string) $non_ascii, $position)) < $strlen) {
             $string = substr_replace($string, sprintf('%%%02X', ord($string[$position])), $position, 1);
             $position += 3;
             $strlen += 2;

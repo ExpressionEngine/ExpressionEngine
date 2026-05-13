@@ -168,11 +168,11 @@ class Member
 
         $this->request = trim_slashes(ee()->uri->uri_string);
 
-        if (false !== ($pos = strpos($this->request, $this->trigger . '/'))) {
-            $this->request = substr($this->request, $pos);
+        if (false !== ($pos = strpos((string) $this->request, $this->trigger . '/'))) {
+            $this->request = substr((string) $this->request, $pos);
         }
 
-        if (preg_match("#/simple#", $this->request)) {
+        if (preg_match("#/simple#", (string) $this->request)) {
             $this->request = str_replace("/simple", '', $this->request);
             $this->show_headings = false;
         }
@@ -183,16 +183,16 @@ class Member
 
         if ($this->request == $this->trigger) {
             $this->request = '';
-        } elseif (strpos($this->request, '/') !== false) {
-            $xr = explode("/", $this->request);
+        } elseif (strpos((string) $this->request, '/') !== false) {
+            $xr = explode("/", (string) $this->request);
             $this->request = str_replace(current($xr) . '/', '', $this->request);
         }
 
         // Determine the ID number, if any
         $this->cur_id = '';
 
-        if (strpos($this->request, '/') !== false) {
-            $x = explode("/", $this->request);
+        if (strpos((string) $this->request, '/') !== false) {
+            $x = explode("/", (string) $this->request);
 
             if (count($x) > 2) {
                 $this->request = $x[0];
@@ -944,7 +944,7 @@ class Member
 
         ee()->TMPL->set_data(['open' => $open]);
 
-        return $open . stripslashes(ee()->TMPL->tagdata) . "</form>";
+        return $open . stripslashes((string) ee()->TMPL->tagdata) . "</form>";
     }
 
     /**
@@ -996,7 +996,7 @@ class Member
 
         ee()->TMPL->set_data(['open' => $open]);
 
-        return $open . stripslashes(ee()->TMPL->tagdata) . "</form>";
+        return $open . stripslashes((string) ee()->TMPL->tagdata) . "</form>";
     }
 
     public function send_username()
@@ -1046,7 +1046,7 @@ class Member
 
         ee()->TMPL->set_data(['open' => $open]);
 
-        return $open . stripslashes(ee()->TMPL->tagdata) . "</form>";
+        return $open . stripslashes((string) ee()->TMPL->tagdata) . "</form>";
     }
 
     /**
@@ -1148,7 +1148,7 @@ class Member
 
         $res = ee()->functions->form_declaration($data);
 
-        $res .= stripslashes(ee()->TMPL->tagdata);
+        $res .= stripslashes((string) ee()->TMPL->tagdata);
 
         $res .= "</form>";
 
@@ -1564,14 +1564,14 @@ class Member
             $swap = array(
                 'name' => ee()->session->userdata('screen_name'),
                 'email' => ee()->session->userdata('email'),
-                'site_name' => stripslashes(ee()->config->item('site_name'))
+                'site_name' => stripslashes((string) ee()->config->item('site_name'))
             );
 
             $email_subject = ee()->functions->var_swap(ee()->lang->line('mbr_delete_notify_title'), $swap);
             $email_msg = ee()->functions->var_swap(ee()->lang->line('mbr_delete_notify_message'), $swap);
 
             // No notification for the user themselves, if they're in the list
-            if (strpos($notify_address, ee()->session->userdata('email')) !== false) {
+            if (strpos($notify_address, (string) ee()->session->userdata('email')) !== false) {
                 $notify_address = str_replace(ee()->session->userdata('email'), "", $notify_address);
             }
 
@@ -1608,7 +1608,7 @@ class Member
 
         // Build Success Message
         $url = ee()->config->item('site_url');
-        $name = stripslashes(ee()->config->item('site_name'));
+        $name = stripslashes((string) ee()->config->item('site_name'));
 
         $data = array('title' => ee()->lang->line('mbr_delete'),
             'heading' => ee()->lang->line('thank_you'),
@@ -1636,9 +1636,9 @@ class Member
     public function login_form()
     {
         if (ee()->config->item('website_session_type') != 'c') {
-            ee()->TMPL->tagdata = preg_replace("/{if\s+auto_login}.*?{" . '\/' . "if}/s", '', ee()->TMPL->tagdata);
+            ee()->TMPL->tagdata = preg_replace("/{if\s+auto_login}.*?{" . '\/' . "if}/s", '', (string) ee()->TMPL->tagdata);
         } else {
-            ee()->TMPL->tagdata = preg_replace("/{if\s+auto_login}(.*?){" . '\/' . "if}/s", "\\1", ee()->TMPL->tagdata);
+            ee()->TMPL->tagdata = preg_replace("/{if\s+auto_login}(.*?){" . '\/' . "if}/s", "\\1", (string) ee()->TMPL->tagdata);
         }
 
         // Create form
@@ -1649,7 +1649,7 @@ class Member
 
         if (
             ee()->TMPL->fetch_param('name') !== false &&
-            preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('name'), $match)
+            preg_match("#^[a-zA-Z0-9_\-]+$#i", (string) ee()->TMPL->fetch_param('name'), $match)
         ) {
             $data['name'] = ee()->TMPL->fetch_param('name');
             ee()->TMPL->log_item('Member Login Form:  The \'name\' parameter has been deprecated.  Please use form_name');
@@ -1659,7 +1659,7 @@ class Member
 
         if (
             ee()->TMPL->fetch_param('id') !== false &&
-            preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('id'))
+            preg_match("#^[a-zA-Z0-9_\-]+$#i", (string) ee()->TMPL->fetch_param('id'))
         ) {
             $data['id'] = ee()->TMPL->fetch_param('id');
             ee()->TMPL->log_item('Member Login Form:  The \'id\' parameter has been deprecated.  Please use form_id');
@@ -1677,7 +1677,7 @@ class Member
 
         ee()->TMPL->set_data(['open' => $open]);
 
-        return $open . stripslashes($template) . "</form>";
+        return $open . stripslashes((string) $template) . "</form>";
     }
 
     /**
@@ -1779,7 +1779,7 @@ class Member
     {
         $result_page = ee()->TMPL->fetch_param('result_page');
 
-        if (!empty($result_page) && substr($result_page, 0, 4) !== 'http' && substr($result_page, 0, 1) !== '/') {
+        if (!empty($result_page) && substr((string) $result_page, 0, 4) !== 'http' && substr((string) $result_page, 0, 1) !== '/') {
             $result_page = '/' . $result_page;
         }
 
@@ -1802,7 +1802,7 @@ class Member
         $data['class'] = ee()->TMPL->form_class;
 
         // Use the `result_page` as our action. If empty, it'll default to the ACT URL.
-        $data['action'] = (ee()->TMPL->fetch_param('result_page') && ee()->TMPL->fetch_param('result_page') != "") ? strtolower(ee()->TMPL->fetch_param('result_page')) : '';
+        $data['action'] = (ee()->TMPL->fetch_param('result_page') && ee()->TMPL->fetch_param('result_page') != "") ? strtolower((string) ee()->TMPL->fetch_param('result_page')) : '';
 
         // If the action is relative, make sure it has a leading slash so we don't append it to the current url.
         if (!empty($data['action']) && substr($data['action'], 0, 4) !== 'http' && substr($data['action'], 0, 1) !== '/') {
@@ -1815,7 +1815,7 @@ class Member
 
         ee()->TMPL->set_data(['open' => $open]);
 
-        return $open . stripslashes($template) . "</form>";
+        return $open . stripslashes((string) $template) . "</form>";
     }
 
     /**
@@ -2031,7 +2031,7 @@ class Member
                 'heading' => ee()->lang->line('general_error'),
                 'content' => ee()->lang->line('nonexistent_page'),
                 'redirect' => '',
-                'link' => array(ee()->config->item('site_url'), stripslashes(ee()->config->item('site_name')))
+                'link' => array(ee()->config->item('site_url'), stripslashes((string) ee()->config->item('site_name')))
             );
 
             set_status_header(404);
@@ -2078,7 +2078,7 @@ class Member
         $crumbs = $this->_crumb_trail(
             array(
                 'link' => ee()->config->item('site_url'),
-                'title' => stripslashes(ee()->config->item('site_name'))
+                'title' => stripslashes((string) ee()->config->item('site_name'))
             )
         );
 
@@ -2239,7 +2239,7 @@ class Member
         }
 
         // Parse the language text
-        if (preg_match_all("/{lang:(.+?)\}/i", $str, $matches)) {
+        if (preg_match_all("/{lang:(.+?)\}/i", (string) $str, $matches)) {
             for ($j = 0; $j < count($matches['0']); $j++) {
                 $line = (ee()->lang->line($matches['1'][$j]) == $matches['1'][$j]) ? ee()->lang->line('mbr_' . $matches['1'][$j]) : ee()->lang->line($matches['1'][$j]);
 
@@ -2249,13 +2249,13 @@ class Member
 
         // Parse old style path variables
         // This is here for backward compatibility for people with older templates
-        $str = preg_replace_callback("/" . LD . "\s*path=(.*?)" . RD . "/", array( & ee()->functions, 'create_url'), $str);
+        $str = preg_replace_callback("/" . LD . "\s*path=(.*?)" . RD . "/", array(& ee()->functions, 'create_url'), (string) $str);
 
         if (preg_match_all("#" . LD . "\s*(profile_path\s*=.*?)" . RD . "#", $str, $matches)) {
             $i = 0;
             foreach ($matches['1'] as $val) {
                 $path = ee()->functions->create_url(ee()->functions->extract_path($val) . '/' . ee()->session->userdata('member_id'));
-                $str = preg_replace("#" . $matches['0'][$i++] . "#", $path, $str, 1);
+                $str = preg_replace("#" . $matches['0'][$i++] . "#", (string) $path, $str, 1);
             }
         }
         // -------
@@ -2309,7 +2309,7 @@ class Member
                 'path:login' => $this->_member_path('login' . $simple),
                 'path:delete' => $this->_member_path('delete'),
                 'page_title' => $this->page_title,
-                'site_name' => stripslashes(ee()->config->item('site_name')),
+                'site_name' => stripslashes((string) ee()->config->item('site_name')),
                 'path:theme_css' => '',
                 'current_request' => $this->request,
                 'username_max_length' => USERNAME_MAX_LENGTH,
@@ -2350,7 +2350,7 @@ class Member
 
         if (! is_object(ee()->TMPL)) {
             // cleanup unparsed conditionals and annotations
-            $str = preg_replace("/" . LD . "if\s+.*?" . RD . ".*?" . LD . '\/if' . RD . "/s", "", $str);
+            $str = preg_replace("/" . LD . "if\s+.*?" . RD . ".*?" . LD . '\/if' . RD . "/s", "", (string) $str);
             $str = preg_replace("/\{!--.*?--\}/s", '', $str);
         }
 
@@ -2394,12 +2394,12 @@ class Member
      */
     public function _deny_if($cond, $str, $replace = '')
     {
-        return preg_replace("/\{if\s+" . $cond . "\}.+?\{\/if\}/si", $replace, $str);
+        return preg_replace("/\{if\s+" . $cond . "\}.+?\{\/if\}/si", (string) $replace, (string) $str);
     }
 
     public function _allow_if($cond, $str)
     {
-        return preg_replace("/\{if\s+" . $cond . "\}(.+?)\{\/if\}/si", "\\1", $str);
+        return preg_replace("/\{if\s+" . $cond . "\}(.+?)\{\/if\}/si", "\\1", (string) $str);
     }
 
     /**
@@ -2519,7 +2519,7 @@ class Member
         if ($this->in_forum == true) {
             $search_path = $this->forum_path . 'member_search/' . $this->cur_id . '/';
         } else {
-            $search_path = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Search', 'do_search') . '&amp;mbr=' . urlencode($results['member_id']);
+            $search_path = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Search', 'do_search') . '&amp;mbr=' . urlencode((string) $results['member_id']);
         }
 
         $more_fields = array(
@@ -2562,7 +2562,7 @@ class Member
         $more_fields['timezone'] = ($default_fields['timezone'] != '') ? ee()->lang->line($default_fields['timezone']) : '';
         foreach (ee()->TMPL->var_single as $key => $val) {
             //  {local_time}
-            if (strncmp($key, 'local_time', 10) == 0) {
+            if (strncmp((string) $key, 'local_time', 10) == 0) {
                 $locale = false;
 
                 if (ee()->session->userdata('member_id') != $this->cur_id) {
@@ -2745,7 +2745,7 @@ class Member
 
         $roles = $member->getAllRoles()->pluck('role_id');
 
-        $rolesToCheck = explode('|', ee()->TMPL->fetch_param('role_id'));
+        $rolesToCheck = explode('|', (string) ee()->TMPL->fetch_param('role_id'));
 
         if (array_intersect($rolesToCheck, $roles)) {
             return ee()->TMPL->tagdata;
@@ -2768,7 +2768,7 @@ class Member
             'success' => true
         ];
         ee()->lang->load('login');
-        $fields = !empty(ee('Request')->get('fields')) ? explode('|', ee('Request')->get('fields')) : [];
+        $fields = !empty(ee('Request')->get('fields')) ? explode('|', (string) ee('Request')->get('fields')) : [];
         if (empty($fields) || array_intersect(['all', 'username', 'password', 'email', 'screen_name'], $fields)) {
             $member = ee()->session->getMember();
             if (ee('Permission')->can('edit_members') && !empty(ee('Request')->post('member_id'))) {
@@ -2793,15 +2793,19 @@ class Member
                         switch ($field) {
                             case 'username':
                                 $validationRules[$field] = 'uniqueUsername|validUsername|notBanned';
+
                                 break;
                             case 'password':
                                 $validationRules[$field] = 'validPassword|passwordMatchesSecurityPolicy';
+
                                 break;
                             case 'email':
                                 $validationRules[$field] = 'email|uniqueEmail|max_length[254]|notBanned';
+
                                 break;
                             case 'screen_name':
                                 $validationRules[$field] = 'validScreenName|notBanned';
+
                                 break;
                             default:
                                 break;
@@ -2900,7 +2904,7 @@ class Member
                 return ee()->TMPL->no_results();
             }
 
-            $ignored = ($query->row('ignore_list') == '') ? array() : explode('|', $query->row('ignore_list'));
+            $ignored = ($query->row('ignore_list') == '') ? array() : explode('|', (string) $query->row('ignore_list'));
         } else {
             $ignored = ee()->session->userdata('ignore_list');
         }
@@ -2921,7 +2925,7 @@ class Member
             $temp = $tagdata;
 
             foreach (ee()->TMPL->var_single as $key => $val) {
-                $val = substr($val, $prelen);
+                $val = substr((string) $val, $prelen);
 
                 if (isset($row[$val])) {
                     $temp = ee()->TMPL->swap_var_single($pre . $val, ee()->functions->encode_ee_tags($row[$val]), $temp);

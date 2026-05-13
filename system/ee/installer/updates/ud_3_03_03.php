@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -79,7 +80,7 @@ class Updater
             );
             ee()->db->update('category_fields', array('legacy_field_data' => 'y'));
         }
-        
+
         $category_fields = ee('Model')->get('CategoryField')
             ->all()
             ->indexBy('field_id');

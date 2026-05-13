@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -87,7 +88,7 @@ class CkeditorService extends AbstractRteService implements RteService
         }
 
         if (!empty($this->toolset)) {
-            $configHandle = preg_replace('/[^a-z0-9]/i', '_', $this->toolset->toolset_name) . $this->toolset->toolset_id;
+            $configHandle = preg_replace('/[^a-z0-9]/i', '_', (string) $this->toolset->toolset_name) . $this->toolset->toolset_id;
             $config = array_merge($baseConfig, $this->toolset->settings);
         } else {
             $config = $baseConfig;
@@ -148,7 +149,7 @@ class CkeditorService extends AbstractRteService implements RteService
         }
 
         // EE FilePicker is not available on frontend channel forms
-        if (stripos($fqcn, 'filepicker_rtefb') !== false && REQ != 'CP') {
+        if (stripos((string) $fqcn, 'filepicker_rtefb') !== false && REQ != 'CP') {
             unset($config['image']);
             $filemanager_key = array_search('filemanager', $config['toolbar']->items);
             if ($filemanager_key !== false) {

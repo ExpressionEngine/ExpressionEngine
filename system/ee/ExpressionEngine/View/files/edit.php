@@ -76,7 +76,7 @@ if (! isset($alerts_name)) {
                                             $class = 'active';
                                         }
 
-                                        if (strpos($tabs[$key], 'class="ee-form-error-message"') !== false) {
+                                        if (strpos((string) $tabs[$key], 'class="ee-form-error-message"') !== false) {
                                             $class .= ' invalid';
                                         }
                                     ?>

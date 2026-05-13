@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -157,9 +158,9 @@ class Access extends Profile
                 }
 
                 foreach ($role->AssignedModules as $module) {
-                    $addon = ee('Addon')->get(strtolower($module->module_name));
+                    $addon = ee('Addon')->get(strtolower((string) $module->module_name));
                     if ($addon) {
-                        $key = 'access_to_add_on_id_' . $module->getId() . ':' . $addon->getName(); 
+                        $key = 'access_to_add_on_id_' . $module->getId() . ':' . $addon->getName();
 
                         if (! array_key_exists($key, $permissions)) {
                             $permissions[$key] = [];
@@ -179,7 +180,7 @@ class Access extends Profile
         $desc = $this->getPermissionDescription($permission);
 
         if ($this->keyword) {
-            if (strpos($desc, $this->keyword) === false) {
+            if (strpos((string) $desc, (string) $this->keyword) === false) {
                 return [];
             }
         }
@@ -216,8 +217,8 @@ class Access extends Profile
         $name = '';
 
         foreach (['_channel_id_', '_template_group_id_', '_add_on_id_'] as $delim) {
-            if (strpos($permission, $delim)) {
-                list($key, $id) = explode($delim, $permission);
+            if (strpos((string) $permission, $delim)) {
+                list($key, $id) = explode($delim, (string) $permission);
                 if ($key == 'access_to') {
                     list($id, $name) = explode(':', $id);
                 }
@@ -386,7 +387,7 @@ class Access extends Profile
             ->filter('module_name', 'NOT IN', array('Channel', 'Comment', 'Member', 'File', 'Filepicker')) // @TODO This REALLY needs abstracting.
             ->all()
             ->filter(function ($addon) {
-                $provision = ee('Addon')->get(strtolower($addon->module_name));
+                $provision = ee('Addon')->get(strtolower((string) $addon->module_name));
 
                 if (! $provision) {
                     return false;
@@ -456,9 +457,9 @@ class Access extends Profile
             return true;
         }
 
-        if (strpos($permission, '_channel_id_') ||
-            strpos($permission, '_template_group_id_') ||
-            strpos($permission, '_add_on_id_')) {
+        if (strpos((string) $permission, '_channel_id_') ||
+            strpos((string) $permission, '_template_group_id_') ||
+            strpos((string) $permission, '_add_on_id_')) {
             return true;
         }
 

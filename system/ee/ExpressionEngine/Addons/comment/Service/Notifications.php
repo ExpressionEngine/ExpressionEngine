@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -119,7 +120,7 @@ class Notifications
             'name' => $comment->name,
             'name_of_commenter' => $comment->name,
             'notification_removal_url' => ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id . '&entry_id=' . $comment->entry_id . '&hash={hash}&type=unsubscribe',
-            'site_name' => stripslashes(ee()->config->item('site_name')),
+            'site_name' => stripslashes((string) ee()->config->item('site_name')),
             'site_url' => ee()->config->item('site_url'),
             'url' => $comment->url,
             'url_title' => $comment->Entry->url_title,

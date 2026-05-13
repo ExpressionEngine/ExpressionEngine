@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -1192,7 +1193,7 @@ EOH;
         /*	  code for the spellcheck (ex: en, es, de)
         /* -------------------------------------------*/
 
-        if (ee()->config->item('spellcheck_language_code') !== false && strlen(ee()->config->item('spellcheck_language_code')) == 2) {
+        if (ee()->config->item('spellcheck_language_code') !== false && strlen((string) ee()->config->item('spellcheck_language_code')) == 2) {
             $lang = ee()->config->item('spellcheck_language_code');
         }
 
@@ -1220,7 +1221,7 @@ EOH;
         // We are also removing any HTML code and HTML code entities so that we
         // do not process them as misspelled words.
 
-        $content = preg_replace("|<.*?" . ">|", '', rawurldecode(ee('Security/XSS')->clean(ee()->input->get_post('q'))));
+        $content = preg_replace("|<.*?" . ">|", '', rawurldecode((string) ee('Security/XSS')->clean(ee()->input->get_post('q'))));
         $content = str_replace(array('&amp;', '&lt;', '&gt;'), '', $content);
 
         $str = '<?xml version="1.0" encoding="UTF-8"?' . ">\n<items>\n";
@@ -1252,7 +1253,7 @@ EOH;
 
             // suckz => <c o="10" l="5" s="0">sucks	sicks	suck	sacks	socks</c>
 
-            if ($data != '' && preg_match_all("|<c\s+(.*?)>(.*?)</c>|is", $data, $matches)) {
+            if ($data != '' && preg_match_all("|<c\s+(.*?)>(.*?)</c>|is", (string) $data, $matches)) {
                 for ($i = 0, $s = count($matches['0']); $i < $s; ++$i) {
                     $x = explode('"', $matches['1'][$i]);
                     $word = substr($content, $x['1'], $x['3']);
@@ -1331,7 +1332,7 @@ EOH;
     /** ----------------------------------------*/
     public function fsockopen_process($url, $payload)
     {
-        $parts = parse_url($url);
+        $parts = parse_url((string) $url);
         $host = $parts['host'];
         $path = (! isset($parts['path'])) ? '/' : $parts['path'];
         $port = ($parts['scheme'] == "https") ? '443' : '80';
@@ -1349,7 +1350,7 @@ EOH;
             fputs($fp, "POST {$path} HTTP/1.0\r\n");
             fputs($fp, "Host: {$host}\r\n");
             fputs($fp, "Content-Type: application/x-www-form-urlencoded\r\n");
-            fputs($fp, "Content-Length: " . strlen($payload) . "\r\n");
+            fputs($fp, "Content-Length: " . strlen((string) $payload) . "\r\n");
             fputs($fp, "Connection: close\r\n\r\n");
             fputs($fp, $payload . "\r\n\r\n");
 

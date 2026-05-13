@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -54,7 +55,7 @@ class Updater
 
         foreach ($installed_modules->result() as $installed_module) {
             $key = array_search(
-                strtolower($installed_module->module_name),
+                strtolower((string) $installed_module->module_name),
                 $required_modules
             );
 

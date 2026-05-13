@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -42,7 +43,7 @@ class Group extends AbstractDesignController
         $errors = null;
 
         $groups = array(
-            'false' => '-- ' . strtolower(lang('none')) . ' --'
+            'false' => '-- ' . strtolower((string) lang('none')) . ' --'
         );
         ee('Model')->get('TemplateGroup')
             ->all()
@@ -113,10 +114,10 @@ class Group extends AbstractDesignController
                                 continue;
                             }
 
-                            if (strpos($value, 'role_id_') === 0) {
+                            if (strpos((string) $value, 'role_id_') === 0) {
                                 $role_ids[] = str_replace('role_id_', '', $value);
                             } else {
-                                list($permission, $role_id) = explode(':role_id_', $value);
+                                list($permission, $role_id) = explode(':role_id_', (string) $value);
 
                                 $permissions[] = ee('Model')->make('Permission', [
                                     'role_id' => $role_id,
@@ -373,10 +374,10 @@ class Group extends AbstractDesignController
                                     continue;
                                 }
 
-                                if (strpos($value, 'role_id_') === 0) {
+                                if (strpos((string) $value, 'role_id_') === 0) {
                                     $role_ids[] = str_replace('role_id_', '', $value);
                                 } else {
-                                    list($permission, $role_id) = explode(':role_id_', $value);
+                                    list($permission, $role_id) = explode(':role_id_', (string) $value);
 
                                     ee('Model')->make('Permission', [
                                         'role_id' => $role_id,

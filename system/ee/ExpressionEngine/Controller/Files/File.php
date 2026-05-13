@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -256,7 +257,7 @@ class File extends AbstractFilesController
                 case 'resize':
                     // Preserve proportions if either dimention was omitted
                     if (empty($_POST['resize_width']) or empty($_POST['resize_height'])) {
-                        $size = explode(" ", $file->file_hw_original);
+                        $size = explode(" ", (string) $file->file_hw_original);
                         // If either h/w unspecified, calculate the other here
                         if (empty($_POST['resize_width'])) {
                             $_POST['resize_width'] = ($size[1] / $size[0]) * $_POST['resize_height'];

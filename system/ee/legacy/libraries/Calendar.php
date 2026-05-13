@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -83,15 +84,15 @@ class EE_Calendar
             $month = date("m", $this->local_time);
         }
 
-        if (strlen($year) == 1) {
+        if (strlen((string) $year) == 1) {
             $year = '200' . $year;
         }
 
-        if (strlen($year) == 2) {
+        if (strlen((string) $year) == 2) {
             $year = '20' . $year;
         }
 
-        if (strlen($month) == 1) {
+        if (strlen((string) $month) == 1) {
             $month = '0' . $month;
         }
 
@@ -138,7 +139,7 @@ class EE_Calendar
         // "previous" month link
         if ($this->show_next_prev == true) {
             // Add a trailing slash to the  URL if needed
-            $this->next_prev_url = preg_replace("/(.+?)\/*$/", "\\1/", $this->next_prev_url);
+            $this->next_prev_url = preg_replace("/(.+?)\/*$/", "\\1/", (string) $this->next_prev_url);
 
             $adjusted_date = $this->adjust_date($month - 1, $year);
             $out .= str_replace('{previous_url}', $this->next_prev_url . $adjusted_date['year'] . '/' . $adjusted_date['month'], $this->temp['heading_previous_cell']);
@@ -171,7 +172,7 @@ class EE_Calendar
 
         $day_names = $this->get_day_names();
 
-        for ($i = 0; $i < 7; $i ++) {
+        for ($i = 0; $i < 7; $i++) {
             $out .= str_replace('{week_day}', $day_names[($start_day + $i) % 7], $this->temp['week_day_cell']);
         }
 
@@ -306,7 +307,7 @@ class EE_Calendar
             $date['year']--;
         }
 
-        if ($pad == true and strlen($date['month']) == 1) {
+        if ($pad == true and strlen((string) $date['month']) == 1) {
             $date['month'] = '0' . $date['month'];
         }
 
@@ -394,7 +395,7 @@ class EE_Calendar
         $today = array('cal_cell_start_today', 'cal_cell_content_today', 'cal_cell_no_content_today', 'cal_cell_end_today');
 
         foreach (array('table_open', 'table_close', 'heading_row_start', 'heading_previous_cell', 'heading_title_cell', 'heading_next_cell', 'heading_row_end', 'week_row_start', 'week_day_cell', 'week_row_end', 'cal_row_start', 'cal_cell_start', 'cal_cell_content', 'cal_cell_no_content',  'cal_cell_blank', 'cal_cell_end', 'cal_row_end', 'cal_cell_start_today', 'cal_cell_content_today', 'cal_cell_no_content_today', 'cal_cell_end_today') as $val) {
-            if (preg_match("/\{" . $val . "\}(.*?)\{\/" . $val . "\}/si", $this->template, $match)) {
+            if (preg_match("/\{" . $val . "\}(.*?)\{\/" . $val . "\}/si", (string) $this->template, $match)) {
                 $this->temp[$val] = $match['1'];
             } else {
                 if (in_array($val, $today, true)) {

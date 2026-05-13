@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -288,7 +289,7 @@ class Tools_model extends CI_Model
 
         // Merge old and new
         if ($query->num_rows() > 0) {
-            $naughty = array_merge($naughty, explode('|', $query->row('blockedlist_value')));
+            $naughty = array_merge($naughty, explode('|', (string) $query->row('blockedlist_value')));
         }
 
         // Clear the old data
@@ -354,7 +355,7 @@ class Tools_model extends CI_Model
                 continue;
             }
 
-            if (substr($file, -$filename_end_len) && substr($file, -$ext_len) == '.php') {
+            if (substr((string) $file, -$filename_end_len) && substr((string) $file, -$ext_len) == '.php') {
                 $languages[] = $file;
             }
         }
@@ -462,10 +463,10 @@ class Tools_model extends CI_Model
         $totsize = 0;
         $records = 0;
 
-        $prefix_len = strlen($this->db->dbprefix);
+        $prefix_len = strlen((string) $this->db->dbprefix);
 
         foreach ($query->result_array() as $row) {
-            if (strncmp($row['Name'], $this->db->dbprefix, $prefix_len) != 0) {
+            if (strncmp((string) $row['Name'], (string) $this->db->dbprefix, $prefix_len) != 0) {
                 continue;
             }
 
@@ -487,11 +488,11 @@ class Tools_model extends CI_Model
 
         foreach ($res as $key => $val) {
             foreach ($val as $v) {
-                if (strncasecmp($v, 'uptime', 6) == 0) {
+                if (strncasecmp((string) $v, 'uptime', 6) == 0) {
                     $uptime = $key;
                 }
 
-                if (strncasecmp($v, 'questions', 9) == 0) {
+                if (strncasecmp((string) $v, 'questions', 9) == 0) {
                     $queries = $key;
                 }
             }
@@ -522,10 +523,10 @@ class Tools_model extends CI_Model
         $tables = 0;
         $totsize = 0;
 
-        $prefix_len = strlen($this->db->dbprefix);
+        $prefix_len = strlen((string) $this->db->dbprefix);
 
         foreach ($query->result() as $row) {
-            if (strncmp($row->Name, $this->db->dbprefix, $prefix_len) != 0) {
+            if (strncmp((string) $row->Name, (string) $this->db->dbprefix, $prefix_len) != 0) {
                 continue;
             }
 

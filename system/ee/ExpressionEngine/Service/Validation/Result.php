@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -120,7 +121,7 @@ class Result
         $view = $view ?: $this->getLineView();
 
         foreach ($this->failed[$field] as $rule) {
-            $out[$rule->getName()] = trim($view->render(compact('rule')));
+            $out[$rule->getName()] = trim((string) $view->render(compact('rule')));
         }
 
         return $out;
@@ -191,7 +192,7 @@ class Result
         $view = $view ?: $this->getDefaultView();
 
         return trim(
-            $view->render(compact('field', 'rules'))
+            (string) $view->render(compact('field', 'rules'))
         );
     }
 

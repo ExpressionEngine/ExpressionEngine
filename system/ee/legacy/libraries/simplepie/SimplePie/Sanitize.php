@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SimplePie
  *
@@ -216,7 +217,7 @@ class SimplePie_Sanitize
 
     public function sanitize($data, $type, $base = '')
     {
-        $data = trim($data);
+        $data = trim((string) $data);
         if ($data !== '' || $type & SIMPLEPIE_CONSTRUCT_IRI) {
             if ($type & SIMPLEPIE_CONSTRUCT_MAYBE_HTML) {
                 if (preg_match('/(&(#(x[0-9a-fA-F]+|[0-9]+)|[a-zA-Z0-9]+)|<\/[A-Za-z][^\x09\x0A\x0B\x0C\x0D\x20\x2F\x3E]*' . SIMPLEPIE_PCRE_HTML_ATTRIBUTE . '>)/', $data)) {
@@ -318,7 +319,7 @@ class SimplePie_Sanitize
 
                 if ($this->remove_div) {
                     $data = preg_replace('/^<div' . SIMPLEPIE_PCRE_XML_ATTRIBUTE . '>/', '', $data);
-                    $data = preg_replace('/<\/div>$/', '', $data);
+                    $data = preg_replace('/<\/div>$/', '', (string) $data);
                 } else {
                     $data = preg_replace('/^<div' . SIMPLEPIE_PCRE_XML_ATTRIBUTE . '>/', '<div>', $data);
                 }
@@ -332,7 +333,7 @@ class SimplePie_Sanitize
             }
 
             if ($type & (SIMPLEPIE_CONSTRUCT_TEXT | SIMPLEPIE_CONSTRUCT_IRI)) {
-                $data = htmlspecialchars($data, ENT_COMPAT, 'UTF-8');
+                $data = htmlspecialchars((string) $data, ENT_COMPAT, 'UTF-8');
             }
 
             if ($this->output_encoding !== 'UTF-8') {
@@ -346,7 +347,7 @@ class SimplePie_Sanitize
     protected function preprocess($html, $type)
     {
         $ret = '';
-        $html = preg_replace('%</?(?:html|body)[^>]*?' . '>%is', '', $html);
+        $html = preg_replace('%</?(?:html|body)[^>]*?' . '>%is', '', (string) $html);
         if ($type & ~SIMPLEPIE_CONSTRUCT_XHTML) {
             // Atom XHTML constructs are wrapped with a div by default
             // Note: No protection if $html contains a stray </div>!
@@ -389,15 +390,15 @@ class SimplePie_Sanitize
     public function do_strip_htmltags($match)
     {
         if ($this->encode_instead_of_strip) {
-            if (isset($match[4]) && !in_array(strtolower($match[1]), array('script', 'style'))) {
-                $match[1] = htmlspecialchars($match[1], ENT_COMPAT, 'UTF-8');
-                $match[2] = htmlspecialchars($match[2], ENT_COMPAT, 'UTF-8');
+            if (isset($match[4]) && !in_array(strtolower((string) $match[1]), array('script', 'style'))) {
+                $match[1] = htmlspecialchars((string) $match[1], ENT_COMPAT, 'UTF-8');
+                $match[2] = htmlspecialchars((string) $match[2], ENT_COMPAT, 'UTF-8');
 
                 return "&lt;$match[1]$match[2]&gt;$match[3]&lt;/$match[1]&gt;";
             } else {
-                return htmlspecialchars($match[0], ENT_COMPAT, 'UTF-8');
+                return htmlspecialchars((string) $match[0], ENT_COMPAT, 'UTF-8');
             }
-        } elseif (isset($match[4]) && !in_array(strtolower($match[1]), array('script', 'style'))) {
+        } elseif (isset($match[4]) && !in_array(strtolower((string) $match[1]), array('script', 'style'))) {
             return $match[4];
         } else {
             return '';

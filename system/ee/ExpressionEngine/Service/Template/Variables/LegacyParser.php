@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -47,7 +48,7 @@ class LegacyParser
         ];
 
         // strip prefix
-        $unprefixed_var = ltrim(preg_replace('/^' . $prefix . '/', '', $template_var));
+        $unprefixed_var = ltrim((string) preg_replace('/^' . $prefix . '/', '', $template_var));
         // we don't need params - take away what's separated by space
         $orig_field_name_length = strpos($unprefixed_var, ' ') ?: strpos($unprefixed_var, "\n");
         if ($orig_field_name_length === false) {
@@ -90,8 +91,8 @@ class LegacyParser
             $prefix = $props['modifier'] . ':';
             $prefix_legnth = strlen($prefix);
             foreach ($props['params'] as $param => $value) {
-                if (strpos($param, $prefix) === 0) {
-                    $props['params'][substr($param, $prefix_legnth)] = $value;
+                if (strpos((string) $param, $prefix) === 0) {
+                    $props['params'][substr((string) $param, $prefix_legnth)] = $value;
                 }
             }
         } else {
@@ -106,8 +107,8 @@ class LegacyParser
                 $prefix = $modifier . ':';
                 $prefix_legnth = strlen($prefix);
                 foreach ($modifier_params as $param => $value) {
-                    if (strpos($param, $prefix) === 0) {
-                        $modifier_params[substr($param, $prefix_legnth)] = $value;
+                    if (strpos((string) $param, $prefix) === 0) {
+                        $modifier_params[substr((string) $param, $prefix_legnth)] = $value;
                     }
                 }
                 $props['all_modifiers'][$modifier] = $modifier_params;
@@ -147,7 +148,7 @@ class LegacyParser
         // matches[3] => attribute value
 
         $bs = '\\'; // single backslash
-        preg_match_all("/(\S+?)\s*=\s*($bs$bs?)(\042|\047)([^\\3]*?)\\2\\3/is", $param_string, $matches, PREG_SET_ORDER);
+        preg_match_all("/(\S+?)\s*=\s*($bs$bs?)(\042|\047)([^\\3]*?)\\2\\3/is", (string) $param_string, $matches, PREG_SET_ORDER);
 
         if (count($matches) > 0) {
             $result = array();
@@ -348,7 +349,7 @@ class LegacyParser
         }
 
         $bs = '\\'; // single backslash
-        if (! preg_match("/format\s*=\s*($bs$bs?)[\'|\"](.*?)\\1[\'|\"]/s", $date_string, $match)) {
+        if (! preg_match("/format\s*=\s*($bs$bs?)[\'|\"](.*?)\\1[\'|\"]/s", (string) $date_string, $match)) {
             return false;
         }
 
@@ -408,8 +409,8 @@ class LegacyParser
                 $prefix = '';
 
                 // embed, layout, etc. will have prefixes
-                if (($prefix_pos = strpos($name, ':')) !== false) {
-                    $prefix = substr($name, 0, $prefix_pos + 1);
+                if (($prefix_pos = strpos((string) $name, ':')) !== false) {
+                    $prefix = substr((string) $name, 0, $prefix_pos + 1);
                 }
 
                 $extracted_vars = $this->extractVariables($str, $name);
@@ -430,6 +431,7 @@ class LegacyParser
                                     // continue to next variable
                                     continue 2;
                                 }
+
                                 // continue to next modifier
                                 continue;
                             }

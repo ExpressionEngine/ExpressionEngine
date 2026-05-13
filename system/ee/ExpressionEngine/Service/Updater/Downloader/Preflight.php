@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -88,6 +89,7 @@ class Preflight
     {
         if ($this->config->get('updater_skip_disk_space_check') === 'y') {
             $this->logger->log('Checking free disk space skipped by config setting');
+
             return;
         }
 
@@ -217,7 +219,7 @@ class Preflight
      */
     private function validateThemePath($theme_path)
     {
-        if (!$this->filesystem->exists(rtrim(rtrim($theme_path, '/'), DIRECTORY_SEPARATOR) . '/ee/cp')) {
+        if (!$this->filesystem->exists(rtrim(rtrim((string) $theme_path, '/'), DIRECTORY_SEPARATOR) . '/ee/cp')) {
             throw new UpdaterException(sprintf(
                 lang('theme_folder_path_invalid'),
                 $theme_path,

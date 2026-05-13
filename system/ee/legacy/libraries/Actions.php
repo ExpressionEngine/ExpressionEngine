@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -76,7 +77,7 @@ class EE_Actions
                 }
             }
 
-            $class = ucfirst($query->row('class'));
+            $class = ucfirst((string) $query->row('class'));
             $method = $query->row('method');
             $csrf_exempt = (bool) $query->row('csrf_exempt');
         } else {

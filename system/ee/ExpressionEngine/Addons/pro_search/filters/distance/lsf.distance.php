@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -7,7 +8,6 @@
  * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -75,7 +75,7 @@ class Pro_search_filter_distance extends Pro_search_filter
         // Get from coords
         // --------------------------------------
 
-        list($lat, $long) = preg_split('/[|,]/', $params['from'], 2, PREG_SPLIT_NO_EMPTY);
+        list($lat, $long) = preg_split('/[|,]/', (string) $params['from'], 2, PREG_SPLIT_NO_EMPTY);
 
         // --------------------------------------
         // Unit
@@ -111,7 +111,7 @@ class Pro_search_filter_distance extends Pro_search_filter
         // --------------------------------------
 
         $tables = array();
-        $fields = preg_split('/[|,]/', $params['to'], 2, PREG_SPLIT_NO_EMPTY);
+        $fields = preg_split('/[|,]/', (string) $params['to'], 2, PREG_SPLIT_NO_EMPTY);
         $single = (count($fields) == 1);
 
         if ($single) {
@@ -242,7 +242,7 @@ class Pro_search_filter_distance extends Pro_search_filter
         if ($this->_results) {
             $orderby = $this->params->get('orderby', 'pro_search_distance');
 
-            if (substr($orderby, 0, 19) == 'pro_search_distance') {
+            if (substr((string) $orderby, 0, 19) == 'pro_search_distance') {
                 $fixed = true;
             }
         }

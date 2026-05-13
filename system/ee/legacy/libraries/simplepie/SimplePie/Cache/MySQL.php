@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SimplePie
  *
@@ -100,7 +101,7 @@ class SimplePie_Cache_MySQL extends SimplePie_Cache_DB
         $this->options = SimplePie_Misc::array_merge_recursive($this->options, SimplePie_Cache::parse_URL($location));
 
         // Path is prefixed with a "/"
-        $this->options['dbname'] = substr($this->options['path'], 1);
+        $this->options['dbname'] = substr((string) $this->options['path'], 1);
 
         try {
             $this->mysql = new PDO("mysql:dbname={$this->options['dbname']};host={$this->options['host']};port={$this->options['port']}", $this->options['user'], $this->options['pass'], array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));

@@ -175,7 +175,7 @@ if (! function_exists('img')) {
         $img = '<img';
 
         foreach ($src as $k => $v) {
-            if ($k == 'src' and strpos($v, '://') === false) {
+            if ($k == 'src' and strpos((string) $v, '://') === false) {
                 if ($index_page === true) {
                     $img .= ' src="' . ee()->config->site_url($v) . '"';
                 } else {
@@ -239,7 +239,7 @@ if (! function_exists('link_tag')) {
 
         if (is_array($href)) {
             foreach ($href as $k => $v) {
-                if ($k == 'href' and strpos($v, '://') === false) {
+                if ($k == 'href' and strpos((string) $v, '://') === false) {
                     if ($index_page === true) {
                         $link .= 'href="' . ee()->config->site_url($v) . '" ';
                     } else {
@@ -252,7 +252,7 @@ if (! function_exists('link_tag')) {
 
             $link .= "/>";
         } else {
-            if (strpos($href, '://') !== false) {
+            if (strpos((string) $href, '://') !== false) {
                 $link .= 'href="' . $href . '" ';
             } elseif ($index_page === true) {
                 $link .= 'href="' . ee()->config->site_url($href) . '" ';

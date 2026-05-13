@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -67,13 +68,13 @@ class StandardGlobals extends Variables
             'last_segment' => ($seg_array = ee()->uri->segment_array()) ? end($seg_array) : '',
             'member_profile_link' => $this->getMemberProfileLink(),
             'password_max_length' => PASSWORD_MAX_LENGTH,
-            'site_description' => stripslashes(ee()->config->item('site_description')),
-            'site_id' => stripslashes(ee()->config->item('site_id')),
-            'site_index' => stripslashes(ee()->config->item('site_index')),
-            'site_label' => stripslashes(ee()->config->item('site_label')),
-            'site_name' => stripslashes(ee()->config->item('site_name')),
-            'site_short_name' => stripslashes(ee()->config->item('site_short_name')),
-            'site_url' => stripslashes(ee()->config->item('site_url')),
+            'site_description' => stripslashes((string) ee()->config->item('site_description')),
+            'site_id' => stripslashes((string) ee()->config->item('site_id')),
+            'site_index' => stripslashes((string) ee()->config->item('site_index')),
+            'site_label' => stripslashes((string) ee()->config->item('site_label')),
+            'site_name' => stripslashes((string) ee()->config->item('site_name')),
+            'site_short_name' => stripslashes((string) ee()->config->item('site_short_name')),
+            'site_url' => stripslashes((string) ee()->config->item('site_url')),
             'template_group' => $this->legacy_tmpl_obj->group_name,
             'template_group_id' => $this->legacy_tmpl_obj->template_group_id,
             'template_id' => $this->legacy_tmpl_obj->template_id,
@@ -84,7 +85,7 @@ class StandardGlobals extends Variables
             'username_max_length' => USERNAME_MAX_LENGTH,
             'version' => APP_VER,
             'version_identifier' => APP_VER_ID,
-            'webmaster_email' => stripslashes(ee()->config->item('webmaster_email')),
+            'webmaster_email' => stripslashes((string) ee()->config->item('webmaster_email')),
         ];
 
         // add member variables and their aliases

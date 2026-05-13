@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -96,7 +97,7 @@ class Snippets extends AbstractDesignController
         );
 
         if (! array_key_exists($sort_col, $sort_map)) {
-            throw new \Exception("Invalid sort column: " . htmlentities($sort_col));
+            throw new \Exception("Invalid sort column: " . htmlentities((string) $sort_col));
         }
 
         $snippet_data = $snippets->order($sort_map[$sort_col], $table->sort_dir)
@@ -136,7 +137,7 @@ class Snippets extends AbstractDesignController
                     'name' => 'selection[]',
                     'value' => $snippet->snippet_id,
                     'data' => array(
-                        'confirm' => lang('template_partial') . ': <b>' . htmlentities($snippet->snippet_name, ENT_QUOTES, 'UTF-8') . '</b>'
+                        'confirm' => lang('template_partial') . ': <b>' . htmlentities((string) $snippet->snippet_name, ENT_QUOTES, 'UTF-8') . '</b>'
                     )
                 )
             );
@@ -243,7 +244,6 @@ class Snippets extends AbstractDesignController
                 'site_id' => ee()->config->item('site_id')
             );
         }
-
 
         if (! empty($_POST)) {
             $snippet = ee('Model')->make('Snippet');
@@ -482,7 +482,6 @@ class Snippets extends AbstractDesignController
         force_download('ExpressionEngine-template-partials.zip', $data);
     }
 
-    
 }
 
 // EOF

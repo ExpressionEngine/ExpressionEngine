@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -99,7 +100,6 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
                 // set the note content as the field data
                 $data['field_id_' . $field_id] = $ft_api->settings[$field_id]['note_content'];
             }
-
 
             if (
                 (isset($data['field_id_' . $field_id]) && $data['field_id_' . $field_id] !== '') or
@@ -218,7 +218,7 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
                 }
 
                 // prevent accidental parsing of other channel variables in custom field data
-                if (strpos($entry, '{') !== false) {
+                if (strpos((string) $entry, '{') !== false) {
                     $entry = str_replace(
                         array('{', '}'),
                         array(unique_marker('channel_bracket_open'), unique_marker('channel_bracket_close')),

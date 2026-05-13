@@ -1,8 +1,8 @@
 <?php
 $ul_open = false;
 $last_page_depth = 0;
-$level_lock_reorder = is_numeric(substr($permissions['reorder'], -1)) ? (int) substr($permissions['reorder'], -1) : $permissions['reorder'];
-$level_lock_delete = is_numeric(substr($permissions['delete'], -1)) ? (int) substr($permissions['delete'], -1) : $permissions['delete'];
+$level_lock_reorder = is_numeric(substr((string) $permissions['reorder'], -1)) ? (int) substr((string) $permissions['reorder'], -1) : $permissions['reorder'];
+$level_lock_delete = is_numeric(substr((string) $permissions['delete'], -1)) ? (int) substr((string) $permissions['delete'], -1) : $permissions['delete'];
 ?>
 
 <div class="padder ee7 structure-gui">
@@ -70,7 +70,7 @@ if ($cp_asset_data or count($tabs) > 1) {
 
                 $edit_url = ee('CP/URL')->make('publish/edit/entry/' . $page['entry_id'], array('channel_id' => $page['channel_id'], 'parent_id' => $page['parent_id']));
 
-                $classes = array('page-item', 'status-' . str_replace(" ", "-", strtolower($page['status'])), 'channel-' . str_replace(" ", "-", strtolower($page['channel_id'])));
+                $classes = array('page-item', 'status-' . str_replace(" ", "-", strtolower((string) $page['status'])), 'channel-' . str_replace(" ", "-", strtolower((string) $page['channel_id'])));
 
                 if ($page['entry_id'] == $homepage) {
                     $classes[] = 'home';
@@ -132,13 +132,13 @@ if ($cp_asset_data or count($tabs) > 1) {
                     $edit_url = ee()->config->item('base_url') . $edit_url;
                     $site_id = ee()->config->item('site_id');
                     $edit_url .= "&site_id=" . $site_id . "&hide_closer=y" . "&preview=y";
-                    if (array_key_exists($page['channel_id'], $assigned_channels)) {
+                    if (array_key_exists((string) $page['channel_id'], $assigned_channels)) {
                         echo '<a href="', $edit_url, '"target="_blank">', (!empty($_GET['debug']) ? $page['entry_id'] . ': ' : '') . $page['title'], '</a>';
                     } else {
                         echo '<span class="page-title-disabled">', $page['title'], '</span>', "\n";
                     }
                 } else {
-                    if (array_key_exists($page['channel_id'], $assigned_channels)) {
+                    if (array_key_exists((string) $page['channel_id'], $assigned_channels)) {
                         echo '<a href="', $edit_url, '">', (!empty($_GET['debug']) ? $page['entry_id'] . ': ' : '') . $page['title'], '</a>';
                     } else {
                         echo '<span class="page-title-disabled">', $page['title'], '</span>', "\n";
@@ -152,7 +152,7 @@ if ($cp_asset_data or count($tabs) > 1) {
                 echo '</span>', "\n";
 
                 // If Listing Exists
-                if ($page['listing_cid'] && array_key_exists($page['listing_cid'], $assigned_channels)) {
+                if ($page['listing_cid'] && array_key_exists((string) $page['listing_cid'], $assigned_channels)) {
                     echo str_repeat("\t", $indentDepth) . "\t\t", '<span class="page-listing"><a href="', ee('CP/URL')->make('publish/create/' . $page['listing_cid']), '">', lang('add'), '</a> or <a href="', ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $page['listing_cid'])), '">', lang('edit'), '</a></span>', "\n";
                 }
 

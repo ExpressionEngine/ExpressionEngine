@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -15,7 +16,6 @@ use ExpressionEngine\Addons\Duration\Traits\DurationTrait;
  */
 class Duration_Ft extends EE_Fieldtype
 {
-
     use DurationTrait;
 
     /**
@@ -133,7 +133,7 @@ class Duration_Ft extends EE_Fieldtype
         $data = ee('Format')->make('Number', $data)->duration($params);
 
         // Duration formatter could return one of ## sec., ##:##, or ##:##:##
-        $parts = explode(':', $data);
+        $parts = explode(':', (string) $data);
 
         if (isset($params['format'])) {
             switch (count($parts)) {
@@ -142,12 +142,12 @@ class Duration_Ft extends EE_Fieldtype
                     $units = ['%h' => $parts[0], '%m' => $parts[1], '%s' => $parts[2]];
 
                     break;
-                // mm:ss
+                    // mm:ss
                 case 2:
                     $units = ['%h' => 0, '%m' => $parts[0], '%s' => $parts[1]];
 
                     break;
-                // ss sec.
+                    // ss sec.
                 case 1:
                 default:
                     // cast to int because the Number formatter will include a seconds abbreviation based on the locale

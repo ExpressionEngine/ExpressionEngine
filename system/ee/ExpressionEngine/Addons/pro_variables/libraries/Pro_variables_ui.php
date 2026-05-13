@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -262,7 +263,7 @@ class Pro_variables_ui
             $sep = $seps[$sep];
         }
 
-        return explode($sep, $data);
+        return explode($sep, (string) $data);
     }
 
     /**

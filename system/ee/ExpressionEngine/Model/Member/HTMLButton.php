@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -59,13 +60,13 @@ class HTMLButton extends Model
 
     public function prepForJSON()
     {
-        if (! empty($this->classname) && strpos($this->classname, 'markItUpSeparator') !== false) {
+        if (! empty($this->classname) && strpos((string) $this->classname, 'markItUpSeparator') !== false) {
             // separators are purely presentational
             $button_js = array('separator' => '---');
         } else {
             $button_js = array(
-                'name' => htmlentities($this->tag_name, ENT_QUOTES, 'UTF-8'),
-                'key' => strtoupper($this->accesskey),
+                'name' => htmlentities((string) $this->tag_name, ENT_QUOTES, 'UTF-8'),
+                'key' => strtoupper((string) $this->accesskey),
                 'openWith' => $this->tag_open,
                 'closeWith' => $this->tag_close,
                 'className' => $this->classname . ' id' . $this->id
