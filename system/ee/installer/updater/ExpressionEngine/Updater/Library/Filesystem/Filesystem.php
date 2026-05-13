@@ -352,7 +352,7 @@ class Filesystem
      */
     public function dirname($path)
     {
-        return dirname($this->normalize($path));
+        return dirname((string) $this->normalize($path));
     }
 
     /**
@@ -363,7 +363,7 @@ class Filesystem
      */
     public function basename($path)
     {
-        return basename($this->normalize($path));
+        return basename((string) $this->normalize($path));
     }
 
     /**
@@ -374,7 +374,7 @@ class Filesystem
      */
     public function filename($path)
     {
-        return pathinfo($this->normalize($path), PATHINFO_FILENAME);
+        return pathinfo((string) $this->normalize($path), PATHINFO_FILENAME);
     }
 
     /**
@@ -385,7 +385,7 @@ class Filesystem
      */
     public function extension($path)
     {
-        return pathinfo($this->normalize($path), PATHINFO_EXTENSION);
+        return pathinfo((string) $this->normalize($path), PATHINFO_EXTENSION);
     }
 
     /**
@@ -499,7 +499,7 @@ class Filesystem
         // For windows servers and safe_mode "on" installations we'll actually
         // write a file then read it.  Bah...
         if ($this->isDir($path)) {
-            $path = rtrim($this->normalize($path), '/') . '/' . md5(mt_rand(1, 100) . mt_rand(1, 100));
+            $path = rtrim((string) $this->normalize($path), '/') . '/' . md5(mt_rand(1, 100) . mt_rand(1, 100));
 
             if (($fp = @fopen($path, FOPEN_WRITE_CREATE)) === false) {
                 return false;
@@ -650,7 +650,7 @@ class Filesystem
      */
     protected function addIndexHtml($dir)
     {
-        $dir = rtrim($dir, '/');
+        $dir = rtrim((string) $dir, '/');
 
         if (!$this->isDir($dir)) {
             throw new FilesystemException("Cannot add index file to non-existant directory: {$dir}");

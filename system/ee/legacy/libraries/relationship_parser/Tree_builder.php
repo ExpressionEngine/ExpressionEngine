@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -7,9 +8,9 @@
  * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
- require_once APPPATH . 'libraries/datastructures/Tree.php';
- require_once APPPATH . 'libraries/relationship_parser/Nodes.php';
- require_once APPPATH . 'libraries/relationship_parser/Iterators.php';
+require_once APPPATH . 'libraries/datastructures/Tree.php';
+require_once APPPATH . 'libraries/relationship_parser/Nodes.php';
+require_once APPPATH . 'libraries/relationship_parser/Iterators.php';
 
 /**
  * Tree Builder
@@ -152,7 +153,7 @@ class EE_relationship_tree_builder
                 ee()->load->model('category_model');
                 $category_lookup = ee()->category_model->get_entry_categories($unique_entry_ids);
                 $entriesQueryWith[] = 'Categories';
-            }else{
+            } else {
                 $disabledFeatures[] = 'categories';
             }
 
@@ -193,6 +194,7 @@ class EE_relationship_tree_builder
                     if ($datum['entry_id'] == $data['entry_id']) {
                         $entries_result[$i] = $data;
                         $found = true;
+
                         break;
                     }
                 }
@@ -242,7 +244,7 @@ class EE_relationship_tree_builder
     protected function _build_tree($str)
     {
         // No variables?  No reason to continue...
-        if (strpos($str, '{') === false) {
+        if (strpos((string) $str, '{') === false) {
             return null;
         }
 
@@ -290,10 +292,10 @@ class EE_relationship_tree_builder
 
             // some helpful booleans
             $is_closing = ($match[0][1] == '/');
-            $is_only_relationship = (substr($relationship_prefix, -1) != ':');
+            $is_only_relationship = (substr((string) $relationship_prefix, -1) != ':');
 
-            $tag_name = rtrim($relationship_prefix, ':');
-            $in_grid = array_key_exists($relationship_prefix, $this->grid_relationship_ids);
+            $tag_name = rtrim((string) $relationship_prefix, ':');
+            $in_grid = array_key_exists((string) $relationship_prefix, $this->grid_relationship_ids);
             $in_fluid_field = (bool) ($this->fluid_field_data_id && $this->fluid_field_data_id > 0);
 
             // We found something in a fluid field that is not a relationship tag, skip it.
@@ -327,7 +329,7 @@ class EE_relationship_tree_builder
 
             // extract the full name and determining relationship
             $last_colon = strrpos($tag_name, ':');
-            $in_grid = array_key_exists($relationship_prefix, $this->grid_relationship_ids);
+            $in_grid = array_key_exists((string) $relationship_prefix, $this->grid_relationship_ids);
 
             if ($last_colon === false || $in_grid) {
                 $parent_node = $open_nodes['__root__'];
@@ -457,7 +459,7 @@ class EE_relationship_tree_builder
                 $field_name = $node->param('field');
 
                 if ($field_name) {
-                    foreach (explode('|', $field_name) as $name) {
+                    foreach (explode('|', (string) $field_name) as $name) {
                         if (array_key_exists($name, $this->relationship_field_ids)) {
                             foreach ($this->relationship_field_ids[$name] as $rel_field_id) {
                                 $field_ids[] = $rel_field_id;

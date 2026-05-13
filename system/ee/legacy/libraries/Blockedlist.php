@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -51,9 +52,9 @@ class EE_Blockedlist
         if (isset($_SERVER['HTTP_REFERER']) && $_SERVER['HTTP_REFERER'] != '') {
             $test_ref = ee('Security/XSS')->clean($_SERVER['HTTP_REFERER']);
 
-            if (! preg_match("#^http://\w+\.\w+\.\w*#", $test_ref)) {
-                if (substr($test_ref, 0, 7) == 'http://' and substr($test_ref, 0, 11) != 'http://www.') {
-                    $test_ref = preg_replace("#^http://(.+?)#", "http://www.\\1", $test_ref);
+            if (! preg_match("#^http://\w+\.\w+\.\w*#", (string) $test_ref)) {
+                if (substr((string) $test_ref, 0, 7) == 'http://' and substr((string) $test_ref, 0, 11) != 'http://www.') {
+                    $test_ref = preg_replace("#^http://(.+?)#", "http://www.\\1", (string) $test_ref);
                 }
             }
 
@@ -87,11 +88,11 @@ class EE_Blockedlist
         if ($results->num_rows() > 0) {
             foreach ($results->result_array() as $row) {
                 if ($row['allowedlist_type'] == 'url') {
-                    $allowedlist_url = explode('|', $row['allowedlist_value']);
+                    $allowedlist_url = explode('|', (string) $row['allowedlist_value']);
                 } elseif ($row['allowedlist_type'] == 'ip') {
-                    $allowedlist_ip = explode('|', $row['allowedlist_value']);
+                    $allowedlist_ip = explode('|', (string) $row['allowedlist_value']);
                 } elseif ($row['allowedlist_type'] == 'agent') {
-                    $allowedlist_agent = explode('|', $row['allowedlist_value']);
+                    $allowedlist_agent = explode('|', (string) $row['allowedlist_value']);
                 }
             }
         }
@@ -104,9 +105,9 @@ class EE_Blockedlist
 
         $allowedlist_url[] = $site_url;
 
-        if (! preg_match("#^http://\w+\.\w+\.\w*#", $site_url)) {
-            if (substr($site_url, 0, 7) == 'http://' and substr($site_url, 0, 11) != 'http://www.') {
-                $allowedlist_url[] = preg_replace("#^http://(.+?)#", "http://www.\\1", $site_url);
+        if (! preg_match("#^http://\w+\.\w+\.\w*#", (string) $site_url)) {
+            if (substr((string) $site_url, 0, 7) == 'http://' and substr((string) $site_url, 0, 11) != 'http://www.') {
+                $allowedlist_url[] = preg_replace("#^http://(.+?)#", "http://www.\\1", (string) $site_url);
             }
         }
 
@@ -124,7 +125,7 @@ class EE_Blockedlist
 
         foreach ($query->result_array() as $row) {
             if ($row['blockedlist_type'] == 'url' && $row['blockedlist_value'] != '' && $this->allowed != 'y') {
-                $blocked_values = explode('|', $row['blockedlist_value']);
+                $blocked_values = explode('|', (string) $row['blockedlist_value']);
 
                 if (! is_array($blocked_values) or count($blocked_values) == 0) {
                     continue;
@@ -133,7 +134,7 @@ class EE_Blockedlist
                 foreach ($_POST as $key => $value) {
                     // Smallest URL Possible
                     // Or no external links
-                    if (is_array($value) or strlen($value) < 8) {
+                    if (is_array($value) or strlen((string) $value) < 8) {
                         continue;
                     }
 
@@ -148,7 +149,7 @@ class EE_Blockedlist
                     // urls, so we need to check them individually.
                     if (preg_match_all("/([f|ht]+tp(s?):\/\/[a-z0-9@%_.~#\/\-\?&=]+.)" .
                                         "|(www.[a-z0-9@%_.~#\-\?&]+.)" .
-                                        "|([a-z0-9@%_~#\-\?&]*\.(" . implode('|', $domains) . "))/si", $value, $matches)) {
+                                        "|([a-z0-9@%_~#\-\?&]*\.(" . implode('|', $domains) . "))/si", (string) $value, $matches)) {
                         for ($i = 0; $i < count($matches['0']); $i++) {
                             // If this is a referrer or the comment module's
                             // url field we know that it's just a single match.
@@ -157,16 +158,16 @@ class EE_Blockedlist
                             }
 
                             foreach ($blocked_values as $bad_url) {
-                                if ($bad_url != '' && stristr($matches['0'][$i], $bad_url) !== false) {
+                                if ($bad_url != '' && stristr((string) $matches['0'][$i], $bad_url) !== false) {
                                     $bad = 'y';
 
                                     // Check Bad Against Whitelist - URLs
 
                                     if (is_array($allowedlist_url) && count($allowedlist_url) > 0) {
-                                        $parts = explode('?', $matches['0'][$i]);
+                                        $parts = explode('?', (string) $matches['0'][$i]);
 
                                         foreach ($allowedlist_url as $pure) {
-                                            if ($pure != '' && stristr($parts['0'], $pure) !== false) {
+                                            if ($pure != '' && stristr($parts['0'], (string) $pure) !== false) {
                                                 $bad = 'n';
                                                 $this->allowed = 'y';
 
@@ -178,7 +179,7 @@ class EE_Blockedlist
                                     // Check Bad Against Whitelist - IPs
                                     if (is_array($allowedlist_ip) && count($allowedlist_ip) > 0) {
                                         foreach ($allowedlist_ip as $pure) {
-                                            if ($pure != '' && strpos(ee()->input->ip_address(), $pure) !== false) {
+                                            if ($pure != '' && strpos((string) ee()->input->ip_address(), $pure) !== false) {
                                                 $bad = 'n';
                                                 $this->allowed = 'y';
 
@@ -205,19 +206,19 @@ class EE_Blockedlist
                     }
                 }
             } elseif ($row['blockedlist_type'] == 'ip' && $row['blockedlist_value'] != '' && $this->allowed != 'y') {
-                $blocked_values = explode('|', $row['blockedlist_value']);
+                $blocked_values = explode('|', (string) $row['blockedlist_value']);
 
                 if (! is_array($blocked_values) or count($blocked_values) == 0) {
                     continue;
                 }
 
                 foreach ($blocked_values as $bad_ip) {
-                    if ($bad_ip != '' && strpos(ee()->input->ip_address(), $bad_ip) === 0) {
+                    if ($bad_ip != '' && strpos((string) ee()->input->ip_address(), $bad_ip) === 0) {
                         $bad = 'y';
 
                         if (is_array($allowedlist_ip) && count($allowedlist_ip) > 0) {
                             foreach ($allowedlist_ip as $pure) {
-                                if ($pure != '' && strpos(ee()->input->ip_address(), $pure) !== false) {
+                                if ($pure != '' && strpos((string) ee()->input->ip_address(), $pure) !== false) {
                                     $bad = 'n';
                                     $this->allowed = 'y';
 
@@ -238,19 +239,19 @@ class EE_Blockedlist
                     }
                 }
             } elseif ($row['blockedlist_type'] == 'agent' && $row['blockedlist_value'] != '' && ee()->input->user_agent() != '' && $this->allowed != 'y') {
-                $blocked_values = explode('|', $row['blockedlist_value']);
+                $blocked_values = explode('|', (string) $row['blockedlist_value']);
 
                 if (! is_array($blocked_values) or count($blocked_values) == 0) {
                     continue;
                 }
 
                 foreach ($blocked_values as $bad_agent) {
-                    if ($bad_agent != '' && stristr(ee()->input->user_agent(), $bad_agent) !== false) {
+                    if ($bad_agent != '' && stristr((string) ee()->input->user_agent(), $bad_agent) !== false) {
                         $bad = 'y';
 
                         if (is_array($allowedlist_ip) && count($allowedlist_ip) > 0) {
                             foreach ($allowedlist_ip as $pure) {
-                                if ($pure != '' && strpos(ee()->input->user_agent(), $pure) !== false) {
+                                if ($pure != '' && strpos((string) ee()->input->user_agent(), $pure) !== false) {
                                     $bad = 'n';
                                     $this->allowed = 'y';
 
@@ -261,7 +262,7 @@ class EE_Blockedlist
 
                         if (is_array($allowedlist_agent) && count($allowedlist_agent) > 0) {
                             foreach ($allowedlist_agent as $pure) {
-                                if ($pure != '' && strpos(ee()->input->agent, $pure) !== false) {
+                                if ($pure != '' && strpos((string) ee()->input->agent, $pure) !== false) {
                                     $bad = 'n';
                                     $this->allowed = 'y';
 

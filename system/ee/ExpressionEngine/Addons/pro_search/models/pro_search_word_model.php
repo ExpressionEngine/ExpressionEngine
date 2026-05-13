@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -7,7 +8,6 @@
  * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -121,7 +121,7 @@ class Pro_search_word_model extends Pro_search_model
         // Change insert to replace to update existing entry
         // --------------------------------------
 
-        return ee()->db->query(preg_replace('/^INSERT/', 'INSERT IGNORE', $sql));
+        return ee()->db->query(preg_replace('/^INSERT/', 'INSERT IGNORE', (string) $sql));
     }
 
     // --------------------------------------------------------------------
@@ -309,7 +309,7 @@ class Pro_search_word_model extends Pro_search_model
 
         foreach ($words as $word) {
             $length = ee()->pro_multibyte->strlen($word);
-            $where[] = sprintf($tmpl, soundex($word), $length - $distance, $length + $distance);
+            $where[] = sprintf($tmpl, soundex((string) $word), $length - $distance, $length + $distance);
         }
 
         $query = ee()->db->select('word, sound')
@@ -356,7 +356,7 @@ class Pro_search_word_model extends Pro_search_model
      */
     public function find($word, $lang)
     {
-        $oper = (strpos($word, '%') === false) ? '=' : 'LIKE';
+        $oper = (strpos((string) $word, '%') === false) ? '=' : 'LIKE';
 
         $where = "(`word` {$oper} '{$word}' OR `clean` {$oper} '{$word}')";
 

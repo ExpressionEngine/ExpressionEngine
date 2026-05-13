@@ -76,7 +76,7 @@ if (count($data)) {
                     </div>
                 <?php elseif ($column['encode'] == true && $column['type'] != Table::COL_STATUS): ?>
                     <?php if (isset($column['href'])): ?>
-                    <span><a href="<?=$column['href']?>"><?=htmlentities($column['content'], ENT_QUOTES, 'UTF-8')?></a></span>
+                    <span><a href="<?=$column['href']?>"><?=htmlentities((string) $column['content'], ENT_QUOTES, 'UTF-8')?></a></span>
                     <?php else: ?>
                     <span><?=htmlentities((string) $column['content'], ENT_QUOTES, 'UTF-8')?></span>
                     <?php endif; ?>

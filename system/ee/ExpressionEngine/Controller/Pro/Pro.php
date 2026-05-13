@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -32,7 +33,7 @@ class Pro extends CP_Controller
 
     public function __call($name, $arguments)
     {
-        $name = ucfirst($name);
+        $name = ucfirst((string) $name);
         if (!empty($arguments)) {
             $function = array_shift($arguments);
         } else {

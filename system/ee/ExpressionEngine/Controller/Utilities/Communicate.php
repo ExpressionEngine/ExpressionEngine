@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -199,10 +200,10 @@ class Communicate extends Utilities
 
         if (ee('Permission')->can('email_roles')) {
             $vars['sections']['recipient_options'][] = ee('CP/Alert')->makeInline('roles-warn')
-                    ->asWarning()
-                    ->addToBody(lang('roles_send_warning'))
-                    ->cannotClose()
-                    ->render();
+                ->asWarning()
+                ->addToBody(lang('roles_send_warning'))
+                ->cannotClose()
+                ->render();
             if (bool_config_item('ignore_member_stats')) {
                 ee()->lang->load('members');
                 $vars['sections']['recipient_options'][] = ee('CP/Alert')->makeInline('roles-count-warn')
@@ -579,7 +580,7 @@ class Communicate extends Utilities
 
         foreach (array($to, $email->cc, $email->bcc) as $string) {
             if ($string != '') {
-                $total_sent += substr_count($string, ',') + 1;
+                $total_sent += substr_count((string) $string, ',') + 1;
             }
         }
 
@@ -850,7 +851,7 @@ class Communicate extends Utilities
             ee()->view->cp_heading = sprintf(
                 lang('search_results_heading'),
                 $count,
-                htmlspecialchars($search, ENT_QUOTES, 'UTF-8')
+                htmlspecialchars((string) $search, ENT_QUOTES, 'UTF-8')
             );
         }
 

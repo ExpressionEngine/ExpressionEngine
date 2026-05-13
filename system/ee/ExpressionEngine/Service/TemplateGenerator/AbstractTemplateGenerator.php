@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -147,13 +148,13 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
             $defaults = ['templates' => null, 'type' => 'webpage'];
             $value = $this->includes[$key];
 
-            if(is_int($key)) {
+            if (is_int($key)) {
                 $carry[$value] = array_merge($defaults, ['name' => $value]);
             } else {
                 $value = array_merge($defaults, $value);
                 $value['templates'] = (is_string($value['templates'])) ? explode(',', $value['templates']) : $value['templates'];
 
-                if(empty($value['templates']) || !empty(array_intersect_key($templates, array_flip($value['templates'])))) {
+                if (empty($value['templates']) || !empty(array_intersect_key($templates, array_flip($value['templates'])))) {
                     $carry[$key] = array_merge($value, ['name' => $key]);
                 }
             }
@@ -168,8 +169,8 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
 
         if (!$validationResult->isValid()) {
             // Flash previous input to the session if it's available
-            if(ee()->has('session') && !empty($_POST)) {
-                foreach($_POST as $key => $value) {
+            if (ee()->has('session') && !empty($_POST)) {
+                foreach ($_POST as $key => $value) {
                     ee()->session->set_flashdata($key, $value);
                 }
                 ee()->session->_age_flashdata();
@@ -215,7 +216,7 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
                 'template_notes' => $templateData['description'] ?? $templateData['name']
             ];
 
-            if($save) {
+            if ($save) {
                 ee('TemplateGenerator')->createTemplate($group, $templateName, $templateInfo, $site_id);
             }
 
@@ -229,7 +230,7 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
     {
         $stub = $this->makeTemplateStub($template)->setTemplateType($type);
 
-        if($this->input->get('theme')) {
+        if ($this->input->get('theme')) {
             $stub->setTheme($this->input->get('theme'));
         }
 
@@ -321,17 +322,17 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
     {
         return array_reduce(array_keys($options), function ($carry, $key) use ($options) {
             $value = $options[$key];
-            if(isset($value['choices'])) {
+            if (isset($value['choices'])) {
                 $classes = [null, $this, ee('TemplateGenerator')];
 
-                foreach($classes as $class) {
+                foreach ($classes as $class) {
                     $callable = !empty($class) ? [$class, $value['choices']] : $value['choices'];
-                    if(is_callable($callable)) {
+                    if (is_callable($callable)) {
                         $value['choices'] = (is_array($callable)) ? call_user_func_array($callable, []) : $callable();
                     }
                 }
 
-                if(!is_array($value['choices'])) {
+                if (!is_array($value['choices'])) {
                     throw new \Exception('Option choices must return an array');
                 }
             }
@@ -351,8 +352,8 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
     protected function mergeDefaults($input)
     {
         $options = $this->getOptions();
-        $defaults = array_reduce(array_keys($options), function($carry, $key) use ($options) {
-            if(array_key_exists('default', $options[$key])) {
+        $defaults = array_reduce(array_keys($options), function ($carry, $key) use ($options) {
+            if (array_key_exists('default', $options[$key])) {
                 $carry[$key] = $options[$key]['default'];
             }
 
@@ -388,7 +389,7 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
         // define our custom rule
         $allRuleNames = [];
         foreach ($rules as $rule) {
-            $ruleNames = explode('|', $rule);
+            $ruleNames = explode('|', (string) $rule);
             foreach ($ruleNames as $ruleName) {
                 $bracketPos = strpos($ruleName, '[');
                 $allRuleNames[] = $bracketPos !== false ? substr($ruleName, 0, $bracketPos) : $ruleName;

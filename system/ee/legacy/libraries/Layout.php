@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -123,7 +124,7 @@ class Layout
                         }
 
                         break;
-                    }
+                }
             }
         }
 
@@ -202,7 +203,7 @@ class Layout
             $channel_id = array($channel_id);
         }
 
-        if(count($channel_id) > 0) {
+        if (count($channel_id) > 0) {
             $layouts = ee('Model')->get('ChannelLayout')
                 ->filter('site_id', ee()->config->item('site_id'))
                 ->filter('channel_id', 'IN', $channel_id)
@@ -221,7 +222,7 @@ class Layout
 
         foreach ($tabs as $key => $val) {
             $tab = array(
-                'id' => strtolower($key),
+                'id' => strtolower((string) $key),
                 'name' => $key,
                 'visible' => true,
                 'fields' => array()
@@ -285,7 +286,7 @@ class Layout
         }
 
         foreach ($tabs as $key => $fields) {
-            $tab_id = strtolower($key);
+            $tab_id = strtolower((string) $key);
             $found = false;
 
             foreach ($layouts as $layout) {

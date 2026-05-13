@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -57,9 +58,9 @@ class Translate extends Utilities
 
         if (empty($arguments)) {
             $this->listFiles($name);
-        } elseif (strtolower($arguments[0]) == 'edit' && isset($arguments[1])) {
+        } elseif (strtolower((string) $arguments[0]) == 'edit' && isset($arguments[1])) {
             $this->edit($name, $arguments[1]);
-        } elseif (strtolower($arguments[0]) == 'save' && isset($arguments[1])) {
+        } elseif (strtolower((string) $arguments[0]) == 'save' && isset($arguments[1])) {
             $this->save($name, $arguments[1]);
         } else {
             show_404();
@@ -121,7 +122,7 @@ class Translate extends Utilities
             ee()->view->cp_heading = sprintf(
                 lang('search_results_heading'),
                 $vars['table']['total_rows'],
-                htmlspecialchars($vars['table']['search'], ENT_QUOTES, 'UTF-8')
+                htmlspecialchars((string) $vars['table']['search'], ENT_QUOTES, 'UTF-8')
             );
         }
 
@@ -172,7 +173,7 @@ class Translate extends Utilities
                 continue;
             }
 
-            if (substr($file, -$filename_end_len) && substr($file, -4) == '.php') {
+            if (substr((string) $file, -$filename_end_len) && substr((string) $file, -4) == '.php') {
                 $name = str_replace('_lang.php', '', $file);
                 $edit_url = ee('CP/URL')->make('utilities/translate/' . $language . '/edit/' . $name);
                 $data[] = [
@@ -187,7 +188,7 @@ class Translate extends Utilities
                         array('toolbar_items' => array(
                             'edit' => array(
                                 'href' => $edit_url,
-                                'title' => strtolower(lang('edit'))
+                                'title' => strtolower((string) lang('edit'))
                             )
                         )),
                         array(
@@ -230,7 +231,7 @@ class Translate extends Utilities
             ee()->view->cp_heading = sprintf(
                 lang('search_results_heading'),
                 $vars['table']['total_rows'],
-                htmlspecialchars($vars['table']['search'], ENT_QUOTES, 'UTF-8')
+                htmlspecialchars((string) $vars['table']['search'], ENT_QUOTES, 'UTF-8')
             );
         }
 
@@ -354,7 +355,7 @@ class Translate extends Utilities
             ee()->functions->redirect(ee('CP/URL')->make('utilities/translate/' . $language));
         }
 
-        ee()->view->cp_page_title = ucfirst($language) . ' ' . $filename . ' ' . ucfirst(lang('translation'));
+        ee()->view->cp_page_title = ucfirst($language) . ' ' . $filename . ' ' . ucfirst((string) lang('translation'));
 
         $vars['language'] = $language;
         $vars['filename'] = $filename;
@@ -395,8 +396,8 @@ class Translate extends Utilities
                     'title' => ee('Format')->make('Text', $val . ' ')->convertToEntities()->compile(),
                     'fields' => [
                         $key => [
-                            'type' => (strlen($val) > 100) ? 'textarea' : 'text',
-                            'value' => isset($M[$key]) ? stripslashes($M[$key]) : ''
+                            'type' => (strlen((string) $val) > 100) ? 'textarea' : 'text',
+                            'value' => isset($M[$key]) ? stripslashes((string) $M[$key]) : ''
                         ]
                     ]
                 ];
@@ -451,6 +452,7 @@ class Translate extends Utilities
                 ->defer();
 
             ee()->functions->redirect(ee('CP/URL')->make('utilities/translate/' . $language . '/edit/' . $file));
+
             return;
         }
 
@@ -586,6 +588,7 @@ class Translate extends Utilities
 
             if (! is_scalar($raw_value) && $raw_value !== null) {
                 $invalid_value_keys[] = $allowed_key;
+
                 continue;
             }
 

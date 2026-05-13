@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -85,12 +86,12 @@ class CpRouteGenerator extends AbstractGenerator
         // The add-on setup has the settings_exist key
         if (array_key_exists('settings_exist', $addonSetupArray)) {
             $pattern = "/(settings_exist)([^=]+)(=>\s)(false|true)/";
-            $addonSetupFile = preg_replace($pattern, "$1$2$3true", $addonSetupFile);
+            $addonSetupFile = preg_replace($pattern, "$1$2$3true", (string) $addonSetupFile);
             $this->filesystem->write($this->addonPath . 'addon.setup.php', $addonSetupFile, true);
         } else {
             // The add-on setup does not have the settings_exist key. Add it
             $pattern = '/(,)([^,]+)$/';
-            $addonSetupFile = preg_replace($pattern, ",\n    'settings_exist'    => true, $2", $addonSetupFile);
+            $addonSetupFile = preg_replace($pattern, ",\n    'settings_exist'    => true, $2", (string) $addonSetupFile);
             $this->filesystem->write($this->addonPath . 'addon.setup.php', $addonSetupFile, true);
         }
     }
@@ -103,7 +104,7 @@ class CpRouteGenerator extends AbstractGenerator
 
         // Replace the has_cp_backend variable
         $pattern = "/(has_cp_backend)([\s]*=[\s]*['\"])([^']*)(['\"];)/";
-        $updFile = preg_replace($pattern, "$1$2y$4", $updFile);
+        $updFile = preg_replace($pattern, "$1$2y$4", (string) $updFile);
         $this->filesystem->write($updFilePath, $updFile, true);
     }
 
@@ -118,7 +119,7 @@ class CpRouteGenerator extends AbstractGenerator
 
         // Create mcp file if it doesnt exist:
         $mcpStub = $this->filesystem->read($this->stub('Mcp/mcp.slug.php'));
-        $mcpStub = $this->write('slug_uc', ucfirst($this->addon), $mcpStub);
+        $mcpStub = $this->write('slug_uc', ucfirst((string) $this->addon), $mcpStub);
         $mcpStub = $this->write('slug', $this->addon, $mcpStub);
         $this->putFile('mcp.' . $this->addon . '.php', $mcpStub);
     }

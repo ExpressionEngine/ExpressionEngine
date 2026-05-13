@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -77,7 +78,7 @@ class Downloader
 
         // Grab the zip's SHA384 hash to verify integrity
         $hash = $this->filesystem->hashFile('sha384', $this->getArchiveFilePath());
-        $signature = trim($curl->getHeader('Package-Signature'), '"');
+        $signature = trim((string) $curl->getHeader('Package-Signature'), '"');
 
         if (! $this->verifySignature($hash, $signature)) {
             throw new UpdaterException(
@@ -102,7 +103,7 @@ class Downloader
         // Make sure everything looks normal
         if ($curl->getHeader('http_code') != '200') {
             // Custom message from server delivered
-            if (($message = json_decode($data, true)) && isset($message['error'])) {
+            if (($message = json_decode((string) $data, true)) && isset($message['error'])) {
                 throw new UpdaterException($message['error'], 20);
             }
 
@@ -115,7 +116,7 @@ class Downloader
             );
         }
 
-        if (trim($curl->getHeader('Content-Type'), '"') != 'application/zip') {
+        if (trim((string) $curl->getHeader('Content-Type'), '"') != 'application/zip') {
             throw new UpdaterException(
                 sprintf(
                     lang('unexpected_mime') . "\n\n" . lang('try_again_later'),
@@ -139,7 +140,7 @@ class Downloader
      */
     private function verifySignature($hash, $signature)
     {
-        $signature = base64_decode($signature);
+        $signature = base64_decode((string) $signature);
 
         $verified = openssl_verify(
             $hash,

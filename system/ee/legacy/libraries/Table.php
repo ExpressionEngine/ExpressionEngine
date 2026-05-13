@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -284,7 +285,7 @@ class EE_Table
 
             // handle data of array('data' => 'content', 'attr' => 'value')
             $temp .= '{{if $.isPlainObject(' . $column . ')}}';
-            $temp .= substr($this->template['cell_start'], 0, -1);
+            $temp .= substr((string) $this->template['cell_start'], 0, -1);
             $temp .= '{{each ' . $column . '}}';
             $temp .= '{{if $index != "data"}} ${$index}="${$value}" {{/if}}';
             $temp .= '{{/each}}';
@@ -849,17 +850,17 @@ class EE_Table
         // add the uniqid as a class so we can find it from
         // the table. Note: You can have multiple instances
         // of the pagination html on the page.
-        if (strpos($config['full_tag_open'], 'class')) { // will never be 0
+        if (strpos((string) $config['full_tag_open'], 'class')) { // will never be 0
             $config['full_tag_open'] = preg_replace(
                 '#class\s*=\s*(\042|\047)#i',
                 '$0' . $this->uniqid . ' ',
-                $config['full_tag_open']
+                (string) $config['full_tag_open']
             );
         } else {
             $config['full_tag_open'] = preg_replace(
                 '#(<\w+)#i',
                 '$1 class="' . $this->uniqid . '"',
-                $config['full_tag_open']
+                (string) $config['full_tag_open']
             );
         }
 

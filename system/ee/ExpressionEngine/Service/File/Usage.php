@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -15,7 +16,7 @@ namespace ExpressionEngine\Service\File;
  */
 class Usage
 {
-    const CACHE_KEY = '/search/file-usage';
+    public const CACHE_KEY = '/search/file-usage';
 
     protected $fieldsAndTables = [];
     protected $updating = false;
@@ -133,10 +134,10 @@ class Usage
                 }
                 $idField = ($table == 'categories') ? 'cat_id' : 'entry_id';
                 $fieldsList = $idField . ', ' . implode(', ', $fields);
-                if (strpos($table, 'channel_grid_field') === 0) {
+                if (strpos((string) $table, 'channel_grid_field') === 0) {
                     $fieldsList .= ', row_id';
                 }
-                if (strpos($table, 'channel_data_field') === 0) {
+                if (strpos((string) $table, 'channel_data_field') === 0) {
                     $fieldsList .= ', id';
                 }
                 $query = ee('db')->select($fieldsList)->from($table)->limit($this->entriesLimit)->offset($this->offset)->get();
@@ -161,7 +162,7 @@ class Usage
                             $dirsAndFiles = [];
                             $currentReplacement = [];
                             //grab the files in old format
-                            if (preg_match_all('/{filedir_(\d+)}([^\"\'\s]*)/', $data, $matches, PREG_SET_ORDER)) {
+                            if (preg_match_all('/{filedir_(\d+)}([^\"\'\s]*)/', (string) $data, $matches, PREG_SET_ORDER)) {
                                 foreach ($matches as $match) {
                                     //set the data for files to be fetched - or use what we have
                                     if (!isset($replacement[$match[0]])) {
@@ -172,7 +173,7 @@ class Usage
                                 }
                             }
                             //and make sure the new format is still not lost
-                            if (preg_match_all('/{file\:(\d+)\:url}/', $data, $matches, PREG_SET_ORDER)) {
+                            if (preg_match_all('/{file\:(\d+)\:url}/', (string) $data, $matches, PREG_SET_ORDER)) {
                                 foreach ($matches as $match) {
                                     $currentReplacement[$match[0]] = $replacement[$match[0]] = [
                                         'file_id' => $match[1],
@@ -218,9 +219,9 @@ class Usage
                     }
                     if (! empty($update)) {
                         //update the data table
-                        if (strpos($table, 'channel_data_field') === 0) {
+                        if (strpos((string) $table, 'channel_data_field') === 0) {
                             ee('db')->where('id', $row['id'])->update($table, $update);
-                        } elseif (strpos($table, 'channel_grid_field') === 0) {
+                        } elseif (strpos((string) $table, 'channel_grid_field') === 0) {
                             ee('db')->where('row_id', $row['row_id'])->update($table, $update);
                         } else {
                             ee('db')->where($idField, $row[$idField])->update($table, $update);

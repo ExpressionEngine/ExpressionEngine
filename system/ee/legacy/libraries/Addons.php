@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -78,7 +79,7 @@ class EE_Addons
         // is_package calls this function with a blank key to skip
         // first party - we'll do that right here instead of checking
         // if the folder exists
-        if (! array_key_exists($type, $type_ident)) {
+        if (! array_key_exists((string) $type, $type_ident)) {
             return array();
         }
 
@@ -95,10 +96,10 @@ class EE_Addons
 
             if (is_array($list)) {
                 foreach ($list as $file) {
-                    if (strncasecmp($file, $abbr . '.', strlen($abbr . '.')) == 0 &&
-                        substr($file, -$ext_len) == '.php' &&
-                        strlen($file) > strlen($abbr . '.' . '.php')) {
-                        $name = substr($file, strlen($abbr . '.'), - $ext_len);
+                    if (strncasecmp((string) $file, $abbr . '.', strlen($abbr . '.')) == 0 &&
+                        substr((string) $file, -$ext_len) == '.php' &&
+                        strlen((string) $file) > strlen($abbr . '.' . '.php')) {
+                        $name = substr((string) $file, strlen($abbr . '.'), - $ext_len);
                         $class = ($abbr == 'pi') ? ucfirst($name) : ucfirst($name) . '_' . $abbr;
                         $path = ($abbr == 'ext' or $abbr == 'acc' or $abbr == 'ft' or $abbr == 'rte') ? constant('PATH_' . strtoupper($abbr)) : $root_path . $name . '/';
 
@@ -164,7 +165,7 @@ class EE_Addons
                 foreach ($type_ident as $addon_type => $identArray) {
                     foreach ($identArray as $ident) {
                         // Fieldtypes can have names that do not match the $pkg_name
-                        $valid = ($ident === 'ft') ? preg_match('/^' . $ident . '\.(.*?)\.php$/', $file, $match) : ($file == $ident . '.' . $pkg_name . '.php');
+                        $valid = ($ident === 'ft') ? preg_match('/^' . $ident . '\.(.*?)\.php$/', (string) $file, $match) : ($file == $ident . '.' . $pkg_name . '.php');
 
                         if ($valid) {
                             $name = ($ident === 'ft') ? $match[1] : $pkg_name;
@@ -174,7 +175,7 @@ class EE_Addons
                             }
 
                             // Plugin classes don't have a suffix
-                            $class = ($ident == 'pi') ? ucfirst($name) : ucfirst($name) . '_' . $ident;
+                            $class = ($ident == 'pi') ? ucfirst((string) $name) : ucfirst((string) $name) . '_' . $ident;
                             $path = $path_prefix . $pkg_name . '/';
                             $author = ($native) ? 'native' : 'third_party';
 
@@ -250,7 +251,7 @@ class EE_Addons
                 $files = $this->get_files('extensions');
 
                 foreach ($query->result_array() as $row) {
-                    $name = strtolower(substr($row['class'], 0, -4));
+                    $name = strtolower(substr((string) $row['class'], 0, -4));
 
                     if (isset($files[$name])) {
                         $_installed[$type][$name] = array_merge($files[$name], $row);
@@ -295,11 +296,11 @@ class EE_Addons
 
                 require $path . 'upd.' . $module . '.php';
 
-                $class = ucfirst($module) . '_upd';
+                $class = ucfirst((string) $module) . '_upd';
 
                 $UPD = new $class();
 
-                if(property_exists($UPD, 'install_errors')) {
+                if (property_exists($UPD, 'install_errors')) {
                     $UPD->install_errors = array();
                 }
 
@@ -333,7 +334,7 @@ class EE_Addons
     {
         $this->get_files('');	// blank key lets us skip first party
 
-        return array_key_exists($name, $this->_packages);
+        return array_key_exists((string) $name, $this->_packages);
     }
 
     /**
@@ -347,7 +348,7 @@ class EE_Addons
     {
         $this->get_files($type);	// blank key lets us skip first party
 
-        if (! array_key_exists($name, $this->_packages)) {
+        if (! array_key_exists((string) $name, $this->_packages)) {
             return false;
         }
 

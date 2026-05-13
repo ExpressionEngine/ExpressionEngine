@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -164,7 +165,7 @@ class UploadDestination extends StructureModel
             $allowed_types = [$allowed_types];
         }
         if (in_array('--', $allowed_types)) {
-            $allowed_types =  ['all'];
+            $allowed_types = ['all'];
         }
         if (empty($allowed_types)) {
             $allowed_types = ['img'];
@@ -462,11 +463,13 @@ class UploadDestination extends StructureModel
      *
      * @return array
      */
-    public function getAllFileNames() {
+    public function getAllFileNames()
+    {
         $directoryMap = $this->getDirectoryMap();
         $flatDirectoryMap = [];
         $this->flattenDirectoryMap($flatDirectoryMap, $directoryMap);
         $files = array_keys($flatDirectoryMap);
+
         return $files;
     }
 
@@ -510,7 +513,7 @@ class UploadDestination extends StructureModel
         foreach ($files as $filePath) {
             $fileInfo = $filesystem->getWithMetadata($filePath);
             if (!isset($fileInfo['basename'])) {
-                $fileInfo['basename'] = basename($fileInfo['path']);
+                $fileInfo['basename'] = basename((string) $fileInfo['path']);
             }
             $mime = ($fileInfo['type'] != 'dir') ? $filesystem->getMimetype($filePath) : 'directory';
 
@@ -542,6 +545,7 @@ class UploadDestination extends StructureModel
                 // Rename the file
                 if (! $filesystem->rename($fileInfo['path'], $clean_filename)) {
                     $errors[$fileInfo['path']] = lang('invalid_filename');
+
                     continue;
                 }
 
@@ -601,6 +605,7 @@ class UploadDestination extends StructureModel
                     foreach ($fileTypes as $fileType) {
                         if (in_array($file->getProperty('mime_type'), $mimes[$fileType])) {
                             $file->setProperty('file_type', $fileType);
+
                             break;
                         }
                     }
@@ -639,7 +644,7 @@ class UploadDestination extends StructureModel
                     $image_dimensions = $file->actLocally(function ($path) {
                         return ee()->filemanager->get_image_dimensions($path);
                     });
-                    $file_data['file_hw_original'] =  $image_dimensions['height'] . ' ' . $image_dimensions['width'];
+                    $file_data['file_hw_original'] = $image_dimensions['height'] . ' ' . $image_dimensions['width'];
                     $file->setRawProperty('file_hw_original', $file_data['file_hw_original']);
                 } catch (\Exception $e) {
                     //do nothing
@@ -656,6 +661,7 @@ class UploadDestination extends StructureModel
                 );
             } catch (\Exception $e) {
                 $errors[$fileInfo['basename']] = $e->getMessage();
+
                 continue;
             }
 
@@ -724,11 +730,12 @@ class UploadDestination extends StructureModel
 
         // Group directories by directory_id
         $directories = array_reduce($directories, function ($carry, $directory) {
-            if (!array_key_exists($directory->directory_id, $carry)) {
+            if (!array_key_exists((string) $directory->directory_id, $carry)) {
                 $carry[$directory->directory_id] = [];
             }
 
             $carry[$directory->directory_id][] = $directory;
+
             return $carry;
         }, []);
 
@@ -741,11 +748,11 @@ class UploadDestination extends StructureModel
     protected function getDirectoryDropdownChildren($parent_id, $directories, $icon = false, $path = '')
     {
         $items = [];
-        $children = array_key_exists($parent_id, $directories) ? $directories[$parent_id] : [];
+        $children = array_key_exists((string) $parent_id, $directories) ? $directories[$parent_id] : [];
 
         foreach ($children as $directory) {
             $label = (($icon) ? '<i class="fal fa-folder"></i>' : '') . $directory->title;
-            $path = $path . urlencode($directory->file_name) . '/';
+            $path = $path . urlencode((string) $directory->file_name) . '/';
             $items[$this->getId() . '.' . $directory->getId()] = [
                 'label' => $label,
                 'upload_location_id' => $this->getId(),
@@ -797,7 +804,7 @@ class UploadDestination extends StructureModel
                             $folder_icon = '<i class="fal fa-folder"></i>' . $directory->title;
                             $icon = true;
                         }
-                        $path = $path . urlencode($directory->file_name) . '/';
+                        $path = $path . urlencode((string) $directory->file_name) . '/';
                         $children[$this->getId() . '.' . $directory->getId()] = [
                             'label' => $folder_icon,
                             'upload_location_id' => $this->getId(),
@@ -901,7 +908,7 @@ class UploadDestination extends StructureModel
 
         // Remove any manipulated files as well
         foreach ($this->FileDimensions as $file_dimension) {
-            $file = rtrim($file_dimension->getAbsolutePath(), '/') . '/' . $filename;
+            $file = rtrim((string) $file_dimension->getAbsolutePath(), '/') . '/' . $filename;
 
             if ($filesystem->exists($file)) {
                 $filesystem->delete($file);
@@ -910,14 +917,14 @@ class UploadDestination extends StructureModel
 
         // Remove front-end manipulations
         $manipulations = ['resize', 'crop', 'rotate', 'webp', 'avif'];
-        $renamer = strrchr($basename, '_');
-        $basename = ($renamer === false) ? $basename : substr($basename, 0, -strlen($renamer));
+        $renamer = strrchr((string) $basename, '_');
+        $basename = ($renamer === false) ? $basename : substr((string) $basename, 0, -strlen($renamer));
 
         foreach ($manipulations as $manipulation) {
             if ($filesystem->exists("{$dirname}/_{$manipulation}/")) {
                 $files = $filesystem->getDirectoryContents("{$dirname}/_{$manipulation}/");
                 $files = array_filter($files, function ($file) use ($basename) {
-                    return (strpos($file, "{$basename}_") === 0);
+                    return (strpos((string) $file, "{$basename}_") === 0);
                 });
                 foreach ($files as $file) {
                     $filesystem->delete($file);

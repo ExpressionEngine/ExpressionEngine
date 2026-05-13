@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -15,14 +16,14 @@ namespace ExpressionEngine\Library\CP;
  */
 class Table
 {
-    const COL_TEXT = 1;
-    const COL_CHECKBOX = 2;
-    const COL_STATUS = 3;
-    const COL_TOOLBAR = 4;
-    const COL_ID = 5;
-    const COL_SMALL = 6;
-    const COL_INFO = 7;
-    const COL_THUMB = 8;
+    public const COL_TEXT = 1;
+    public const COL_CHECKBOX = 2;
+    public const COL_STATUS = 3;
+    public const COL_TOOLBAR = 4;
+    public const COL_ID = 5;
+    public const COL_SMALL = 6;
+    public const COL_INFO = 7;
+    public const COL_THUMB = 8;
 
     public $config = array();
     protected $columns = array();
@@ -526,15 +527,15 @@ class Table
      * @return Integer  Comparison result (-1, 0, 1) based on the two values passed in
      */
     public function compareData($a, $b)
-    {   
+    {
         /*These 2 ifs are needed to catch columns that do not have a data at that spot.
         For instance blank cookie lifetime setting data for pro.
         This makes it so that Null values are considered to be smallest value.
         To make Null values be considered biggest value have a return 1 and b return -1.*/
-        if($a === NULL){
+        if ($a === null) {
             return -1;
         }
-        if($b === NULL){
+        if ($b === null) {
             return 1;
         }
         // Sort numbers as numbers
@@ -550,15 +551,15 @@ class Table
 
             // Check for disk size
             $sizes = array('KB', 'MB', 'GB', 'TB', 'PB');
-            $size_a = strtoupper(substr(strip_tags($a), -2));
-            $size_b = strtoupper(substr(strip_tags($b), -2));
+            $size_a = strtoupper(substr(strip_tags((string) $a), -2));
+            $size_b = strtoupper(substr(strip_tags((string) $b), -2));
 
             if ($date_a !== false && $date_b !== false) {
                 $cmp = $date_a - $date_b;
             } elseif (in_array($size_a, $sizes) && in_array($size_b, $sizes)) {
                 $cmp = $this->convertToBytes($a) - $this->convertToBytes($b);
             } else {
-                $cmp = strcmp(strtolower(strip_tags($a)), strtolower(strip_tags($b)));
+                $cmp = strcmp(strtolower(strip_tags((string) $a)), strtolower(strip_tags((string) $b)));
             }
         }
 
@@ -617,7 +618,7 @@ class Table
                     $column['type'] == self::COL_TEXT or
                     $column['type'] == self::COL_STATUS
                 ) {
-                    if (!empty($column['content']) && strpos(strtolower($column['content']), strtolower($this->config['search'])) !== false) {
+                    if (!empty($column['content']) && strpos(strtolower((string) $column['content']), strtolower((string) $this->config['search'])) !== false) {
                         // Found a match, move on to the next row
                         $match = true;
 
@@ -691,7 +692,7 @@ class Table
             return $column['label'];
         }, $this->columns);
 
-        if (! $this->config['force_sort_col'] && 
+        if (! $this->config['force_sort_col'] &&
             ((empty($this->config['sort_col']) && count($this->columns) > 0) or
             ! in_array($this->config['sort_col'], $search))
         ) {
@@ -701,6 +702,7 @@ class Table
                     return $column['label'];
                 }
             }
+
             return null;
         }
 
@@ -741,7 +743,7 @@ class Table
         );
     }
 
-    public function setNoResultsHTML($html, $class='')
+    public function setNoResultsHTML($html, $class = '')
     {
         $this->config['no_results'] = $this->setNoResultsText('');
         $this->config['no_results']['html'] = $html;

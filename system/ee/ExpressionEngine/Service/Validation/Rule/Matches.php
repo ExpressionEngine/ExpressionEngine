@@ -22,7 +22,7 @@ class Matches extends ValidationRule
     public function validate($key, $value)
     {
         foreach ($this->parameters as $field_name) {
-            if (! array_key_exists($field_name, $this->all_values)) {
+            if (! array_key_exists((string) $field_name, $this->all_values)) {
                 return isset($value); // both not set technically matches
             }
 

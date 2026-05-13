@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -119,12 +120,13 @@ class FileSystemEntity extends ContentModel
     protected $_subfolderPath;
     protected $_exists;
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
 
         // If this is a case-sensitive filesystem mark the file_name column
         // to be filtered with a binary cast to enforce case-sensitive comparison
-        if(ee()->config->item('filesystem_case_sensitive') === 'y') {
+        if (ee()->config->item('filesystem_case_sensitive') === 'y') {
             static::$_binary_comparisons[] = 'file_name';
         }
     }
@@ -167,7 +169,7 @@ class FileSystemEntity extends ContentModel
      */
     public function isImage()
     {
-        return ($this->isFile() && strpos($this->mime_type, 'image/') === 0);
+        return ($this->isFile() && strpos((string) $this->mime_type, 'image/') === 0);
     }
 
     /**
@@ -201,7 +203,7 @@ class FileSystemEntity extends ContentModel
      */
     public function isSVG()
     {
-        return ($this->isFile() && strpos($this->mime_type, 'image/svg') === 0);
+        return ($this->isFile() && strpos((string) $this->mime_type, 'image/svg') === 0);
     }
 
     /**
@@ -223,7 +225,7 @@ class FileSystemEntity extends ContentModel
                     $directory_id = 0;
                 }
             }
-            $this->_subfolderPath = implode($subfolders);
+            $this->_subfolderPath = implode('', $subfolders);
         }
 
         return $this->_subfolderPath;
@@ -237,7 +239,7 @@ class FileSystemEntity extends ContentModel
     public function getBaseServerPath()
     {
         if (empty($this->_baseServerPath) && $this->UploadDestination->getProperty('adapter') == 'local') {
-            $this->_baseServerPath = rtrim($this->UploadDestination->server_path, '\\/') . '/';
+            $this->_baseServerPath = rtrim((string) $this->UploadDestination->server_path, '\\/') . '/';
         }
 
         return $this->_baseServerPath;
@@ -358,7 +360,7 @@ class FileSystemEntity extends ContentModel
             return $this->getAbsoluteURL();
         }
 
-        return $filesystem->getUrl($this->getSubfoldersPath() . '_' . $manipulation . '/'  . $this->file_name);
+        return $filesystem->getUrl($this->getSubfoldersPath() . '_' . $manipulation . '/' . $this->file_name);
     }
 
     /**
@@ -379,7 +381,7 @@ class FileSystemEntity extends ContentModel
 
     public function deleteOriginalFile()
     {
-         $this->UploadDestination->deleteOriginalFiles($this->getAbsolutePath());
+        $this->UploadDestination->deleteOriginalFiles($this->getAbsolutePath());
     }
 
     public function deleteGeneratedFiles()
@@ -403,8 +405,8 @@ class FileSystemEntity extends ContentModel
             $dynamicFilePrefix = "{$filesystem->filename($this->file_name)}_{$manipulation}_";
             $dynamicFilenameLength = strlen("{$dynamicFilePrefix}.{$filesystem->extension($this->file_name)}") + 32;
 
-            foreach($filesystem->filesMatchingPrefix("{$directory}/{$dynamicFilePrefix}") as $file) {
-                if(strlen("{$file['filename']}.{$file['extension']}") == $dynamicFilenameLength) {
+            foreach ($filesystem->filesMatchingPrefix("{$directory}/{$dynamicFilePrefix}") as $file) {
+                if (strlen("{$file['filename']}.{$file['extension']}") == $dynamicFilenameLength) {
                     $filesystem->delete($file['path']);
                 }
             }
@@ -598,7 +600,7 @@ class FileSystemEntity extends ContentModel
         }, []);
 
         // If we do not have a group for this file system entity we can exit
-        if (!array_key_exists($this->file_id, $grouped)) {
+        if (!array_key_exists((string) $this->file_id, $grouped)) {
             return [];
         }
 

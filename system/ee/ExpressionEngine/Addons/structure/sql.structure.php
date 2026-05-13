@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -258,11 +259,11 @@ class Sql_structure
         $statuses = explode('|', $status);
 
         if (! is_array($include)) {
-            $include = array_filter(explode('|', $include), 'ctype_digit');
+            $include = array_filter(explode('|', (string) $include), 'ctype_digit');
         }
 
         if (! is_array($exclude)) {
-            $exclude = array_filter(explode('|', $exclude), 'ctype_digit');
+            $exclude = array_filter(explode('|', (string) $exclude), 'ctype_digit');
         }
 
         // ---
@@ -283,7 +284,7 @@ class Sql_structure
             $where_exclude = '';
 
             foreach ($exclude as $id) {
-                if ($id != '' && array_key_exists($id, $pages['uris'])) {
+                if ($id != '' && array_key_exists((string) $id, $pages['uris'])) {
                     $where_exclude .= " AND structure.lft NOT BETWEEN (SELECT lft FROM exp_structure WHERE entry_id = '$id') AND (SELECT rgt FROM exp_structure WHERE entry_id = '$id')";
                 }
             }
@@ -488,8 +489,8 @@ class Sql_structure
     public function count_segments($uri)
     {
         if ($uri != "") {
-            $uri = Structure_Helper::remove_double_slashes(trim(html_entity_decode($uri), '/'));
-            $segment_array = explode('/', $uri);
+            $uri = Structure_Helper::remove_double_slashes(trim(html_entity_decode((string) $uri), '/'));
+            $segment_array = explode('/', (string) $uri);
 
             return count($segment_array);
         }
@@ -505,7 +506,7 @@ class Sql_structure
     public function get_single_path($entry_id)
     {
         $listing_ids = $this->get_listing_entry_ids();
-        if (is_array($listing_ids) && array_key_exists($entry_id, $listing_ids)) {
+        if (is_array($listing_ids) && array_key_exists((string) $entry_id, $listing_ids)) {
             $entry_id = $this->get_parent_id($entry_id);
         }
 
@@ -525,7 +526,7 @@ class Sql_structure
 
         if ($result->num_rows() > 0) {
             foreach ($result->result_array() as $row) {
-                if (array_key_exists($row['entry_id'], $pages['uris'])) {
+                if (array_key_exists((string) $row['entry_id'], $pages['uris'])) {
                     // this is to fix a bug in EE3.4.x. It should not replace anything otherwise
                     $ee_url = ee()->functions->create_page_url($pages['url'], $pages['uris'][$row['entry_id']], false);
                     $url = str_replace("{base_url}/", ee()->config->item('base_url'), $ee_url);
@@ -586,12 +587,12 @@ class Sql_structure
             }
 
             // here class to listing parent
-            if (is_array($listing_ids) && array_key_exists($entry_id, $listing_ids) && $page['entry_id'] == $parent_id) {
+            if (is_array($listing_ids) && array_key_exists((string) $entry_id, $listing_ids) && $page['entry_id'] == $parent_id) {
                 $pages[$parent_id]['classes'][] = $current_class;
             }
 
             // parent-here class
-            if (array_key_exists($page['entry_id'], $path_pages) && $page['entry_id'] != $entry_id && ! array_key_exists('overview', $page)) {
+            if (array_key_exists((string) $page['entry_id'], $path_pages) && $page['entry_id'] != $entry_id && ! array_key_exists('overview', $page)) {
                 if ($mode == "main") {
                     $pages[$key]['classes'][] = $current_class;
                 } else {
@@ -640,7 +641,7 @@ class Sql_structure
                  && (! in_array('first', $pages[$page['entry_id']]['classes']))) #first page
                     || (
                         $page['parent_id'] != 0
-                && array_key_exists($page['parent_id'], $pages)
+                && array_key_exists((string) $page['parent_id'], $pages)
                 && ($page['lft'] - 1) == $pages[$page['parent_id']]['lft']
                 && (! in_array('overview', $pages[$page['parent_id']]['classes']))
                     )
@@ -649,7 +650,7 @@ class Sql_structure
             }
 
             // last class
-            if ($page['parent_id'] != 0 && array_key_exists($page['parent_id'], $pages) && ($page['rgt'] + 1) == $pages[$page['parent_id']]['rgt']) {
+            if ($page['parent_id'] != 0 && array_key_exists((string) $page['parent_id'], $pages) && ($page['rgt'] + 1) == $pages[$page['parent_id']]['rgt']) {
                 // If this is the last but it's set to hidden, we want to go back and set the
                 // previous entry and then remove it from the nav.
                 if ($pages[$key]['hidden'] == "y" && $override_hidden_state != "yes") {
@@ -761,7 +762,7 @@ class Sql_structure
             $title = $custom_title_fields !== false ? $custom_title_fields[$tree[$i]['entry_id']] : $tree[$i]['title'];
 
             if (ee()->TMPL->fetch_param('encode_titles', 'yes') === "yes") {
-                $title = htmlspecialchars($title);
+                $title = htmlspecialchars((string) $title);
             }
 
             // Add span hook if desired
@@ -901,12 +902,12 @@ class Sql_structure
         // $pair looks like "channel:custom_field" and is a string.
         foreach ($custom_titles as $pair) {
             // Each pair needs to have a : delimeter. If one of the pairs doesnt have it, return false.
-            if (strstr($pair, ':') === false) {
+            if (strstr((string) $pair, ':') === false) {
                 return false;
             }
 
             // We are exploding on : and then assigning variables for clarity and readability
-            $exploded = explode(':', $pair);
+            $exploded = explode(':', (string) $pair);
             $channel_name = $exploded[0];
             $custom_name = $exploded[1];
 
@@ -940,7 +941,7 @@ class Sql_structure
         $c_fields_global = array_key_exists(0, $c_fields['custom_channel_fields']) ? $c_fields['custom_channel_fields'][0] : array();
 
         // Get only the custom channel fields for this site_id
-        $c_fields_site = array_key_exists($this->site_id, $c_fields['custom_channel_fields']) ? $c_fields['custom_channel_fields'][$this->site_id] : array();
+        $c_fields_site = array_key_exists((string) $this->site_id, $c_fields['custom_channel_fields']) ? $c_fields['custom_channel_fields'][$this->site_id] : array();
 
         $c_fields = array_merge($c_fields_global, $c_fields_site);
 
@@ -948,7 +949,7 @@ class Sql_structure
         foreach ($title_fields as $channel_id => $field) {
             // if we dont have custom fields, or if the field is not in the custom fields, continue.
             // This could leave $sql_fields as an empty array, which is okay.
-            if (! is_array($c_fields) or ! array_key_exists($field, $c_fields)) {
+            if (! is_array($c_fields) or ! array_key_exists((string) $field, $c_fields)) {
                 continue;
             }
 
@@ -1010,7 +1011,7 @@ class Sql_structure
 
             // This will determine if the custom title array actually has the data we need in it
             $custom_field_exists = (
-                array_key_exists($channelEntry->channel_id, $sql_fields)    // the channel_id is in the array
+                array_key_exists((string) $channelEntry->channel_id, $sql_fields)    // the channel_id is in the array
                                 && isset($sql_fields[$channelEntry->channel_id]['field_id'])    // The field_id is set
                                 && !empty($sql_fields[$channelEntry->channel_id]['field_id'])   // The field_id is not empty
             );
@@ -1088,7 +1089,7 @@ class Sql_structure
             }
 
             $member_settings = $results->row_array();
-            $member_settings['nav_state'] = json_decode($member_settings['nav_state']);
+            $member_settings['nav_state'] = json_decode((string) $member_settings['nav_state']);
 
             return $member_settings;
         }
@@ -1124,6 +1125,7 @@ class Sql_structure
         // Get homepage instead
         if ($result['parent_id'] !== 0) {
             StaticCache::set($cacheKey, $result['parent_id']);
+
             return $result['parent_id'];
         } elseif ($default == 'home') {
             $sql = "SELECT entry_id FROM exp_structure WHERE lft = 2 AND site_id = $this->site_id";
@@ -1131,6 +1133,7 @@ class Sql_structure
 
             if (isset($result['entry_id']) && is_numeric($result['entry_id'])) {
                 StaticCache::set($cacheKey, $result['entry_id']);
+
                 return $result['entry_id'];
             }
         }
@@ -1171,7 +1174,7 @@ class Sql_structure
 
         $cached_page_title = StaticCache::get('structure_page_title_' . $entry_id);
 
-        if(!empty($cached_page_title)) {
+        if (!empty($cached_page_title)) {
             return $cached_page_title;
         }
 
@@ -1187,7 +1190,6 @@ class Sql_structure
 
             return $row->title;
         }
-        
 
         return false;
     }
@@ -1195,6 +1197,7 @@ class Sql_structure
     public function is_listing_entry($entry_id)
     {
         $listing_entries = $this->get_listing_entry_ids();
+
         // TODO
         return isset($listing_entries[$entry_id]);
     }
@@ -1437,7 +1440,7 @@ class Sql_structure
             if (empty($pages_array) || empty($pages_array['site_pages'])) {
                 $all_pages = array();
             } else {
-                $all_pages = unserialize(base64_decode($pages_array['site_pages']));
+                $all_pages = unserialize(base64_decode((string) $pages_array['site_pages']));
             }
         } else {
             $all_pages = ee()->config->item('site_pages');
@@ -1456,7 +1459,7 @@ class Sql_structure
         } else {
             foreach ($site_pages['uris'] as $key => $uri) {
                 if ($site_pages['uris'][$key] !== '/') {
-                    $site_pages['uris'][$key] = rtrim($uri, '/');
+                    $site_pages['uris'][$key] = rtrim((string) $uri, '/');
                 }
             }
         }
@@ -1499,7 +1502,7 @@ class Sql_structure
             $hidden_indicator = ee()->config->item('hidden_template_indicator') ? ee()->config->item('hidden_template_indicator') : '.';
 
             foreach ($templates as $key => $row) {
-                if (substr($row['template_name'], 0, 1) == $hidden_indicator) {
+                if (substr((string) $row['template_name'], 0, 1) == $hidden_indicator) {
                     unset($templates[$key]);
                 }
             }
@@ -1561,10 +1564,9 @@ class Sql_structure
                 WHERE entry_id = " . $entry_id .
                 " AND site_id = " . $this->site_id;
 
-        
         $cached_listing_cid = StaticCache::get('get_listing_channel_' . $sql);
 
-        if(!empty($cached_listing_cid)) {
+        if (!empty($cached_listing_cid)) {
             return $cached_listing_cid;
         }
 
@@ -1743,18 +1745,19 @@ class Sql_structure
 
         if (in_array($uri . $trailing_slash, $pages)) {
             $i = 0;
-            $old_uri = trim($uri, '/');
-            while (in_array('/' . trim($uri, '/') . $trailing_slash, $pages)) {
+            $old_uri = trim((string) $uri, '/');
+            while (in_array('/' . trim((string) $uri, '/') . $trailing_slash, $pages)) {
                 $i++;
                 if (defined('CLONING_MODE') && CLONING_MODE === true) {
                     $uri_parts = explode('/', $old_uri);
                     $uri = str_repeat('copy' . $separator, $i) . array_pop($uri_parts);
                     $uri = implode('/', $uri_parts) . '/' . $uri;
                 } else {
-                    $uri = rtrim($uri, $separator . ($i - 1)) . $separator . $i;
+                    $uri = rtrim((string) $uri, $separator . ($i - 1)) . $separator . $i;
                 }
             }
-            $uri = '/' . trim($uri, '/') . $trailing_slash;
+            $uri = '/' . trim((string) $uri, '/') . $trailing_slash;
+
             return $uri;
         }
 
@@ -1781,9 +1784,10 @@ class Sql_structure
         // if structure_uri is not entered use url_title
         $uri = $uri ? $uri : $url_title;
         // Clean it up TODO replace with EE create URL TITLE?
-        $uri = preg_replace("#[^a-zA-Z0-9_\-\.]+#i", '', $uri);
+        $uri = preg_replace("#[^a-zA-Z0-9_\-\.]+#i", '', (string) $uri);
+
         // Make sure there are no "_" underscores at the beginning or end
-        return trim($uri, "_");
+        return trim((string) $uri, "_");
     }
 
     /*
@@ -1792,8 +1796,8 @@ class Sql_structure
     */
     public function create_page_uri($parent_uri, $page_uri = '')
     {
-        $parent_uri = preg_replace("#[^a-zA-Z0-9_\-\.]+#i", '', $parent_uri);
-        $page_uri = preg_replace("#[^a-zA-Z0-9_\-\.]+#i", '', $page_uri);
+        $parent_uri = preg_replace("#[^a-zA-Z0-9_\-\.]+#i", '', (string) $parent_uri);
+        $page_uri = preg_replace("#[^a-zA-Z0-9_\-\.]+#i", '', (string) $page_uri);
 
         // prepend the parent uri
         $uri = $parent_uri . '/' . $page_uri . '/';
@@ -1816,6 +1820,7 @@ class Sql_structure
         $uri = $parent_uri . '/' . $uri;
         // ensure beginning and ending slash
         $uri = '/' . trim($uri, '/') . '/';
+
         // if double slash, reduce to one
         return str_replace('//', '/', $uri);
     }
@@ -1831,7 +1836,7 @@ class Sql_structure
         if (is_null($trailing_slash)) {
             foreach ($site_pages['uris'] as &$uri) {
                 if ($uri != "/") {
-                    $uri = rtrim($uri, '/');
+                    $uri = rtrim((string) $uri, '/');
                 }
             }
         }
@@ -1880,7 +1885,7 @@ class Sql_structure
         unset($data['parent_uri']);
         unset($data['hidden']);
 
-        $data['uri'] = trim($data['uri'], '/'); // Just keeping our data clean.
+        $data['uri'] = trim((string) $data['uri'], '/'); // Just keeping our data clean.
 
         // See if row exists first
         $query = ee()->db->get_where('structure_listings', array('entry_id' => $data['entry_id']));
@@ -2293,7 +2298,7 @@ class Sql_structure
                 $check_url = $site_pages_url;
 
                 if (!empty($site_pages_url)) {
-                    $check_url = trim($check_url, '/');
+                    $check_url = trim((string) $check_url, '/');
 
                     if (strpos($check_url, '/')) {
                         $check_url = substr($check_url, strrpos($check_url, '/') + 1);
@@ -2365,7 +2370,7 @@ class Sql_structure
                             $check_url = $site_pages_url;
 
                             if (!empty($site_pages_url)) {
-                                $check_url = trim($check_url, '/');
+                                $check_url = trim((string) $check_url, '/');
 
                                 if (strpos($check_url, '/')) {
                                     $check_url = substr($check_url, strrpos($check_url, '/') + 1);
@@ -2700,7 +2705,7 @@ class Sql_structure
                 }
             }
 
-            $structure_url_title = strtolower($structure_url_title);
+            $structure_url_title = strtolower((string) $structure_url_title);
             if ($debug) {
                 echo 'Final Title: ', $structure_url_title, '<br />';
             }
@@ -2735,7 +2740,7 @@ class Sql_structure
                         $listing_structure_url_title = $site_pages['uris'][$entry_id] . $listing_structure_url_title;
                     }
 
-                    $listing_structure_url_title = strtolower($listing_structure_url_title);
+                    $listing_structure_url_title = strtolower((string) $listing_structure_url_title);
 
                     $site_pages['uris'][$listing_entry_id] = (empty($listing_structure_url_title) ? '/' : $listing_structure_url_title . '/');
 
@@ -2787,7 +2792,7 @@ class Sql_structure
         $template_defaults = $this->get_structure_channels();
 
         foreach ($uris as $key => $row) {
-            if (! array_key_exists($key, $templates)) {
+            if (! array_key_exists((string) $key, $templates)) {
                 $sql = "SELECT channel_id FROM exp_channel_titles WHERE site_id = '$this->site_id' AND entry_id = '$key'";
                 $query = ee()->db->query($sql);
                 $channel_id = $query->row()->channel_id;
@@ -2816,7 +2821,7 @@ class Sql_structure
         $template_defaults = $this->get_structure_channels();
 
         foreach ($uris as $key => $row) {
-            if (! array_key_exists($key, $templates)) {
+            if (! array_key_exists((string) $key, $templates)) {
                 $sql = "SELECT channel_id FROM exp_channel_titles WHERE site_id = '$this->site_id' AND entry_id = '$key'";
                 $query = ee()->db->query($sql);
                 $channel_id = $query->row()->channel_id;
@@ -2867,7 +2872,7 @@ class Sql_structure
         $settings = $this->get_settings();
         $trailing_slash = isset($settings['add_trailing_slash']) && $settings['add_trailing_slash'] === 'y' ? '/' : null;
 
-        $uri = preg_replace("/(\/P\d*)/", '', Structure_Helper::remove_double_slashes('/' . ee()->uri->uri_string() . $trailing_slash));
+        $uri = preg_replace("/(\/P\d*)/", '', (string) Structure_Helper::remove_double_slashes('/' . ee()->uri->uri_string() . $trailing_slash));
 
         if ($uri == '') {
             $uri = '/'; # e.g. pagination segment off homepage
@@ -3050,6 +3055,7 @@ class structure_leaf
     public function is_of_value($key, $values, $exclude = false)
     {
         $is_of_value = in_array($this->row[$key], $values);
+
         // echo $this->row['title'].' of '.$key.' '.$this->row[$key].'<br>';
         return ($is_of_value && $exclude) || (! $is_of_value && ! $exclude);
     }
@@ -3081,11 +3087,11 @@ class structure_leaf
      */
     public function has_ancestor($leaf, $compare_on = 'entry_id')
     {
-        if (! array_key_exists($compare_on, $leaf->row)) {
+        if (! array_key_exists((string) $compare_on, $leaf->row)) {
             return false;
         }
 
-        if (array_key_exists($compare_on, $this->row) && $leaf->row[$compare_on] == $this->row[$compare_on]) {
+        if (array_key_exists((string) $compare_on, $this->row) && $leaf->row[$compare_on] == $this->row[$compare_on]) {
             return true;
         }
 

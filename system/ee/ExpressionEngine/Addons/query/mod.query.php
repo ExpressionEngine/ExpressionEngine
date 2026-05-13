@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -24,7 +25,7 @@ class Query
 
         // Rudimentary check to see if it's a SELECT query, most definitely not
         // bulletproof
-        if (substr(strtolower(trim($sql)), 0, 6) != 'select') {
+        if (substr(strtolower(trim((string) $sql)), 0, 6) != 'select') {
             return false;
         }
 
@@ -63,7 +64,7 @@ class Query
 
                 $chunk = ee()->TMPL->parse_switch($chunk, $count - 1);
 
-                if (strpos($chunk, LD . 'base_') !== false) {
+                if (strpos((string) $chunk, LD . 'base_') !== false) {
                     $chunk = isset($row['site_id'])
                         ? parse_config_variables(
                             $chunk,
@@ -77,7 +78,7 @@ class Query
             $parsed = ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $results);
         }
 
-        if (get_bool_from_string(ee()->TMPL->fetch_param('parse_files', config_item('parse_variables_query_results_by_default'))) && (strpos($parsed, LD . 'filedir_') !== false || strpos($parsed, LD . 'file:') !== false)) {
+        if (get_bool_from_string(ee()->TMPL->fetch_param('parse_files', config_item('parse_variables_query_results_by_default'))) && (strpos((string) $parsed, LD . 'filedir_') !== false || strpos((string) $parsed, LD . 'file:') !== false)) {
             ee()->load->library('file_field');
             $parsed = ee()->file_field->parse_string($parsed);
         }

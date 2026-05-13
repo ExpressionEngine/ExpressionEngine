@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -89,7 +90,7 @@ class Mfa extends Profile\Pro
                 ->filter('member_id', $this->member->member_id)
                 ->all();
             if (!empty($_POST['mfa_code'])) {
-                $validated = ee('pro:Mfa')->validateOtp(ee('Security/XSS')->clean(ee('Request')->post('mfa_code')), ee()->session->userdata('unique_id') . md5(ee('Security/XSS')->clean(ee('Request')->post('backup_mfa_code'))));
+                $validated = ee('pro:Mfa')->validateOtp(ee('Security/XSS')->clean(ee('Request')->post('mfa_code')), ee()->session->userdata('unique_id') . md5((string) ee('Security/XSS')->clean(ee('Request')->post('backup_mfa_code'))));
                 if (!$validated) {
                     ee('CP/Alert')->makeInline('shared-form')
                         ->asIssue()
@@ -104,7 +105,7 @@ class Mfa extends Profile\Pro
                         ->now();
                 } else {
                     $this->member->enable_mfa = true;
-                    $this->member->backup_mfa_code = md5(ee('Security/XSS')->clean(ee('Request')->post('backup_mfa_code')));
+                    $this->member->backup_mfa_code = md5((string) ee('Security/XSS')->clean(ee('Request')->post('backup_mfa_code')));
                     $this->member->save();
 
                     foreach ($sessions as $session) {
@@ -150,7 +151,7 @@ class Mfa extends Profile\Pro
                         'fields' => array(
                             'enable_mfa' => array(
                                 'type' => 'yes_no',
-                                'disabled' => version_compare(PHP_VERSION, 7.1, '<'),
+                                'disabled' => version_compare(PHP_VERSION, '7.1', '<'),
                                 'value' => $this->member->enable_mfa,
                                 'group_toggle' => array(
                                     'n' => 'password',
@@ -164,25 +165,25 @@ class Mfa extends Profile\Pro
         } else {
             $vars['sections'] = array_merge($vars['sections'], [
                 [
-                ee('CP/Alert')->makeInline('mfa_not_available')
-                    ->asWarning()
-                    ->addToBody(lang('mfa_wrong_user_desc'))
-                    ->cannotClose()
-                    ->render()
+                    ee('CP/Alert')->makeInline('mfa_not_available')
+                        ->asWarning()
+                        ->addToBody(lang('mfa_wrong_user_desc'))
+                        ->cannotClose()
+                        ->render()
                 ]
             ]);
         }
 
-        if (version_compare(PHP_VERSION, 7.1, '<')) {
+        if (version_compare(PHP_VERSION, '7.1', '<')) {
             ee()->lang->load('addons');
             $vars['sections'] = array_merge($vars['sections'], [
                 [
-                ee('CP/Alert')->makeInline('mfa_not_available')
-                    ->asWarning()
-                    ->withTitle(lang('mfa_not_available'))
-                    ->addToBody(sprintf(lang('version_required'), 'PHP', 7.1))
-                    ->cannotClose()
-                    ->render()
+                    ee('CP/Alert')->makeInline('mfa_not_available')
+                        ->asWarning()
+                        ->withTitle(lang('mfa_not_available'))
+                        ->addToBody(sprintf(lang('version_required'), 'PHP', 7.1))
+                        ->cannotClose()
+                        ->render()
                 ],
                 [
                     form_hidden('enable_mfa', 'n')
@@ -190,7 +191,7 @@ class Mfa extends Profile\Pro
             ]);
         }
 
-        if (version_compare(PHP_VERSION, 7.1, '>=') && $this->member->enable_mfa === false && ee()->session->userdata('member_id') == $this->member->member_id) {
+        if (version_compare(PHP_VERSION, '7.1', '>=') && $this->member->enable_mfa === false && ee()->session->userdata('member_id') == $this->member->member_id) {
             $vars['sections'][0] = array_merge($vars['sections'][0], array(
                 array(
                     'title' => 'mfa_qr_code',
@@ -280,7 +281,7 @@ class Mfa extends Profile\Pro
     public function qrCode()
     {
         header('Content-Type: image/svg+xml');
-        echo ee('pro:Mfa')->generateQrCode(ee()->session->userdata('unique_id') . md5(ee('Security/XSS')->clean(ee('Request')->get('code'))));
+        echo ee('pro:Mfa')->generateQrCode(ee()->session->userdata('unique_id') . md5((string) ee('Security/XSS')->clean(ee('Request')->get('code'))));
         exit();
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -39,7 +40,7 @@ class Factory
         if (isset(ee()->core) && false !== $addon = ee()->core->cache(__CLASS__, $name, false)) {
             return $addon;
         }
-        
+
         if (! $this->app->has($name)) {
             return null;
         }
@@ -51,6 +52,7 @@ class Factory
             if (isset(ee()->core)) {
                 ee()->core->set_cache(__CLASS__, $name, $addon);
             }
+
             return $addon;
         }
 

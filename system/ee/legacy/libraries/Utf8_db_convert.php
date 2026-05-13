@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -76,7 +77,7 @@ class Utf8_db_convert
                             // If it does, then we need to update this row.
                             if (is_numeric($value)) {
                                 $where[$field] = $value;
-                            } elseif (preg_match('/[^\x00-\x7F]/S', $value) > 0) {
+                            } elseif (preg_match('/[^\x00-\x7F]/S', (string) $value) > 0) {
                                 $update = true;
                             }
                         }

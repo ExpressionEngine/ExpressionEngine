@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -86,7 +87,7 @@ class Date_ft extends EE_Fieldtype
      */
     public function validate($data)
     {
-        if (! is_numeric($data) && ! empty($data) && trim($data)) {
+        if (! is_numeric($data) && ! empty($data) && trim((string) $data)) {
             $data = $this->_parse_date($data);
         }
 
@@ -191,7 +192,7 @@ class Date_ft extends EE_Fieldtype
         }
 
         return ee('View')->make('date:publish')->render(array(
-            'has_localize_option' => ((! in_array($this->field_name, $special) && $this->content_type() != 'grid') OR $this->content_type() == 'pro_variables'),
+            'has_localize_option' => ((! in_array($this->field_name, $special) && $this->content_type() != 'grid') or $this->content_type() == 'pro_variables'),
             'show_localize_options' => $show_localize_options,
             'field_name' => $this->field_name,
             'value' => $custom_date,

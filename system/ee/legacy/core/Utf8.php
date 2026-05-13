@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -31,7 +32,7 @@ class EE_Utf8
             preg_match('/./u', 'é') === 1						// PCRE must support UTF-8
             and function_exists('iconv')						// iconv must be installed
             and $CFG->item('charset') == 'UTF-8'				// Application charset must be UTF-8
-            ) {
+        ) {
             log_message('debug', "UTF-8 Support Enabled");
 
             define('UTF8_ENABLED', true);
@@ -63,7 +64,7 @@ class EE_Utf8
     public function clean_string($str)
     {
         if ($this->_is_ascii($str) === false) {
-            $str = @iconv('UTF-8', 'UTF-8//IGNORE', $str);
+            $str = @iconv('UTF-8', 'UTF-8//IGNORE', (string) $str);
         }
 
         return $str;
@@ -96,7 +97,7 @@ class EE_Utf8
     public function convert_to_utf8($str, $encoding)
     {
         if (function_exists('iconv')) {
-            $str = @iconv($encoding, 'UTF-8', $str);
+            $str = @iconv((string) $encoding, 'UTF-8', (string) $str);
         } elseif (function_exists('mb_convert_encoding')) {
             $str = @mb_convert_encoding($str, 'UTF-8', $encoding);
         } else {
@@ -116,7 +117,7 @@ class EE_Utf8
      */
     public function _is_ascii($str)
     {
-        return (preg_match('/[^\x00-\x7F]/S', $str) == 0);
+        return (preg_match('/[^\x00-\x7F]/S', (string) $str) == 0);
     }
 }
 // End Utf8 Class

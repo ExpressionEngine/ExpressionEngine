@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -271,7 +272,7 @@ class CommandUpdatePrepare extends Cli
 
     private function getConfigPath($path = null)
     {
-        $customConfig = ($path ? rtrim($path, '/') : SYSPATH) . '/upgrade.config.php';
+        $customConfig = ($path ? rtrim((string) $path, '/') : SYSPATH) . '/upgrade.config.php';
 
         if (! file_exists($customConfig)) {
             return false;
@@ -298,7 +299,7 @@ class CommandUpdatePrepare extends Cli
 
     private function prepTmpDirectory()
     {
-        $tmp_folder = rtrim($this->upgradeConfig['old_base_path'], '/') . '/' . $this->upgradeConfig['temp_directory'];
+        $tmp_folder = rtrim((string) $this->upgradeConfig['old_base_path'], '/') . '/' . $this->upgradeConfig['temp_directory'];
 
         if (ee('Filesystem')->isDir($tmp_folder)) {
             ee('Filesystem')->delete($tmp_folder);
@@ -341,20 +342,20 @@ class CommandUpdatePrepare extends Cli
 
     private function copyOriginalConfig()
     {
-        $tmp_folder = rtrim($this->upgradeConfig['old_base_path'], '/') . '/' . $this->upgradeConfig['temp_directory'] . '/';
+        $tmp_folder = rtrim((string) $this->upgradeConfig['old_base_path'], '/') . '/' . $this->upgradeConfig['temp_directory'] . '/';
 
         // We should check if this is EE2 or EE3+
         if (ee('Filesystem')->exists($tmp_folder . '/system/expressionengine')) {
             // It's EE2!
             ee('Filesystem')->copy(
-                $tmp_folder . rtrim($this->filemap['config_path'], '/') . '/' . $this->filemap['config_file'],
-                rtrim($this->upgradeConfig['new_system_path'], '/') . '/user/config/' . ltrim($this->filemap['config_file'], '/')
+                $tmp_folder . rtrim((string) $this->filemap['config_path'], '/') . '/' . $this->filemap['config_file'],
+                rtrim((string) $this->upgradeConfig['new_system_path'], '/') . '/user/config/' . ltrim((string) $this->filemap['config_file'], '/')
             );
 
             if (isset($this->filemap['database_file']) && $this->filemap['database_file'] !== 'config.php') {
                 ee('Filesystem')->copy(
-                    $tmp_folder . rtrim($this->filemap['config_path'], '/') . '/' . $this->filemap['database_file'],
-                    rtrim($this->upgradeConfig['new_system_path'], '/') . '/user/config/' . ltrim($this->filemap['database_file'], '/')
+                    $tmp_folder . rtrim((string) $this->filemap['config_path'], '/') . '/' . $this->filemap['database_file'],
+                    rtrim((string) $this->upgradeConfig['new_system_path'], '/') . '/user/config/' . ltrim((string) $this->filemap['database_file'], '/')
                 );
 
                 $this->info('command_update_prepare_database_file_found_move_to_config');
@@ -363,12 +364,12 @@ class CommandUpdatePrepare extends Cli
             // It's EE3+!
             ee('Filesystem')->copy(
                 $tmp_folder . $this->filemap['config_path'] . $this->filemap['config_file'],
-                rtrim($this->upgradeConfig['new_system_path'], '/') . '/user/config/' . ltrim($this->filemap['config_file'], '/')
+                rtrim((string) $this->upgradeConfig['new_system_path'], '/') . '/user/config/' . ltrim((string) $this->filemap['config_file'], '/')
             );
 
             ee('Filesystem')->copy(
                 $tmp_folder . $this->filemap['config_path'] . $this->filemap['database_file'],
-                rtrim($this->upgradeConfig['new_system_path'], '/') . '/user/config/' . ltrim($this->filemap['database_file'], '/')
+                rtrim((string) $this->upgradeConfig['new_system_path'], '/') . '/user/config/' . ltrim((string) $this->filemap['database_file'], '/')
             );
         }
     }
@@ -382,8 +383,8 @@ class CommandUpdatePrepare extends Cli
         // $tmp_folder = rtrim($this->upgradeConfig['old_base_path'], '/') . '/' . $this->upgradeConfig['temp_directory'] . '/';
 
         ee('Filesystem')->rename(
-            rtrim($this->upgradeConfig['old_template_path'], '/'),
-            rtrim($this->upgradeConfig['new_template_path'], '/')
+            rtrim((string) $this->upgradeConfig['old_template_path'], '/'),
+            rtrim((string) $this->upgradeConfig['new_template_path'], '/')
         );
     }
 

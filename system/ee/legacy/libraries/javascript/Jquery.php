@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -618,7 +619,7 @@ class EE_Jquery extends EE_Javascript
     {
         $container = $this->_prep_element($container);
 
-        $controller = (strpos('://', $controller) === false) ? $controller : ee()->config->site_url($controller);
+        $controller = (strpos('://', (string) $controller) === false) ? $controller : ee()->config->site_url($controller);
 
         // ajaxStart and ajaxStop are better choices here... but this is a stop gap
         if (ee()->config->item('javascript_ajax_img') == '') {
@@ -912,7 +913,7 @@ class EE_Jquery extends EE_Javascript
     {
         if (in_array($speed, array('slow', 'normal', 'fast'))) {
             $speed = '"' . $speed . '"';
-        } elseif (preg_match("/[^0-9]/", $speed)) {
+        } elseif (preg_match("/[^0-9]/", (string) $speed)) {
             $speed = '';
         }
 

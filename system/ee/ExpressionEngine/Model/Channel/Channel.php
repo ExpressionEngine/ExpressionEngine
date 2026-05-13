@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -247,7 +248,7 @@ class Channel extends StructureModel
             return true;
         }
 
-        $emails = explode(',', $value);
+        $emails = explode(',', (string) $value);
 
         foreach ($emails as $email) {
             if ($email != filter_var($email, FILTER_SANITIZE_EMAIL) or ! filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -269,9 +270,9 @@ class Channel extends StructureModel
             return true;
         }
 
-        $parsed_url = parse_url($value);
+        $parsed_url = parse_url((string) $value);
 
-        if (strpos($value, '{base_url}') !== false or isset($parsed_url['scheme'])) {
+        if (strpos((string) $value, '{base_url}') !== false or isset($parsed_url['scheme'])) {
             return lang('channel_preview_url_invalid');
         }
 
@@ -335,7 +336,7 @@ class Channel extends StructureModel
 
         foreach (get_object_vars($this) as $property => $value) {
             // don't duplicate fields that are unique to each channel
-            if (in_array($property, $exceptions) || strpos($property, '_') === 0) {
+            if (in_array($property, $exceptions) || strpos((string) $property, '_') === 0) {
                 continue;
             }
 
@@ -439,7 +440,7 @@ class Channel extends StructureModel
 
                 foreach ($section['fields'] as $j => $field_info) {
                     // All category fields begin with "categories"
-                    if (strpos($field_info['field'], 'categories') === 0) {
+                    if (strpos((string) $field_info['field'], 'categories') === 0) {
                         $field_name = $field_info['field'];
 
                         // Is it already accounted for?
@@ -608,6 +609,7 @@ class Channel extends StructureModel
                 ee()->session->set_cache(__CLASS__, $cache_key, $fields);
             }
         }
+
         return $fields;
     }
 
@@ -638,14 +640,14 @@ class Channel extends StructureModel
 
     protected function set__channel_notify_emails($value)
     {
-        $value = trim($value);
+        $value = trim((string) $value);
         $value = str_replace(' ', '', $value);
         $this->setRawProperty('channel_notify_emails', $value);
     }
 
     protected function set__comment_notify_emails($value)
     {
-        $value = trim($value);
+        $value = trim((string) $value);
         $value = str_replace(' ', '', $value);
         $this->setRawProperty('comment_notify_emails', $value);
     }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -101,7 +102,7 @@ class Consent extends Variables
         foreach ($this->template_vars as $name => $vars) {
             unset($params['return']);
 
-            if (strncmp($name, 'consent_grant_url', 17) === 0 or strncmp($name, 'consent_withdraw_url', 20) === 0) {
+            if (strncmp((string) $name, 'consent_grant_url', 17) === 0 or strncmp((string) $name, 'consent_withdraw_url', 20) === 0) {
                 $variable = ee('Variables/Parser')->parseVariableProperties($name);
 
                 if (isset($variable['params']['return'])) {

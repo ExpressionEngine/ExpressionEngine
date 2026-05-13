@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -53,7 +54,7 @@ class Channel_form_category_tree_obj
             $catarray = array();
 
             foreach ($_POST as $key => $val) {
-                if (strpos($key, 'category') !== false && is_array($val)) {
+                if (strpos((string) $key, 'category') !== false && is_array($val)) {
                     foreach ($val as $k => $v) {
                         $catarray[$v] = $v;
                     }
@@ -72,7 +73,7 @@ class Channel_form_category_tree_obj
         }
 
         // Fetch category groups
-        $group_ids = explode('|', $group_id);
+        $group_ids = explode('|', (string) $group_id);
 
         ee()->db->select('cat_name, cat_id, parent_id');
         ee()->db->where_in('group_id', $group_ids);
@@ -139,7 +140,7 @@ class Channel_form_category_tree_obj
             $catarray = array();
 
             foreach ($_POST as $key => $val) {
-                if (strpos($key, 'category') !== false && is_array($val)) {
+                if (strpos((string) $key, 'category') !== false && is_array($val)) {
                     foreach ($val as $k => $v) {
                         $catarray[$v] = $v;
                     }

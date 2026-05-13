@@ -42,7 +42,7 @@ if (! function_exists('force_download')) {
         $len = ee_mb_strlen($data, '8bit');
 
         // Generate the server headers
-        if (strpos($_SERVER['HTTP_USER_AGENT'], "MSIE") !== false) {
+        if (strpos((string) $_SERVER['HTTP_USER_AGENT'], "MSIE") !== false) {
             header('Content-Type: "' . $mime . '"');
             header('Content-Disposition: attachment; filename="' . $filename . '"');
             header('Expires: 0');

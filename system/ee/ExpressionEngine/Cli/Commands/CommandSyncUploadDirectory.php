@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -110,7 +111,7 @@ class CommandSyncUploadDirectory extends Cli
         }
 
         if (! $uploadLocation->exists()) {
-            $this->fail(strip_tags(sprintf(lang('directory_not_found'), addslashes($uploadLocation->server_path))));
+            $this->fail(strip_tags(sprintf(lang('directory_not_found'), addslashes((string) $uploadLocation->server_path))));
         }
 
         // Get a listing of raw files in the directory

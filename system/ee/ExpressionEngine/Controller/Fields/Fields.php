@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -37,7 +38,7 @@ class Fields extends AbstractFieldsController
         if (ee()->input->post('bulk_action') == 'remove') {
             $redirectUrl = $this->remove(ee()->input->post('selection'));
             if (!is_null($redirectUrl)) {
-                $redirectUrl = $redirectUrl->setQueryStringVariable('return', base64_encode($base_url))->compile();
+                $redirectUrl = $redirectUrl->setQueryStringVariable('return', base64_encode((string) $base_url))->compile();
             }
             $redirectUrl = $redirectUrl ?: $base_url;
             ee()->functions->redirect($redirectUrl);
@@ -115,8 +116,8 @@ class Fields extends AbstractFieldsController
             if ($search = ee()->input->get_post('filter_by_keyword')) {
                 $fields = array_filter($fields, function ($field) use ($search) {
                     return strpos(
-                        strtolower($field->field_label) . strtolower($field->field_name),
-                        strtolower($search)
+                        strtolower((string) $field->field_label) . strtolower((string) $field->field_name),
+                        strtolower((string) $search)
                     ) !== false;
                 });
             }
@@ -361,7 +362,7 @@ class Fields extends AbstractFieldsController
                     ee()->functions->redirect(
                         ee('CP/URL')->make('utilities/sync-conditional-fields/sync')
                             ->setQueryStringVariable('channel_id', $channels->pluck('channel_id'))
-                            ->setQueryStringVariable('return', base64_encode($redirectUrl))
+                            ->setQueryStringVariable('return', base64_encode((string) $redirectUrl))
                             ->compile()
                     );
                 }
@@ -583,7 +584,7 @@ class Fields extends AbstractFieldsController
                     ee()->functions->redirect(
                         ee('CP/URL')->make('utilities/sync-conditional-fields/sync')
                             ->setQueryStringVariable('channel_id', $channels->pluck('channel_id'))
-                            ->setQueryStringVariable('return', base64_encode($redirectUrl))
+                            ->setQueryStringVariable('return', base64_encode((string) $redirectUrl))
                             ->compile()
                     );
                 }
@@ -711,7 +712,7 @@ class Fields extends AbstractFieldsController
         $field->set(ee('Security/XSS')->clean($_POST));
 
         if ($field->field_pre_populate && ee('Request')->post('field_pre_populate_id')) {
-            list($channel_id, $field_id) = explode('_', ee('Request')->post('field_pre_populate_id'));
+            list($channel_id, $field_id) = explode('_', (string) ee('Request')->post('field_pre_populate_id'));
 
             $field->field_pre_channel_id = $channel_id;
             $field->field_pre_field_id = $field_id;

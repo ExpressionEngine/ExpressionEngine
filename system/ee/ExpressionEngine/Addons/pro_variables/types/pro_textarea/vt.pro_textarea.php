@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -109,8 +110,8 @@ class Pro_textarea extends Pro_variables_type
         $extra['current_time'] = ee()->localize->now;
 
         foreach (ee()->TMPL->tagparams as $key => $val) {
-            if (substr($key, 0, $offset) == $param_pfx) {
-                $key = substr($key, $offset);
+            if (substr((string) $key, 0, $offset) == $param_pfx) {
+                $key = substr((string) $key, $offset);
                 $extra[$var_pfx . ':' . $key] = $val;
                 $extra[$key] = $val; // Backwards compat
             }
@@ -118,7 +119,7 @@ class Pro_textarea extends Pro_variables_type
 
         // Look for any var_pfx:foo vars in here and set them as vars if they don't already exist
         // Makes them act like embed-vars.
-        if (preg_match_all("/({$var_pfx}:[\w\-:]+)/", $var_data, $matches)) {
+        if (preg_match_all("/({$var_pfx}:[\w\-:]+)/", (string) $var_data, $matches)) {
             foreach ($matches[0] as $key) {
                 if (! array_key_exists($key, $extra)) {
                     $extra[$key] = null;

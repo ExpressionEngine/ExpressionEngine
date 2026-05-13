@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -141,7 +142,7 @@ class EE_Input
         }
 
         // Clean up the value.
-        $data['value'] = stripslashes($data['value']);
+        $data['value'] = stripslashes((string) $data['value']);
 
         // check the cookie setting for expiration date
         if (is_numeric($data['expire'])) {
@@ -249,16 +250,16 @@ class EE_Input
             // thus the SameSite setting must be hacked in with the path option.
             return setcookie(
                 $data['prefix'] . $data['name'],
-                $data['value'],
+                (string) $data['value'],
                 $data['expire'],
                 $data['path'] . '; SameSite=' . $data['samesite'],
-                $data['domain'],
+                (string) $data['domain'],
                 $data['secure_cookie'],
                 $data['httponly']
             );
         }
 
-        return setcookie($data['prefix'] . $data['name'], $data['value'], [
+        return setcookie($data['prefix'] . $data['name'], (string) $data['value'], [
             'expires' => $data['expire'],
             'path' => $data['path'],
             'domain' => $data['domain'],
@@ -456,6 +457,7 @@ class EE_Input
                 $range = IPLib\Factory::parseRangeString($proxy_ip);
                 if ($range->contains($address)) {
                     $proxyIsValid = true;
+
                     break;
                 }
             }
@@ -484,6 +486,7 @@ class EE_Input
 
                         if ($this->valid_ip($spoof)) {
                             $this->ip_address = $spoof;
+
                             break;
                         }
                     }
@@ -531,12 +534,12 @@ class EE_Input
         }
 
         // If it's not we'll do it manually
-        $which = strtolower($which);
+        $which = strtolower((string) $which);
 
         if ($which != 'ipv6' or $which != 'ipv4') {
-            if (strpos($ip, ':') !== false) {
+            if (strpos((string) $ip, ':') !== false) {
                 $which = 'ipv6';
-            } elseif (strpos($ip, '.') !== false) {
+            } elseif (strpos((string) $ip, '.') !== false) {
                 $which = 'ipv4';
             } else {
                 return false;
@@ -559,7 +562,7 @@ class EE_Input
     */
     protected function _valid_ipv4($ip)
     {
-        $ip_segments = explode('.', $ip);
+        $ip_segments = explode('.', (string) $ip);
 
         // Always 4 segments needed
         if (count($ip_segments) != 4) {
@@ -599,7 +602,7 @@ class EE_Input
         $collapsed = false;
 
         $chunks = array_filter(
-            preg_split('/(:{1,2})/', $str, -1, PREG_SPLIT_DELIM_CAPTURE)
+            preg_split('/(:{1,2})/', (string) $str, -1, PREG_SPLIT_DELIM_CAPTURE)
         );
 
         // Rule out easy nonsense
@@ -729,15 +732,15 @@ class EE_Input
             $headers['Content-Type'] = (isset($_SERVER['CONTENT_TYPE'])) ? $_SERVER['CONTENT_TYPE'] : @getenv('CONTENT_TYPE');
 
             foreach ($_SERVER as $key => $val) {
-                if (strncmp($key, 'HTTP_', 5) === 0) {
-                    $headers[substr($key, 5)] = $this->_fetch_from_array($_SERVER, $key, $xss_clean);
+                if (strncmp((string) $key, 'HTTP_', 5) === 0) {
+                    $headers[substr((string) $key, 5)] = $this->_fetch_from_array($_SERVER, $key, $xss_clean);
                 }
             }
         }
 
         // take SOME_HEADER and turn it into Some-Header
         foreach ($headers as $key => $val) {
-            $key = str_replace('_', ' ', strtolower($key));
+            $key = str_replace('_', ' ', strtolower((string) $key));
             $key = str_replace(' ', '-', ucwords($key));
 
             $this->headers[$key] = $val;
@@ -829,7 +832,7 @@ class EE_Input
      */
     public function remove_session_id($str)
     {
-        return preg_replace("#S=.+?/#", "", $str);
+        return preg_replace("#S=.+?/#", "", (string) $str);
     }
 
     /**
@@ -913,14 +916,14 @@ class EE_Input
 
             foreach ($_COOKIE as $key => $val) {
                 // Clean only our cookies
-                if (substr($key, 0, strlen($cookie_prefix)) == $cookie_prefix) {
+                if (substr((string) $key, 0, strlen((string) $cookie_prefix)) == $cookie_prefix) {
                     $_COOKIE[$this->_clean_input_keys($key)] = $this->_clean_input_data($val);
                 }
             }
         }
 
         // Sanitize PHP_SELF
-        $_SERVER['PHP_SELF'] = strip_tags($_SERVER['PHP_SELF']);
+        $_SERVER['PHP_SELF'] = strip_tags((string) $_SERVER['PHP_SELF']);
 
         if ($_css) {
             $_GET['css'] = remove_invisible_characters($_css);
@@ -1007,7 +1010,7 @@ class EE_Input
 
         // Standardize newlines if needed
         if ($this->_standardize_newlines == true) {
-            if (strpos($str, "\r") !== false) {
+            if (strpos((string) $str, "\r") !== false) {
                 $str = str_replace(array("\r\n", "\r"), "\n", $str);
             }
         }

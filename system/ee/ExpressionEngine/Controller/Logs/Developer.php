@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -32,7 +33,7 @@ class Developer extends Logs
 
         if (ee()->input->post('delete')) {
             $this->delete('DeveloperLog', lang('developer_log'));
-            if (strtolower(ee()->input->post('delete')) == 'all') {
+            if (strtolower((string) ee()->input->post('delete')) == 'all') {
                 return ee()->functions->redirect(ee('CP/URL')->make('logs/developer'));
             }
         }
@@ -168,12 +169,12 @@ class Developer extends Logs
                     $description .= '<p>';
                     $description .= sprintf(
                         lang('deprecated_template'),
-                        '<code>exp:' . strtolower($log->addon_module) . ':' . $log->addon_method . '</code>',
+                        '<code>exp:' . strtolower((string) $log->addon_module) . ':' . $log->addon_method . '</code>',
                         '<a href="' . ee('CP/URL')->make('design/template/edit/' . $log->template_id) . '">' . $log->template_group . '/' . $log->template_name . '</a>'
                     );
 
                     if ($log->snippets) {
-                        $snippets = explode('|', $log->snippets);
+                        $snippets = explode('|', (string) $log->snippets);
 
                         foreach ($snippets as &$snip) {
                             $snip = '<a href="' . ee('CP/URL')->make('design/snippets_edit', array('snippet' => $snip)) . '">{' . $snip . '}</a>';

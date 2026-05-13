@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -221,7 +222,7 @@ class Builder
 
             foreach ($words as $word) {
                 if ($word[0] == '-') {
-                    $search[substr($word, 1)] = false;
+                    $search[substr((string) $word, 1)] = false;
                 } else {
                     $search[$word] = true;
                 }
@@ -621,6 +622,7 @@ class Builder
         if (isset(ee()->core)) {
             return ee()->core->cache(__CLASS__, $key, false);
         }
+
         return false;
     }
 }

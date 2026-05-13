@@ -37,7 +37,7 @@ class Updater
 
         return true;
     }
-    
+
     private function dropOrphanMemberPivotRecords()
     {
         ee('db')->query('DELETE FROM exp_members_roles WHERE member_id NOT IN (SELECT member_id FROM exp_members)');

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -366,7 +367,7 @@ class XSS
         // Strip data URIs
         // Not all browsers conform strictly to RFC2397 so we strip anything
         // that looks close to a data URI inside an attribute
-        $str = preg_replace_callback("/<\w+.*?(?=>|<|$)/si", array($this, '_strip_data_URIs'), $str);
+        $str = preg_replace_callback("/<\w+.*?(?=>|<|$)/si", array($this, '_strip_data_URIs'), (string) $str);
 
         // Validate Entities in URLs
         $str = $this->_validate_entities($str);
@@ -392,9 +393,9 @@ class XSS
          *
          */
 
-        $str = preg_replace_callback("/[a-z]+=([\'\"]).*?\\1/si", array($this, '_convert_attribute'), $str);
+        $str = preg_replace_callback("/[a-z]+=([\'\"]).*?\\1/si", array($this, '_convert_attribute'), (string) $str);
 
-        $str = preg_replace_callback("/<\w+.*?(?=>|<|$)/si", array($this, '_decode_entity'), $str);
+        $str = preg_replace_callback("/<\w+.*?(?=>|<|$)/si", array($this, '_decode_entity'), (string) $str);
 
         /*
          * Remove Invisible Characters Again!
@@ -410,7 +411,7 @@ class XSS
          * large blocks of data, so we use str_replace.
          */
 
-        if (strpos($str, "\t") !== false) {
+        if (strpos((string) $str, "\t") !== false) {
             $str = str_replace("\t", ' ', $str);
         }
 
@@ -460,7 +461,7 @@ class XSS
 
             // We only want to do this when it is followed by a non-word character
             // That way valid stuff like "dealer to" does not become "dealerto"
-            $str = preg_replace_callback('#(' . substr($temp, 0, -3) . ')(\W)#is', array($this, '_compact_exploded_words'), $str);
+            $str = preg_replace_callback('#(' . substr($temp, 0, -3) . ')(\W)#is', array($this, '_compact_exploded_words'), (string) $str);
         }
 
         /*
@@ -472,20 +473,20 @@ class XSS
         do {
             $original = $str;
 
-            if (preg_match("/<a/i", $str)) {
-                $str = preg_replace_callback("#<a\s+([^>]*?)(>|$)#si", array($this, '_js_link_removal'), $str);
+            if (preg_match("/<a/i", (string) $str)) {
+                $str = preg_replace_callback("#<a\s+([^>]*?)(>|$)#si", array($this, '_js_link_removal'), (string) $str);
             }
 
-            if (preg_match("/<img/i", $str)) {
-                $str = preg_replace_callback("#<img\s+([^>]*?)(\s?/?>|$)#si", array($this, '_js_img_removal'), $str);
+            if (preg_match("/<img/i", (string) $str)) {
+                $str = preg_replace_callback("#<img\s+([^>]*?)(\s?/?>|$)#si", array($this, '_js_img_removal'), (string) $str);
             }
 
-            if (preg_match("/<svg/i", $str)) {
-                $str = preg_replace_callback("#<svg\s+([^>]*?)(\s?/?>|$)#si", array($this, '_js_img_removal'), $str);
+            if (preg_match("/<svg/i", (string) $str)) {
+                $str = preg_replace_callback("#<svg\s+([^>]*?)(\s?/?>|$)#si", array($this, '_js_img_removal'), (string) $str);
             }
 
-            if (preg_match("/script/i", $str) or preg_match("/xss/i", $str)) {
-                $str = preg_replace("#<(/*)(script|xss)(.*?)\>#si", '[removed]', $str);
+            if (preg_match("/script/i", (string) $str) or preg_match("/xss/i", (string) $str)) {
+                $str = preg_replace("#<(/*)(script|xss)(.*?)\>#si", '[removed]', (string) $str);
             }
         } while ($original != $str);
 
@@ -518,7 +519,7 @@ class XSS
          * For example: eval('some code')
          * Becomes:     eval&#40;'some code'&#41;
          */
-        $str = preg_replace('#(console.log|alert|cmd|passthru|eval|exec|expression|system|fopen|fsockopen|file|file_get_contents|readfile|unlink)(\s*)\((.*?)\)#si', "\\1\\2&#9001;\\3&#9002;", $str);
+        $str = preg_replace('#(console.log|alert|cmd|passthru|eval|exec|expression|system|fopen|fsockopen|file|file_get_contents|readfile|unlink)(\s*)\((.*?)\)#si', "\\1\\2&#9001;\\3&#9002;", (string) $str);
 
         // Final clean up
         // This adds a bit of extra precaution in case
@@ -567,7 +568,7 @@ class XSS
     private function decodeUrlCallback($match)
     {
         // rawurldecode() so we don't convert + signs
-        $str = rawurldecode($match[0]);
+        $str = rawurldecode((string) $match[0]);
 
         // decoding could have left some non-UTF-8 encoded strings, which could cause nulled
         // strings in PCRE calls later. If that happened, strip those invalid characters
@@ -615,7 +616,7 @@ class XSS
             $matches = $matches1 = 0;
 
             $str = preg_replace('~(&#x0*[0-9a-f]{2,5});?~iS', '$1;', $str, -1, $matches);
-            $str = preg_replace('~(&#\d{2,4});?~S', '$1;', $str, -1, $matches1);
+            $str = preg_replace('~(&#\d{2,4});?~S', '$1;', (string) $str, -1, $matches1);
 
             // ENT_HTML5 is PHP 5.4+ only
             if (! defined('ENT_HTML5')) {
@@ -626,7 +627,7 @@ class XSS
                 );
                 $str = html_entity_decode($str, ENT_COMPAT | ENT_QUOTES, $charset);
             } else {
-                $str = html_entity_decode($str, ENT_COMPAT | ENT_QUOTES | ENT_HTML5, $charset);
+                $str = html_entity_decode((string) $str, ENT_COMPAT | ENT_QUOTES | ENT_HTML5, $charset);
             }
         } while ($matches or $matches1);
 
@@ -644,7 +645,7 @@ class XSS
      */
     protected function _compact_exploded_words($matches)
     {
-        return preg_replace('/\s+/s', '', $matches[1]) . $matches[2];
+        return preg_replace('/\s+/s', '', (string) $matches[1]) . $matches[2];
     }
 
     /**
@@ -701,13 +702,13 @@ class XSS
             $attribs = array();
 
             // find occurrences of illegal attribute strings without quotes
-            preg_match_all('/(\W' . implode('|', $evil_attributes) . ')\s*=\s*([^\s>]*)/is', $str, $matches, PREG_SET_ORDER);
+            preg_match_all('/(\W' . implode('|', $evil_attributes) . ')\s*=\s*([^\s>]*)/is', (string) $str, $matches, PREG_SET_ORDER);
             foreach ($matches as $attr) {
                 $attribs[] = trim(preg_quote($attr[0], '/'));
             }
 
             // find occurrences of illegal attribute strings with quotes (042 and 047 are octal quotes)
-            preg_match_all('/(\W' . implode('|', $evil_attributes) . ')\s*=\s*(\042|\047)([^\\2]*?)(\\2)/is', $str, $matches, PREG_SET_ORDER);
+            preg_match_all('/(\W' . implode('|', $evil_attributes) . ')\s*=\s*(\042|\047)([^\\2]*?)(\\2)/is', (string) $str, $matches, PREG_SET_ORDER);
 
             foreach ($matches as $attr) {
                 $attribs[] = trim(preg_quote($attr[0], '/'));
@@ -715,7 +716,7 @@ class XSS
 
             // replace illegal attribute strings that are inside an html tag
             if (count($attribs) > 0) {
-                $str = preg_replace("/<(\/?[^><]+?)([^A-Za-z<>\-])(.*?)(" . implode('|', $attribs) . ")(.*?)([\s><]*)([><]*)/i", '<$1 $3$5$6$7', $str, -1, $count);
+                $str = preg_replace("/<(\/?[^><]+?)([^A-Za-z<>\-])(.*?)(" . implode('|', $attribs) . ")(.*?)([\s><]*)([><]*)/i", '<$1 $3$5$6$7', (string) $str, -1, $count);
             }
         } while ($count);
 
@@ -749,7 +750,7 @@ class XSS
             $str = (string) $strTmp;
             $count += $temp_count;
 
-            $regex =  '/(.*?)(<[^>]+)(?<!\p{L})(?:' . $this->_cache_evil_attributes_regex_string . ')\s*=\s*(?:[^\s>]*)/ius';
+            $regex = '/(.*?)(<[^>]+)(?<!\p{L})(?:' . $this->_cache_evil_attributes_regex_string . ')\s*=\s*(?:[^\s>]*)/ius';
             $strTmp = \preg_replace(
                 $regex,
                 '$1$2' . $this->_replacement . '$3',
@@ -758,7 +759,7 @@ class XSS
                 $temp_count
             );
             if ($strTmp === null) {
-                $regex =  '/(?<!\p{L})(?:' . $this->_cache_evil_attributes_regex_string . ')\s*=\s*(?:[^\s>]*)(.*?)/ius';
+                $regex = '/(?<!\p{L})(?:' . $this->_cache_evil_attributes_regex_string . ')\s*=\s*(?:[^\s>]*)(.*?)/ius';
                 $strTmp = \preg_replace(
                     $regex,
                     '$1$2' . $this->_replacement . '$3',
@@ -767,7 +768,7 @@ class XSS
                     $temp_count
                 );
             }
-            $str = (string)$strTmp;
+            $str = (string) $strTmp;
             $count += $temp_count;
         } while ($count);
 
@@ -858,7 +859,7 @@ class XSS
     {
         $out = '';
 
-        if (preg_match_all('#\s*[a-z\-]+\s*=\s*(\042|\047)([^\\1]*?)\\1#is', $str, $matches)) {
+        if (preg_match_all('#\s*[a-z\-]+\s*=\s*(\042|\047)([^\\1]*?)\\1#is', (string) $str, $matches)) {
             foreach ($matches[0] as $match) {
                 $out .= preg_replace("#/\*.*?\*/#s", '', $match);
             }
@@ -877,7 +878,7 @@ class XSS
      */
     protected function _decode_entity($match)
     {
-        return $this->entity_decode($match[0], strtoupper(config_item('charset')));
+        return $this->entity_decode($match[0], strtoupper((string) config_item('charset')));
     }
 
     /**
@@ -896,7 +897,7 @@ class XSS
 
         // 901119URL5918AMP18930PROTECT8198
 
-        $str = preg_replace('|\&([a-z\_0-9\-]+)\=([a-z\_0-9\-]+)|i', $this->xss_hash() . "\\1=\\2", $str);
+        $str = preg_replace('|\&([a-z\_0-9\-]+)\=([a-z\_0-9\-]+)|i', $this->xss_hash() . "\\1=\\2", (string) $str);
 
         /*
          * Validate standard character entities
@@ -905,7 +906,7 @@ class XSS
          * the conversion of entities to ASCII later.
          *
          */
-        $str = preg_replace('#(&\#?[0-9a-z]{2,})([\x00-\x20])*;?#i', "\\1;\\2", $str);
+        $str = preg_replace('#(&\#?[0-9a-z]{2,})([\x00-\x20])*;?#i', "\\1;\\2", (string) $str);
 
         /*
          * Validate UTF16 two byte encoding (x00)
@@ -913,7 +914,7 @@ class XSS
          * Just as above, adds a semicolon if missing.
          *
          */
-        $str = preg_replace('#(&\#x?)([0-9A-F]+);?#i', "\\1\\2;", $str);
+        $str = preg_replace('#(&\#x?)([0-9A-F]+);?#i', "\\1\\2;", (string) $str);
 
         /*
          * Un-Protect GET variables in URLs
@@ -938,7 +939,7 @@ class XSS
         }
 
         foreach ($this->_never_allowed_regex as $key => $val) {
-            $str = preg_replace("#" . $key . "#si", $val, $str);
+            $str = preg_replace("#" . $key . "#si", (string) $val, (string) $str);
         }
 
         return $str;

@@ -151,7 +151,7 @@ class Updater
             foreach ($field_groups->result() as $field_group) {
                 if (empty($field_group->short_name)) {
                     // change all spaces to underscores
-                    $short_name = substr('field_group_' . preg_replace('/\s+/', '_', strtolower($field_group->group_name)), 0, 50);
+                    $short_name = substr('field_group_' . preg_replace('/\s+/', '_', strtolower((string) $field_group->group_name)), 0, 50);
                     ee('db')->set(['short_name' => $short_name])->where('group_id', $field_group->group_id)->update('field_groups');
                 }
             }

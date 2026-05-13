@@ -60,7 +60,7 @@ class Diff
 
     protected function attemptFastUndoRemove($hash)
     {
-        if (array_key_exists($hash, $this->removed)) {
+        if (array_key_exists((string) $hash, $this->removed)) {
             unset($this->removed[$hash]);
 
             return true;
@@ -71,7 +71,7 @@ class Diff
 
     protected function attemptFastUndoAdd($hash)
     {
-        if (array_key_exists($hash, $this->added)) {
+        if (array_key_exists((string) $hash, $this->added)) {
             unset($this->added[$hash]);
 
             return true;

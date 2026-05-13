@@ -59,7 +59,7 @@ class Date extends Filter
         $this->addDatePickerScript();
 
         $value = $this->value();
-        if ($value && (is_array($value) || ! array_key_exists($value, $this->options))) {
+        if ($value && (is_array($value) || ! array_key_exists((string) $value, $this->options))) {
             if (is_numeric($value)) {
                 ee()->load->library('relative_date');
 
@@ -92,7 +92,7 @@ class Date extends Filter
     public function isValid()
     {
         $value = $this->value();
-        if (array_key_exists($value, $this->options)) {
+        if (array_key_exists((string) $value, $this->options)) {
             return true;
         }
 
@@ -119,7 +119,7 @@ class Date extends Filter
 
         $value = $this->display_value;
         if (is_null($value)) {
-            $value = (array_key_exists($this->value(), $this->options)) ?
+            $value = (array_key_exists((string) $this->value(), $this->options)) ?
                 $this->options[$this->value()] :
                 $this->value();
         }

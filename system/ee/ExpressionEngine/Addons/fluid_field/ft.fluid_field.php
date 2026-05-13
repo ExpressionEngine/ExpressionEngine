@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -70,21 +71,21 @@ class Fluid_field_ft extends EE_Fieldtype
             $field_group_id = null;
             $fluid_field_data_id = null;
 
-            if (strpos($key, 'field_') === 0) {
+            if (strpos((string) $key, 'field_') === 0) {
                 $fluid_field_data_id = (int) str_replace('field_', '', $key);
-            } elseif (strpos($key, 'new_field_') === 0) {
+            } elseif (strpos((string) $key, 'new_field_') === 0) {
                 $new_field = "[$key]";
             }
 
             foreach ($field_data as $id => $datum) {
-                if (strpos($id, 'field_group_id_') === 0) {
+                if (strpos((string) $id, 'field_group_id_') === 0) {
                     $field_group_id = (int) str_replace('field_group_id_', '', $id);
                 }
 
                 $group_name = (!is_null($field_group_id)) ? '[field_group_id_' . $field_group_id . ']' : '';
 
                 foreach ($datum as $fieldId => $fieldValue) {
-                    if (strpos($fieldId, 'field_id_') === 0) {
+                    if (strpos((string) $fieldId, 'field_id_') === 0) {
                         $field_id = str_replace('field_id_', '', $fieldId);
                     }
 
@@ -103,7 +104,7 @@ class Fluid_field_ft extends EE_Fieldtype
 
                     // Is this AJAX validation? If so, just return the result for the field
                     // we're validating by skipping the others
-                    if (ee()->input->is_ajax_request() && strpos(ee()->input->post('ee_fv_field'), $field_name) === false) {
+                    if (ee()->input->is_ajax_request() && strpos((string) ee()->input->post('ee_fv_field'), $field_name) === false) {
                         continue;
                     }
 
@@ -191,27 +192,27 @@ class Fluid_field_ft extends EE_Fieldtype
             $create = false;
             $fluid_field_data_id = 0;
 
-            if (strpos(key($value), 'field_group_id_') === 0) {
+            if (strpos((string) key($value), 'field_group_id_') === 0) {
                 $field_group_id = (int) str_replace('field_group_id_', '', key($value));
                 $field_group_id = ($field_group_id > 0) ? $field_group_id : null;
                 $value = current($value);
             }
 
             // Existing field - field_id_3[fields][field_3][field_group_0][field_id_2] = value
-            if (strpos($key, 'field_') === 0) {
+            if (strpos((string) $key, 'field_') === 0) {
                 $fluid_field_id = (int) str_replace('field_', '', $key);
                 if (! isset($fluid_field_data[$fluid_field_id]) && ee('Request')->get('version')) {
                     $key = 'new_field_' . ($total_fields + $fluid_field_id);
                 }
             }
             // New field - field_id_3[fields][new_field_1][field_group_1][field_id_2] = value
-            if (strpos($key, 'new_field_') === 0) {
+            if (strpos((string) $key, 'new_field_') === 0) {
                 $create = true;
             }
 
             // Loop through all field_id => field_value pairs
             foreach ($value as $fieldKey => $fieldValue) {
-                if (strpos($fieldKey, 'field_id_') === 0) {
+                if (strpos((string) $fieldKey, 'field_id_') === 0) {
                     $field_id = (int) str_replace('field_id_', '', $fieldKey);
                 }
 
@@ -271,7 +272,7 @@ class Fluid_field_ft extends EE_Fieldtype
                 continue;
             }
 
-            if (strpos(key($value), 'field_group_id_') === 0) {
+            if (strpos((string) key($value), 'field_group_id_') === 0) {
                 $field_group_id = (int) str_replace('field_group_id_', '', key($value));
                 $field_group_id = ($field_group_id > 0) ? $field_group_id : null;
                 $value = current($value);
@@ -280,17 +281,17 @@ class Fluid_field_ft extends EE_Fieldtype
             $group_key = $key;
 
             foreach ($value as $fieldKey => $fieldValue) {
-                if (strpos($fieldKey, 'field_id_') !== 0) {
+                if (strpos((string) $fieldKey, 'field_id_') !== 0) {
                     continue;
                 }
                 $id = null;
                 $field_id = null;
 
                 // Existing field
-                if (strpos($key, 'field_') === 0) {
+                if (strpos((string) $key, 'field_') === 0) {
                     $id = str_replace('field_', '', $key);
                     // If we have cloned an existing field we need to populate the fluid_field_data with its data
-                    if(defined('CLONING_MODE') && CLONING_MODE === true && !isset($fluid_field_data[$id])) {
+                    if (defined('CLONING_MODE') && CLONING_MODE === true && !isset($fluid_field_data[$id])) {
                         $clonedField = ee('Model')->get('fluid_field:FluidField')->filter('id', $id)->first();
                         $group_key = (!empty($clonedField)) ? 'group_' . $clonedField->group : $group_key;
                     } elseif (isset($fluid_field_data[$id])) {
@@ -301,13 +302,13 @@ class Fluid_field_ft extends EE_Fieldtype
                 }
 
                 // New field for group
-                if (strpos($key, 'new_field_for_group_') === 0) {
+                if (strpos((string) $key, 'new_field_for_group_') === 0) {
                     $id = str_replace('new_field_for_group_', '', $key);
                     $group_key = str_replace('new_field_for_', '', $key);
                 }
 
                 // New field - a cloned `field_X` value should also be considered a new field
-                if (strpos($key, 'new_field_') === 0 || (defined('CLONING_MODE') && CLONING_MODE === true)) {
+                if (strpos((string) $key, 'new_field_') === 0 || (defined('CLONING_MODE') && CLONING_MODE === true)) {
                     $field_id = str_replace('field_id_', '', $fieldKey);
                 }
 
@@ -597,7 +598,7 @@ class Fluid_field_ft extends EE_Fieldtype
                         $viewData = array_merge($viewData, [
                             'field_group' => $field_group,
                             'field_group_fields' => array_map(function ($field) use ($field_data, $current, $field_group) {
-                                $exists = (array_key_exists($field->getId(), $field_data));
+                                $exists = (array_key_exists((string) $field->getId(), $field_data));
                                 $field = ($exists) ? $field_data[$field->getId()] : $field;
                                 $f = $field->getField();
                                 $f->setName(implode('', [
@@ -638,7 +639,7 @@ class Fluid_field_ft extends EE_Fieldtype
                 $field_group_id = null;
                 $fluid_field_data_id = null;
 
-                if (strpos($key, 'field_') === 0) {
+                if (strpos((string) $key, 'field_') === 0) {
                     $fluid_field_data_id = (int) str_replace('field_', '', $key);
                 }
 
@@ -648,14 +649,14 @@ class Fluid_field_ft extends EE_Fieldtype
                 }
 
                 foreach ($field_data as $id => $datum) {
-                    if (strpos($id, 'field_group_id_') === 0) {
+                    if (strpos((string) $id, 'field_group_id_') === 0) {
                         $field_group_id = (int) str_replace('field_group_id_', '', $id);
                     }
 
                     $group_name = (!is_null($field_group_id)) ? '[field_group_id_' . $field_group_id . ']' : '';
 
                     foreach ($datum as $fieldId => $fieldValue) {
-                        if (strpos($fieldId, 'field_id_') === 0) {
+                        if (strpos((string) $fieldId, 'field_id_') === 0) {
                             $field_id = str_replace('field_id_', '', $fieldId);
                         } else {
                             continue;
@@ -677,7 +678,7 @@ class Fluid_field_ft extends EE_Fieldtype
                         $f = $this->setupFieldInstance($f, $datum, $fluid_field_data_id);
 
                         // New fields for a group should match the existing group's id
-                        if(strpos($key, 'new_field_for_group_') === 0) {
+                        if (strpos((string) $key, 'new_field_for_group_') === 0) {
                             $key = str_replace('new_field_for_group_', '', $key);
                         }
 
@@ -690,7 +691,7 @@ class Fluid_field_ft extends EE_Fieldtype
                             $group = ($field_group_id > 0) ? $field_groups[$field_group_id] : null;
                         }
 
-                        if (!array_key_exists($group_key, $rows)) {
+                        if (!array_key_exists((string) $group_key, $rows)) {
                             $rows[$group_key] = [];
                         }
 
@@ -948,7 +949,7 @@ class Fluid_field_ft extends EE_Fieldtype
             // Sometimes a fluid field with no fields attached to it gets saved as an empty string
             //   rather than an empty array. In this case, we need to convert it to an array to
             //   perform array operations on it
-            if(is_string($all['field_channel_fields']) && empty($all['field_channel_fields'])) {
+            if (is_string($all['field_channel_fields']) && empty($all['field_channel_fields'])) {
                 $all['field_channel_fields'] = [];
             }
 
@@ -959,8 +960,8 @@ class Fluid_field_ft extends EE_Fieldtype
                     ->filter('fluid_field_id', $this->field_id)
                     ->filter('field_id', 'IN', $removed_fields)
                     ->filterGroup()
-                        ->filter('field_group_id', 0)
-                        ->orFilter('field_group_id', 'IS', NULL)
+                    ->filter('field_group_id', 0)
+                    ->orFilter('field_group_id', 'IS', null)
                     ->endFilterGroup()
                     ->all()
                     ->delete();

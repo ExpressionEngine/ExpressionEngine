@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -127,7 +128,7 @@ class URLFactory
                 $path = null;
 
                 foreach ($qs as $key => $value) {
-                    if (strpos($key, '/cp/') === 0) {
+                    if (strpos((string) $key, '/cp/') === 0) {
                         $path = $key;
 
                         continue;

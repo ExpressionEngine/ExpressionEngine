@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -172,7 +173,7 @@ class Metaweblog_api
                 $cats = array();
 
                 foreach ($parameters['3']['categories'] as $cat) {
-                    if (trim($cat) != '') {
+                    if (trim((string) $cat) != '') {
                         $cats[] = $cat;
                     }
                 }
@@ -318,7 +319,7 @@ class Metaweblog_api
                 $cats = array();
 
                 foreach ($parameters['3']['categories'] as $cat) {
-                    if (trim($cat) != '') {
+                    if (trim((string) $cat) != '') {
                         $cats[] = $cat;
                     }
                 }
@@ -832,7 +833,7 @@ class Metaweblog_api
             return ee()->xmlrpc->send_error_message('804', ee()->lang->line('invalid_channel'));
         }
 
-        if (! ee('Permission')->isSuperAdmin() && ! array_key_exists($query->row('channel_id'), $this->userdata['assigned_channels'])) {
+        if (! ee('Permission')->isSuperAdmin() && ! array_key_exists((string) $query->row('channel_id'), $this->userdata['assigned_channels'])) {
             return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_access'));
         }
 
@@ -988,7 +989,7 @@ class Metaweblog_api
         /** -------------------------------------------------
         /**  Find Assigned Channels
         /** -------------------------------------------------*/
-        $assigned_channels = ee()->session->getMember()->getAssignedChannels()->getDictionary('channel_id', 'channel_title'); 
+        $assigned_channels = ee()->session->getMember()->getAssignedChannels()->getDictionary('channel_id', 'channel_title');
 
         if (empty($assigned_channels)) {
             return false; // Nowhere to Post!!
@@ -1020,7 +1021,7 @@ class Metaweblog_api
             return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_access'));
         }
 
-        if (! ee('Permission')->isSuperAdmin() && ! array_key_exists($parameters['0'], $this->userdata['assigned_channels'])) {
+        if (! ee('Permission')->isSuperAdmin() && ! array_key_exists((string) $parameters['0'], $this->userdata['assigned_channels'])) {
             return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_channel'));
         }
 
@@ -1070,7 +1071,7 @@ class Metaweblog_api
             return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_access'));
         }
 
-        if (! ee('Permission')->isSuperAdmin() && ! array_key_exists($parameters['0'], $this->userdata['assigned_channels'])) {
+        if (! ee('Permission')->isSuperAdmin() && ! array_key_exists((string) $parameters['0'], $this->userdata['assigned_channels'])) {
             return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_channel'));
         }
 
@@ -1109,7 +1110,7 @@ class Metaweblog_api
      */
     public function parse_channel($channel_id)
     {
-        $channel_id = trim($channel_id);
+        $channel_id = trim((string) $channel_id);
         $this->status = 'open';
 
         $channel = ee('Model')->get('Channel', $channel_id)->first();
@@ -1131,7 +1132,7 @@ class Metaweblog_api
             $this->assign_parents = (ee()->config->item('auto_assign_cat_parents') == 'n') ? false : true;
         }
 
-        if (! array_key_exists($channel->channel_id, $this->userdata['assigned_channels']) && ! ee('Permission')->isSuperAdmin()) {
+        if (! array_key_exists((string) $channel->channel_id, $this->userdata['assigned_channels']) && ! ee('Permission')->isSuperAdmin()) {
             return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_channel'));
         }
 
@@ -1257,7 +1258,7 @@ class Metaweblog_api
             return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_access'));
         }
 
-        if (! ee('Permission')->isSuperAdmin() && ! array_key_exists($parameters['0'], $this->userdata['assigned_channels'])) {
+        if (! ee('Permission')->isSuperAdmin() && ! array_key_exists((string) $parameters['0'], $this->userdata['assigned_channels'])) {
             return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_channel'));
         }
 
@@ -1292,16 +1293,16 @@ class Metaweblog_api
             array('ignore_dupes' => false)
         );
 
-        $filename = basename($file_path);
+        $filename = basename((string) $file_path);
 
         // Check to see if we're dealing with relative paths
-        if (strncmp($file_path, '..', 2) == 0) {
-            $directory = dirname($file_path);
+        if (strncmp((string) $file_path, '..', 2) == 0) {
+            $directory = dirname((string) $file_path);
             $file_path = realpath(substr($directory, 1)) . '/' . $filename;
         }
 
         // Upload the file
-        $config = array('upload_path' => dirname($file_path));
+        $config = array('upload_path' => dirname((string) $file_path));
         ee()->load->library('upload', $config);
 
         if (ee()->upload->raw_upload($filename, $parameters['3']['bits']) === false) {
@@ -1317,7 +1318,7 @@ class Metaweblog_api
             $this->upload_dir,
             array(
                 'title' => $filename,
-                'path' => dirname($file_path),
+                'path' => dirname((string) $file_path),
                 'file_name' => $filename
             )
         );
@@ -1431,7 +1432,7 @@ class Metaweblog_api
         // return a time in the localtime, or UTC
         $t = 0;
 
-        if (preg_match('/([0-9]{4})([0-9]{2})([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})/', $time, $regs)) {
+        if (preg_match('/([0-9]{4})([0-9]{2})([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})/', (string) $time, $regs)) {
             /*
             if ($utc === TRUE)
             {
@@ -1506,7 +1507,7 @@ class Metaweblog_api
         ee()->load->library('addons');
 
         foreach (ee()->addons->get_files('plugins') as $plugin) {
-            $plugins[] = strtolower($plugin['class']);
+            $plugins[] = strtolower((string) $plugin['class']);
         }
 
         sort($plugins);
@@ -1548,7 +1549,7 @@ class Metaweblog_api
 
             // Settings that need to be prepped
             $settings = array(
-                'field_instructions' => trim($row['field_instructions']),
+                'field_instructions' => trim((string) $row['field_instructions']),
                 'field_text_direction' => ($row['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr',
                 'field_fmt' => $field_fmt,
                 'field_data' => $field_data,

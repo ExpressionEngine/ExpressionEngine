@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -54,14 +55,14 @@ class Login extends CP_Controller
         if ($this->input->post('return_path')) {
             $redirect = $this->input->post('return_path');
         } elseif ($this->input->get('return')) {
-            $redirect = urldecode($this->input->get('return'));
+            $redirect = urldecode((string) $this->input->get('return'));
         }
 
         if (!empty($redirect)) {
             $return_path = ee('Encrypt')->decode(str_replace(' ', '+', $redirect));
 
-            if (strpos($return_path, '{') === 0) {
-                $uri_elements = json_decode($return_path, true);
+            if (strpos((string) $return_path, '{') === 0) {
+                $uri_elements = json_decode((string) $return_path, true);
                 $return_path = ee('CP/URL')->make($uri_elements['path'], $uri_elements['arguments'])->compile();
                 if (isset($uri_elements['arguments']['hide_closer']) && $uri_elements['arguments']['hide_closer'] == 'y') {
                     $this->view->hide_topbar = true;
@@ -180,7 +181,7 @@ class Login extends CP_Controller
         ee()->lang->load('pro');
 
         if (!empty($_POST)) {
-            if (md5(ee('Security/XSS')->clean(ee('Request')->post('backup_mfa_code'))) == $member->backup_mfa_code) {
+            if (md5((string) ee('Security/XSS')->clean(ee('Request')->post('backup_mfa_code'))) == $member->backup_mfa_code) {
                 ee()->session->delete_password_lockout();
                 $sessions = ee('Model')
                     ->get('Session')
@@ -336,8 +337,8 @@ class Login extends CP_Controller
         }
 
         if (ee()->config->item('cp_session_type') != 's' && ee()->config->item('cookie_domain') != '') {
-            $cookie_domain = strpos(ee()->config->item('cookie_domain'), '.') === 0 ? substr(ee()->config->item('cookie_domain'), 1) : ee()->config->item('cookie_domain');
-            if (strpos(ee()->config->item('cp_url'), $cookie_domain) === false) {
+            $cookie_domain = strpos((string) ee()->config->item('cookie_domain'), '.') === 0 ? substr((string) ee()->config->item('cookie_domain'), 1) : ee()->config->item('cookie_domain');
+            if (strpos((string) ee()->config->item('cp_url'), (string) $cookie_domain) === false) {
                 ee('CP/Alert')
                     ->makeInline()
                     ->asIssue()
@@ -387,7 +388,7 @@ class Login extends CP_Controller
         } elseif ($return) {
             $this->view->return_path = ee('Security/XSS')->clean($return);
 
-            $return = json_decode(ee('Encrypt')->decode(str_replace(' ', '+', ee()->input->get('return'))));
+            $return = json_decode((string) ee('Encrypt')->decode(str_replace(' ', '+', ee()->input->get('return'))));
             if (isset($return->arguments->hide_closer) && $return->arguments->hide_closer == 'y') {
                 $view = 'pro:account/login';
                 $this->view->hide_topbar = true;
@@ -434,8 +435,8 @@ class Login extends CP_Controller
         $uml = $this->config->item('un_min_len');
         $pml = $this->config->item('pw_min_len');
 
-        $ulen = strlen($username);
-        $plen = strlen($password);
+        $ulen = strlen((string) $username);
+        $plen = strlen((string) $password);
 
         if ($ulen < $uml or $plen < $pml) {
             return $this->_un_pw_update_form();
@@ -479,8 +480,8 @@ class Login extends CP_Controller
         if ($this->input->post('return_path')) {
             $return_path = ee('Encrypt')->decode(str_replace(' ', '+', $this->input->post('return_path')));
 
-            if (strpos($return_path, '{') === 0) {
-                $uri_elements = json_decode($return_path, true);
+            if (strpos((string) $return_path, '{') === 0) {
+                $uri_elements = json_decode((string) $return_path, true);
                 $return_path = ee('CP/URL')->make($uri_elements['path'], $uri_elements['arguments']);
             } else {
                 $return_path = ee()->uri->reformat($base . AMP . $return_path, $base);
@@ -524,8 +525,8 @@ class Login extends CP_Controller
         $uml = $this->config->item('un_min_len');
         $pml = $this->config->item('pw_min_len');
 
-        $ulen = strlen($this->input->post('username'));
-        $plen = strlen($this->input->post('password'));
+        $ulen = strlen((string) $this->input->post('username'));
+        $plen = strlen((string) $this->input->post('password'));
 
         $new_un = ee('Request')->post('new_username', '');
         $new_pw = ee('Request')->post('new_password', '');
@@ -788,7 +789,7 @@ class Login extends CP_Controller
         $address = strip_tags($address);
 
         // cp_member_send_reset_token_start hook allows overriding posted email address from cp password reset form
-        if (ee()->extensions->active_hook('cp_member_send_reset_token_start')) {          
+        if (ee()->extensions->active_hook('cp_member_send_reset_token_start')) {
             $address = ee()->extensions->call('cp_member_send_reset_token_start', $address);
             if (ee()->extensions->end_script === true) {
                 return;
@@ -841,7 +842,7 @@ class Login extends CP_Controller
             'name' => $name,
             'username' => $username,
             'reset_url' => reduce_double_slashes($this->config->item('cp_url') . "?/cp/login/reset_password&resetcode=" . $rand),
-            'site_name' => stripslashes($this->config->item('site_name')),
+            'site_name' => stripslashes((string) $this->config->item('site_name')),
             'site_url' => $this->config->item('site_url')
         );
 
@@ -954,17 +955,17 @@ class Login extends CP_Controller
                     ->or_where('member_id', $member_id)
                     ->delete('reset_password');
 
-		        /* -------------------------------------------
-		        /* 'cp_member_reset_password' hook.
-		        /*  - Additional processing after user resets password
-		        /*  - Added EE 2.9.3
-		        */
-		        $this->extensions->call('cp_member_reset_password');
-		        if ($this->extensions->end_script === true) {
-		            return;
-		        }
-		        /*
-		        /* -------------------------------------------*/
+                /* -------------------------------------------
+                /* 'cp_member_reset_password' hook.
+                /*  - Additional processing after user resets password
+                /*  - Added EE 2.9.3
+                */
+                $this->extensions->call('cp_member_reset_password');
+                if ($this->extensions->end_script === true) {
+                    return;
+                }
+                /*
+                /* -------------------------------------------*/
 
                 ee('CP/Alert')
                     ->makeInline()
@@ -984,11 +985,11 @@ class Login extends CP_Controller
 
         // Show form validation errors
         if (form_error('password')) {
-            $alert->addToBody(strip_tags(form_error('password')))->now();
+            $alert->addToBody(strip_tags((string) form_error('password')))->now();
         }
 
         if (form_error('password_confirm')) {
-            $alert->addToBody(strip_tags(form_error('password_confirm')))->now();
+            $alert->addToBody(strip_tags((string) form_error('password_confirm')))->now();
         }
 
         $this->view->cp_page_title = lang('enter_new_password');

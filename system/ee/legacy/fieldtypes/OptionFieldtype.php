@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -98,7 +99,7 @@ abstract class OptionFieldtype extends EE_Fieldtype
                     $data['field_pre_populate_id'] = '0_0';
                 }
 
-                list($channel_id, $field_id) = explode('_', $data['field_pre_populate_id']);
+                list($channel_id, $field_id) = explode('_', (string) $data['field_pre_populate_id']);
 
                 $field_pre_channel_id = $channel_id;
                 $field_pre_field_id = $field_id;

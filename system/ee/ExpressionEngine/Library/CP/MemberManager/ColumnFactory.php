@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -9,6 +10,7 @@
  */
 
 namespace ExpressionEngine\Library\CP\MemberManager;
+
 use ExpressionEngine\Library\CP\EntryManager;
 
 /**
@@ -43,7 +45,7 @@ class ColumnFactory extends EntryManager\ColumnFactory
         if (isset(static::$standard_columns[$identifier])) {
             $class = static::$standard_columns[$identifier];
             self::$instances[$identifier] = new $class($identifier);
-        } elseif (strpos($identifier, 'm_field_id_') === 0 && $field = self::getCompatibleField($identifier)) {
+        } elseif (strpos((string) $identifier, 'm_field_id_') === 0 && $field = self::getCompatibleField($identifier)) {
             self::$instances[$identifier] = new Columns\MemberField($identifier, $field);
         } else {
             return null;

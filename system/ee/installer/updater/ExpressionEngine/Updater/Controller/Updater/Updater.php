@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -26,7 +27,7 @@ class Updater
 
         if ($step === false or
             $step == 'undefined' or
-            strtoupper($_SERVER['REQUEST_METHOD']) !== 'POST') {
+            strtoupper((string) $_SERVER['REQUEST_METHOD']) !== 'POST') {
             return 'The updater folder is still present. Delete the folder at system/ee/updater to access the control panel.';
         }
 

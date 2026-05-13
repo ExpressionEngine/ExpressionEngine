@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -93,7 +94,7 @@ class EE_Form_validation
         $field = ee()->input->post('ee_fv_field');
 
         // Remove any namespacing to run validation for the parent field
-        $field = preg_replace('/\[.+?\]/', '', $field);
+        $field = preg_replace('/\[.+?\]/', '', (string) $field);
 
         // Unset any other rules that aren't for the field we want to
         // validate
@@ -423,6 +424,7 @@ class EE_Form_validation
             foreach ($result->getErrors('screen_name') as $key => $error) {
                 $this->set_message('valid_screen_name', $error);
             }
+
             return false;
         }
 
@@ -464,6 +466,7 @@ class EE_Form_validation
             foreach ($result->getErrors('password') as $key => $error) {
                 $this->set_message('valid_password', $error);
             }
+
             return false;
         }
 
@@ -603,12 +606,13 @@ class EE_Form_validation
      */
     public function file_exists($file)
     {
-        $parsed = rtrim(parse_config_variables($file, $_POST), '\\/');
+        $parsed = rtrim((string) parse_config_variables($file, $_POST), '\\/');
 
         try {
             $filesystem = ee('File')->getPath($parsed);
+
             return $filesystem->exists($parsed) || $filesystem->exists($parsed . DIRECTORY_SEPARATOR);
-        }catch(\Exception $e) {
+        } catch (\Exception $e) {
             return false;
         }
     }
@@ -624,10 +628,11 @@ class EE_Form_validation
     public function writable($path)
     {
 
-        $parsed = rtrim(parse_config_variables($path, $_POST), '\\/');
+        $parsed = rtrim((string) parse_config_variables($path, $_POST), '\\/');
 
         try {
             $filesystem = ee('File')->getPath($parsed);
+
             return $filesystem->isWritable($parsed) || $filesystem->isWritable($parsed . DIRECTORY_SEPARATOR);
         } catch (\Exception $e) {
             return false;
@@ -713,16 +718,16 @@ class EE_Form_validation
      */
     public function prep_list($str, $delim = " ")
     {
-        $str = trim($str);
+        $str = trim((string) $str);
 
         if ($delim == " ") {
             $str = preg_replace("/\t+/", " ", $str);
-            $str = preg_replace("/\s+/", " ", $str);
-            $str = preg_replace("/[,|]+/", " ", $str);
+            $str = preg_replace("/\s+/", " ", (string) $str);
+            $str = preg_replace("/[,|]+/", " ", (string) $str);
             $str = str_replace(array("\r\n", "\r", "\n"), " ", $str);
         } else {
-            $str = preg_replace("/[\s,|]+/", $delim, $str);
-            $str = trim($str, $delim);
+            $str = preg_replace("/[\s,|]+/", (string) $delim, $str);
+            $str = trim((string) $str, $delim);
         }
 
         return $str;
@@ -849,15 +854,15 @@ class EE_Form_validation
 
             // Is the rule a callback?
             $callback = false;
-            if (substr($rule, 0, 9) == 'callback_') {
-                $rule = substr($rule, 9);
+            if (substr((string) $rule, 0, 9) == 'callback_') {
+                $rule = substr((string) $rule, 9);
                 $callback = true;
             }
 
             // Strip the parameter (if exists) from the rule
             // Rules can contain a parameter: max_length[5]
             $param = false;
-            if (preg_match("/(.*?)\[(.*?)\]/", $rule, $match)) {
+            if (preg_match("/(.*?)\[(.*?)\]/", (string) $rule, $match)) {
                 $rule = $match[1];
                 $param = $match[2];
             }
@@ -896,7 +901,7 @@ class EE_Form_validation
                     $result = $this->$rule($postdata, $param);
                 } else {
                     //is this valid stand-alone validation rule?
-                    $rule_class = 'ExpressionEngine\\Service\\Validation\\Rule\\' . implode('', array_map('ucfirst', explode('_', $rule)));
+                    $rule_class = 'ExpressionEngine\\Service\\Validation\\Rule\\' . implode('', array_map('ucfirst', explode('_', (string) $rule)));
                     if (class_exists($rule_class)) {
                         $validator = ee('Validation')->make(array(
                             $row['field'] => $rule
@@ -1126,7 +1131,7 @@ class EE_Form_validation
             }
 
             // Is there a validation rule for the particular URI being accessed?
-            $uri = ($group == '') ? trim(ee()->uri->ruri_string(), '/') : $group;
+            $uri = ($group == '') ? trim((string) ee()->uri->ruri_string(), '/') : $group;
 
             if ($uri != '' and isset($this->_config_rules[$uri])) {
                 $this->set_rules($this->_config_rules[$uri]);
@@ -1153,11 +1158,11 @@ class EE_Form_validation
 
             if ($row['is_array'] == true) {
                 $this->_field_data[$field]['postdata'] = $this->_reduce_array(ee('Request')->post(), $row['keys']);
-            } else if(ee('Request')->post($field) != "") {
+            } elseif (ee('Request')->post($field) != "") {
                 $this->_field_data[$field]['postdata'] = ee('Request')->post($field);
             }
 
-            $this->_execute($row, explode('|', $row['rules']), $this->_field_data[$field]['postdata']);
+            $this->_execute($row, explode('|', (string) $row['rules']), $this->_field_data[$field]['postdata']);
         }
 
         // Did we end up with any errors?
@@ -1258,9 +1263,9 @@ class EE_Form_validation
     {
         // Do we need to translate the field name?
         // We look for the prefix lang: to determine this
-        if (substr($fieldname, 0, 5) == 'lang:') {
+        if (substr((string) $fieldname, 0, 5) == 'lang:') {
             // Grab the variable
-            $line = substr($fieldname, 5);
+            $line = substr((string) $fieldname, 5);
 
             // Were we able to translate the field name?  If not we use $line
             if (false === ($fieldname = ee()->lang->line($line))) {
@@ -1389,7 +1394,7 @@ class EE_Form_validation
     public function required($str)
     {
         if (! is_array($str)) {
-            return (trim($str) == '') ? false : true;
+            return (trim((string) $str) == '') ? false : true;
         } else {
             return (! empty($str));
         }
@@ -1424,7 +1429,7 @@ class EE_Form_validation
      */
     public function min_length($str, $val)
     {
-        if (preg_match("/[^0-9]/", $val)) {
+        if (preg_match("/[^0-9]/", (string) $val)) {
             return false;
         }
 
@@ -1441,7 +1446,7 @@ class EE_Form_validation
      */
     public function max_length($str, $val)
     {
-        if (preg_match("/[^0-9]/", $val)) {
+        if (preg_match("/[^0-9]/", (string) $val)) {
             return false;
         }
 
@@ -1458,7 +1463,7 @@ class EE_Form_validation
      */
     public function exact_length($str, $val)
     {
-        if (preg_match("/[^0-9]/", $val)) {
+        if (preg_match("/[^0-9]/", (string) $val)) {
             return false;
         }
 
@@ -1486,11 +1491,11 @@ class EE_Form_validation
      */
     public function valid_emails($str)
     {
-        if (strpos($str, ',') === false) {
-            return $this->valid_email(trim($str));
+        if (strpos((string) $str, ',') === false) {
+            return $this->valid_email(trim((string) $str));
         }
 
-        foreach (explode(',', $str) as $email) {
+        foreach (explode(',', (string) $str) as $email) {
             if (trim($email) != '' && $this->valid_email(trim($email)) === false) {
                 return false;
             }
@@ -1520,7 +1525,7 @@ class EE_Form_validation
      */
     public function alpha($str)
     {
-        return (! preg_match("/^([a-z])+$/i", $str)) ? false : true;
+        return (! preg_match("/^([a-z])+$/i", (string) $str)) ? false : true;
     }
 
     /**
@@ -1532,7 +1537,7 @@ class EE_Form_validation
      */
     public function alpha_numeric($str)
     {
-        return (! preg_match("/^([a-z0-9])+$/i", $str)) ? false : true;
+        return (! preg_match("/^([a-z0-9])+$/i", (string) $str)) ? false : true;
     }
 
     /**
@@ -1544,7 +1549,7 @@ class EE_Form_validation
      */
     public function alpha_dash($str)
     {
-        return (! preg_match("/^([-a-z0-9_-])+$/i", $str)) ? false : true;
+        return (! preg_match("/^([-a-z0-9_-])+$/i", (string) $str)) ? false : true;
     }
 
     /**
@@ -1556,7 +1561,7 @@ class EE_Form_validation
      */
     public function alpha_dash_space($str)
     {
-        return (! preg_match("/^([a-z0-9\_\-\s])+$/i", $str)) ? false : true;
+        return (! preg_match("/^([a-z0-9\_\-\s])+$/i", (string) $str)) ? false : true;
     }
 
     /**
@@ -1568,7 +1573,7 @@ class EE_Form_validation
      */
     public function numeric($str)
     {
-        return (bool) preg_match('/^[\-+]?[0-9]*\.?[0-9]+$/', $str);
+        return (bool) preg_match('/^[\-+]?[0-9]*\.?[0-9]+$/', (string) $str);
     }
 
     /**
@@ -1592,7 +1597,7 @@ class EE_Form_validation
      */
     public function integer($str)
     {
-        return (bool) preg_match('/^[\-+]?[0-9]+$/', $str);
+        return (bool) preg_match('/^[\-+]?[0-9]+$/', (string) $str);
     }
 
     /**
@@ -1652,7 +1657,7 @@ class EE_Form_validation
      */
     public function is_natural($str)
     {
-        return (bool) preg_match('/^[0-9]+$/', $str);
+        return (bool) preg_match('/^[0-9]+$/', (string) $str);
     }
 
     /**
@@ -1664,7 +1669,7 @@ class EE_Form_validation
      */
     public function is_natural_no_zero($str)
     {
-        if (! preg_match('/^[0-9]+$/', $str)) {
+        if (! preg_match('/^[0-9]+$/', (string) $str)) {
             return false;
         }
 
@@ -1687,7 +1692,7 @@ class EE_Form_validation
      */
     public function valid_base64($str)
     {
-        return (bool) ! preg_match('/[^a-zA-Z0-9\/\+=]/', $str);
+        return (bool) ! preg_match('/[^a-zA-Z0-9\/\+=]/', (string) $str);
     }
 
     /**
@@ -1714,7 +1719,7 @@ class EE_Form_validation
             return $data;
         }
 
-        return str_replace(array("'", '"', '<', '>'), array("&#39;", "&quot;", '&lt;', '&gt;'), stripslashes($data));
+        return str_replace(array("'", '"', '<', '>'), array("&#39;", "&quot;", '&lt;', '&gt;'), stripslashes((string) $data));
     }
 
     /**

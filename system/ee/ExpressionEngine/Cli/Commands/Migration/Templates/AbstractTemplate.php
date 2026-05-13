@@ -39,7 +39,7 @@ abstract class AbstractTemplate
     {
         $missing = array();
         foreach ($this->requiredVars() as $requiredVar) {
-            if (! array_key_exists($requiredVar, $this->vars)) {
+            if (! array_key_exists((string) $requiredVar, $this->vars)) {
                 $missing[] = $requiredVar;
             }
         }

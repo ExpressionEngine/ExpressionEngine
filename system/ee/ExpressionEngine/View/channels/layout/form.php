@@ -29,7 +29,7 @@
 			<?php foreach ($layout->getTabs() as $index => $tab): ?>
 				<?php
                 $icon = '';
-                if (strpos($tab->id, 'custom_') !== false) {
+                if (strpos((string) $tab->id, 'custom_') !== false) {
                     $icon = '<i class="tab-edit"></i><i class="tab-remove">';
                 } else {
                     if ($tab->isVisible()) {
@@ -59,7 +59,7 @@
 									<label class="layout-item__title"><span class="faded float-right"><?=$field->getTypeName()?></span><?=$field->getLabel()?> <span class="faded"><?=(($tab->id != 'categories') ? '(' . $field->getShortName() . ')' : '') ?></span></label>
 									<div class="layout-item__options">
 										<?php if ($field->isRequired()): ?>
-										<label class="field-option-required"><?=ucwords(lang('required_field'))?></label>
+										<label class="field-option-required"><?=ucwords((string) lang('required_field'))?></label>
 										<?php else: ?>
 										<label class="field-option-hide"><input class="checkbox checkbox--small" type="checkbox"<?php if (! $field->isVisible()): ?> checked="checked"<?php endif ?>><?=lang('hide')?></label>
 										<?php endif; ?>

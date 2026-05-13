@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -120,7 +121,7 @@ class Publish extends AbstractPublishController
             $members->limit((int) $settings['limit']);
         }
         if (!empty($settings['selected'])) {
-            $members->filter('member_id', 'NOT IN', explode('|', $settings['selected']));
+            $members->filter('member_id', 'NOT IN', explode('|', (string) $settings['selected']));
         }
         if (!empty($settings['channel_id'])) {
             $members->filter('PrimaryRole.role_id', $settings['channel_id']);
@@ -202,7 +203,7 @@ class Publish extends AbstractPublishController
         $autosave->save();
 
         $time = ee()->localize->human_time(ee()->localize->now);
-        $time = trim(strstr($time, ' '));
+        $time = trim(strstr((string) $time, ' '));
 
         ee()->output->send_ajax_response(array(
             'success' => ee('View')->make('ee:publish/partials/autosave_badge')->render(['time' => $time]),
@@ -228,6 +229,7 @@ class Publish extends AbstractPublishController
             ee()->lang->load('content');
             ee()->output->set_status_header(403);
             ee()->output->send_ajax_response(['error' => lang('unauthorized_to_edit')]);
+
             return;
         }
 
@@ -236,6 +238,7 @@ class Publish extends AbstractPublishController
             ee()->lang->load('content');
             ee()->output->set_status_header(403);
             ee()->output->send_ajax_response(['error' => lang('unauthorized_to_edit')]);
+
             return;
         }
 
@@ -248,6 +251,7 @@ class Publish extends AbstractPublishController
                 ee()->lang->load('content');
                 ee()->output->set_status_header(403);
                 ee()->output->send_ajax_response(['error' => lang('unauthorized_to_edit')]);
+
                 return;
             }
             $entry_channel_id = (int) $entry_row->row('channel_id');
@@ -256,6 +260,7 @@ class Publish extends AbstractPublishController
                 ee()->lang->load('content');
                 ee()->output->set_status_header(403);
                 ee()->output->send_ajax_response(['error' => lang('unauthorized_to_edit')]);
+
                 return;
             }
         }
@@ -276,6 +281,7 @@ class Publish extends AbstractPublishController
             ee()->lang->load('content');
             ee()->output->set_status_header(403);
             ee()->output->send_ajax_response(['error' => lang('unauthorized_to_edit')]);
+
             return;
         }
 
@@ -465,7 +471,7 @@ class Publish extends AbstractPublishController
             ),
             'ui' => ['draggable'],
             'file' => array(
-                'cp/publish/publish', 
+                'cp/publish/publish',
                 'cp/publish/entry-list',
                 'cp/channel/category_edit',
             )
@@ -503,7 +509,7 @@ class Publish extends AbstractPublishController
         }
 
         foreach ($_GET as $key => $value) {
-            if (strpos($key, 'field_id_') === 0) {
+            if (strpos((string) $key, 'field_id_') === 0) {
                 $data[$key] = $value;
             }
         }

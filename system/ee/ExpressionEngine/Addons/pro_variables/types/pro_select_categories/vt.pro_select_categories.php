@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -114,7 +115,7 @@ class Pro_select_categories extends Pro_variables_type
             foreach ($cats as $group) {
                 foreach ($group['categories'] as $cat) {
                     $choices[$cat['id']] = str_repeat('&nbsp;&nbsp;', $cat['depth'])
-                        . htmlspecialchars($cat['name'], ENT_QUOTES);
+                        . htmlspecialchars((string) $cat['name'], ENT_QUOTES);
                 }
             }
         }

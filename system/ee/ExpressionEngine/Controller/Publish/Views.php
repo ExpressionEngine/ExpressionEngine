@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -253,7 +254,7 @@ class Views extends CP_Controller
                 continue;
             }
 
-            $column_choices[$identifier] = strip_tags(lang($column->getTableColumnLabel()));
+            $column_choices[$identifier] = strip_tags((string) lang($column->getTableColumnLabel()));
         }
 
         return $column_choices;

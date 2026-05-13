@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -73,7 +74,7 @@ class RelationGraph
     {
         $prefix = $this->registry->getPrefix($model_name);
 
-        if (strpos($model_name, $prefix) !== 0) {
+        if (strpos((string) $model_name, (string) $prefix) !== 0) {
             $model_name = $prefix . ':' . $model_name;
         }
 
@@ -127,7 +128,7 @@ class RelationGraph
 
         $prefix = $this->registry->getPrefix($model);
 
-        if (strpos($model, $prefix) !== 0) {
+        if (strpos((string) $model, (string) $prefix) !== 0) {
             $model = $prefix . ':' . $model;
         }
 
@@ -185,13 +186,13 @@ class RelationGraph
         $prefix = $this->registry->getPrefix($relation->getSourceModel());
         $name = $options['name'];
 
-        if (strpos($name, $prefix) !== 0) {
+        if (strpos((string) $name, (string) $prefix) !== 0) {
             $name = $prefix . ':' . $name;
         }
 
         $prefix = $this->registry->getPrefix($to_model);
 
-        if (strpos($to_model, $prefix) !== 0) {
+        if (strpos((string) $to_model, (string) $prefix) !== 0) {
             $to_model = $prefix . ':' . $to_model;
         }
 
@@ -211,7 +212,7 @@ class RelationGraph
     {
         $options = $options ?: $this->prepareRelationshipData($model, $name);
 
-        $type = ucfirst($options['type']);
+        $type = ucfirst((string) $options['type']);
         $class = __NAMESPACE__ . "\\Relation\\{$type}";
 
         if (! class_exists($class)) {
@@ -237,7 +238,7 @@ class RelationGraph
         $to_model = isset($relationship['model']) ? $relationship['model'] : $name;
         $as_defined_to = $to_model;
 
-        if (strpos($to_model, ':') == 0) {
+        if (strpos((string) $to_model, ':') == 0) {
             $to_model = $this->registry->getPrefix($model) . ':' . $to_model;
         }
 

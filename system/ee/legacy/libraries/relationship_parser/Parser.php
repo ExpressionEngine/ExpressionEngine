@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -139,7 +140,7 @@ class EE_Relationship_data_parser
 
             $shortcut = preg_quote($node->shortcut, '/');
 
-            if (preg_match_all('/' . $open_tag . '(.+?){\/' . $tag . ':' . $shortcut . '}/is', $tagdata, $matches, PREG_SET_ORDER)) {
+            if (preg_match_all('/' . $open_tag . '(.+?){\/' . $tag . ':' . $shortcut . '}/is', (string) $tagdata, $matches, PREG_SET_ORDER)) {
                 foreach ($matches as &$match) {
                     $match = array($match[0], $match[0]);
                 }
@@ -196,7 +197,7 @@ class EE_Relationship_data_parser
                 'categories' => $categories
             );
         } else {
-            if (! preg_match('/' . $open_tag . '(.+?){\/' . $tag . '}/is', $tagdata, $match)) {
+            if (! preg_match('/' . $open_tag . '(.+?){\/' . $tag . '}/is', (string) $tagdata, $match)) {
                 return $tagdata;
             }
 
@@ -252,7 +253,7 @@ class EE_Relationship_data_parser
 
         // frontend edit link
 
-        if (!empty($node->param('disable')) && strpos($node->param('disable'), 'frontedit') !== false) {
+        if (!empty($node->param('disable')) && strpos((string) $node->param('disable'), 'frontedit') !== false) {
             $result = str_replace(LD . $node->data['field_name'] . ':frontedit' . RD, '', $result);
         } elseif ($node->data['shortcut'] == 'frontedit') {
             foreach ($channel->cfields as $field_site_id => $cfields) {
@@ -278,7 +279,7 @@ class EE_Relationship_data_parser
         $backspace = $node->param('backspace');
 
         if ($backspace) {
-            $result = substr($result, 0, -$backspace);
+            $result = substr((string) $result, 0, -$backspace);
         }
 
         return $this->cleanup_no_results_tag($node, $result);
@@ -306,7 +307,7 @@ class EE_Relationship_data_parser
      */
     public function find_no_results($node, $node_tagdata, $whole_tag = false)
     {
-        $tag = preg_quote($node->name(), '/');
+        $tag = preg_quote((string) $node->name(), '/');
 
         // Find no results chunks
         $has_no_results = strpos($node_tagdata, 'if ' . $node->name() . ':no_results') !== false;
@@ -320,7 +321,7 @@ class EE_Relationship_data_parser
                 return $match[0];
             }
 
-            return substr($match[0], strlen(LD . "if {$node->name()}:no_results" . RD), -strlen(LD . '/' . "if" . RD));
+            return substr((string) $match[0], strlen(LD . "if {$node->name()}:no_results" . RD), -strlen(LD . '/' . "if" . RD));
         }
 
         return '';
@@ -341,20 +342,20 @@ class EE_Relationship_data_parser
      */
     public function clear_node_tagdata($node, $tagdata)
     {
-        $tag_name = preg_quote($node->name(), '/');
-        $open_tag = preg_quote($node->open_tag, '/');
+        $tag_name = preg_quote((string) $node->name(), '/');
+        $open_tag = preg_quote((string) $node->open_tag, '/');
 
         if ($node->shortcut) {
             $tagdata = str_replace($node->open_tag, '', $tagdata);
         }
 
-        while (preg_match('/' . $open_tag . '(.+?){\/' . $tag_name . '}/is', $tagdata, $match)) {
+        while (preg_match('/' . $open_tag . '(.+?){\/' . $tag_name . '}/is', (string) $tagdata, $match)) {
             $no_results = $this->find_no_results($node, $match[1]);
 
             // substr_replace() is not multibyte compatible, nor can it be overloaded, so let's DANCE!
-            $needle_position = strpos($tagdata, $match[0]);
+            $needle_position = strpos((string) $tagdata, $match[0]);
             $needle_length = strlen($match[0]);
-            $tagdata = substr($tagdata, 0, $needle_position) . $no_results . substr($tagdata, $needle_position + $needle_length);
+            $tagdata = substr((string) $tagdata, 0, $needle_position) . $no_results . substr((string) $tagdata, $needle_position + $needle_length);
         }
 
         return $tagdata;
@@ -458,12 +459,12 @@ class EE_Relationship_data_parser
 
                 $not = false;
 
-                if (strpos($value, 'not ') === 0) {
+                if (strpos((string) $value, 'not ') === 0) {
                     $not = true;
-                    $value = substr($value, 4);
+                    $value = substr((string) $value, 4);
                 }
 
-                $value = trim($value, " |\t\n\r");
+                $value = trim((string) $value, " |\t\n\r");
                 $value = explode('|', $value);
                 $value = array_map('strtolower', $value);
 
@@ -471,7 +472,7 @@ class EE_Relationship_data_parser
                     $p = 'channel_name';
                 }
 
-                $data_matches = in_array(strtolower($data[$p]), $value);
+                $data_matches = in_array(strtolower((string) $data[$p]), $value);
 
                 if (($data_matches && $not) or
                     (! $data_matches && ! $not)) {
@@ -632,8 +633,8 @@ class EE_Relationship_data_parser
             return $entry_ids;
         }
 
-        $order_by = array_filter(explode('|', $node->param('orderby')));
-        $sort = explode('|', $node->param('sort', 'desc'));
+        $order_by = array_filter(explode('|', (string) $node->param('orderby')));
+        $sort = explode('|', (string) $node->param('sort', 'desc'));
 
         // random
         if (! empty($order_by) && $order_by[0] == 'random') {
@@ -665,6 +666,7 @@ class EE_Relationship_data_parser
             $data = $this->entry($entry_id);
             if (is_null($data)) {
                 unset($entry_ids[$rel_order]);
+
                 continue;
             }
 

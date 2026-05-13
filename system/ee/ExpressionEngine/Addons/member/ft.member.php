@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -17,7 +18,6 @@ use ExpressionEngine\Library\CP\EntryManager\ColumnInterface;
  */
 class Member_ft extends Relationship_ft implements ColumnInterface
 {
-
     public $info = array(
         'name' => 'Members',
         'version' => '1.0.0'
@@ -313,7 +313,7 @@ class Member_ft extends Relationship_ft implements ColumnInterface
     {
         // Determine if this is a LivePreview request
         // We need to flip the data from Live Preview so we have member_id => order
-        if(ee('LivePreview')->forEntryId($this->row['entry_id'])) {
+        if (ee('LivePreview')->forEntryId($this->row['entry_id'])) {
             return array_flip($data['data'] ?? []);
         }
 
@@ -427,7 +427,7 @@ class Member_ft extends Relationship_ft implements ColumnInterface
         $tagdata = $parser->parse($channel, $vars);
 
         if (isset($params['backspace']) && !empty($params['backspace'])) {
-            $tagdata = substr($tagdata, 0, - (int) $params['backspace']);
+            $tagdata = substr((string) $tagdata, 0, - (int) $params['backspace']);
         }
 
         return $tagdata;
@@ -502,8 +502,8 @@ class Member_ft extends Relationship_ft implements ColumnInterface
                 )
             ),
             array(
-                'title' => sprintf(lang('rel_ft_limit'), strtolower(lang('members'))),
-                'desc' => sprintf(lang('rel_ft_limit_desc'), strtolower(lang('members')), strtolower(lang('members'))),
+                'title' => sprintf(lang('rel_ft_limit'), strtolower((string) lang('members'))),
+                'desc' => sprintf(lang('rel_ft_limit_desc'), strtolower((string) lang('members')), strtolower((string) lang('members'))),
                 'fields' => array(
                     'limit' => array(
                         'type' => 'text',
@@ -513,7 +513,7 @@ class Member_ft extends Relationship_ft implements ColumnInterface
             ),
             array(
                 'title' => 'rel_ft_order',
-                'desc' => sprintf(lang('rel_ft_order_desc'), strtolower(lang('members'))),
+                'desc' => sprintf(lang('rel_ft_order_desc'), strtolower((string) lang('members'))),
                 'fields' => array(
                     'order_field' => array(
                         'type' => 'radio',
@@ -547,8 +547,8 @@ class Member_ft extends Relationship_ft implements ColumnInterface
                 )
             ),
             array(
-                'title' => sprintf(lang('rel_ft_min'), strtolower(lang('members'))),
-                'desc' => sprintf(lang('rel_ft_min_desc'), strtolower(lang('members'))),
+                'title' => sprintf(lang('rel_ft_min'), strtolower((string) lang('members'))),
+                'desc' => sprintf(lang('rel_ft_min_desc'), strtolower((string) lang('members'))),
                 'group' => 'member_rel_min_max',
                 'fields' => array(
                     'rel_min' => array(
@@ -558,8 +558,8 @@ class Member_ft extends Relationship_ft implements ColumnInterface
                 )
             ),
             array(
-                'title' => sprintf(lang('rel_ft_max'), strtolower(lang('members'))),
-                'desc' => sprintf(lang('rel_ft_max_desc'), strtolower(lang('members'))),
+                'title' => sprintf(lang('rel_ft_max'), strtolower((string) lang('members'))),
+                'desc' => sprintf(lang('rel_ft_max_desc'), strtolower((string) lang('members'))),
                 'group' => 'member_rel_min_max',
                 'fields' => array(
                     'rel_max' => array(

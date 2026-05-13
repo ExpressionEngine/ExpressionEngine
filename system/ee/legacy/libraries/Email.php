@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -369,7 +370,7 @@ class EE_Email
 
         $this->_smtp_auth = ! ($this->smtp_user === '' && $this->smtp_pass === '');
 
-        $this->charset = strtoupper($this->charset);
+        $this->charset = strtoupper((string) $this->charset);
 
         $this->EE_initialize();
     }
@@ -511,7 +512,7 @@ class EE_Email
             }
         }
 
-        if (preg_match('/\<(.*)\>/', $from, $match)) {
+        if (preg_match('/\<(.*)\>/', (string) $from, $match)) {
             $from = $match[1];
         }
 
@@ -525,9 +526,9 @@ class EE_Email
         // prepare the display name
         if ($name !== '') {
             // only use Q encoding if there are characters that would require it
-            if (! preg_match('/[\200-\377]/', $name)) {
+            if (! preg_match('/[\200-\377]/', (string) $name)) {
                 // add slashes for non-printing characters, slashes, and double quotes, and surround it in double quotes
-                $name = '"' . addcslashes($name, "\0..\37\177'\"\\") . '"';
+                $name = '"' . addcslashes((string) $name, "\0..\37\177'\"\\") . '"';
             } else {
                 $name = $this->_prep_q_encoding($name);
             }
@@ -550,7 +551,7 @@ class EE_Email
      */
     public function reply_to($replyto, $name = '')
     {
-        if (preg_match('/\<(.*)\>/', $replyto, $match)) {
+        if (preg_match('/\<(.*)\>/', (string) $replyto, $match)) {
             $replyto = $match[1];
         }
 
@@ -562,7 +563,7 @@ class EE_Email
             $name = $replyto;
         }
 
-        if (strpos($name, '"') !== 0) {
+        if (strpos((string) $name, '"') !== 0) {
             $name = '"' . $name . '"';
         }
 
@@ -670,7 +671,7 @@ class EE_Email
      */
     public function subject($subject)
     {
-        if (preg_match('/[^\x20-\x7E]/', $subject)) {
+        if (preg_match('/[^\x20-\x7E]/', (string) $subject)) {
             $subject = $this->_prep_q_encoding($subject);
         }
 
@@ -720,9 +721,9 @@ class EE_Email
     protected function _str_to_array($email)
     {
         if (! is_array($email)) {
-            return (strpos($email, ',') !== false)
-                ? preg_split('/[\s,]/', $email, -1, PREG_SPLIT_NO_EMPTY)
-                : (array) trim($email);
+            return (strpos((string) $email, ',') !== false)
+                ? preg_split('/[\s,]/', (string) $email, -1, PREG_SPLIT_NO_EMPTY)
+                : (array) trim((string) $email);
         }
 
         return $email;
@@ -788,7 +789,7 @@ class EE_Email
      */
     public function set_priority($n = 3)
     {
-        $this->priority = preg_match('/^[1-5]$/', $n) ? (int) $n : 3;
+        $this->priority = preg_match('/^[1-5]$/', (string) $n) ? (int) $n : 3;
 
         return $this;
     }
@@ -965,13 +966,13 @@ class EE_Email
     public function clean_email($email)
     {
         if (! is_array($email)) {
-            return preg_match('/\<(.*)\>/', $email, $match) ? $match[1] : $email;
+            return preg_match('/\<(.*)\>/', (string) $email, $match) ? $match[1] : $email;
         }
 
         $clean_email = array();
 
         foreach ($email as $addy) {
-            $clean_email[] = preg_match('/\<(.*)\>/', $addy, $match) ? $match[1] : $addy;
+            $clean_email[] = preg_match('/\<(.*)\>/', (string) $addy, $match) ? $match[1] : $addy;
         }
 
         return $clean_email;
@@ -1025,17 +1026,17 @@ class EE_Email
         }
 
         // Standardize newlines
-        if (strpos($str, "\r") !== false) {
+        if (strpos((string) $str, "\r") !== false) {
             $str = str_replace(array("\r\n", "\r"), "\n", $str);
         }
 
         // Reduce multiple spaces at end of line
-        $str = preg_replace('| +\n|', "\n", $str);
+        $str = preg_replace('| +\n|', "\n", (string) $str);
 
         // If the current word is surrounded by {unwrap} tags we'll
         // strip the entire chunk and replace it with a marker.
         $unwrap = array();
-        if (preg_match_all('|(\{unwrap\}.+?\{/unwrap\})|s', $str, $matches)) {
+        if (preg_match_all('|(\{unwrap\}.+?\{/unwrap\})|s', (string) $str, $matches)) {
             for ($i = 0, $c = count($matches[0]); $i < $c; $i++) {
                 $unwrap[] = $matches[1][$i];
                 $str = str_replace($matches[1][$i], '{{unwrapped' . $i . '}}', $str);
@@ -1045,7 +1046,7 @@ class EE_Email
         // Use PHP's native public function to do the initial wordwrap.
         // We set the cut flag to FALSE so that any individual words that are
         // too long get left alone. In the next step we'll deal with them.
-        $str = wordwrap($str, $charlim, "\n", false);
+        $str = wordwrap((string) $str, $charlim, "\n", false);
 
         // Split the string into individual lines of text and cycle through them
         $output = '';
@@ -1255,7 +1256,7 @@ class EE_Email
         for ($i = 0, $c = count($this->_attachments), $z = 0; $i < $c; $i++) {
             $filename = $this->_attachments[$i]['name'][0];
             $basename = ($this->_attachments[$i]['name'][1] === null)
-                ? basename($filename) : $this->_attachments[$i]['name'][1];
+                ? basename((string) $filename) : $this->_attachments[$i]['name'][1];
             $ctype = $this->_attachments[$i]['type'];
             $file_content = '';
 
@@ -1287,7 +1288,7 @@ class EE_Email
                 . 'Content-Disposition: ' . $this->_attachments[$i]['disposition'] . ';' . $this->newline
                 . 'Content-Transfer-Encoding: base64' . $this->newline;
 
-            $attachment[$z++] = chunk_split(base64_encode($file_content));
+            $attachment[$z++] = chunk_split(base64_encode((string) $file_content));
         }
 
         $body .= implode($this->newline, $attachment) . $this->newline . '--' . $this->_atc_boundary . '--';
@@ -1340,7 +1341,7 @@ class EE_Email
             for ($i = 0; $i < $length; $i++) {
                 // Grab the next character
                 $char = $line[$i];
-                $ascii = ord($char);
+                $ascii = ord($char[0]);
 
                 // Convert spaces and tabs but only if it's the end of the line
                 if ($i === ($length - 1) && ($ascii === 32 or $ascii === 9)) {
@@ -1803,14 +1804,17 @@ class EE_Email
                     $this->_send_data('HELO ' . $this->_get_hostname());
                 }
                 $resp = 250;
+
                 break;
             case 'starttls':
                 $this->_send_data('STARTTLS');
                 $resp = 220;
+
                 break;
             case 'from':
                 $this->_send_data('MAIL FROM:<' . $data . '>');
                 $resp = 250;
+
                 break;
             case 'to':
                 if ($this->dsn) {
@@ -1819,18 +1823,22 @@ class EE_Email
                     $this->_send_data('RCPT TO:<' . $data . '>');
                 }
                 $resp = 250;
+
                 break;
             case 'data':
                 $this->_send_data('DATA');
                 $resp = 354;
+
                 break;
             case 'reset':
                 $this->_send_data('RSET');
                 $resp = 250;
+
                 break;
             case 'quit':
                 $this->_send_data('QUIT');
                 $resp = 221;
+
                 break;
         }
 
@@ -2080,8 +2088,8 @@ class EE_Email
 
         // Determine storage path for dummy email files, prioritizing configured path if available.
         if ($configured_path) {
-            if (strpos($configured_path, SYSPATH . '/user/') !== 0) {
-                $tmppath = SYSPATH . '/user/' . ltrim($configured_path, '/');
+            if (strpos((string) $configured_path, SYSPATH . '/user/') !== 0) {
+                $tmppath = SYSPATH . '/user/' . ltrim((string) $configured_path, '/');
             } else {
                 $tmppath = $configured_path;
             }

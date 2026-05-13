@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -140,7 +141,7 @@ class SignedToken
             return $this->signer->sign($payload, $this->key, $this->algo);
         }
 
-        return hash_hmac($this->algo, $payload, $this->key);
+        return hash_hmac((string) $this->algo, $payload, $this->key);
     }
 
     /**

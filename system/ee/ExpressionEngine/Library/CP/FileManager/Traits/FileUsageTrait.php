@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -24,7 +25,7 @@ trait FileUsageTrait
         $fileUsageReplacements = [];
         $dirsAndFiles = [];
         $dirsAndFilesInSubfolders = [];
-        if (preg_match_all('/{filedir_(\d+)}([^\"\'\s]*)/', $data, $matches, PREG_SET_ORDER)) {
+        if (preg_match_all('/{filedir_(\d+)}([^\"\'\s]*)/', (string) $data, $matches, PREG_SET_ORDER)) {
             foreach ($matches as $match) {
                 $relativePath = $match[2] ?? '';
                 if ($relativePath === '') {

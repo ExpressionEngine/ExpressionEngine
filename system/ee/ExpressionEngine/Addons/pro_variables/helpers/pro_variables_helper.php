@@ -65,7 +65,7 @@ if (! function_exists('pro_associate_results')) {
         $array = array();
 
         foreach ($resultset as $row) {
-            if (array_key_exists($key, $row) && ! array_key_exists($row[$key], $array)) {
+            if (array_key_exists((string) $key, $row) && ! array_key_exists((string) $row[$key], $array)) {
                 $array[$row[$key]] = $row;
             }
         }

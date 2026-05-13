@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -253,7 +254,7 @@ class Filesystem
     public function deleteDir($path, $leave_empty = false)
     {
         $path = $this->normalize($path);
-        $path = $this->normalizeRelativePath(rtrim($path, '/'));
+        $path = $this->normalizeRelativePath(rtrim((string) $path, '/'));
 
         if (!$this->isDir($path)) {
             throw new FilesystemException("Directory does not exist {$path}.");
@@ -294,7 +295,7 @@ class Filesystem
         $contents_array = [];
 
         foreach ($contents as $item) {
-            if (($item['type'] == 'file' && ($includeHidden || strpos($item['path'], '.') !== 0)) || ($item['type'] == 'dir' && ($includeHidden || strpos($item['path'], '_') !== 0))) {
+            if (($item['type'] == 'file' && ($includeHidden || strpos((string) $item['path'], '.') !== 0)) || ($item['type'] == 'dir' && ($includeHidden || strpos((string) $item['path'], '_') !== 0))) {
                 $contents_array[] = $item['path'];
             }
         }
@@ -322,7 +323,7 @@ class Filesystem
 
             try {
                 $files = $this->getDirectoryContents($directory);
-            } catch(FilesystemException $e) {
+            } catch (FilesystemException $e) {
                 $files = [];
             }
 
@@ -584,7 +585,7 @@ class Filesystem
      */
     public function dirname($path)
     {
-        return pathinfo($this->normalize($path), PATHINFO_DIRNAME);
+        return pathinfo((string) $this->normalize($path), PATHINFO_DIRNAME);
     }
 
     /**
@@ -606,7 +607,7 @@ class Filesystem
      */
     public function basename($path)
     {
-        return basename($this->normalize($path));
+        return basename((string) $this->normalize($path));
     }
 
     /**
@@ -617,7 +618,7 @@ class Filesystem
      */
     public function filename($path)
     {
-        return pathinfo($this->normalize($path), PATHINFO_FILENAME);
+        return pathinfo((string) $this->normalize($path), PATHINFO_FILENAME);
     }
 
     /**
@@ -628,7 +629,7 @@ class Filesystem
      */
     public function extension($path)
     {
-        return pathinfo($this->normalize($path), PATHINFO_EXTENSION);
+        return pathinfo((string) $this->normalize($path), PATHINFO_EXTENSION);
     }
 
     /**
@@ -987,7 +988,7 @@ class Filesystem
      */
     public function addIndexHtml($dir)
     {
-        $dir = rtrim($dir, '/');
+        $dir = rtrim((string) $dir, '/');
         $dir = $this->normalizeRelativePath($dir);
 
         if (! $this->isDir($dir)) {
@@ -1096,10 +1097,10 @@ class Filesystem
         // Remove invisible control characters
         $path = preg_replace('#\\p{C}+#u', '', $path);
 
-        return str_replace('//', '/', implode([
-            in_array(substr($path, 0, 1), ['/', '\\']) ? '/' : '',
+        return str_replace('//', '/', implode('', [
+            in_array(substr((string) $path, 0, 1), ['/', '\\']) ? '/' : '',
             Flysystem\Util::normalizePath($path),
-            in_array(substr($path, -1), ['/', '\\']) ? '/' : ''
+            in_array(substr((string) $path, -1), ['/', '\\']) ? '/' : ''
         ]));
     }
 
@@ -1113,7 +1114,7 @@ class Filesystem
     {
         $adapter = $this->flysystem->getAdapter();
         $normalized = $this->normalizeAbsolutePath($path);
-        $prefix = rtrim($this->getPathPrefix(), '\\/');
+        $prefix = rtrim((string) $this->getPathPrefix(), '\\/');
 
         if (!empty($prefix) && strpos($normalized, $prefix) === 0) {
             return $normalized;

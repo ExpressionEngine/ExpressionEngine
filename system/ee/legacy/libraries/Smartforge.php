@@ -271,7 +271,7 @@ class Smartforge
         // Checks all parts of $unique as one query rather than individually.
         if (! empty($unique)) {
             foreach ($unique as $k => $v) {
-                if (array_key_exists($k, $values)) {
+                if (array_key_exists((string) $k, $values)) {
                     ee()->db->where($k, $v);
                 }
             }

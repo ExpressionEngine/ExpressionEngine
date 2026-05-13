@@ -47,7 +47,7 @@ class LayoutTab
         // we need to show alert if the status is not available,
         // and this is the point where we for sure have all data
         if ($field->getId() == 'status') {
-            if (! array_key_exists($field->getData(), $field->get('field_list_items'))) {
+            if (! array_key_exists((string) $field->getData(), $field->get('field_list_items'))) {
                 ee('CP/Alert')->makeInline('status-not-available')
                     ->asWarning()
                     ->cannotClose()

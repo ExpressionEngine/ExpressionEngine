@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -143,7 +144,7 @@ class Pages_tab
             unset($uris[$entry->entry_id]);
         }
         //ensure leading slash is present
-        $value = '/' . trim($values['pages_uri'], '/');
+        $value = '/' . trim((string) $values['pages_uri'], '/');
 
         $word_separator = ee()->config->item('word_separator') != "dash" ? '_' : '-';
         while (in_array($value, $uris)) {
@@ -306,7 +307,8 @@ class Pages_tab
                 $entry = ee('Model')->get('ChannelEntry', $entry_id)->fields('entry_id', 'title')->first();
                 if ($entry) {
                     $edit_link = ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);
-                    return sprintf(lang('duplicate_page_uri_used'), $edit_link, htmlentities($entry->title, ENT_QUOTES, 'UTF-8'));
+
+                    return sprintf(lang('duplicate_page_uri_used'), $edit_link, htmlentities((string) $entry->title, ENT_QUOTES, 'UTF-8'));
                 }
             }
 
@@ -409,10 +411,11 @@ class Pages_tab
     {
         $site_pages = ee()->config->item('site_pages');
         $site_id = ee()->config->item('site_id');
-        $uri = array_key_exists($entry->entry_id, $site_pages[$site_id]['uris']) ? $site_pages[$site_id]['uris'][$entry->entry_id] : '';
+        $uri = array_key_exists((string) $entry->entry_id, $site_pages[$site_id]['uris']) ? $site_pages[$site_id]['uris'][$entry->entry_id] : '';
         if (!empty($uri)) {
             return '<a href="' . str_replace('//', '/', ee()->functions->fetch_site_index(0, 0) . $uri) . '" target="_blank"><i class="fal fa-link"></i></a>';
         }
+
         return '';
     }
 

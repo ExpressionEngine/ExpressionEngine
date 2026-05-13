@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -113,11 +114,11 @@ class Pro_variables
             foreach ($this->vars as $t) {
                 if ($t['variable_name'] == $var && $t['is_hidden'] === 'n') {
                     array_push($local_vars, $t);
-                } elseif (strpos($tagdata, "{$t['variable_name']}") !== false && $t['is_hidden'] === 'n') {
+                } elseif (strpos((string) $tagdata, "{$t['variable_name']}") !== false && $t['is_hidden'] === 'n') {
                     array_push($local_vars, $t);
                 }
                 //Get the early parsed variables
-                elseif (!empty($t['variable_data']) && strpos($tagdata, "{$t['variable_data']}") !== false && $t['is_hidden'] === 'n') {
+                elseif (!empty($t['variable_data']) && strpos((string) $tagdata, "{$t['variable_data']}") !== false && $t['is_hidden'] === 'n') {
                     array_push($local_vars, $t);
                 }
             }
@@ -145,7 +146,7 @@ class Pro_variables
 
             // Parse vars based on data array
             $it = ee()->TMPL->parse_variables_row($tagdata, $data);
-        } elseif (array_key_exists($var, $this->vars)) {
+        } elseif (array_key_exists((string) $var, $this->vars)) {
             //  We have a single var. Focus on it. Get object from it.
             $row = $this->vars[$var];
             $obj = ee()->pro_variables_types->get($row);
@@ -355,14 +356,14 @@ class Pro_variables
         //  Get site id based on site_name:var_name value
         // -------------------------------------
 
-        if (! empty($var) && ($pos = strpos($var, ':')) !== false) {
+        if (! empty($var) && ($pos = strpos((string) $var, ':')) !== false) {
             // Get the part before the :
-            $prefix = substr($var, 0, $pos);
+            $prefix = substr((string) $var, 0, $pos);
 
             // If MSM is enabled and prefix is a valid site name
             if (ee()->config->item('multiple_sites_enabled') == 'y' && in_array($prefix, ee()->TMPL->sites)) {
                 // Strip prefix from var name
-                $var = substr($var, $pos + 1);
+                $var = substr((string) $var, $pos + 1);
 
                 // Get the correct site ID
                 $site_id = array_search($prefix, ee()->TMPL->sites);

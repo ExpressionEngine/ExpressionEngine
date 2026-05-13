@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -180,7 +181,7 @@ class CI_DB_driver
 
         // Verify table prefix and replace if necessary
         if (($this->dbprefix != '' and $this->swap_pre != '') and ($this->dbprefix != $this->swap_pre)) {
-            $sql = preg_replace("/(\W)" . $this->swap_pre . "(\S+?)/", "\${1}" . $this->dbprefix . "\${2}", $sql);
+            $sql = preg_replace("/(\W)" . $this->swap_pre . "(\S+?)/", "\${1}" . $this->dbprefix . "\${2}", (string) $sql);
         }
 
         // Compile binds if needed
@@ -211,7 +212,7 @@ class CI_DB_driver
                 return $this->display_error(array(
                     '<b>Error number</b>: ' . $error_no,
                     $error_msg,
-                    htmlentities($sql, ENT_QUOTES, 'UTF-8')
+                    htmlentities((string) $sql, ENT_QUOTES, 'UTF-8')
                 ));
             }
 
@@ -387,7 +388,7 @@ class CI_DB_driver
      */
     public function compile_binds($sql, $binds)
     {
-        if (strpos($sql, $this->bind_marker) === false) {
+        if (strpos((string) $sql, (string) $this->bind_marker) === false) {
             return $sql;
         }
 
@@ -396,7 +397,7 @@ class CI_DB_driver
         }
 
         // Get the sql segments around the bind markers
-        $segments = explode($this->bind_marker, $sql);
+        $segments = explode($this->bind_marker, (string) $sql);
 
         // The count of bind should be 1 less then the count of segments
         // If there are more bind arguments trim it down
@@ -424,7 +425,7 @@ class CI_DB_driver
      */
     public function is_write_type($sql)
     {
-        if (! preg_match('/^\s*"?(SET|INSERT|UPDATE|DELETE|REPLACE|CREATE|DROP|TRUNCATE|LOAD DATA|COPY|ALTER|GRANT|REVOKE|LOCK|UNLOCK)\s+/i', $sql)) {
+        if (! preg_match('/^\s*"?(SET|INSERT|UPDATE|DELETE|REPLACE|CREATE|DROP|TRUNCATE|LOAD DATA|COPY|ALTER|GRANT|REVOKE|LOCK|UNLOCK)\s+/i', (string) $sql)) {
             return false;
         }
 
@@ -768,7 +769,7 @@ class CI_DB_driver
      */
     public function _has_operator($str)
     {
-        $str = trim($str);
+        $str = trim((string) $str);
         if (! preg_match("/(\s|<|>|!|=|is null|is not null)/i", $str)) {
             return false;
         }
@@ -788,7 +789,7 @@ class CI_DB_driver
     {
         $driver = $this->dbdriver . '_';
 
-        if (false === strpos($driver, $function)) {
+        if (false === strpos($driver, (string) $function)) {
             $function = $driver . $function;
         }
 
@@ -962,29 +963,29 @@ class CI_DB_driver
         }
 
         // Convert tabs or multiple spaces into single spaces
-        $item = preg_replace('/[\t ]+/', ' ', $item);
+        $item = preg_replace('/[\t ]+/', ' ', (string) $item);
 
         // If the item has an alias declaration we remove it and set it aside.
         // Basically we remove everything to the right of the first space
         $alias = '';
-        if (strpos($item, ' ') !== false) {
-            $alias = strstr($item, " ");
-            $item = substr($item, 0, - strlen($alias));
+        if (strpos((string) $item, ' ') !== false) {
+            $alias = strstr((string) $item, " ");
+            $item = substr((string) $item, 0, - strlen($alias));
         }
 
         // This is basically a bug fix for queries that use MAX, MIN, etc.
         // If a parenthesis is found we know that we do not need to
         // escape the data or add a prefix.  There's probably a more graceful
         // way to deal with this, but I'm not thinking of it -- Rick
-        if (strpos($item, '(') !== false) {
+        if (strpos((string) $item, '(') !== false) {
             return $item . $alias;
         }
 
         // Break the string apart if it contains periods, then insert the table prefix
         // in the correct location, assuming the period doesn't indicate that we're dealing
         // with an alias. While we're at it, we will escape the components
-        if (strpos($item, '.') !== false) {
-            $parts = explode('.', $item);
+        if (strpos((string) $item, '.') !== false) {
+            $parts = explode('.', (string) $item);
 
             // Does the first segment of the exploded item match
             // one of the aliases previously identified?  If so,
@@ -1029,12 +1030,12 @@ class CI_DB_driver
                 }
 
                 // Verify table prefix and replace if necessary
-                if ($this->swap_pre != '' && strncmp($parts[$i], $this->swap_pre, strlen($this->swap_pre)) === 0) {
+                if ($this->swap_pre != '' && strncmp($parts[$i], (string) $this->swap_pre, strlen((string) $this->swap_pre)) === 0) {
                     $parts[$i] = preg_replace("/^" . $this->swap_pre . "(\S+?)/", $this->dbprefix . "\\1", $parts[$i]);
                 }
 
                 // We only add the table prefix if it does not already exist
-                if (substr($parts[$i], 0, strlen($this->dbprefix)) != $this->dbprefix) {
+                if (substr((string) $parts[$i], 0, strlen((string) $this->dbprefix)) != $this->dbprefix) {
                     $parts[$i] = $this->dbprefix . $parts[$i];
                 }
 
@@ -1052,12 +1053,12 @@ class CI_DB_driver
         // Is there a table prefix?  If not, no need to insert it
         if ($this->dbprefix != '') {
             // Verify table prefix and replace if necessary
-            if ($this->swap_pre != '' && strncmp($item, $this->swap_pre, strlen($this->swap_pre)) === 0) {
-                $item = preg_replace("/^" . $this->swap_pre . "(\S+?)/", $this->dbprefix . "\\1", $item);
+            if ($this->swap_pre != '' && strncmp((string) $item, (string) $this->swap_pre, strlen((string) $this->swap_pre)) === 0) {
+                $item = preg_replace("/^" . $this->swap_pre . "(\S+?)/", $this->dbprefix . "\\1", (string) $item);
             }
 
             // Do we prefix an item with no segments?
-            if ($prefix_single == true and substr($item, 0, strlen($this->dbprefix)) != $this->dbprefix) {
+            if ($prefix_single == true and substr((string) $item, 0, strlen((string) $this->dbprefix)) != $this->dbprefix) {
                 $item = $this->dbprefix . $item;
             }
         }
@@ -1089,7 +1090,7 @@ class CI_DB_driver
             return $item;
         }
         // Avoid breaking functions and literal values inside queries
-        elseif (ctype_digit($item) or $item[0] === "'" or ($this->_escape_char !== '"' && $item[0] === '"') or strpos($item, '(') !== false) {
+        elseif (ctype_digit((string) $item) or $item[0] === "'" or ($this->_escape_char !== '"' && $item[0] === '"') or strpos((string) $item, '(') !== false) {
             return $item;
         }
 
@@ -1098,24 +1099,24 @@ class CI_DB_driver
         if (empty($preg_ec)) {
             if (is_array($this->_escape_char)) {
                 $preg_ec = array(
-                    preg_quote($this->_escape_char[0], '/'),
-                    preg_quote($this->_escape_char[1], '/'),
+                    preg_quote((string) $this->_escape_char[0], '/'),
+                    preg_quote((string) $this->_escape_char[1], '/'),
                     $this->_escape_char[0],
                     $this->_escape_char[1]
                 );
             } else {
-                $preg_ec[0] = $preg_ec[1] = preg_quote($this->_escape_char, '/');
+                $preg_ec[0] = $preg_ec[1] = preg_quote((string) $this->_escape_char, '/');
                 $preg_ec[2] = $preg_ec[3] = $this->_escape_char;
             }
         }
 
         foreach ($this->_reserved_identifiers as $id) {
-            if (strpos($item, '.' . $id) !== false) {
-                return preg_replace('/' . $preg_ec[0] . '?([^' . $preg_ec[1] . '\.]+)' . $preg_ec[1] . '?\./i', $preg_ec[2] . '$1' . $preg_ec[3] . '.', $item);
+            if (strpos((string) $item, '.' . $id) !== false) {
+                return preg_replace('/' . $preg_ec[0] . '?([^' . $preg_ec[1] . '\.]+)' . $preg_ec[1] . '?\./i', $preg_ec[2] . '$1' . $preg_ec[3] . '.', (string) $item);
             }
         }
 
-        return preg_replace('/' . $preg_ec[0] . '?([^' . $preg_ec[1] . '\.]+)' . $preg_ec[1] . '?(\.)?/i', $preg_ec[2] . '$1' . $preg_ec[3] . '$2', $item);
+        return preg_replace('/' . $preg_ec[0] . '?([^' . $preg_ec[1] . '\.]+)' . $preg_ec[1] . '?(\.)?/i', $preg_ec[2] . '$1' . $preg_ec[3] . '$2', (string) $item);
     }
 }
 

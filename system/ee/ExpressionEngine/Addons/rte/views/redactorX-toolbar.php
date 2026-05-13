@@ -4,7 +4,7 @@
             <div class="rx-toolbar cke_toolbox">
                 <?php foreach ($buttons as $button => $label): ?>
                     <?php
-                        $lc_class = str_replace(':', '', strtolower($button));
+                        $lc_class = str_replace(':', '', strtolower((string) $button));
                         $id = 'tb-option-' . $lc_class;
                         $svg = '';
                         switch ($lc_class) {
@@ -70,7 +70,7 @@
                     ?>
                     <span id="<?php echo $id ?>" class="cke_toolbar tb-option tb-selected">
                         <span class="cke_toolgroup">
-                            <a class="rx-button rx-button-target rx-button-toolbar <?php if (in_array($button, $selection) === $reverse) { echo 'disable';} ?>" tabindex="-1" title="<?php echo htmlspecialchars($label) ?>">
+                            <a class="rx-button rx-button-target rx-button-toolbar <?php if (in_array($button, $selection) === $reverse) { echo 'disable';} ?>" tabindex="-1" title="<?php echo htmlspecialchars((string) $label) ?>">
                                 <span class="rx-button-icon">
                                     <?=(!empty($svg)) ? $svg : '<span class="rx-icon-' . $icon_class .'"></span>'; ?>
                                 </span>

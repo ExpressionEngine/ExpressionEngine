@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -44,7 +45,7 @@ class EntryManagerViews extends Filter
 
             $available_views[] = [
                 'view_id' => $available_view->view_id,
-                'name' => htmlentities($available_view->name, ENT_QUOTES, 'UTF-8'),
+                'name' => htmlentities((string) $available_view->name, ENT_QUOTES, 'UTF-8'),
                 'url' => $item_url->compile(),
             ];
         }

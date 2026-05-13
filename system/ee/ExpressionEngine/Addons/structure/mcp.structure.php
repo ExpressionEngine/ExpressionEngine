@@ -336,7 +336,7 @@ class Structure_mcp
 
         // Get Page Slugs
         foreach ($uris as $key => $uri) {
-            $slug = trim($uri, '/');
+            $slug = trim((string) $uri, '/');
             if (strpos($slug, '/')) {
                 $slug = substr(strrchr($slug, '/'), 1);
             }
@@ -701,13 +701,13 @@ class Structure_mcp
         $settings = $this->sql->get_settings();
         if (!$this->sql->user_access('perm_delete', $settings)) {
             ee('CP/Alert')->makeInline('Permission Denied')
-            ->asIssue()->withTitle('Permission Denied')
-            ->canClose()->defer();
- 
+                ->asIssue()->withTitle('Permission Denied')
+                ->canClose()->defer();
+
             ee()->functions->redirect($this->base_url);
         }
 
-        $channel_ids = explode(',', ee()->input->get_post('channel_ids'));
+        $channel_ids = explode(',', (string) ee()->input->get_post('channel_ids'));
 
         // add structure nav history beofre deleting data by channel
         $deleted_structure_data_channels = print_r($channel_ids, true);
@@ -835,7 +835,7 @@ class Structure_mcp
         foreach ($_POST as $key => $value) {
             // Good heavens, this is just plain ghetto. If there is no "perm", it's a "setting"
             // if if there's no "perm" AND it's not a number, then it's a multi-option permission.
-            $value = strpos($key, 'perm_') === 0 && is_numeric($value) ? 'y' : $value;
+            $value = strpos((string) $key, 'perm_') === 0 && is_numeric($value) ? 'y' : $value;
             if ($key !== 'submit') {
                 ee()->db->query(ee()->db->insert_string(
                     "exp_structure_settings",
@@ -878,7 +878,7 @@ class Structure_mcp
     public function get_site_path()
     {
         // extract path info
-        $site_url_path = parse_url(ee()->functions->fetch_site_index(), PHP_URL_PATH);
+        $site_url_path = parse_url((string) ee()->functions->fetch_site_index(), PHP_URL_PATH);
 
         $path_parts = pathinfo($site_url_path);
         $site_path = $path_parts['dirname'];
@@ -969,6 +969,7 @@ class Structure_mcp
         if (ee()->extensions->active_hook('structure_data_validation') === true) {
             $vars['other_validations'] = ee()->extensions->call('structure_data_validation', $vars);
         }
+
         //
         // -------------------------------------------
         return ee()->general_helper->view('validation', $vars, true);
@@ -1056,7 +1057,7 @@ class Structure_mcp
 
                 // ok, now lets restore the structure table for this site id...
                 // second paramater of true forces the decode to an array for our insert_batch
-                $structure_table_data = json_decode($nav_to_rollback_to->structure, true);
+                $structure_table_data = json_decode((string) $nav_to_rollback_to->structure, true);
 
                 // ok remove old stuff for this site_id from the structure table
                 ee()->db->delete('structure', array('site_id' => $nav_to_rollback_to->site_id));

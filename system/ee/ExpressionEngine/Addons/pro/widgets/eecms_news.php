@@ -39,7 +39,7 @@ class Eecms_news extends Dashboard\AbstractDashboardWidget implements Dashboard\
 
                 foreach ($feed->get_items(0, 10) as $item) {
                     $news[] = array(
-                        'title'   => strip_tags($item->get_title()),
+                        'title'   => strip_tags((string) $item->get_title()),
                         'date'    => ee()->localize->format_date(
                             ee()->session->userdata('date_format', ee()->config->item('date_format')),
                             $item->get_date('U')

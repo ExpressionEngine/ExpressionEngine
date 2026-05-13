@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -7,7 +8,6 @@
  * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -171,7 +171,7 @@ trait Pro_search_base
         if (! empty($extra)) {
             // convert to array
             if (! is_array($extra)) {
-                parse_str($extra, $extra);
+                parse_str((string) $extra, $extra);
             }
 
             // And add to the url

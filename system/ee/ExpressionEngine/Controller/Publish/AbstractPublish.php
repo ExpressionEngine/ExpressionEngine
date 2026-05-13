@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -349,7 +350,7 @@ abstract class AbstractPublish extends CP_Controller
             if ($tab->isVisible()) {
                 foreach ($tab->getFields() as $field) {
                     // Fields that were not required and not visible were not rendered
-                    $field_name = strstr($field->getName(), '[', true) ?: $field->getName();
+                    $field_name = strstr((string) $field->getName(), '[', true) ?: $field->getName();
 
                     //categories need special treatment
                     if ($field_name == 'categories') {
@@ -363,7 +364,7 @@ abstract class AbstractPublish extends CP_Controller
                         continue;
                     }
 
-                    if (! array_key_exists($field_name, $_POST)) {
+                    if (! array_key_exists((string) $field_name, $_POST)) {
                         $_POST[$field_name] = null;
                     }
                 }
@@ -377,7 +378,7 @@ abstract class AbstractPublish extends CP_Controller
         //workaround if some category groups are hidden and some are displayed
         if (count($category_fields_hidden) != 0 && count($category_fields_hidden) != count($category_fields)) {
             foreach ($category_fields_hidden as $fieldname) {
-                $cat_group_name = trim(strstr($fieldname, '['), '[]');
+                $cat_group_name = trim(strstr((string) $fieldname, '['), '[]');
                 $cat_group_id = str_replace('cat_group_id_', '', $cat_group_name);
                 $_POST['categories'][$cat_group_name] = $entry->Categories->filter('group_id', $cat_group_id)->pluck('cat_id');
             }
@@ -474,7 +475,7 @@ abstract class AbstractPublish extends CP_Controller
             ? ee('CP/Alert')->makeStandard()
             : ee('CP/Alert')->makeInline('entry-form');
 
-        $lang_string = sprintf(lang($action . '_entry_success_desc'), htmlentities($edit_entry_url, ENT_QUOTES, 'UTF-8'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8'), ee()->localize->human_time($entry->edit_date, true, true));
+        $lang_string = sprintf(lang($action . '_entry_success_desc'), htmlentities((string) $edit_entry_url, ENT_QUOTES, 'UTF-8'), htmlentities((string) $entry->title, ENT_QUOTES, 'UTF-8'), ee()->localize->human_time($entry->edit_date, true, true));
 
         $alert->asSuccess()
             ->withTitle(lang($action . '_entry_success'))
@@ -499,7 +500,7 @@ abstract class AbstractPublish extends CP_Controller
                     'label' => $entry->title,
                     'instructions' => $entry->Channel->channel_title,
                     'can_edit' => ($entry->author_id == ee()->session->userdata('member_id')) ? ee('Permission')->has('can_edit_self_entries_channel_id_' . $entry->channel_id) : ee('Permission')->has('can_edit_other_entries_channel_id_' . $entry->channel_id),
-                    'editable' => (ee('Permission')->isSuperAdmin() || array_key_exists($entry->Channel->getId(), ee()->session->userdata('assigned_channels'))),
+                    'editable' => (ee('Permission')->isSuperAdmin() || array_key_exists((string) $entry->Channel->getId(), ee()->session->userdata('assigned_channels'))),
                 ]
             ];
 
@@ -524,7 +525,7 @@ abstract class AbstractPublish extends CP_Controller
             }
 
             if (ee()->input->get('return') != '') {
-                $redirect_url = urldecode(ee()->input->get('return'));
+                $redirect_url = urldecode((string) ee()->input->get('return'));
             } elseif (ee()->input->post('return') != '') {
                 $redirect_url = ee()->input->post('return');
             } else {
@@ -680,7 +681,7 @@ abstract class AbstractPublish extends CP_Controller
                     $configuredUrls = array_merge($configuredUrls, $extraDomains);
                 }
                 foreach ($configuredUrls as $configuredUrl) {
-                    if (strpos($configuredUrl, $_SERVER['HTTP_HOST']) !== false) {
+                    if (strpos((string) $configuredUrl, (string) $_SERVER['HTTP_HOST']) !== false) {
                         $lp_domain_mismatch = false;
 
                         break;
@@ -715,14 +716,14 @@ abstract class AbstractPublish extends CP_Controller
 
                 $return = null;
                 if (ee()->input->get('return') != '') {
-                    $return = urldecode(ee()->input->get('return', true));
+                    $return = urldecode((string) ee()->input->get('return', true));
                     $preview_url .= AMP . 'return=' . rawurlencode(base64_encode($return));
                 }
 
                 $from_origin = null;
                 //cross-domain live previews are only possible if $_SERVER['HTTP_HOST'] is set
                 if (isset($_SERVER['HTTP_HOST']) && !empty($_SERVER['HTTP_HOST'])) {
-                    $from_origin = (ee('Request')->isEncrypted() ? 'https://' : 'http://') . strtolower($_SERVER['HTTP_HOST']);
+                    $from_origin = (ee('Request')->isEncrypted() ? 'https://' : 'http://') . strtolower((string) $_SERVER['HTTP_HOST']);
                     $preview_url .= AMP . 'from=' . rawurlencode(base64_encode($from_origin));
                 }
 
@@ -763,6 +764,7 @@ abstract class AbstractPublish extends CP_Controller
                 ->withTitle(lang('preview_url_not_set'))
                 ->addToBody(sprintf(lang('preview_url_not_set_desc'), ee('CP/URL')->make('channels/edit/' . $entry->channel_id)->compile() . '#tab=t-4&id=fieldset-preview_url'));
             ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
+
             return false;
         }
 

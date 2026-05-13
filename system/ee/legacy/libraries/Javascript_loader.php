@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -52,7 +53,7 @@ class Javascript_loader
 
         foreach ($types as $type => $path) {
             $mock_name .= ee()->input->get_post($type);
-            $files = explode(',', ee()->input->get_post($type));
+            $files = explode(',', (string) ee()->input->get_post($type));
 
             if ($type == 'template') {
                 if (!isset(ee()->JS_TMPL)) {
@@ -161,14 +162,14 @@ class Javascript_loader
 
         // Remove anything after the semicolon
 
-        if ($pos = strrpos($modified_since, ';') !== false) {
-            $modified_since = substr($modified_since, 0, $pos);
+        if ($pos = strrpos((string) $modified_since, ';') !== false) {
+            $modified_since = substr((string) $modified_since, 0, $pos);
         }
 
         // If the file is in the client cache, we'll
         // send a 304 and be done with it.
 
-        if ($modified_since && (strtotime($modified_since) == $modified)) {
+        if ($modified_since && (strtotime((string) $modified_since) == $modified)) {
             ee()->output->set_status_header(304);
             exit;
         }

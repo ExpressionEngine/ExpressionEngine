@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -8,7 +9,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-use  ExpressionEngine\Library\Core\LoaderFacade;
+use ExpressionEngine\Library\Core\LoaderFacade;
 
 /**
  * Loader Class
@@ -94,7 +95,7 @@ class EE_Loader
         // until we hit a third party or non_cascading path.
 
         foreach (array_reverse($orig_paths, true) as $path => $cascade) {
-            if (strpos($path, PATH_THIRD) !== false or $cascade === false) {
+            if (strpos((string) $path, PATH_THIRD) !== false or $cascade === false) {
                 break;
             }
 
@@ -132,12 +133,12 @@ class EE_Loader
             return;
         }
 
-        if (strtolower($library) == 'api') {
+        if (strtolower((string) $library) == 'api') {
             $object_name = 'legacy_api';
         }
 
         // Security is always loaded
-        if (strtolower($library) == 'security') {
+        if (strtolower((string) $library) == 'security') {
             return null;
         }
 
@@ -245,12 +246,12 @@ class EE_Loader
         $path = '';
 
         // Is the model in a sub-folder? If so, parse out the filename and path.
-        if (($last_slash = strrpos($model, '/')) !== false) {
+        if (($last_slash = strrpos((string) $model, '/')) !== false) {
             // The path is in front of the last slash
-            $path = substr($model, 0, $last_slash + 1);
+            $path = substr((string) $model, 0, $last_slash + 1);
 
             // And the model name behind it
-            $model = substr($model, $last_slash + 1);
+            $model = substr((string) $model, $last_slash + 1);
         }
 
         if ($name == '') {
@@ -265,7 +266,7 @@ class EE_Loader
             show_error('The model name you are loading is the name of a resource that is already being used: ' . $name);
         }
 
-        $model = strtolower($model);
+        $model = strtolower((string) $model);
 
         foreach ($this->_ci_model_paths as $mod_path) {
             if (! file_exists($mod_path . 'models/' . $path . $model . '.php')) {
@@ -583,7 +584,7 @@ class EE_Loader
      */
     public function add_package_path($path, $view_cascade = true)
     {
-        $path = rtrim($path, '/') . '/';
+        $path = rtrim((string) $path, '/') . '/';
 
         array_unshift($this->_ci_library_paths, $path);
         array_unshift($this->_ci_model_paths, $path);
@@ -635,7 +636,7 @@ class EE_Loader
                 $void = array_shift($this->_ci_view_paths);
             }
         } else {
-            $path = rtrim($path, '/') . '/';
+            $path = rtrim((string) $path, '/') . '/';
             foreach (array('_ci_library_paths', '_ci_model_paths', '_ci_helper_paths') as $var) {
                 if (($key = array_search($path, $this->{$var})) !== false) {
                     unset($this->{$var}[$key]);

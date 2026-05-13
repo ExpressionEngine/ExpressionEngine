@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -52,18 +53,22 @@ class Members extends CP_Controller
             switch ($action) {
                 case 'remove':
                     $this->delete($ids);
+
                     break;
 
                 case 'approve':
                     $this->approve($ids);
+
                     break;
 
                 case 'decline':
                     $this->decline($ids);
+
                     break;
 
                 case 'resend':
                     $this->resend($ids);
+
                     break;
             }
 
@@ -272,10 +277,10 @@ class Members extends CP_Controller
 
         $swap = array(
             'name' => $member->getMemberName(),
-            'site_name' => stripslashes(ee()->config->item('site_name')),
+            'site_name' => stripslashes((string) ee()->config->item('site_name')),
             'site_url' => ee()->config->item('site_url'),
             'username' => $member->username,
-            ) + $extra_swap;
+        ) + $extra_swap;
 
         $email_title = ee()->functions->var_swap($template->data_title, $swap);
         $email_message = ee()->functions->var_swap($template->template_data, $swap);
@@ -289,6 +294,7 @@ class Members extends CP_Controller
         ee()->email->to($member->email);
         ee()->email->subject($email_title);
         ee()->email->message(entities_to_ascii($email_message));
+
         return ee()->email->send();
     }
 
@@ -387,7 +393,7 @@ class Members extends CP_Controller
      */
     public function heirFilter($group_ids = null, $selected = null)
     {
-        $selected = $selected ?: explode('|', ee('Request')->get('selected'));
+        $selected = $selected ?: explode('|', (string) ee('Request')->get('selected'));
 
         $search = null;
         if (!empty(ee('Request')->get('search'))) {
@@ -397,7 +403,7 @@ class Members extends CP_Controller
 
         if (!empty($selected)) {
             foreach ($selected as $selectedMemberId) {
-                if (array_key_exists($selectedMemberId, $authors)) {
+                if (array_key_exists((string) $selectedMemberId, $authors)) {
                     unset($authors[$selectedMemberId]);
                 }
             }
@@ -631,7 +637,7 @@ class Members extends CP_Controller
             $swap = array(
                 'name' => $member->screen_name,
                 'email' => $member->email,
-                'site_name' => stripslashes(ee()->config->item('site_name'))
+                'site_name' => stripslashes((string) ee()->config->item('site_name'))
             );
 
             ee()->lang->loadfile('member');
@@ -645,7 +651,7 @@ class Members extends CP_Controller
             );
 
             // No notification for the user themselves, if they're in the list
-            if (strpos($notify_address, $member->email) !== false) {
+            if (strpos($notify_address, (string) $member->email) !== false) {
                 $notify_address = str_replace($member->email, "", $notify_address);
             }
 
@@ -781,6 +787,7 @@ class Members extends CP_Controller
                             'instructions' => $member->username
                         ]
                     ];
+
                     return $result;
                 }
 
@@ -873,6 +880,7 @@ class Members extends CP_Controller
                 'text' => 'save_and_close',
                 'working' => 'btn_saving'
             ]];
+
             return ee('View')->make('settings/modal-form')->render($vars);
         }
 
@@ -1058,16 +1066,19 @@ class Members extends CP_Controller
                     $role_id = $pendingRole->role_id;
                 } else {
                     $errors[] = sprintf(lang('cannot_activate_member_role_not_exists'), $member->username, $pendingRole->name);
+
                     continue;
                 }
             }
             $role = ee('Model')->get('Role', $role_id)->first();
             if (empty($role)) {
                 $errors[] = sprintf(lang('cannot_activate_member_role_not_exists'), $member->username, $role->name);
+
                 continue;
             }
             if ($role->is_locked == 'y' && !ee('Permission')->isSuperAdmin()) {
                 $errors[] = sprintf(lang('cannot_activate_member_role_is_locked'), $member->username, $role->name);
+
                 continue;
             }
             $member->Roles = new Collection([$role]);
@@ -1188,13 +1199,16 @@ class Members extends CP_Controller
                 switch ($filter_values['search_in']) {
                     case 'titles_and_content':
                         $search_fields = array_merge(['username', 'screen_name', 'email', 'member_id'], $content_fields);
+
                         break;
                     case 'content':
                         $search_fields = $content_fields;
+
                         break;
                     case 'titles':
                     default:
                         $search_fields = ['username', 'screen_name', 'email', 'member_id'];
+
                         break;
                 }
 
@@ -1341,7 +1355,6 @@ class Members extends CP_Controller
                 'title' => $member->screen_name,
             ];
 
-
             if ($preselectedId && $member->member_id == $preselectedId) {
                 $attrs['class'] .= ' selected';
             }
@@ -1359,7 +1372,7 @@ class Members extends CP_Controller
 
         $vars['filters'] = $filters->renderEntryFilters($base_url);
         $vars['filters_search'] = $filters->renderSearch($base_url);
-        $vars['search_value'] = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
+        $vars['search_value'] = htmlentities((string) ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
         $vars['role_id'] = $roleId;
 
         ee()->javascript->set_global([
@@ -1372,6 +1385,7 @@ class Members extends CP_Controller
                 'cp/publish/entry-list',
             ),
         ));
+
         return $vars;
     }
 
@@ -1408,7 +1422,7 @@ class Members extends CP_Controller
                 continue;
             }
 
-            $column_choices[$identifier] = strip_tags(lang($column->getTableColumnLabel()));
+            $column_choices[$identifier] = strip_tags((string) lang($column->getTableColumnLabel()));
         }
 
         return $column_choices;

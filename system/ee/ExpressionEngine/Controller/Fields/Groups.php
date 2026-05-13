@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -241,6 +242,7 @@ class Groups extends AbstractFieldsController
                     foreach ($fields as $field) {
                         if ($field->field_is_conditional) {
                             $syncNeeded = true;
+
                             break;
                         }
                     }
@@ -257,7 +259,7 @@ class Groups extends AbstractFieldsController
                     ee()->functions->redirect(
                         ee('CP/URL')->make('utilities/sync-conditional-fields/sync')
                             ->setQueryStringVariable('channel_id', $channels->pluck('channel_id'))
-                            ->setQueryStringVariable('return', base64_encode($redirectUrl))
+                            ->setQueryStringVariable('return', base64_encode((string) $redirectUrl))
                             ->compile()
                     );
                 }
@@ -346,7 +348,7 @@ class Groups extends AbstractFieldsController
                             'value' => $field_group->group_description
                         )
                     )
-                        ),
+                ),
                 array(
                     'title' => 'fields',
                     'desc' => 'fields_assign_to_group',

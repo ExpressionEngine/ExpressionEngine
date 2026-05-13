@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -175,12 +176,12 @@ class Updater
             }
 
             // In webpages, we must have script tags to check
-            if ($template->template_type == 'webpage' && strpos($template->template_data, '<script') === false) {
+            if ($template->template_type == 'webpage' && strpos((string) $template->template_data, '<script') === false) {
                 continue;
             }
 
             // If there aren't any conditional tags, then we don't need to continue.
-            if (strpos($template->template_data, LD . 'if') === false) {
+            if (strpos((string) $template->template_data, LD . 'if') === false) {
                 continue;
             }
 
@@ -190,11 +191,11 @@ class Updater
             $regex = '/([()]|do|with|)\s*\{if\b/is';
 
             if ($template->template_type == 'js') {
-                if (preg_match($regex, $template->template_data)) {
+                if (preg_match($regex, (string) $template->template_data)) {
                     $has_conditional_in_scripts = true;
                 }
             } elseif ($template->template_type == 'template_data') {
-                if (preg_match('/<script\s+(.*?)<\/script/is', $template->template_data, $matches)) {
+                if (preg_match('/<script\s+(.*?)<\/script/is', (string) $template->template_data, $matches)) {
                     foreach ($matches as $match) {
                         if (preg_match($regex, $match[0])) {
                             $has_conditional_in_scripts = true;
@@ -260,7 +261,7 @@ class Updater
         $warnings = array();
         foreach ($templates as $template) {
             // This catches any {layout=} and {layout:set} tags
-            if (preg_match_all('/(' . LD . 'layout\s*)(.*?)' . RD . '/s', $template->template_data, $matches, PREG_SET_ORDER)) {
+            if (preg_match_all('/(' . LD . 'layout\s*)(.*?)' . RD . '/s', (string) $template->template_data, $matches, PREG_SET_ORDER)) {
                 foreach ($matches as $match) {
                     $params = ee('Variables/Parser')->parseTagParameters($match[2]);
 

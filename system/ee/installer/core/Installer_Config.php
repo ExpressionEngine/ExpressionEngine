@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -124,7 +125,7 @@ class Installer_Config extends EE_Config
             unset($site['site_id']);
 
             foreach ($site as $column => $data) {
-                $data = unserialize(base64_decode($data));
+                $data = unserialize(base64_decode((string) $data));
 
                 foreach ($remove_key as $key) {
                     if (isset($data[$key])) {
@@ -194,8 +195,8 @@ class MSM_Config extends EE_Config
 
         // Fold in the Preferences in the Database
         foreach ($query->row_array() as $name => $data) {
-            if (substr($name, -12) == '_preferences') {
-                $data = base64_decode($data);
+            if (substr((string) $name, -12) == '_preferences') {
+                $data = base64_decode((string) $data);
 
                 if (! is_string($data) or substr($data, 0, 2) != 'a:') {
                     show_error("Site Error:  Unable to Load Site Preferences; Invalid Preference Data", 503);
@@ -205,7 +206,7 @@ class MSM_Config extends EE_Config
             } elseif ($name == 'site_pages') {
                 $this->config['site_pages'] = $this->site_pages($row['site_id'], $data);
             } elseif ($name == 'site_bootstrap_checksums') {
-                $data = base64_decode($data);
+                $data = base64_decode((string) $data);
 
                 if (! is_string($data) or substr($data, 0, 2) != 'a:') {
                     $this->config['site_bootstrap_checksums'] = array();
@@ -240,7 +241,7 @@ class MSM_Config extends EE_Config
         ee()->db->save_queries = (ee()->config->item('show_profiler') == 'y' or DEBUG == 1) ? true : false;
 
         // lowercase version charset to use in HTML output
-        $this->config['output_charset'] = strtolower($this->config['charset']);
+        $this->config['output_charset'] = strtolower((string) $this->config['charset']);
     }
 
     /**
@@ -272,7 +273,7 @@ class MSM_Config extends EE_Config
             unset($site['site_id']);
 
             foreach ($site as $column => $data) {
-                $data = unserialize(base64_decode($data));
+                $data = unserialize(base64_decode((string) $data));
 
                 foreach ($remove_key as $key) {
                     if (isset($data[$key])) {

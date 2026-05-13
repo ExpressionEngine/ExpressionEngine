@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -7,7 +8,6 @@
  * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -266,15 +266,15 @@ class Pro_search_words
         foreach ($rules as $pattern => $result) {
             $pattern = "/{$pattern}\$/iu";
 
-            if (preg_match($pattern, $word)) {
-                return preg_replace($pattern, $result, $word);
+            if (preg_match($pattern, (string) $word)) {
+                return preg_replace($pattern, (string) $result, (string) $word);
             }
         }
 
         // Get singular or plural rules rules
         foreach ($this->_get_rules($type) as $pattern => $result) {
-            if (preg_match($pattern, $word)) {
-                return preg_replace($pattern, $result, $word);
+            if (preg_match($pattern, (string) $word)) {
+                return preg_replace($pattern, (string) $result, (string) $word);
             }
         }
 
@@ -308,7 +308,7 @@ class Pro_search_words
     public function is_valid($str)
     {
         // No digits and at least 3 characters long
-        return ! (ee()->pro_multibyte->strlen(trim($str)) < 3 || preg_match('/\d/', $str));
+        return ! (ee()->pro_multibyte->strlen(trim((string) $str)) < 3 || preg_match('/\d/', (string) $str));
     }
 
     /**
@@ -333,17 +333,17 @@ class Pro_search_words
         $str = (string) $str;
         $str = str_replace('<', ' <', $str); //inject some whitespace between tags to prevent concatenation
         $str = preg_replace('/<br\s?\/?>/iu', ' ', $str);
-        $str = strip_tags($str);
+        $str = strip_tags((string) $str);
         $str = html_entity_decode($str, ENT_QUOTES, 'UTF-8');
         $str = preg_replace('/[^\p{L}\p{N}]+/u', ' ', $str);
         $str = ee()->pro_multibyte->strtolower($str);
 
         if ($ignore === true && $words) {
-            $str = preg_replace('/\b(' . implode('|', $words) . ')\b/iu', '', $str);
+            $str = preg_replace('/\b(' . implode('|', $words) . ')\b/iu', '', (string) $str);
         }
 
-        $str = preg_replace('/\s{2,}/', ' ', $str);
-        $str = trim($str);
+        $str = preg_replace('/\s{2,}/', ' ', (string) $str);
+        $str = trim((string) $str);
 
         return $str;
     }

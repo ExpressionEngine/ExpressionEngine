@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -72,7 +73,7 @@ return array(
         $tokens = array();
         $tokens[] = new Token('LD', '{');
 
-        switch (trim($lexeme)) {
+        switch (trim((string) $lexeme)) {
             case '{if': $tokens[] = new Token('IF', 'if');
 
                 break;
@@ -182,7 +183,7 @@ return array(
         if ($scanner->state == 'TAG') {
             $scanner->tag_buffer .= $lexeme;
         } else {
-            return new Token('STRING', substr($lexeme, 1, -1));
+            return new Token('STRING', substr((string) $lexeme, 1, -1));
         }
     },
 
@@ -191,7 +192,7 @@ return array(
         if ($scanner->state == 'TAG') {
             $scanner->tag_buffer .= $lexeme;
         } else {
-            return new Token('STRING', substr($lexeme, 1, -1));
+            return new Token('STRING', substr((string) $lexeme, 1, -1));
         }
     },
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -21,7 +22,7 @@ class NotStartsWith extends ValidationRule
     {
         list($startsWith) = $this->assertParameters('startsWith');
 
-        return (empty($value) || strpos($value, $startsWith) !== 0);
+        return (empty($value) || strpos((string) $value, (string) $startsWith) !== 0);
     }
 
     public function getLanguageKey()

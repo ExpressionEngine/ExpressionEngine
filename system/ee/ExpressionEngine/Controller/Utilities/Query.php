@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -103,7 +104,7 @@ class Query extends Utilities
             if (! $sql = ee()->input->get('thequery')) {
                 return $this->index();
             } else {
-                $sql = trim(base64_decode(rawurldecode($sql)));
+                $sql = trim(base64_decode(rawurldecode((string) $sql)));
 
                 if (! $signature = ee('Request')->get('signature')) {
                     return $this->index(false);

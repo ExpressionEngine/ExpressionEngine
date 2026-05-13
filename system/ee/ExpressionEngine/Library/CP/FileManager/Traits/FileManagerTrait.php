@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -320,7 +321,9 @@ trait FileManagerTrait
         }
 
         if (! ($table->sort_dir == 'desc' && $table->sort_col == 'date_added')) {
-            $queryStringVariables = array_merge($queryStringVariables, array(
+            $queryStringVariables = array_merge(
+                $queryStringVariables,
+                array(
                     'sort_dir' => $table->sort_dir,
                     'sort_col' => $table->sort_col
                 )
@@ -458,6 +461,7 @@ trait FileManagerTrait
                 'cp/files/copy-url'
             ),
         ));
+
         return $vars;
     }
 
@@ -593,7 +597,7 @@ trait FileManagerTrait
                 continue;
             }
 
-            $column_choices[$identifier] = strip_tags(lang($column->getTableColumnLabel()));
+            $column_choices[$identifier] = strip_tags((string) lang($column->getTableColumnLabel()));
         }
 
         return $column_choices;
@@ -629,6 +633,7 @@ trait FileManagerTrait
                 ];
             }
         }
+
         return $uploadLocationsAndDirectoriesDropdownChoices;
     }
 }

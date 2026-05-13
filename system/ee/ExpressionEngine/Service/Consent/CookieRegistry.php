@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -20,22 +21,22 @@ class CookieRegistry
     /**
      * @var int Value to indicate Necessary cookies
      */
-    const NECESSARY = 0;
+    public const NECESSARY = 0;
 
     /**
      * @var int Value to indicate Functionality cookies
      */
-    const FUNCTIONALITY = 1;
+    public const FUNCTIONALITY = 1;
 
     /**
      * @var int Value to indicate Performance cookies
      */
-    const PERFORMANCE = 2;
+    public const PERFORMANCE = 2;
 
     /**
      * @var int Value to indicate Targeting cookies
      */
-    const TARGETING = 4;
+    public const TARGETING = 4;
 
     /**
      * @var array Registered cookies
@@ -205,7 +206,6 @@ class CookieRegistry
         ];
     }
 
-    
     /**
      * Get lifetime for cookie to be set
      *
@@ -217,6 +217,7 @@ class CookieRegistry
         if (isset($this->cookie_settings[$name]) && !empty($this->cookie_settings[$name])) {
             return $this->cookie_settings[$name];
         }
+
         return null;
     }
 }

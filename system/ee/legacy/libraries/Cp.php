@@ -62,7 +62,7 @@ class Cp
      */
     public function set_default_view_variables()
     {
-        $langfile = substr(ee()->router->class, 0, strcspn(ee()->router->class, '_'));
+        $langfile = substr((string) ee()->router->class, 0, strcspn((string) ee()->router->class, '_'));
 
         // Javascript Path Constants
         define('PATH_JQUERY', PATH_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/jquery/');
@@ -108,7 +108,7 @@ class Cp
             'cp_current_site_label' => ee()->config->item('site_name'),
             'cp_screen_name' => ee('Format')->make('Text', $member->screen_name)->attributeSafe(),
             'cp_member_primary_role_title' => $member->PrimaryRole ? $member->PrimaryRole->name : '',
-            'cp_avatar_path' => ($member->avatar_filename) ? rtrim(ee()->config->slash_item('avatar_url'), '/') . '/' . ltrim($member->avatar_filename, '/') : (URL_THEMES . 'asset/img/default-avatar.png'),
+            'cp_avatar_path' => ($member->avatar_filename) ? rtrim((string) ee()->config->slash_item('avatar_url'), '/') . '/' . ltrim((string) $member->avatar_filename, '/') : (URL_THEMES . 'asset/img/default-avatar.png'),
             'cp_avatar_width' => ($member->avatar_filename) ? $member->avatar_width : '',
             'cp_avatar_height' => ($member->avatar_filename) ? $member->avatar_height : '',
             'cp_quicklinks' => $this->_get_quicklinks($member->getQuicklinks()),
@@ -248,8 +248,8 @@ class Cp
 
         $installed_modules_js = [];
         foreach ($installed_modules->result() as $installed_module) {
-            $installed_modules_js[strtolower($installed_module->module_name)] = [
-                'slug' => strtolower($installed_module->module_name),
+            $installed_modules_js[strtolower((string) $installed_module->module_name)] = [
+                'slug' => strtolower((string) $installed_module->module_name),
                 'name' => ucwords(str_replace('_', ' ', $installed_module->module_name)),
                 'version' => $installed_module->module_version,
             ];
@@ -301,7 +301,7 @@ class Cp
         if (ee()->config->item('new_version_check') == 'y' && $new_version = ee()->el_pings->getUpgradeInfo()) {
             ee()->view->new_version = $new_version;
             $version_major = explode('.', APP_VER, 2)[0];
-            $update_version_major = explode('.', $new_version['version'], 2)[0];
+            $update_version_major = explode('.', (string) $new_version['version'], 2)[0];
 
             if (version_compare($version_major, $update_version_major, '<')) {
                 ee()->view->major_update = true;
@@ -559,7 +559,7 @@ class Cp
      */
     public function masked_url($url)
     {
-        return ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'URL=' . urlencode($url);
+        return ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'URL=' . urlencode((string) $url);
     }
 
     /**
@@ -720,8 +720,8 @@ class Cp
                 break;
 
             case 'package':
-                if (strpos($name, ':') !== false) {
-                    list($package, $name) = explode(':', $name);
+                if (strpos((string) $name, ':') !== false) {
+                    list($package, $name) = explode(':', (string) $name);
                 } else {
                     $package = $name;
                 }
@@ -846,7 +846,7 @@ class Cp
      */
     private function _get_quicklinks($quick_links)
     {
-        $len = strlen(ee()->config->item('cp_url'));
+        $len = strlen((string) ee()->config->item('cp_url'));
 
         $link = array();
 
@@ -932,7 +932,7 @@ class Cp
     {
         // Deprecated for scripts. Let's encourage good practices. This will
         // also let us move jquery in the future.
-        if (strpos($data, '<script') !== false) {
+        if (strpos((string) $data, '<script') !== false) {
             ee()->load->library('logger');
             ee()->logger->deprecated('2.8', 'CP::add_to_foot() for scripts');
         }
@@ -1105,7 +1105,7 @@ class Cp
     public function makeChangelogLinkForVersion($version)
     {
         // Version in anchor is sans dots
-        $version = implode('', explode('.', $version));
+        $version = implode('', explode('.', (string) $version));
         $changelog_url = DOC_URL . 'installation/changelog.html#version-' . $version;
 
         return $changelog_url;

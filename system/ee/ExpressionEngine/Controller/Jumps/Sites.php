@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -51,11 +52,11 @@ class Sites extends Jumps
 
         if (!empty($searchString)) {
             // Break the search string into individual keywords so we can partially match them.
-            $keywords = explode(' ', $searchString);
+            $keywords = explode(' ', (string) $searchString);
 
             foreach ($keywords as $keyword) {
                 foreach ($this->sites as $site) {
-                    if (preg_match('/' . $keyword . '/', $site)) {
+                    if (preg_match('/' . $keyword . '/', (string) $site)) {
                         $response['switchSite' . $site['id']] = array(
                             'icon' => $site['icon'],
                             'command' => $site['name'],
@@ -101,11 +102,11 @@ class Sites extends Jumps
 
         if (!empty($searchString)) {
             // Break the search string into individual keywords so we can partially match them.
-            $keywords = explode(' ', $searchString);
+            $keywords = explode(' ', (string) $searchString);
 
             foreach ($keywords as $keyword) {
                 foreach ($this->sites as $site) {
-                    if (preg_match('/' . $keyword . '/', $site)) {
+                    if (preg_match('/' . $keyword . '/', (string) $site)) {
                         $response['editSite' . $site['id']] = array(
                             'icon' => $site['icon'],
                             'command' => $site['name'],

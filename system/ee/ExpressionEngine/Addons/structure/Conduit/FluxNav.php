@@ -103,7 +103,7 @@ abstract class FluxNav
             $this->nav_items[$method] = $this->sidebar->addHeader($title);
 
             // If the method starts with "HEADING", dont add a url
-            if (substr($method, 0, strlen($noUrl)) !== $noUrl) {
+            if (substr((string) $method, 0, strlen($noUrl)) !== $noUrl) {
                 $this->nav_items[$method]->withUrl($this->getUrl($method));
             }
         }
@@ -200,7 +200,7 @@ abstract class FluxNav
             $method = 'index';
         }
 
-        if (strpos($method, 'http') === false) {
+        if (strpos((string) $method, 'http') === false) {
             $url = ee('CP/URL', 'addons/settings/structure/' . $method);
         } else {
             $url = $method;

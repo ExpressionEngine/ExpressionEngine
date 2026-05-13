@@ -51,7 +51,7 @@ class Updater
                 )
             );
         }
-        
+
         ee()->db->where('module_name', 'Search')->update('modules', ['module_version' => '2.3.0']);
     }
 }

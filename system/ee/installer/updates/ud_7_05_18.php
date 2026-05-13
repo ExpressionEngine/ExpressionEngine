@@ -38,7 +38,6 @@ class Updater
         return true;
     }
 
-
     private function addCacheTable()
     {
         if (ee()->db->table_exists('cache')) {
@@ -72,8 +71,8 @@ class Updater
         ee()->dbforge->add_key('cache_key', true);
         ee()->dbforge->add_key('created_at');
         ee()->smartforge->create_table('cache');
-      
-      return true;
+
+        return true;
     }
 
     private function modifyDateColumns()

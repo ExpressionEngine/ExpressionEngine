@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -47,9 +48,9 @@ class FieldtypeGenerator extends AbstractGenerator
     {
         $ftStub = $this->filesystem->read($this->stub('ft.slug.php'));
 
-        $ftStub = $this->write('slug_uc', ucfirst($this->str->snakecase($this->name)), $ftStub);
+        $ftStub = $this->write('slug_uc', ucfirst((string) $this->str->snakecase($this->name)), $ftStub);
         $ftStub = $this->write('version', $this->version, $ftStub);
-        $ftStub = $this->write('name', ucfirst($this->name), $ftStub);
+        $ftStub = $this->write('name', ucfirst((string) $this->name), $ftStub);
 
         $this->putFile('ft.' . $this->str->snakecase($this->name) . '.php', $ftStub);
 
@@ -70,14 +71,14 @@ class FieldtypeGenerator extends AbstractGenerator
 
         $ftSetup = $this->filesystem->read($this->stub('AddonSetup/fieldtype_setup.php'));
         $ftSetup = $this->write('fieldtype_slug', $this->name, $ftSetup);
-        $ftSetup = $this->write('fieldtype_name', ucfirst($this->name), $ftSetup);
+        $ftSetup = $this->write('fieldtype_name', ucfirst((string) $this->name), $ftSetup);
         $ftSetup = $this->write('fieldtype_compatibility', 'text', $ftSetup);
 
         // The add-on setup has the fieldtypes key
         if (! array_key_exists('fieldtypes', $addonSetupArray)) {
             // Add an empty FT array
             $pattern = '/(,)([^,]+)$/';
-            $addonSetupFile = preg_replace($pattern, ",\n    'fieldtypes'        => [{{fieldtypes}}], $2", $addonSetupFile);
+            $addonSetupFile = preg_replace($pattern, ",\n    'fieldtypes'        => [{{fieldtypes}}], $2", (string) $addonSetupFile);
             $addonSetupFile = $this->write('fieldtypes', $ftSetup, $addonSetupFile);
             $this->filesystem->write($addonSetupPath, $addonSetupFile, true);
 
@@ -86,7 +87,7 @@ class FieldtypeGenerator extends AbstractGenerator
 
         // Add it to the existing fieldtypes array
         $pattern = "/(fieldtypes)([^=]+)(=>\s)(array\(|\[)([^\S]*)([\s])([\s\S]*)$/";
-        $addonSetupFile = preg_replace($pattern, "$1$2$3$4\n$ftSetup$5$6$7", $addonSetupFile);
+        $addonSetupFile = preg_replace($pattern, "$1$2$3$4\n$ftSetup$5$6$7", (string) $addonSetupFile);
         $this->filesystem->write($this->addonPath . 'addon.setup.php', $addonSetupFile, true);
     }
 }

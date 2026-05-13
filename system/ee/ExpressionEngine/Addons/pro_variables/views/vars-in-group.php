@@ -3,7 +3,7 @@
         <li>
             <input type="hidden" name="vars[]" value="<?=$row['variable_id']?>" />
             <span class="ico reorder"></span>
-            <?=htmlspecialchars($row['variable_label'] ?: $row['variable_name'])?>
+            <?=htmlspecialchars((string) $row['variable_label'] ?: (string) $row['variable_name'])?>
         </li>
     <?php endforeach; ?>
 </ul>

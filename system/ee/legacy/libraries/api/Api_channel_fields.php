@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -55,7 +56,7 @@ class Api_channel_fields extends Api
             $settings['field_name'] = $field_id;
         }
 
-        if (! array_key_exists($settings['field_type'], $this->field_types)) {
+        if (! array_key_exists((string) $settings['field_type'], $this->field_types)) {
             $this->field_types[$settings['field_type']] = $this->include_handler($settings['field_type']);
         }
 
@@ -161,7 +162,7 @@ class Api_channel_fields extends Api
         $tfields = array();
 
         foreach ($query->result_array() as $row) {
-            if (! array_key_exists($row['field_type'], $this->field_types)) {
+            if (! array_key_exists((string) $row['field_type'], $this->field_types)) {
                 $this->field_types[$row['field_type']] = $this->include_handler($row['field_type']);
             }
 
@@ -184,7 +185,7 @@ class Api_channel_fields extends Api
             }
 
             if (isset($row['field_settings']) && $row['field_settings'] != '') {
-                $settings = unserialize(base64_decode($row['field_settings']));
+                $settings = unserialize(base64_decode((string) $row['field_settings']));
                 $settings['field_type'] = $row['field_type'];
                 $settings['field_fmt'] = $row['field_fmt'];
                 $settings['field_name'] = $row['field_name'];
@@ -227,7 +228,7 @@ class Api_channel_fields extends Api
 
         $mfields = array();
         foreach ($query->result_array() as $row) {
-            if (! array_key_exists($row['m_field_type'], $this->field_types)) {
+            if (! array_key_exists((string) $row['m_field_type'], $this->field_types)) {
                 $this->field_types[$row['m_field_type']] = $this->include_handler($row['m_field_type']);
             }
 
@@ -235,7 +236,7 @@ class Api_channel_fields extends Api
             $this->custom_member_fields['m_' . $row['m_field_id']] = $row['m_field_type'];
 
             if (isset($row['m_field_settings']) && $row['m_field_settings'] != '') {
-                $settings = json_decode($row['m_field_settings'], true);
+                $settings = json_decode((string) $row['m_field_settings'], true);
                 $settings['field_type'] = $row['m_field_type'];
                 $settings['field_fmt'] = $row['m_field_fmt'];
                 $settings['field_name'] = $row['m_field_name'];
@@ -346,9 +347,9 @@ class Api_channel_fields extends Api
             $field_id = $field_type;
             $settingsKey = $field_id;
             $field_type = $this->settings[$field_id]['field_type'];
-        } elseif (strpos($field_type, 'm_') === 0 && isset($this->custom_member_fields[$field_type])) {
+        } elseif (strpos((string) $field_type, 'm_') === 0 && isset($this->custom_member_fields[$field_type])) {
             //custom member fields
-            $field_id = substr($field_type, 2);
+            $field_id = substr((string) $field_type, 2);
             $settingsKey = 'member_field_' . $field_id;
             $field_type = $this->custom_member_fields[$field_type];
         }
@@ -578,7 +579,7 @@ class Api_channel_fields extends Api
         $old_data = $query->row_array();
 
         if ($col_settings_method == 'grid_settings_modify_column') {
-            $old_data = json_decode($old_data['col_settings'], true);
+            $old_data = json_decode((string) $old_data['col_settings'], true);
         }
 
         // merge in a few variables to the data array
@@ -756,7 +757,7 @@ class Api_channel_fields extends Api
         }
 
         foreach ($tab_modules as $name) {
-            $directory = strtolower($name);
+            $directory = strtolower((string) $name);
             $class_name = ucfirst($directory) . '_tab';
 
             $mod_base_path = $this->_include_tab_file($directory);
@@ -811,7 +812,7 @@ class Api_channel_fields extends Api
         }
 
         foreach ($tab_modules as $name) {
-            $directory = strtolower($name);
+            $directory = strtolower((string) $name);
             $class_name = ucfirst($directory) . '_tab';
 
             $mod_base_path = $this->_include_tab_file($directory);
@@ -870,7 +871,7 @@ class Api_channel_fields extends Api
 
         // Have we encountered this one before?
         if (! isset($paths[$name])) {
-            $class_name = ucfirst($name) . '_tab';
+            $class_name = ucfirst((string) $name) . '_tab';
 
             // First or third party?
             foreach (array(PATH_ADDONS, PATH_THIRD) as $tmp_path) {
@@ -916,7 +917,7 @@ class Api_channel_fields extends Api
             foreach ($module_names as $module_name) {
                 $module_name .= "__";
 
-                if (strncmp($field, $module_name, strlen($module_name)) == 0) {
+                if (strncmp((string) $field, $module_name, strlen($module_name)) == 0) {
                     // new name
                     $cleared_field_name = str_replace($module_name, '', $field); // avoid passing the entire $module_names array for swapping to avoid common naming situations
 
@@ -1076,7 +1077,7 @@ class Api_channel_fields extends Api
             }
 
             $settings = array(
-                'field_instructions' => trim($row['field_instructions']),
+                'field_instructions' => trim((string) $row['field_instructions']),
                 'field_text_direction' => ($row['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr',
                 'field_fmt' => $field_fmt,
                 'field_dt' => $field_dt,
@@ -1161,7 +1162,7 @@ class Api_channel_fields extends Api
         }
 
         // Does field name contain invalid characters?
-        if (preg_match('/[^a-z0-9\_\-]/i', $field_data['field_name'])) {
+        if (preg_match('/[^a-z0-9\_\-]/i', (string) $field_data['field_name'])) {
             $this->errors[] = lang('invalid_characters') . ': ' . $field_data['field_name'];
         }
 
@@ -1172,7 +1173,7 @@ class Api_channel_fields extends Api
         }
 
         // Truncated field name to test against duplicates
-        $trunc_field_name = substr(element('field_name', $field_data), 0, 32);
+        $trunc_field_name = substr((string) element('field_name', $field_data), 0, 32);
 
         // Is the field name taken?
         ee()->db->where(array(
@@ -1242,7 +1243,7 @@ class Api_channel_fields extends Api
         }
 
         if ($native_settings['field_pre_populate'] == 'y') {
-            $x = explode('_', $this->_get_ft_data($field_type, 'field_pre_populate_id', $field_data));
+            $x = explode('_', (string) $this->_get_ft_data($field_type, 'field_pre_populate_id', $field_data));
 
             $native_settings['field_pre_channel_id'] = $x['0'];
             $native_settings['field_pre_field_id'] = $x['1'];

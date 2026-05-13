@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -253,7 +254,7 @@ class EE_Channel_preparser
      */
     public function has_tag($tagname)
     {
-        return strpos($this->_tagdata, LD . $this->_prefix . $tagname) !== false;
+        return strpos((string) $this->_tagdata, LD . $this->_prefix . $tagname) !== false;
     }
 
     /**
@@ -269,13 +270,13 @@ class EE_Channel_preparser
      */
     public function has_tag_pair($tagname)
     {
-        $start = strpos($this->_tagdata, LD . $this->_prefix . $tagname);
+        $start = strpos((string) $this->_tagdata, LD . $this->_prefix . $tagname);
 
         if ($start === false) {
             return false;
         }
 
-        $end = strpos($this->_tagdata, LD . '/' . $this->_prefix . $tagname, $start);
+        $end = strpos((string) $this->_tagdata, LD . '/' . $this->_prefix . $tagname, $start);
 
         return $end !== false;
     }
@@ -298,7 +299,7 @@ class EE_Channel_preparser
 
         $filtered = array();
         $tagdata = $this->_tagdata;
-        $regex_prefix = '/^' . preg_quote($this->_prefix, '/') . '.*+( |$)/';
+        $regex_prefix = '/^' . preg_quote((string) $this->_prefix, '/') . '.*+( |$)/';
 
         foreach (preg_grep($regex_prefix, array_keys($data)) as $key) {
             $filtered[$key] = $data[$key];
@@ -319,9 +320,9 @@ class EE_Channel_preparser
     {
         $subscribers = array();
 
-        if (strpos($this->_tagdata, LD . 'comment_subscriber_total' . RD) !== false
+        if (strpos((string) $this->_tagdata, LD . 'comment_subscriber_total' . RD) !== false
             && isset(ee()->session->cache['channel']['entry_ids'])
-            ) {
+        ) {
             ee()->load->library('subscription');
             ee()->subscription->init('comment');
             $subscribers = ee()->subscription->get_subscription_totals('entry_id', ee()->session->cache['channel']['entry_ids']);
@@ -345,7 +346,7 @@ class EE_Channel_preparser
         }
 
         foreach (array_keys($all_field_names) as $name) {
-            if (strpos($this->_tagdata, $name) !== false) {
+            if (strpos((string) $this->_tagdata, (string) $name) !== false) {
                 $present_field_names[] = $name;
             }
         }

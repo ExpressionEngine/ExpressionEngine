@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -35,7 +36,6 @@ class Request
         return $this->approvedMethod('get_post');
     }
 
-
     /**
      * Get variables from the $_POST array
      *
@@ -64,6 +64,7 @@ class Request
     {
         $ip = ee()->input->ip_address();
         $this->return_data = $ip;
+
         return $ip;
     }
 
@@ -75,6 +76,7 @@ class Request
     {
         $user_agent = ee()->input->user_agent();
         $this->return_data = $user_agent;
+
         return $user_agent;
     }
 
@@ -99,6 +101,7 @@ class Request
         if (!$name) {
             if (empty(ee()->TMPL->tagdata)) {
                 $this->return_data = '';
+
                 return $this->return_data;
             }
 
@@ -117,7 +120,7 @@ class Request
             $tagdata = ee()->TMPL->tagdata;
         } else {
             $separator = ee()->TMPL->fetch_param('separator', '|');
-            ee()->TMPL->tagparams['backspace'] = strlen($separator);
+            ee()->TMPL->tagparams['backspace'] = strlen((string) $separator);
             $tagdata = "{item}" . $separator;
         }
 

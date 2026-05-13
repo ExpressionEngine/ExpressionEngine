@@ -26,7 +26,7 @@
                             <option value="<?=$key?>"<?php if ($key == $default) :
                                 ?>selected<?php
                             endif; ?>>
-                                <?=htmlspecialchars($val)?>
+                                <?=htmlspecialchars((string) $val)?>
                                 <!-- <?php if (isset($counts[$key])) :
                                     ?>&ndash; <?=number_format($counts[$key])?><?php
                                 endif; ?>-->

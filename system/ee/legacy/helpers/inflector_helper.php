@@ -29,7 +29,7 @@ if (! defined('BASEPATH')) {
 if (! function_exists('singular')) {
     function singular($str)
     {
-        $str = strtolower(trim($str));
+        $str = strtolower(trim((string) $str));
         $end = substr($str, -3);
 
         if ($end == 'ies') {
@@ -61,7 +61,7 @@ if (! function_exists('singular')) {
 if (! function_exists('plural')) {
     function plural($str, $force = false)
     {
-        $str = strtolower(trim($str));
+        $str = strtolower(trim((string) $str));
         $end = substr($str, -1);
 
         if ($end == 'y') {
@@ -98,8 +98,8 @@ if (! function_exists('plural')) {
 if (! function_exists('camelize')) {
     function camelize($str)
     {
-        $str = 'x' . strtolower(trim($str));
-        $str = ucwords(preg_replace('/[\s_]+/', ' ', $str));
+        $str = 'x' . strtolower(trim((string) $str));
+        $str = ucwords((string) preg_replace('/[\s_]+/', ' ', $str));
 
         return substr(str_replace(' ', '', $str), 1);
     }
@@ -117,7 +117,7 @@ if (! function_exists('camelize')) {
 if (! function_exists('underscore')) {
     function underscore($str)
     {
-        return preg_replace('/[\s]+/', '_', strtolower(trim($str)));
+        return preg_replace('/[\s]+/', '_', strtolower(trim((string) $str)));
     }
 }
 
@@ -133,7 +133,7 @@ if (! function_exists('underscore')) {
 if (! function_exists('humanize')) {
     function humanize($str)
     {
-        return ucwords(preg_replace('/[_]+/', ' ', strtolower(trim($str))));
+        return ucwords((string) preg_replace('/[_]+/', ' ', strtolower(trim((string) $str))));
     }
 }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -201,7 +202,7 @@ class Pro_select_files extends Pro_variables_type
 
             // Generate choices
             foreach ($options as $file) {
-                $name = htmlspecialchars($file['name'], ENT_QUOTES);
+                $name = htmlspecialchars((string) $file['name'], ENT_QUOTES);
 
                 if ($data['thumbs'] && $file['thumb']) {
                     $name = sprintf('<img src="%s" alt="" />', $file['thumb']) . $name;
@@ -298,7 +299,7 @@ class Pro_select_files extends Pro_variables_type
         $name = $this->name();
 
         // Get manipulations from var names
-        if ($tagdata && preg_match_all("/\{{$name}:([\w-]+)\}/", $tagdata, $matches)) {
+        if ($tagdata && preg_match_all("/\{{$name}:([\w-]+)\}/", (string) $tagdata, $matches)) {
             $manip = array_unique($matches[1]);
         } elseif ($param = ee()->TMPL->fetch_param('manipulation')) {
             // Get manipulation from tag param

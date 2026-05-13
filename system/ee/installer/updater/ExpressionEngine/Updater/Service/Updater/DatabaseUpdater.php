@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -127,7 +128,7 @@ class DatabaseUpdater
 
         $update_files = [];
         foreach ($files as $filename) {
-            $filename = pathinfo($filename);
+            $filename = pathinfo((string) $filename);
             $version = $this->getVersionForFilename($filename['basename']);
 
             if (version_compare($version, $this->from_version, '>')) {

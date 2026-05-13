@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -222,7 +223,7 @@ class Channel_form_lib
 
         //decide which fields to show, based on pipe delimited list of field id's and/or field short names
         if (ee()->TMPL->fetch_param('show_fields')) {
-            if (preg_match('/not (.*)/', ee()->TMPL->fetch_param('show_fields'), $match)) {
+            if (preg_match('/not (.*)/', (string) ee()->TMPL->fetch_param('show_fields'), $match)) {
                 foreach ($this->custom_fields as $field_name => $field) {
                     $this->show_fields[] = $field_name;
                 }
@@ -239,7 +240,7 @@ class Channel_form_lib
                     }
                 }
             } else {
-                foreach (explode('|', ee()->TMPL->fetch_param('show_fields')) as $field_name) {
+                foreach (explode('|', (string) ee()->TMPL->fetch_param('show_fields')) as $field_name) {
                     if (is_numeric($field_name)) {
                         $field_name = $this->get_field_name($field_name);
                     }
@@ -280,7 +281,7 @@ class Channel_form_lib
         $checkbox_fields = array();
 
         // parse custom fields loop
-        if (preg_match('/' . LD . 'custom_fields' . RD . '(.*)' . LD . '\/custom_fields' . RD . '/s', ee()->TMPL->tagdata, $match)) {
+        if (preg_match('/' . LD . 'custom_fields' . RD . '(.*)' . LD . '\/custom_fields' . RD . '/s', (string) ee()->TMPL->tagdata, $match)) {
             $custom_field_output = '';
 
             $tagdata = $match[1];
@@ -299,7 +300,7 @@ class Channel_form_lib
                     $custom_field_variables_row
                 );
 
-                if (strpos($temp, LD . 'display_field' . RD) !== false) {
+                if (strpos((string) $temp, LD . 'display_field' . RD) !== false) {
                     $custom_field_variables_row['display_field'] = $this->encode_ee_tags(
                         $this->display_field($field_name)
                     );
@@ -333,7 +334,7 @@ class Channel_form_lib
         }
 
         foreach (ee()->TMPL->var_pair as $tag_pair_open => $tagparams) {
-            $tag_name = current(preg_split('/\s/', $tag_pair_open));
+            $tag_name = current(preg_split('/\s/', (string) $tag_pair_open));
 
             if ($tag_name == 'categories') {
                 $checkbox_fields[] = 'category';
@@ -351,9 +352,9 @@ class Channel_form_lib
                 $this->parse_variables['statuses'] = $this->statuses;
             } elseif (isset($this->custom_fields[$tag_name])) {
                 //custom field pair parsing with replace_tag
-                if (preg_match_all('/' . LD . preg_quote($tag_pair_open) . RD . '(.*?)' . LD . '\/' . $tag_name . RD . '/s', ee()->TMPL->tagdata, $matches)) {
+                if (preg_match_all('/' . LD . preg_quote((string) $tag_pair_open) . RD . '(.*?)' . LD . '\/' . $tag_name . RD . '/s', (string) ee()->TMPL->tagdata, $matches)) {
                     // Map field short name to field_id_x
-                    if (array_key_exists($tag_name, $this->custom_fields)) {
+                    if (array_key_exists((string) $tag_name, $this->custom_fields)) {
                         $field = $this->custom_fields[$tag_name];
                         $name = 'field_id_' . $field->field_id;
                     }
@@ -369,7 +370,7 @@ class Channel_form_lib
                     }
                 }
             } elseif (
-                preg_match('/^options:(.*)/', $tag_name, $match) && ($field_type_match = $this->get_field_type($match[1])) &&
+                preg_match('/^options:(.*)/', (string) $tag_name, $match) && ($field_type_match = $this->get_field_type($match[1])) &&
                 (in_array($field_type_match, $this->option_fields) or $field_type_match == 'relationship')
             ) {
                 //options:field_name tag pair parsing
@@ -424,11 +425,11 @@ class Channel_form_lib
             $comment_expiration_date = ($this->entry('comment_expiration_date')) ? $this->entry('comment_expiration_date') * 1000 : ee()->localize->now * 1000;
 
             foreach (ee()->TMPL->var_single as $key) {
-                if (preg_match('/entry_id_path=([\042\047])?([^\042\047]*)[\042\047]?/', $key, $match)) {
+                if (preg_match('/entry_id_path=([\042\047])?([^\042\047]*)[\042\047]?/', (string) $key, $match)) {
                     $this->parse_variables[$match[0]] = ee()->functions->create_url($match[2] . '/' . $this->entry('entry_id'));
-                } elseif (preg_match('/(url_title_path|title_permalink)=[\042\047]?([^\042\047]*)[\042\047]?/', $key, $match)) {
+                } elseif (preg_match('/(url_title_path|title_permalink)=[\042\047]?([^\042\047]*)[\042\047]?/', (string) $key, $match)) {
                     $this->parse_variables[$match[0]] = ee()->functions->create_url($match[2] . '/' . $this->entry('url_title'));
-                } elseif (preg_match('/^field:(.*)$/', $key, $match)) {
+                } elseif (preg_match('/^field:(.*)$/', (string) $key, $match)) {
                     // use fieldtype display_field method
                     if (
                         $this->get_field_type($match[1]) == 'checkboxes' ||
@@ -439,7 +440,7 @@ class Channel_form_lib
                     }
 
                     $this->parse_variables[$match[0]] = (array_key_exists($match[1], $this->custom_fields)) ? $this->encode_ee_tags($this->display_field($match[1])) : '';
-                } elseif (preg_match('/^label:(.*)$/', $key, $match)) {
+                } elseif (preg_match('/^label:(.*)$/', (string) $key, $match)) {
                     if ($match[1] == 'title') {
                         $this->parse_variables[$match[0]] = $this->channel('title_field_label');
                     } elseif (array_key_exists($match[1], $this->custom_fields)) {
@@ -448,7 +449,7 @@ class Channel_form_lib
                         $this->parse_variables[$match[0]] = '';
                     }
                 } elseif (
-                    preg_match('/^selected_option:(.*?)(:label)?$/', $key, $match) &&
+                    preg_match('/^selected_option:(.*?)(:label)?$/', (string) $key, $match) &&
                     ($field_type_match = $this->get_field_type($match[1])) &&
                     (in_array($field_type_match, $this->option_fields) or $field_type_match == 'relationship')
                 ) {
@@ -467,7 +468,7 @@ class Channel_form_lib
                     }
 
                     $this->parse_variables[$match[0]] = $selected_option;
-                } elseif (preg_match('/^instructions:(.*)$/', $key, $match)) {
+                } elseif (preg_match('/^instructions:(.*)$/', (string) $key, $match)) {
                     if ($match[1] == 'title') {
                         $this->parse_variables[$match[0]] = $this->channel('title_field_instructions');
                     } elseif (array_key_exists($match[1], $this->custom_fields)) {
@@ -476,12 +477,12 @@ class Channel_form_lib
                     } else {
                         $this->parse_variables[$match[0]] = '';
                     }
-                } elseif (preg_match('/^error:(.*)$/', $key, $match)) {
+                } elseif (preg_match('/^error:(.*)$/', (string) $key, $match)) {
                     $this->parse_variables[$match[0]] = (! empty($this->field_errors[$match[1]])) ? $this->field_errors[$match[1]] : '';
                 } else {
                     $name = $key;
 
-                    if (array_key_exists($key, $this->custom_fields)) {
+                    if (array_key_exists((string) $key, $this->custom_fields)) {
                         $field = $this->custom_fields[$key];
                         $name = 'field_id_' . $field->field_id;
                     }
@@ -538,17 +539,17 @@ class Channel_form_lib
             $this->form_hidden('unique_url_title', $this->bool_string(ee()->TMPL->fetch_param('unique_url_title')) ? '1' : '');
 
             if ($this->datepicker) {
-                if (strpos(ee()->TMPL->tagdata, 'entry_date') !== false) {
+                if (strpos((string) ee()->TMPL->tagdata, 'entry_date') !== false) {
                     $this->parse_variables['entry_date'] = ee()->localize->human_time();
                     $this->parse_variables['entry_timestamp'] = ee()->localize->now;
                 }
 
-                if (strpos(ee()->TMPL->tagdata, 'expiration_date') !== false) {
+                if (strpos((string) ee()->TMPL->tagdata, 'expiration_date') !== false) {
                     $this->parse_variables['expiration_date'] = '';
                     $this->parse_variables['expiration_timestamp'] = '';
                 }
 
-                if (strpos(ee()->TMPL->tagdata, 'comment_expiration_date') !== false) {
+                if (strpos((string) ee()->TMPL->tagdata, 'comment_expiration_date') !== false) {
                     $comment_expiration_date = '';
                     $comment_expiration_timestamp = '';
 
@@ -576,12 +577,12 @@ class Channel_form_lib
 
             foreach ($this->custom_fields as $field) {
                 foreach (ee()->TMPL->var_pair as $tag_pair_open => $tagparams) {
-                    $tag_name = current(preg_split('/\s/', $tag_pair_open));
+                    $tag_name = current(preg_split('/\s/', (string) $tag_pair_open));
 
                     if ($tag_name == $field->field_name) {
                         //special parsing here for catchall fieldtype, pls keep this in
                         if ($field->field_type === 'catchall') {
-                            if (preg_match_all('/' . LD . $tag_pair_open . RD . '(.*)' . LD . '\/' . $field->field_name . RD . '/s', ee()->TMPL->tagdata, $matches)) {
+                            if (preg_match_all('/' . LD . $tag_pair_open . RD . '(.*)' . LD . '\/' . $field->field_name . RD . '/s', (string) ee()->TMPL->tagdata, $matches)) {
                                 foreach ($matches[1] as $match_index => $var_pair_tagdata) {
                                     if (preg_match_all('/' . LD . '([^\s]*)' . RD . '(.*)' . LD . '\/' . '\1' . RD . '/s', $var_pair_tagdata, $submatches)) {
                                         foreach ($submatches[2] as $submatch_index => $sub_var_pair_tagdata) {
@@ -619,12 +620,12 @@ class Channel_form_lib
                 $this->parse_variables['error:' . $field->field_name] = (! empty($this->field_errors[$field->field_name])) ? $this->field_errors[$field->field_name] : '';
 
                 //let's not needlessly call this, otherwise we could get duplicate fields rendering
-                if (strpos(ee()->TMPL->tagdata, LD . 'field:' . $field->field_name . RD) !== false) {
+                if (strpos((string) ee()->TMPL->tagdata, LD . 'field:' . $field->field_name . RD) !== false) {
                     if ($field->field_type == 'checkboxes' or $field->field_type == 'grid') {
                         $checkbox_fields[] = $field->field_name;
                     }
 
-                    $this->parse_variables['field:' . $field->field_name] = (array_key_exists($field->field_name, $this->custom_fields))
+                    $this->parse_variables['field:' . $field->field_name] = (array_key_exists((string) $field->field_name, $this->custom_fields))
                         ? $this->encode_ee_tags($this->display_field($field->field_name))
                         : '';
                 }
@@ -652,7 +653,7 @@ class Channel_form_lib
         );
 
         if ($captcha_conditional['captcha'] && ee()->config->item('use_recaptcha') == 'y') {
-            ee()->TMPL->tagdata = preg_replace("/{if captcha}.+?{\/if}/s", ee('Captcha')->create(), ee()->TMPL->tagdata);
+            ee()->TMPL->tagdata = preg_replace("/{if captcha}.+?{\/if}/s", (string) ee('Captcha')->create(), (string) ee()->TMPL->tagdata);
         }
 
         $conditionals = array_merge($conditional_errors, $captcha_conditional);
@@ -734,8 +735,8 @@ class Channel_form_lib
 
         // If we have a non-native template engine we must populate the custom field
         // inputs now because they may add javascript that needs to be built
-        if(!empty(ee()->TMPL->template_engine)) {
-            foreach($custom_field_variables as $field => $fieldVariables) {
+        if (!empty(ee()->TMPL->template_engine)) {
+            foreach ($custom_field_variables as $field => $fieldVariables) {
                 $custom_field_variables[$field] = [
                     'settings' => $fieldVariables,
                     'input' => $this->display_field($field),
@@ -757,7 +758,7 @@ class Channel_form_lib
 
         //added in 1.0.3
         if ($this->bool_string(ee()->TMPL->fetch_param('secure_action'))) {
-            $return = preg_replace('/(<form.*?action=")http:/', '\\1https:', $return);
+            $return = preg_replace('/(<form.*?action=")http:/', '\\1https:', (string) $return);
         }
 
         $return = ee()->functions->insert_action_ids($return);
@@ -1085,7 +1086,7 @@ GRID_FALLBACK;
             // fieldtype conditionals
             $custom_field_variables_row[$field->getType()] = 1;
 
-            if (array_key_exists($field->getType(), $this->custom_field_conditional_names)) {
+            if (array_key_exists((string) $field->getType(), $this->custom_field_conditional_names)) {
                 $custom_field_variables_row[$this->custom_field_conditional_names[$field->getType()]] = 1;
             }
 
@@ -1146,13 +1147,13 @@ GRID_FALLBACK;
             $conditional_errors['field_errors'] = array();
 
             foreach ($this->field_errors as $field => $error) {
-                if (strpos($field, 'field_id_') === 0) {
+                if (strpos((string) $field, 'field_id_') === 0) {
                     $fieldId = str_replace('field_id_', '', $field);
                     $fieldName = array_key_exists($fieldId, $this->custom_field_names) ? $this->custom_field_names[$fieldId] : $field;
                 } else {
                     $fieldName = $field;
                 }
-                $label = array_key_exists($fieldName, $this->custom_fields) ? $this->custom_fields[$fieldName]->field_label : lang($field);
+                $label = array_key_exists((string) $fieldName, $this->custom_fields) ? $this->custom_fields[$fieldName]->field_label : lang($field);
 
                 $conditional_errors['field_errors'][$fieldName] = array('field' => $label, 'error' => $error);
             }
@@ -1330,7 +1331,7 @@ GRID_FALLBACK;
         // If any checkbox fields are missing from the POST array,
         // add them in as blank values for form validation to catch
         if (isset($_POST['checkbox_fields'])) {
-            foreach (explode('|', $_POST['checkbox_fields']) as $checkbox) {
+            foreach (explode('|', (string) $_POST['checkbox_fields']) as $checkbox) {
                 if (! isset($_POST[$checkbox])) {
                     if ($checkbox == 'allow_comments') {
                         $_POST[$checkbox] = 'n';
@@ -1369,7 +1370,7 @@ GRID_FALLBACK;
                         $_POST[$field->field_name] = $img['value'];
                     } else {
                         $_POST[$field->field_name] = '';
-                        $this->field_errors[$field->field_name] = strip_tags($img);
+                        $this->field_errors[$field->field_name] = strip_tags((string) $img);
                     }
                 }
             }
@@ -1416,7 +1417,7 @@ GRID_FALLBACK;
                     }
 
                     $_POST['field_ft_' . $field->field_id] = $fmt;
-                } elseif (preg_match('/^' . $field->field_name . '_(.+)/', $key, $match)) {
+                } elseif (preg_match('/^' . $field->field_name . '_(.+)/', (string) $key, $match)) {
                     //also change utility POST fields, ie my_field_field_directory to field_id_X_directory
                     $_POST['field_id_' . $field->field_id . '_' . $match[1]] = ee()->input->post($key, true);
                 }
@@ -1477,7 +1478,7 @@ GRID_FALLBACK;
             $dynamic_title = $this->_meta['dynamic_title'];
 
             foreach ($_POST as $key => $value) {
-                if (is_string($value) && strstr($dynamic_title, '[' . $key . ']') !== false) {
+                if (is_string($value) && strstr((string) $dynamic_title, '[' . $key . ']') !== false) {
                     $dynamic_title = str_replace('[' . $key . ']', $value, $dynamic_title);
                 }
             }
@@ -1531,7 +1532,7 @@ GRID_FALLBACK;
             $url_title = $_POST['url_title'];
 
             // Max URL title length, minus uniqid length, minus separator
-            $url_title = substr($url_title, 0, URL_TITLE_MAX_LENGTH - 23 - 1);
+            $url_title = substr((string) $url_title, 0, URL_TITLE_MAX_LENGTH - 23 - 1);
 
             $separator = (ee()->config->item('word_separator') == 'dash') ? '-' : '_';
 
@@ -1693,19 +1694,19 @@ GRID_FALLBACK;
 
         $return = ($this->_meta['return'])
             ? (
-                (strpos($this->_meta['return'], 'http://') === 0 || strpos($this->_meta['return'], 'https://') === 0) ? $this->_meta['return'] : ee()->functions->create_url($this->_meta['return'])
+                (strpos((string) $this->_meta['return'], 'http://') === 0 || strpos((string) $this->_meta['return'], 'https://') === 0) ? $this->_meta['return'] : ee()->functions->create_url($this->_meta['return'])
             )
             : ee()->functions->fetch_site_index();
 
-        if (strpos($return, 'ENTRY_ID') !== false) {
+        if (strpos((string) $return, 'ENTRY_ID') !== false) {
             $return = str_replace('ENTRY_ID', $this->entry('entry_id'), $return);
         }
 
-        if (strpos($return, 'URL_TITLE') !== false) {
+        if (strpos((string) $return, 'URL_TITLE') !== false) {
             $return = str_replace('URL_TITLE', $this->entry('url_title'), $return);
         }
 
-        if (strpos($return, 'AUTHOR_ID') !== false) {
+        if (strpos((string) $return, 'AUTHOR_ID') !== false) {
             $return = str_replace('AUTHOR_ID', $this->entry('author_id'), $return);
         }
 
@@ -1714,7 +1715,7 @@ GRID_FALLBACK;
         }
 
         if ($this->_meta['secure_return']) {
-            $return = preg_replace('/^http:/', 'https:', $return);
+            $return = preg_replace('/^http:/', 'https:', (string) $return);
         }
 
         ee()->functions->redirect($return);
@@ -2293,7 +2294,7 @@ GRID_FALLBACK;
         $meta['return'] = '';
 
         foreach ($params as $name) {
-            if (preg_match('/^rules:(.+)/', $name, $match)) {
+            if (preg_match('/^rules:(.+)/', (string) $name, $match)) {
                 $meta['rules'][$match[1]] = ee()->TMPL->fetch_param($name);
             } else {
                 $meta[$name] = ee()->TMPL->fetch_param($name);
@@ -2370,7 +2371,7 @@ GRID_FALLBACK;
         }
 
         if ($this->_meta['category'] !== false) {
-            $this->_meta['category'] = array_filter(explode('|', $this->_meta['category']), function ($cat) {
+            $this->_meta['category'] = array_filter(explode('|', (string) $this->_meta['category']), function ($cat) {
                 return is_numeric($cat);
             });
         }
@@ -2464,7 +2465,7 @@ GRID_FALLBACK;
                     );
                 }
             } elseif ($field->field_list_items) {
-                foreach (preg_split('/[\r\n]+/', $field->field_list_items) as $row) {
+                foreach (preg_split('/[\r\n]+/', (string) $field->field_list_items) as $row) {
                     $row = trim($row);
 
                     if ($row == '') {
@@ -2493,7 +2494,7 @@ GRID_FALLBACK;
                     foreach ($pop_content as $content) {
                         $options[] = array(
                             'option_value' => $content,
-                            'option_name' => str_replace(array("\r\n", "\r", "\n", "\t"), ' ', substr($content, 0, 110)),
+                            'option_name' => str_replace(array("\r\n", "\r", "\n", "\t"), ' ', substr((string) $content, 0, 110)),
                             'selected' => (in_array($content, $current)) ? ' selected="selected"' : '',
                             'checked' => (in_array($content, $current)) ? ' checked="checked"' : '',
                         );
@@ -2582,11 +2583,11 @@ GRID_FALLBACK;
                 foreach ($limit_authors as $author) {
                     switch ($author[0]) {
                         case 'g':
-                            $groups[] = substr($author, 2);
+                            $groups[] = substr((string) $author, 2);
 
                             break;
                         case 'm':
-                            $members[] = substr($author, 2);
+                            $members[] = substr((string) $author, 2);
 
                             break;
                     }
@@ -2907,7 +2908,7 @@ GRID_FALLBACK;
             return $data;
         }
 
-        $data = preg_replace('/[^\d]/', '', $data);
+        $data = preg_replace('/[^\d]/', '', (string) $data);
 
         return ($data) ? $data : false;
     }
@@ -2943,9 +2944,9 @@ GRID_FALLBACK;
     {
         $tagdata = ee()->functions->prep_conditionals($tagdata, $conditionals);
 
-        $tagdata = preg_replace('/\{if\s+[\042\047]*0[\042\047]*\}(.+?)\{\/if\}/si', '', $tagdata);
+        $tagdata = preg_replace('/\{if\s+[\042\047]*0[\042\047]*\}(.+?)\{\/if\}/si', '', (string) $tagdata);
 
-        $tagdata = preg_replace('/\{if\s+[\042\047]*1[\042\047]*\}(.+?)\{\/if\}/si', '\\1', $tagdata);
+        $tagdata = preg_replace('/\{if\s+[\042\047]*1[\042\047]*\}(.+?)\{\/if\}/si', '\\1', (string) $tagdata);
 
         return $tagdata;
     }
@@ -2964,7 +2965,7 @@ GRID_FALLBACK;
     {
         $close_key = ($close_key) ? $close_key : $key;
 
-        if (preg_match_all('/' . LD . preg_quote($key) . RD . '(.*?)' . LD . '\/' . $close_key . RD . '/s', $tagdata, $matches)) {
+        if (preg_match_all('/' . LD . preg_quote((string) $key) . RD . '(.*?)' . LD . '\/' . $close_key . RD . '/s', (string) $tagdata, $matches)) {
             foreach ($matches[1] as $match_index => $var_pair_tagdata) {
                 $output = '';
 

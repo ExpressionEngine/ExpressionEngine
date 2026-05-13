@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -233,7 +234,7 @@ class Api_template_structure extends Api
     public function file_extensions($template_type, $engine = null)
     {
         // Check our standard template types for a file extension
-        $engine = ($engine && array_key_exists($engine, $this->template_engines)) ? ".$engine" : null;
+        $engine = ($engine && array_key_exists((string) $engine, $this->template_engines)) ? ".$engine" : null;
 
         // Handle array template_type (take first element)
         if (is_array($template_type)) {
@@ -281,7 +282,7 @@ class Api_template_structure extends Api
 
         foreach ($this->template_engine_file_extensions as $type => $extensions) {
             foreach ($extensions as $extension) {
-                if (!array_key_exists($extension['extension'], $result)) {
+                if (!array_key_exists((string) $extension['extension'], $result)) {
                     $result[$extension['extension']] = [
                         'type' => $type,
                         'engine' => $extension['engine']
@@ -361,12 +362,13 @@ class Api_template_structure extends Api
      */
     public function get_default_template_engine()
     {
-        if(count($this->template_engines) <= 1) {
+        if (count($this->template_engines) <= 1) {
             return '';
         };
 
         $default = ee()->config->item('default_template_engine') ?? null;
-        return array_key_exists($default, $this->template_engines) ? $default : '';
+
+        return array_key_exists((string) $default, $this->template_engines) ? $default : '';
     }
 
     /**
@@ -390,8 +392,8 @@ class Api_template_structure extends Api
         foreach ($this->all_file_extensions() as $extension => $info) {
             // If template ends with extension we are done.  This finds the most specific extension first
             // because all_file_extensions returns a sorted list with longest extensions first
-            $extensionLength = strlen($extension);
-            if (substr_compare($template, $extension, -$extensionLength, $extensionLength, true) === 0) {
+            $extensionLength = strlen((string) $extension);
+            if (substr_compare($template, (string) $extension, -$extensionLength, $extensionLength, true) === 0) {
                 $name = substr($template, 0, -$extensionLength);
                 // Sanitize the name to prevent path traversal attacks
                 // First normalize path separators
@@ -405,7 +407,8 @@ class Api_template_structure extends Api
                 }
                 // Remove any remaining path traversal characters
                 $name = preg_replace('/\.\.+/', '', $name);
-                $name = preg_replace('/[^a-zA-Z0-9_\-\.]/', '', $name);
+                $name = preg_replace('/[^a-zA-Z0-9_\-\.]/', '', (string) $name);
+
                 return [
                     'name' => $name,
                     'type' => $info['type'],

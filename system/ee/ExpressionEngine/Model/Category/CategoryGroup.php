@@ -269,7 +269,7 @@ class CategoryGroup extends StructureModel
                 ->get()
                 ->result_array(),
             function($carry, $row) {
-                if(!array_key_exists($row['parent_id'], $carry)) {
+                if(!array_key_exists((string) $row['parent_id'], $carry)) {
                     $carry[$row['parent_id']] = [];
                 }
 

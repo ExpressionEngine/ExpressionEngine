@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -79,8 +80,8 @@ class Roles extends AbstractRolesController
             if ($search) {
                 $roles = array_filter($roles, function ($role) use ($search) {
                     return strpos(
-                        strtolower($role->name),
-                        strtolower($search)
+                        strtolower((string) $role->name),
+                        strtolower((string) $search)
                     ) !== false;
                 });
             }
@@ -121,7 +122,7 @@ class Roles extends AbstractRolesController
             $edit_url = (ee('Permission')->hasAny('can_edit_roles')) ? ee('CP/URL')->make('members/roles/edit/' . $role->getId()) : '';
             $labelVars = [
                 'label' => $role->name,
-                'class' => str_replace(' ', '_', strtolower($role->name)),
+                'class' => str_replace(' ', '_', strtolower((string) $role->name)),
                 'styles' => [
                     'background-color' => 'var(--ee-bg-blank)',
                     'border-color' => '#' . $role->highlight,
@@ -348,6 +349,7 @@ class Roles extends AbstractRolesController
             while (true !== $role->validateUnique('name', $_POST['name'])) {
                 $_POST['name'] = lang('copy_of') . ' ' . $_POST['name'];
             }
+
             return $this->create(!empty($active_groups) ? $active_groups[0] : null);
         }
 
@@ -521,9 +523,9 @@ class Roles extends AbstractRolesController
         $channel_ids = [];
         if (!empty(ee('Request')->post('channel_access'))) {
             foreach (ee('Request')->post('channel_access') as $value) {
-                if (strpos($value, 'channel_id_') !== 0) {
+                if (strpos((string) $value, 'channel_id_') !== 0) {
                     $allowed_perms[] = $value;
-                    $value_exploded = explode('channel_id_', $value);
+                    $value_exploded = explode('channel_id_', (string) $value);
                     $channel_ids[] = end($value_exploded);
                 }
             }
@@ -546,7 +548,7 @@ class Roles extends AbstractRolesController
         $template_group_ids = [];
         if (!empty(ee('Request')->post('template_group_access'))) {
             foreach (ee('Request')->post('template_group_access') as $value) {
-                if (strpos($value, 'template_group_') === 0) {
+                if (strpos((string) $value, 'template_group_') === 0) {
                     $template_group_ids[] = str_replace('template_group_', '', $value);
                 } else {
                     $allowed_perms[] = $value;
@@ -591,7 +593,7 @@ class Roles extends AbstractRolesController
         }
 
         foreach ($_POST as $key => $value) {
-            if (strpos($key, 'can_') === 0 && $value == 'y') {
+            if (strpos((string) $key, 'can_') === 0 && $value == 'y') {
                 $allowed_perms[] = $key;
             }
         }
@@ -1031,7 +1033,7 @@ class Roles extends AbstractRolesController
             ->fields('module_id', 'module_name')
             ->all()
             ->filter(function ($addon) {
-                $provision = ee('Addon')->get(strtolower($addon->module_name));
+                $provision = ee('Addon')->get(strtolower((string) $addon->module_name));
 
                 if (! $provision) {
                     return false;

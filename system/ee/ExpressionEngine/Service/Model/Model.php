@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -201,6 +202,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
     {
         $footprint = get_object_vars($this);
         unset($footprint['_facade']);
+
         return $footprint;
     }
 
@@ -358,6 +360,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
 
         if ($this->isNew()) {
             $this->forwardEventToHooks('insert');
+
             try {
                 $qb->insert();
             } catch (\Exception $e) {
@@ -366,6 +369,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
         } else {
             $this->constrainQueryToSelf($qb);
             $this->forwardEventToHooks('update');
+
             try {
                 $qb->update();
             } catch (\Exception $e) {
@@ -730,7 +734,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
             $value = $type->set($value);
         }
 
-        if (array_key_exists($name, $this->_foreign_keys)) {
+        if (array_key_exists((string) $name, $this->_foreign_keys)) {
             $assoc = $this->getAssociation($this->_foreign_keys[$name]);
             $assoc->foreignKeyChanged($value);
         }
@@ -740,7 +744,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
 
     public function getTypeFor($name)
     {
-        if (! array_key_exists($name, $this->_property_types)) {
+        if (! array_key_exists((string) $name, $this->_property_types)) {
             $this->_property_types[$name] = $this->createTypeFor($name);
         }
 
@@ -751,7 +755,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
     {
         $columns = $this->getMetadata('typed_columns') ?: array();
 
-        if (! array_key_exists($name, $columns)) {
+        if (! array_key_exists((string) $name, $columns)) {
             return null;
         }
 
@@ -836,7 +840,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
 
         // handle events we're subscribed to
         if (in_array($event, $this->getSubscribedEvents())) {
-            $method = 'on' . ucfirst($event);
+            $method = 'on' . ucfirst((string) $event);
             call_user_func_array(array($this, $method), array_slice($args, 1));
         }
 
@@ -858,16 +862,16 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
         $events = array_flip($events);
 
         if (isset($events[$event])) {
-            $method = '::on' . ucfirst($event);
+            $method = '::on' . ucfirst((string) $event);
             forward_static_call_array(static::class . $method, $args);
         }
 
         // Extension hook
         if ($hook_basename = self::getMetaData('hook_id')) {
-            if (strpos($event, 'before') === 0) {
+            if (strpos((string) $event, 'before') === 0) {
                 $when = 'before_';
             }
-            if (strpos($event, 'after') === 0) {
+            if (strpos((string) $event, 'after') === 0) {
                 $when = 'after_';
             }
 
@@ -979,7 +983,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
      */
     public function alias($association, $as)
     {
-        if (strpos($association, ':') === false) {
+        if (strpos((string) $association, ':') === false) {
             throw new \Exception('Cannot alias relationship.');
         }
 
@@ -1025,13 +1029,15 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
      * @param string $operation
      * @return void
      */
-    private function catchDbExceptionOnModel($exception, $operation = 'update') {
-        if (strpos($exception->getMessage(), "Incorrect string value: '\x") !== false) {
+    private function catchDbExceptionOnModel($exception, $operation = 'update')
+    {
+        if (strpos((string) $exception->getMessage(), "Incorrect string value: '\x") !== false) {
             if (! isset(ee()->logger)) {
                 ee()->load->library('logger');
             }
             ee()->logger->developer('Unable to ' . $operation . ' ' . $this->getName() . ' model. The data contains multibyte characters, however the database table does not support those.', true);
         }
+
         throw $exception;
     }
 
@@ -1047,6 +1053,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
         if (isset(ee()->core)) {
             return ee()->core->cache(get_called_class(), $key, false);
         }
+
         return false;
     }
 }

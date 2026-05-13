@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -49,7 +50,7 @@ class Bookmarks extends Settings
             $toolbar = array('toolbar_items' => array(
                 'edit' => array(
                     'href' => ee('CP/URL')->make('members/profile/bookmarks/edit/' . $id, $this->query_string),
-                    'title' => strtolower(lang('edit'))
+                    'title' => strtolower((string) lang('edit'))
                 )
             ));
 
@@ -61,13 +62,13 @@ class Bookmarks extends Settings
             $link = 'javascript:' . urlencode($link);
 
             $links[] = array(
-                'name' => "<a href='$link'>" . htmlentities($bookmark->name, ENT_QUOTES, 'UTF-8') . "</a>",
+                'name' => "<a href='$link'>" . htmlentities((string) $bookmark->name, ENT_QUOTES, 'UTF-8') . "</a>",
                 $toolbar,
                 array(
                     'name' => 'selection[]',
                     'value' => $id,
                     'data' => array(
-                        'confirm' => lang('bookmarklet') . ': <b>' . htmlentities($bookmark->name, ENT_QUOTES, 'UTF-8') . '</b>'
+                        'confirm' => lang('bookmarklet') . ': <b>' . htmlentities((string) $bookmark->name, ENT_QUOTES, 'UTF-8') . '</b>'
                     )
                 )
             );

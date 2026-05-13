@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -100,12 +101,11 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
                 $data['field_id_' . $field_id] = $ft_api->settings[$field_id]['note_content'];
             }
 
-
             if (
                 (isset($data['field_id_' . $field_id]) && $data['field_id_' . $field_id] !== '') or
-                array_key_exists($field['field_name'], $gfields) or // is a Grid single
-                array_key_exists($field['field_name'], $msfields) or // is a Member select single
-                array_key_exists($field['field_name'], $ffields) // is a Fluid single
+                array_key_exists((string) $field['field_name'], $gfields) or // is a Grid single
+                array_key_exists((string) $field['field_name'], $msfields) or // is a Member select single
+                array_key_exists((string) $field['field_name'], $ffields) // is a Fluid single
             ) {
                 $obj = $ft_api->setup_handler($field_id, true);
 
@@ -218,7 +218,7 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
                 }
 
                 // prevent accidental parsing of other channel variables in custom field data
-                if (strpos($entry, '{') !== false) {
+                if (strpos((string) $entry, '{') !== false) {
                     $entry = str_replace(
                         array('{', '}'),
                         array(unique_marker('channel_bracket_open'), unique_marker('channel_bracket_close')),

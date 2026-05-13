@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -31,7 +32,7 @@ class Pro extends Logs
         if (empty($function)) {
             $function = $name;
         }
-        $name = ucfirst($name);
+        $name = ucfirst((string) $name);
         $class = "\ExpressionEngine\Addons\Pro\Controller\Logs\\" . $name;
         $controller = new $class();
 

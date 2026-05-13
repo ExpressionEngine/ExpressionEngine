@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -12,8 +13,8 @@ namespace ExpressionEngine\Addons\Rte\Service;
 
 use ExpressionEngine\Library\Rte\RteFilebrowserInterface;
 
-class RedactorXService extends RedactorService implements RteService {
-
+class RedactorXService extends RedactorService implements RteService
+{
     protected static $type = 'redactorX';
     protected static $_includedFieldResources = false;
 
@@ -35,7 +36,7 @@ class RedactorXService extends RedactorService implements RteService {
         }
 
         if (!empty($this->toolset)) {
-            $configHandle = preg_replace('/[^a-z0-9]/i', '_', $this->toolset->toolset_name) . $this->toolset->toolset_id;
+            $configHandle = preg_replace('/[^a-z0-9]/i', '_', (string) $this->toolset->toolset_name) . $this->toolset->toolset_id;
             $config = array_merge($baseConfig, $this->toolset->settings);
         } else {
             $config = $baseConfig;
@@ -131,14 +132,17 @@ class RedactorXService extends RedactorService implements RteService {
             switch ($config['toolbar']['spellcheck']) {
                 case 'browser':
                     $config['toolbar']['editor']->spellcheck = true;
+
                     break;
                 case 'grammarly':
                     $config['toolbar']['editor']->spellcheck = false;
                     $config['toolbar']['editor']->grammarly = true;
+
                     break;
                 case 'none':
                 default:
                     $config['toolbar']['editor']->spellcheck = false;
+
                     break;
             }
             unset($config['toolbar']['spellcheck']);
@@ -181,7 +185,7 @@ class RedactorXService extends RedactorService implements RteService {
         }
 
         // EE FilePicker is not available on frontend channel forms
-        if (stripos($fqcn, 'filepicker_rtefb') !== false && REQ != 'CP') {
+        if (stripos((string) $fqcn, 'filepicker_rtefb') !== false && REQ != 'CP') {
             $filemanager_key = array_search('filebrowser', $config['toolbar']['plugins']);
             if ($filemanager_key !== false) {
                 $items = $config['toolbar']['plugins'];
@@ -250,7 +254,7 @@ class RedactorXService extends RedactorService implements RteService {
 
     public function toolbarInputHtml($config, $toolbar = 'buttons')
     {
-        ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.css" type="text/css" />');
+        ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/fields/rte/' . strtolower((string) static::$type) . '/redactor.min.css" type="text/css" />');
 
         $selection = [];
         if (is_object($config->settings['toolbar'])) {

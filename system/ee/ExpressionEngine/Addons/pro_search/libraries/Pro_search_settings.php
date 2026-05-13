@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -202,7 +203,7 @@ class Pro_search_settings
 
         foreach (array_keys($this->_default_settings) as $key) {
             // Permissions look like can_whatever
-            if (substr($key, 0, 4) != 'can_') {
+            if (substr((string) $key, 0, 4) != 'can_') {
                 continue;
             }
             // Add those to the output

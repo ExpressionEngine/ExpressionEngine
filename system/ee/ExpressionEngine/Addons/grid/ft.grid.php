@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -13,7 +14,6 @@
  */
 class Grid_ft extends EE_Fieldtype
 {
-
     public $info = array(
         'name' => 'Grid',
         'version' => '1.0.0'
@@ -339,7 +339,7 @@ class Grid_ft extends EE_Fieldtype
         // Match the row data section only
         if (preg_match(
             '/' . preg_quote($row_data_marker) . '(.*)' . preg_quote($row_data_marker) . '/s',
-            $tagdata,
+            (string) $tagdata,
             $match
         )) {
             // Parse the loopable portion of the table

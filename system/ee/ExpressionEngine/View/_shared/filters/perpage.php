@@ -1,8 +1,8 @@
 <div class="filter-search-bar__item">
-	<button type="button" class="has-sub filter-bar__button js-dropdown-toggle button button--default button--small" data-filter-label="<?=strtolower(lang($label))?>">
+	<button type="button" class="has-sub filter-bar__button js-dropdown-toggle button button--default button--small" data-filter-label="<?=strtolower((string) lang($label))?>">
 		<?=lang($label)?>
 		<?php if ($value): ?>
-		<span class="faded">(<?=htmlentities($value, ENT_QUOTES, 'UTF-8')?>)</span>
+		<span class="faded">(<?=htmlentities((string) $value, ENT_QUOTES, 'UTF-8')?>)</span>
 		<?php endif; ?>
 	</button>
 	<div class="dropdown">
@@ -14,8 +14,8 @@
 				type="text"
 				name="<?=$name?>"
 				id="<?=$name . uniqid()?>"
-				value="<?=htmlentities($custom_value, ENT_QUOTES, 'UTF-8')?>"
-				placeholder="<?=htmlentities($placeholder, ENT_QUOTES, 'UTF-8')?>"
+				value="<?=htmlentities((string) $custom_value, ENT_QUOTES, 'UTF-8')?>"
+				placeholder="<?=htmlentities((string) $placeholder, ENT_QUOTES, 'UTF-8')?>"
 				data-threshold="<?=$threshold?>"
 				data-threshold-text="<?=sprintf(lang('confirm_show_all_desc'), $threshold)?>"
 				class="search-input__input input--small"

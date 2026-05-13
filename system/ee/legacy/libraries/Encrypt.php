@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -60,7 +61,7 @@ class EE_Encrypt
             }
         }
 
-        return md5($key);
+        return md5((string) $key);
     }
 
     /**
@@ -114,7 +115,7 @@ class EE_Encrypt
         // mcrypt library scheme. We'll try some wizardry then.
         if ($decoded === false) {
             $key = $this->get_key($key);
-            $decoded = $this->mcrypt_decode(base64_decode($string), $key);
+            $decoded = $this->mcrypt_decode(base64_decode((string) $string), $key);
         }
 
         return $decoded;
@@ -152,11 +153,11 @@ class EE_Encrypt
 
         $key = $this->get_key($key);
 
-        if (preg_match('/[^a-zA-Z0-9\/\+=]/', $string)) {
+        if (preg_match('/[^a-zA-Z0-9\/\+=]/', (string) $string)) {
             return false;
         }
 
-        $dec = base64_decode($string);
+        $dec = base64_decode((string) $string);
 
         if (($dec = $this->mcrypt_decode($dec, $key)) === false) {
             return false;
@@ -192,8 +193,8 @@ class EE_Encrypt
         $rand = $this->hash($rand);
 
         $enc = '';
-        for ($i = 0; $i < strlen($string); $i++) {
-            $enc .= substr($rand, ($i % strlen($rand)), 1) . (substr($rand, ($i % strlen($rand)), 1) ^ substr($string, $i, 1));
+        for ($i = 0; $i < strlen((string) $string); $i++) {
+            $enc .= substr($rand, ($i % strlen($rand)), 1) . (substr($rand, ($i % strlen($rand)), 1) ^ substr((string) $string, $i, 1));
         }
 
         return $this->_xor_merge($enc, $key);
@@ -236,8 +237,8 @@ class EE_Encrypt
     {
         $hash = $this->hash($key);
         $str = '';
-        for ($i = 0; $i < strlen($string); $i++) {
-            $str .= substr($string, $i, 1) ^ substr($hash, ($i % strlen($hash)), 1);
+        for ($i = 0; $i < strlen((string) $string); $i++) {
+            $str .= substr((string) $string, $i, 1) ^ substr($hash, ($i % strlen($hash)), 1);
         }
 
         return $str;
@@ -423,7 +424,7 @@ class EE_Encrypt
      */
     public function hash($str)
     {
-        return ($this->_hash_type == 'sha1') ? $this->sha1($str) : md5($str);
+        return ($this->_hash_type == 'sha1') ? $this->sha1($str) : md5((string) $str);
     }
 
     /**
@@ -436,9 +437,9 @@ class EE_Encrypt
     public function sha1($str)
     {
         if (! function_exists('sha1')) {
-            return bin2hex(hash('sha1', $str, true));
+            return bin2hex(hash('sha1', (string) $str, true));
         } else {
-            return sha1($str);
+            return sha1((string) $str);
         }
     }
 

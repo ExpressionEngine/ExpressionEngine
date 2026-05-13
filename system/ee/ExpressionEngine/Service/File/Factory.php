@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -22,10 +23,10 @@ class Factory
     {
         if (is_null($adapter)) {
             $adapter = new Local(['path' => $path]);
-        }else{
+        } else {
             $adapter->setPathPrefix($path);
         }
-        
+
         return new Directory($adapter);
     }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -164,7 +165,7 @@ class Javascript extends CI_Controller
         $this->output->out_type = 'cp_asset';
         $this->output->set_header("Content-Type: text/javascript");
         $this->output->set_header("Cache-Control: no-cache, must-revalidate");
-        $this->output->set_header('Content-Length: ' . strlen($str));
+        $this->output->set_header('Content-Length: ' . strlen((string) $str));
         $this->output->set_output($str);
     }
 

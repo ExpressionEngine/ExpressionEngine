@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -55,7 +56,7 @@ class Buttons extends Settings
             ->all();
 
         foreach ($buttons as $button) {
-            $name = (empty($button->classname) || strpos($button->classname, 'html-') !== 0) ? htmlentities($button->tag_name) : '';
+            $name = (empty($button->classname) || strpos((string) $button->classname, 'html-') !== 0) ? htmlentities((string) $button->tag_name) : '';
 
             $preview = array('toolbar_items' => array(
                 $button->classname => array(
@@ -68,7 +69,7 @@ class Buttons extends Settings
             $toolbar = array('toolbar_items' => array(
                 'edit' => array(
                     'href' => ee('CP/URL')->make('settings/buttons/edit/' . $button->id),
-                    'title' => strtolower(lang('edit')),
+                    'title' => strtolower((string) lang('edit')),
                     'class' => 'button button--default button--small'
                 )
             ));
@@ -82,7 +83,7 @@ class Buttons extends Settings
                     'name' => 'selection[]',
                     'value' => $button->id,
                     'data' => array(
-                        'confirm' => lang('html_button') . ': <b>' . htmlentities($button->tag_name, ENT_QUOTES, 'UTF-8') . '</b>'
+                        'confirm' => lang('html_button') . ': <b>' . htmlentities((string) $button->tag_name, ENT_QUOTES, 'UTF-8') . '</b>'
                     )
                 )
             );
@@ -241,7 +242,7 @@ class Buttons extends Settings
 
     public function order()
     {
-        parse_str(ee()->input->post('order'), $order);
+        parse_str((string) ee()->input->post('order'), $order);
         $order = $order['order'];
         $position = 0;
 
@@ -415,7 +416,7 @@ class Buttons extends Settings
                 'title' => $name,
                 'data-accesskey' => $button['accesskey'],
             );
-            if (strpos($button['classname'], 'html-') !== 0) {
+            if (strpos((string) $button['classname'], 'html-') !== 0) {
                 $current['content'] = $name;
                 $buttons[$button['tag_name']] = $current;
             } else {

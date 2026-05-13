@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -55,7 +56,7 @@ class TemplateTagGenerator extends AbstractGenerator
     {
         $tagStub = $this->filesystem->read($this->stub('Tags/TagStub.php'));
         $tagStub = $this->write('slug', $this->addon, $tagStub);
-        $tagStub = $this->write('namespace', ucfirst($this->namespace), $tagStub);
+        $tagStub = $this->write('namespace', ucfirst((string) $this->namespace), $tagStub);
         $tagStub = $this->write('TagName', $this->TagName, $tagStub);
         $tagStub = $this->write('tag_name', $this->tag_name, $tagStub);
 

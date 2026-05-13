@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -101,7 +102,7 @@ class Facade
      */
     private function removeAlias($str)
     {
-        $str = trim($str);
+        $str = trim((string) $str);
         $pos = strrpos($str, ' ');
 
         if ($pos !== false) {

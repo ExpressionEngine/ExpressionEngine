@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -66,7 +67,7 @@ class Columns extends Filter
         $options = [];
         $selected = $this->value();
         if (!is_array($selected)) {
-            $selected = json_decode($selected);
+            $selected = json_decode((string) $selected);
         }
         foreach ($selected as $key) {
             if (isset($this->options[$key])) {

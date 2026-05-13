@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -101,7 +102,7 @@ class Member_images extends Member
             ? 10000
             : ee()->config->item('sig_maxlength');
 
-        if (strlen($body) > $maxlength) {
+        if (strlen((string) $body) > $maxlength) {
             return ee()->output->show_user_error(
                 'submission',
                 sprintf(lang('sig_too_big'), $maxlength)
@@ -136,7 +137,7 @@ class Member_images extends Member
     public function edit_avatar()
     {
         // Fetch the template tag data
-        $tagdata = trim(ee()->TMPL->tagdata);
+        $tagdata = trim((string) ee()->TMPL->tagdata);
 
         // If there is tag data, it's a tag pair, otherwise it's a single tag which means it's a legacy speciality template.
         $template = '';
@@ -276,12 +277,12 @@ class Member_images extends Member
 
         // Check to see if the old style pagination exists
         // @deprecated 2.8
-        if (stripos($template, LD . 'if pagination' . RD) !== false) {
-            if (stripos($template, LD . 'paginate' . RD) !== false) {
+        if (stripos((string) $template, LD . 'if pagination' . RD) !== false) {
+            if (stripos((string) $template, LD . 'paginate' . RD) !== false) {
                 $template = str_replace('{paginate}', '{pagination_links}', $template);
             }
 
-            $template = preg_replace("/{if pagination}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $template);
+            $template = preg_replace("/{if pagination}(.*?){\/if}/uis", "{paginate}$1{/paginate}", (string) $template);
             ee()->load->library('logger');
             ee()->logger->developer('{if paginate} has been deprecated, use normal {paginate} tags in your browse avatars template.', true, 604800);
         }
@@ -434,7 +435,7 @@ class Member_images extends Member
             $site_url = ee()->functions->create_url('');
         }
 
-        $site_parts = @parse_url($site_url);
+        $site_parts = @parse_url((string) $site_url);
         $referrer_parts = @parse_url($referrer);
 
         if (! is_array($site_parts) || ! is_array($referrer_parts)) {
@@ -531,7 +532,7 @@ class Member_images extends Member
             }
 
             // Make sure it's an actual URL.
-            if (substr($return_link, 0, 4) !== 'http' && substr($return_link, 0, 1) !== '/') {
+            if (substr((string) $return_link, 0, 4) !== 'http' && substr((string) $return_link, 0, 1) !== '/') {
                 $return_link = '/' . $return_link;
             }
         }

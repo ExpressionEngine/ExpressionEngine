@@ -33,7 +33,7 @@ function generate_quicktab($title = '')
                 continue;
             }
 
-            $link .= htmlentities($key) . '--' . htmlentities($val) . '/';
+            $link .= htmlentities((string) $key) . '--' . htmlentities((string) $val) . '/';
         }
 
         $link = substr($link, 0, -1);
@@ -48,14 +48,14 @@ function generate_quicktab($title = '')
     if (ee()->session->userdata('quick_tabs') !== false) {
         $newlink = str_replace('/', '&', str_replace('--', '=', $link)) . '|';
 
-        if (strpos(ee()->session->userdata('quick_tabs'), $newlink)) {
+        if (strpos((string) ee()->session->userdata('quick_tabs'), $newlink)) {
             $show_link = false;
         }
     }
 
     // We do not normally allow semicolons in GET variables,
     // so we protect it in this rare instance.
-    $tablink = ($link != '' and $show_link == true) ? AMP . 'link=' . $link . AMP . 'linkt=' . base64_encode($title) : '';
+    $tablink = ($link != '' and $show_link == true) ? AMP . 'link=' . $link . AMP . 'linkt=' . base64_encode((string) $title) : '';
 
     return BASE . AMP . 'C=myaccount' . AMP . 'M=main_menu_manager_add' . $tablink;
 }

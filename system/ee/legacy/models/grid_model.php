@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -222,7 +223,7 @@ class Grid_model extends CI_Model
             ee()->api_channel_fields->edit_datatype(
                 $col_id,
                 $column['col_type'],
-                is_array($column['col_settings']) ? $column['col_settings'] : json_decode($column['col_settings'], true),
+                is_array($column['col_settings']) ? $column['col_settings'] : json_decode((string) $column['col_settings'], true),
                 $this->_get_ft_api_settings($column['field_id'], $content_type)
             );
 
@@ -239,7 +240,7 @@ class Grid_model extends CI_Model
             ee()->api_channel_fields->setup_handler($column['col_type']);
             ee()->api_channel_fields->set_datatype(
                 $col_id,
-                is_array($column['col_settings']) ? $column['col_settings'] : json_decode($column['col_settings'], true),
+                is_array($column['col_settings']) ? $column['col_settings'] : json_decode((string) $column['col_settings'], true),
                 array(),
                 true,
                 false,
@@ -376,7 +377,7 @@ class Grid_model extends CI_Model
             if (isset($options['fixed_order']) && ! empty($options['fixed_order'])) {
                 ee()->functions->ar_andor_string($options['fixed_order'], 'row_id');
                 ee()->db->order_by(
-                    'FIELD(row_id, ' . implode(', ', explode('|', $options['fixed_order'])) . ')',
+                    'FIELD(row_id, ' . implode(', ', explode('|', (string) $options['fixed_order'])) . ')',
                     element('sort', $options, 'asc'),
                     false
                 );
@@ -432,11 +433,11 @@ class Grid_model extends CI_Model
             $fluid_field = 0;
 
             if ($fluid_field_data_id && ! is_int($fluid_field_data_id)) {
-                list($fluid_field, $sub_field_id) = explode(',', $fluid_field_data_id);
+                list($fluid_field, $sub_field_id) = explode(',', (string) $fluid_field_data_id);
                 $data = reset($data[$fluid_field]['fields'][$sub_field_id]);
             }
 
-            if (array_key_exists($entry_id, $entry_data)
+            if (array_key_exists((string) $entry_id, $entry_data)
                 && isset($data['field_id_' . $field_id])
                 && is_array($data['field_id_' . $field_id])
                 && array_key_exists('rows', $data['field_id_' . $field_id])) {
@@ -444,7 +445,7 @@ class Grid_model extends CI_Model
                 $i = 0;
                 foreach ($data['field_id_' . $field_id]['rows'] as $row_id => $row_data) {
                     $override[$i] = [
-                        'row_id' => crc32($row_id),
+                        'row_id' => crc32((string) $row_id),
                         'orig_row_id' => $row_id,
                         'entry_id' => $entry_id,
                         'row_order' => $i,
@@ -500,7 +501,7 @@ class Grid_model extends CI_Model
 
     private function previewDataPassesCondition($condition, $data)
     {
-        $condition = str_replace("  ", " ", trim(trim($condition, ') '), ' ('));
+        $condition = str_replace("  ", " ", trim(trim((string) $condition, ') '), ' ('));
         // when the check is using IS_EMPTY we check for both empty string and NULL
         // here we just grab the IS NULL part for simplicity
         if (strpos($condition, 'IS NULL') !== false && strpos($condition, ' OR ') !== false) {
@@ -528,13 +529,13 @@ class Grid_model extends CI_Model
                 $value = trim(trim($value, '"'), '%');
                 if (is_array($datum)) {
                     foreach ($datum as $piece) {
-                        $passes = stripos($piece, $value)!==false;
+                        $passes = stripos((string) $piece, $value) !== false;
                         if ($passes) {
                             break 2;
                         }
                     }
                 } else {
-                    $passes = stripos($datum, $value)!==false;
+                    $passes = stripos((string) $datum, $value) !== false;
                 }
 
                 break;
@@ -661,8 +662,8 @@ class Grid_model extends CI_Model
         $search = array();
         if ($params !== false) {
             foreach ($params as $key => $val) {
-                if (strncmp($key, 'search:', 7) == 0) {
-                    $search[substr($key, 7)] = $val;
+                if (strncmp((string) $key, 'search:', 7) == 0) {
+                    $search[substr((string) $key, 7)] = $val;
                 }
             }
         }
@@ -857,6 +858,7 @@ class Grid_model extends CI_Model
                 ee()->db->where('(' . $search_sql . ')');
             }
         }
+
         return $conditions;
     }
 
@@ -915,7 +917,7 @@ class Grid_model extends CI_Model
             ->result_array();
 
         foreach ($columns as &$column) {
-            $column['col_settings'] = is_array($column['col_settings']) ? $column['col_settings'] : json_decode($column['col_settings'], true);
+            $column['col_settings'] = is_array($column['col_settings']) ? $column['col_settings'] : json_decode((string) $column['col_settings'], true);
             $this->_columns[$content_type][$column['field_id']][$column['col_id']] = $column;
         }
 
@@ -977,12 +979,12 @@ class Grid_model extends CI_Model
             }
 
             // New rows
-            if (strpos($row_id, 'new_row_') !== false) {
+            if (strpos((string) $row_id, 'new_row_') !== false) {
                 $columns['entry_id'] = $entry_id;
                 $new_rows[] = $columns;
             }
             // Existing rows
-            elseif (strpos($row_id, 'row_id_') !== false) {
+            elseif (strpos((string) $row_id, 'row_id_') !== false) {
                 if (defined('CLONING_MODE') && CLONING_MODE === true) {
                     $columns['entry_id'] = $entry_id;
                     $new_rows[] = $columns;
@@ -1110,6 +1112,7 @@ class Grid_model extends CI_Model
             }
         }
         $rows = array_combine($keys, $values);
+
         return $rows;
     }
 
@@ -1168,7 +1171,7 @@ class Grid_model extends CI_Model
                 // We need only the column data for insertion
                 $column_data = [];
                 foreach ($row as $key => $value) {
-                    if (strncmp($key, 'col_id_', 7) === 0) {
+                    if (strncmp((string) $key, 'col_id_', 7) === 0) {
                         $column_data[$key] = $value;
                     }
                 }

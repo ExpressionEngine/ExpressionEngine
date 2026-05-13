@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -89,7 +90,7 @@ class Site extends Filter
         $value = parent::value();
 
         if (! is_numeric($value) && ! empty($value)) {
-            $needle = strtolower($value);
+            $needle = strtolower((string) $value);
 
             $matches = array_filter($this->options, function ($haystack) use ($needle) {
                 return(strpos(strtolower($haystack), $needle));

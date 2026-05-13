@@ -66,7 +66,7 @@ class Factory extends Core\Factory
     {
         $path = $provider->getPath();
 
-        return (strpos($path, PATH_ADDONS) === 0 || (defined('PATH_PRO_ADDONS') && strpos($path, PATH_PRO_ADDONS) === 0) || strpos($path, PATH_THIRD) === 0);
+        return (strpos($path, PATH_ADDONS) === 0 || (defined('PATH_PRO_ADDONS') && strpos($path, (string) PATH_PRO_ADDONS) === 0) || strpos($path, PATH_THIRD) === 0);
     }
 }
 

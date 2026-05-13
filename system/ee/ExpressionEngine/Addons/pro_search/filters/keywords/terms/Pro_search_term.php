@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -7,7 +8,6 @@
  * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -84,7 +84,7 @@ class Pro_search_term
 
         // Add the clean term if it's different
         foreach ($terms as &$term) {
-            $term = preg_quote($term, '/');
+            $term = preg_quote((string) $term, '/');
         }
 
         // Get pattern based on the terms
@@ -116,7 +116,7 @@ class Pro_search_term
     public function is_fulltext()
     {
         // Loop through each word in the search term
-        foreach (explode(' ', $this->clean) as $word) {
+        foreach (explode(' ', (string) $this->clean) as $word) {
             // Check word length
             if (ee()->pro_multibyte->strlen($word) < ee()->pro_search_settings->get('min_word_length')) {
                 return false;

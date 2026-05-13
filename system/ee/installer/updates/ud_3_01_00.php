@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -66,14 +67,14 @@ class Updater
         $columns_to_modify = array();
         foreach ($member_data_columns as $column) {
             if ($column == 'member_id' or 						// Don't rename the primary key
-                substr($column, 0, 2) == 'm_' or 				// or if it already has the prefix
+                substr((string) $column, 0, 2) == 'm_' or 				// or if it already has the prefix
                 in_array('m_' . $column, $member_data_columns)) { 	// or if the prefixed column already exists (?!)
                 continue;
             }
 
             $columns_to_modify[$column] = array(
                 'name' => 'm_' . $column,
-                'type' => (strpos($column, 'field_ft_') !== false) ? 'tinytext' : 'text'
+                'type' => (strpos((string) $column, 'field_ft_') !== false) ? 'tinytext' : 'text'
             );
         }
 
@@ -140,7 +141,7 @@ class Updater
             $sites = ee()->db->get('sites');
 
             foreach ($sites->result_array() as $site) {
-                $data = unserialize(base64_decode($site['site_member_preferences']));
+                $data = unserialize(base64_decode((string) $site['site_member_preferences']));
 
                 $avatar_path = $data['avatar_path'];
                 $avatar_path = realpath($avatar_path);
@@ -248,7 +249,7 @@ class Updater
         $sites = ee()->db->get('sites');
 
         foreach ($sites->result_array() as $site) {
-            $member_prefs = unserialize(base64_decode($site['site_member_preferences']));
+            $member_prefs = unserialize(base64_decode((string) $site['site_member_preferences']));
             $member_directories = array();
 
             $member_directories['Avatars'] = array(
@@ -261,8 +262,8 @@ class Updater
             );
 
             $member_directories['Default Avatars'] = array(
-                'server_path' => rtrim($member_prefs['avatar_path'], '/') . '/default/',
-                'url' => rtrim($member_prefs['avatar_url'], '/') . '/default/',
+                'server_path' => rtrim((string) $member_prefs['avatar_path'], '/') . '/default/',
+                'url' => rtrim((string) $member_prefs['avatar_url'], '/') . '/default/',
                 'allowed_types' => 'img',
                 'max_width' => $member_prefs['avatar_max_width'],
                 'max_height' => $member_prefs['avatar_max_height'],
@@ -397,7 +398,7 @@ class Updater
 
             foreach ($layout->field_layout as $section) {
                 foreach ($section['fields'] as $field_info) {
-                    if (strpos($field_info['field'], 'field_id_') == 0) {
+                    if (strpos((string) $field_info['field'], 'field_id_') == 0) {
                         $id = str_replace('field_id_', '', $field_info['field']);
                         unset($custom_fields[$id]);
                     }

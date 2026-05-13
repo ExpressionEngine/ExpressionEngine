@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -93,7 +94,7 @@ class Localize
 
         // Match all EE date vars, which are essentially the normal PHP date
         // vars with a percent sign in front of them
-        if (! preg_match_all("/(%\S)/", $format, $matches)) {
+        if (! preg_match_all("/(%\S)/", (string) $format, $matches)) {
             return $dt->format('U');
         }
 
@@ -375,7 +376,7 @@ class Localize
 
             foreach ($zones_by_country[$code] as $zone) {
                 // Explode ID by slashes while replacing underscores with spaces
-                $zone_array = str_replace('_', ' ', explode('/', $zone));
+                $zone_array = str_replace('_', ' ', explode('/', (string) $zone));
 
                 // Exclude deprecated PHP timezones
                 if (! in_array($zone_array[0], $continents)) {
@@ -534,7 +535,7 @@ EOF;
             foreach ($this->_get_countries() as $code => $country) {
                 $this->_timezones_by_country[$code] = DateTimeZone::listIdentifiers(
                     DateTimeZone::PER_COUNTRY,
-                    strtoupper($code)
+                    strtoupper((string) $code)
                 );
             }
         }

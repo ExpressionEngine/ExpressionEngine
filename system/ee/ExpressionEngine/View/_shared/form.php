@@ -43,7 +43,7 @@
                                     $class = 'active';
                                 }
 
-                                if (strpos($tabs[$name], 'class="ee-form-error-message"') !== false) {
+                                if (strpos((string) $tabs[$name], 'class="ee-form-error-message"') !== false) {
                                     $class .= ' invalid';
                                 }
                             ?>

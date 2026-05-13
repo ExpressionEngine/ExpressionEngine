@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -99,11 +100,11 @@ class CommandGenerator extends AbstractGenerator
         // The add-on setup has the commands array
         if (array_key_exists('commands', $addonSetupArray)) {
             $pattern = "/(commands)([^=]+)(=>\s)(array\(|\[)([^\S]*)([\s])([\s\S]*)$/";
-            $addonSetupFile = preg_replace($pattern, "$1$2$3$4\n$commandString$5$6$7", $addonSetupFile);
+            $addonSetupFile = preg_replace($pattern, "$1$2$3$4\n$commandString$5$6$7", (string) $addonSetupFile);
             $this->filesystem->write($this->addonPath . 'addon.setup.php', $addonSetupFile, true);
         } else { // The add-on setup does not have the commands array
             $pattern = '/(,)([^,]+)$/';
-            $addonSetupFile = preg_replace($pattern, ",\n    $commandStub $2", $addonSetupFile);
+            $addonSetupFile = preg_replace($pattern, ",\n    $commandStub $2", (string) $addonSetupFile);
             $this->filesystem->write($this->addonPath . 'addon.setup.php', $addonSetupFile, true);
         }
     }

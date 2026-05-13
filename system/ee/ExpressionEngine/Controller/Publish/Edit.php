@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -163,7 +164,7 @@ class Edit extends AbstractPublishController
             }
         }
 
-        if(isset($columns[$sort_col]) && $columns[$sort_col] instanceof Column) {
+        if (isset($columns[$sort_col]) && $columns[$sort_col] instanceof Column) {
             $sort_field = $columns[$sort_col]->getEntryManagerColumnSortField();
             $entries->order($sort_field, $table->sort_dir);
             if ($sort_col != 'entry_id') {
@@ -248,7 +249,7 @@ class Edit extends AbstractPublishController
 
         $vars['filters'] = $filters->renderEntryFilters($base_url);
         $vars['filters_search'] = $filters->renderSearch($base_url);
-        $vars['search_value'] = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
+        $vars['search_value'] = htmlentities((string) ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
         $vars['pagination'] = ee('CP/Pagination', $count)
             ->perPage($filter_values['perpage'])
             ->currentPage($page)
@@ -406,7 +407,7 @@ class Edit extends AbstractPublishController
         }
         // -------------------------------------------
 
-        $entry_title = htmlentities($entry->title, ENT_QUOTES, 'UTF-8');
+        $entry_title = htmlentities((string) $entry->title, ENT_QUOTES, 'UTF-8');
 
         ee()->view->cp_page_title = sprintf(lang('edit_entry_with_title'), $entry_title);
 
@@ -433,7 +434,7 @@ class Edit extends AbstractPublishController
         if (ee()->input->get('hide_closer') === 'y' && ee()->input->get('modal_form') === 'y') {
             if (ee()->input->get('return') != '') {
                 $vars['form_hidden'] = [
-                    'return' => urldecode(ee()->input->get('return', true))
+                    'return' => urldecode((string) ee()->input->get('return', true))
                 ];
             }
             $vars['hide_sidebar'] = true;

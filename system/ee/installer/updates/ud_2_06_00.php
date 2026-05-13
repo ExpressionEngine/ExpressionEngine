@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -431,8 +432,8 @@ If you do not wish to reset your password, ignore this message. It will expire i
         // Foreach template
         foreach ($templates as $template) {
             // If there aren't any related entries tags, then we don't need to continue.
-            if (strpos($template->template_data, 'related_entries') === false
-                && strpos($template->template_data, 'reverse_related_entries') === false) {
+            if (strpos((string) $template->template_data, 'related_entries') === false
+                && strpos((string) $template->template_data, 'reverse_related_entries') === false) {
                 continue;
             }
 

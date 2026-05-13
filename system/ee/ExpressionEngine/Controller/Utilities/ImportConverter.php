@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -161,7 +162,7 @@ class ImportConverter extends Utilities
                 return false;
             }
 
-            preg_match("/[\w\d]*/", $str, $matches);
+            preg_match("/[\w\d]*/", (string) $str, $matches);
 
             if ($matches[0] != '') {
                 ee()->form_validation->set_message('_not_alphanu', lang('alphanumeric_not_allowed'));
@@ -336,10 +337,11 @@ class ImportConverter extends Utilities
             }
         } else {
             foreach ($contents as $line) {
-                preg_match_all("/" . preg_quote($enclosure) . "(.*?)" . preg_quote($enclosure) . "/si", $line, $matches);
+                preg_match_all("/" . preg_quote((string) $enclosure) . "(.*?)" . preg_quote((string) $enclosure) . "/si", $line, $matches);
                 $fields[] = $matches[1];
             }
         }
+
         return $fields;
     }
 
@@ -360,7 +362,7 @@ class ImportConverter extends Utilities
 
         // Validate selected fields
         foreach ($_POST as $key => $val) {
-            if (substr($key, 0, 5) == 'field') {
+            if (substr((string) $key, 0, 5) == 'field') {
                 $paired[$key] = $val;
             }
         }
@@ -464,7 +466,7 @@ class ImportConverter extends Utilities
         $structure = array();
 
         foreach ($_POST as $key => $val) {
-            if (substr($key, 0, 5) == 'field') {
+            if (substr((string) $key, 0, 5) == 'field') {
                 $structure[] = $val;
             }
         }

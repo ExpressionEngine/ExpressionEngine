@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -24,10 +25,10 @@ class Modifiers
      * @var array
      */
     protected $modifiers = [];
-    
+
     public function __construct()
     {
-        
+
     }
 
     /**
@@ -60,7 +61,7 @@ class Modifiers
 
         // also register with add-on name
         $this->modifiers[$provider->getPrefix() . '_' . $name] = $fqcn;
-        
+
         return $this->modifiers;
     }
 

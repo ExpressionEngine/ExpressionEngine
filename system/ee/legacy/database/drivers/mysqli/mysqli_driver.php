@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -130,8 +131,8 @@ class CI_DB_mysqli_driver extends CI_DB
     {
         // "DELETE FROM TABLE" returns 0 affected rows This hack modifies
         // the query so that it returns the number of affected rows
-        if (preg_match('/^\s*DELETE\s+FROM\s+(\S+)\s*$/i', $sql)) {
-            $sql = preg_replace("/^\s*DELETE\s+FROM\s+(\S+)\s*$/", "DELETE FROM \\1 WHERE 1=1", $sql);
+        if (preg_match('/^\s*DELETE\s+FROM\s+(\S+)\s*$/i', (string) $sql)) {
+            $sql = preg_replace("/^\s*DELETE\s+FROM\s+(\S+)\s*$/", "DELETE FROM \\1 WHERE 1=1", (string) $sql);
         }
 
         return $sql;
@@ -380,22 +381,22 @@ class CI_DB_mysqli_driver extends CI_DB
         }
 
         foreach ($this->_reserved_identifiers as $id) {
-            if (strpos($item, '.' . $id) !== false) {
+            if (strpos((string) $item, '.' . $id) !== false) {
                 $str = $this->_escape_char . str_replace('.', $this->_escape_char . '.', $item);
 
                 // remove duplicates if the user already included the escape
-                return preg_replace('/[' . $this->_escape_char . ']+/', $this->_escape_char, $str);
+                return preg_replace('/[' . $this->_escape_char . ']+/', (string) $this->_escape_char, $str);
             }
         }
 
-        if (strpos($item, '.') !== false) {
+        if (strpos((string) $item, '.') !== false) {
             $str = $this->_escape_char . str_replace('.', $this->_escape_char . '.' . $this->_escape_char, $item) . $this->_escape_char;
         } else {
             $str = $this->_escape_char . $item . $this->_escape_char;
         }
 
         // remove duplicates if the user already included the escape
-        return preg_replace('/[' . $this->_escape_char . ']+/', $this->_escape_char, $str);
+        return preg_replace('/[' . $this->_escape_char . ']+/', (string) $this->_escape_char, $str);
     }
 
     /**

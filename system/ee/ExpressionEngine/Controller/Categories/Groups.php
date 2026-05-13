@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -41,7 +42,7 @@ class Groups extends AbstractCategoriesController
                 ->withTitle(lang('category_groups_deleted'))
                 ->addToBody(sprintf(
                     lang('category_groups_deleted_desc'),
-                    htmlentities($group->group_name, ENT_QUOTES, 'UTF-8')
+                    htmlentities((string) $group->group_name, ENT_QUOTES, 'UTF-8')
                 ))
                 ->defer();
         } else {

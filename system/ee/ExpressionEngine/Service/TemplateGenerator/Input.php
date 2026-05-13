@@ -21,7 +21,7 @@ class Input {
 
     public function has($key)
     {
-        return array_key_exists($key, $this->items);
+        return array_key_exists((string) $key, $this->items);
     }
 
     public function get($key, $default = null)

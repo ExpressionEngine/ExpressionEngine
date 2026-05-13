@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -60,7 +61,7 @@ class Number_ft extends Text_ft
 
         if ($this->settings['datalist_items']) {
             $field['datalist'] = [];
-            $datalist = explode("\n", $this->settings['datalist_items']);
+            $datalist = explode("\n", (string) $this->settings['datalist_items']);
             foreach ($datalist as $option) {
                 if (!empty(trim($option))) {
                     $field['datalist'][] = trim($option);
@@ -109,6 +110,7 @@ class Number_ft extends Text_ft
         $validationResult = $validator->validate(array('value' => $data));
         if (! $validationResult->isValid()) {
             $error = $validationResult->getErrors('value');
+
             return array_shift($error);
         }
 
@@ -217,10 +219,12 @@ class Number_ft extends Text_ft
         return $validator->validate($settings);
     }
 
-    public function matchesContentTypeRule($key, $value, $params, $rule) {
-        if ((int)$value != $value) {
+    public function matchesContentTypeRule($key, $value, $params, $rule)
+    {
+        if ((int) $value != $value) {
             return 'integer';
         }
+
         return true;
     }
 

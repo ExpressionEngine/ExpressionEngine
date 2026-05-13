@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -10,8 +11,8 @@
 
 namespace ExpressionEngine\Controller\Members\Profile;
 
-use ExpressionEngine\Service\Model\Collection AS FileCollection;
-use ExpressionEngine\Model\File\File AS FileModel;
+use ExpressionEngine\Service\Model\Collection as FileCollection;
+use ExpressionEngine\Model\File\File as FileModel;
 
 /**
  * Member Profile Personal Settings Controller
@@ -108,7 +109,7 @@ class Settings extends Profile
                             'type' => 'image',
                             'id' => 'avatar',
                             'edit' => false,
-                            'image' => $avatar_exists ? rtrim($avatar_directory->url, '/') . '/' . ltrim($this->member->avatar_filename, '/') : '',
+                            'image' => $avatar_exists ? rtrim((string) $avatar_directory->url, '/') . '/' . ltrim((string) $this->member->avatar_filename, '/') : '',
                             'value' => $this->member->avatar_filename
                         )
                     )
@@ -188,6 +189,7 @@ class Settings extends Profile
                 $vars['left_nav'] = $sidebar;
                 $vars['left_nav_collapsed'] = ee('CP/Sidebar')->collapsedState;
             }
+
             return ee('View')->make('settings/modal-form')->render($vars);
         }
 
@@ -218,6 +220,7 @@ class Settings extends Profile
                     'instructions' => $this->member->username
                 ]
             ];
+
             return $result;
         }
 
@@ -239,6 +242,7 @@ class Settings extends Profile
                 $this->removeAvatarFiles($directory->id);
             }
             $this->member->avatar_filename = ee()->security->sanitize_filename(ee()->input->post('avatar_filename'));
+
             return true;
         }
 
@@ -256,7 +260,7 @@ class Settings extends Profile
 
         // We don't have the suffix, so first we explode to avoid passed by reference error
         // Then we grab our suffix
-        $name_array = explode('.', $_FILES['upload_avatar']['name']);
+        $name_array = explode('.', (string) $_FILES['upload_avatar']['name']);
         $suffix = array_pop($name_array);
 
         //$name = $_FILES['upload_avatar']['name'];
@@ -268,7 +272,7 @@ class Settings extends Profile
             array('ignore_dupes' => false)
         );
 
-        $filename = basename($file_path);
+        $filename = basename((string) $file_path);
 
         $original = $upload_response['upload_directory_prefs']['server_path'] . $upload_response['file_name'];
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -28,11 +29,11 @@ class Xml_encode
         // Load the XML Helper
         ee()->load->helper('xml');
 
-        $str = xml_convert(strip_tags($str), $protect_all);
+        $str = xml_convert(strip_tags((string) $str), $protect_all);
 
         // Strip [email] tags
-        $str = preg_replace("/\[email=(.*?)\](.*?)\[\/email\]/i", '\\2', $str);
-        $str = preg_replace("/\[email\](.*?)\[\/email\]/i", '\\1', $str);
+        $str = preg_replace("/\[email=(.*?)\](.*?)\[\/email\]/i", '\\2', (string) $str);
+        $str = preg_replace("/\[email\](.*?)\[\/email\]/i", '\\1', (string) $str);
 
         $this->return_data = trim(str_replace('&nbsp;', '&#160;', $str));
     }

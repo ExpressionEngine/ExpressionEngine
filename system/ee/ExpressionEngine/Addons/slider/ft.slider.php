@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -86,7 +87,7 @@ class Slider_ft extends Text_ft
     public function replace_tag($data, $params = '', $tagdata = '')
     {
         //some fallback if we switched from double to single slider
-        if (strpos($data, '|') !== false) {
+        if (strpos((string) $data, '|') !== false) {
             ee()->load->helper('custom_field');
             $data = decode_multi_field($data);
             if (isset($data[0])) {
@@ -250,9 +251,10 @@ class Slider_ft extends Text_ft
         ));
 
         $validator->defineRule('matchesContentType', function ($key, $value) use ($settings) {
-            if ($settings['field_content_type'] == 'integer' && $this->settings_form_field_name == 'slider' && (int)$value != $value) {
+            if ($settings['field_content_type'] == 'integer' && $this->settings_form_field_name == 'slider' && (int) $value != $value) {
                 return 'integer';
             }
+
             return true;
         });
 

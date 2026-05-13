@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -43,11 +44,11 @@ class Themes extends Jumps
 
         if (!empty($searchString)) {
             // Break the search string into individual keywords so we can partially match them.
-            $keywords = explode(' ', $searchString);
+            $keywords = explode(' ', (string) $searchString);
 
             foreach ($keywords as $keyword) {
                 foreach ($this->themes as $theme => $icon) {
-                    if (preg_match('/' . $keyword . '/', $theme)) {
+                    if (preg_match('/' . $keyword . '/', (string) $theme)) {
                         $response['switchTheme' . $theme] = array(
                             'icon' => $icon,
                             'command' => lang($theme),

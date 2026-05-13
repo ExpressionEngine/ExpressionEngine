@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -181,7 +182,7 @@ abstract class EE_Fieldtype
 
         // Handle both array and object types
         if (is_array($this->row)) {
-            return array_key_exists($key, $this->row) ? $this->row[$key] : $default;
+            return array_key_exists((string) $key, $this->row) ? $this->row[$key] : $default;
         }
 
         if (is_object($this->row)) {
@@ -189,6 +190,7 @@ abstract class EE_Fieldtype
             if (method_exists($this->row, 'getProperty')) {
                 return $this->row->getProperty($key) ?: $default;
             }
+
             // Fallback to direct property access
             return isset($this->row->$key) ? $this->row->$key : $default;
         }
@@ -848,7 +850,7 @@ abstract class EE_Fieldtype
             $field_options = $pairs;
         } elseif ($this->get_setting('field_pre_populate') === false) {
             if (! is_array($this->settings['field_list_items'])) {
-                foreach (explode("\n", $this->settings['field_list_items']) as $v) {
+                foreach (explode("\n", (string) $this->settings['field_list_items']) as $v) {
                     $v = trim($v);
                     $field_options[$v] = $v;
                 }
@@ -869,14 +871,14 @@ abstract class EE_Fieldtype
             }
 
             foreach ($entriesData as $datum) {
-                if (trim($datum) == '') {
+                if (trim((string) $datum) == '') {
                     continue;
                 }
 
-                $pretitle = substr($datum, 0, 110);
+                $pretitle = substr((string) $datum, 0, 110);
                 $pretitle = str_replace(array("\r\n", "\r", "\n", "\t"), " ", $pretitle);
 
-                $field_options[trim($datum)] = $pretitle;
+                $field_options[trim((string) $datum)] = $pretitle;
             }
         }
 
@@ -898,7 +900,7 @@ abstract class EE_Fieldtype
             }
 
             // Get keys from a multidimensional array recursively
-            $arrayKeysRecursive = function($array) use(&$arrayKeysRecursive) {
+            $arrayKeysRecursive = function ($array) use (&$arrayKeysRecursive) {
                 $keys = array_keys($array);
 
                 foreach ($array as $value) {
@@ -1155,7 +1157,7 @@ abstract class EE_Fieldtype
         foreach ($channels as $channel) {
             foreach ($channel->getAllCustomFields() as $field) {
                 if (isset($text_compatible_fields[$field->field_type])) {
-                    $channels_options[$channel->channel_title][$channel->channel_id . '_' . $field->field_id] = htmlentities($field->field_label, ENT_QUOTES, 'UTF-8');
+                    $channels_options[$channel->channel_title][$channel->channel_id . '_' . $field->field_id] = htmlentities((string) $field->field_label, ENT_QUOTES, 'UTF-8');
                 }
             }
         }

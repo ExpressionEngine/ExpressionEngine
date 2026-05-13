@@ -69,7 +69,7 @@ class Updater
         $templatesQuery = ee()->db->get('specialty_templates');
         foreach ($templatesQuery->result_array() as $row) {
             if (isset($EE2Hashes[$row['template_name']])) {
-                $hash = md5($row['template_data']);
+                $hash = md5((string) $row['template_data']);
                 if ($hash != $EE2Hashes[$row['template_name']]) {
                     continue;
                 }
@@ -202,7 +202,7 @@ class Updater
 
                 // Test for non-integer values and convert to DEFAULT 0 if found
                 $hasNonInteger = ee()->db->query("SELECT * FROM " . ee()->db->dbprefix($table) . " WHERE `" . $column . "` NOT REGEXP '^-?[0-9]+$' LIMIT 1");
-                if($hasNonInteger->num_rows() != 0) {
+                if ($hasNonInteger->num_rows() != 0) {
                     ee()->db->query("UPDATE " . ee()->db->dbprefix($table) . " SET `" . $column . "` = 0 WHERE " . $column . " NOT REGEXP '^-?[0-9]+$'");
                 }
 

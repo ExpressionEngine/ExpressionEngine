@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -154,7 +155,7 @@ class EE_Core
 
         // Assign Site prefs now that the DB is fully loaded
         if (ee()->config->item('site_name') != '') {
-            ee()->config->set_item('site_name', preg_replace('/[^a-z0-9\-\_]/i', '', ee()->config->item('site_name')));
+            ee()->config->set_item('site_name', preg_replace('/[^a-z0-9\-\_]/i', '', (string) ee()->config->item('site_name')));
         }
 
         ee()->config->site_prefs(ee()->config->item('site_name'));
@@ -557,7 +558,7 @@ class EE_Core
         if ((ee()->config->item('enable_mfa') === false || ee()->config->item('enable_mfa') === 'y') && ee()->session->userdata('mfa_flag') != 'skip') {
             //only allow MFA code page
             if (!(ee()->uri->segment(2) == 'login' && in_array(ee()->uri->segment(3), ['mfa', 'mfa_reset', 'logout'])) && !(ee()->uri->segment(2) == 'members' && ee()->uri->segment(3) == 'profile' && ee()->uri->segment(4) == 'pro' && ee()->uri->segment(5) == 'mfa')) {
-                ee()->functions->redirect(ee('CP/URL')->make('/login/mfa', ['return' => urlencode(ee('Encrypt')->encode(ee()->cp->get_safe_refresh()))]));
+                ee()->functions->redirect(ee('CP/URL')->make('/login/mfa', ['return' => urlencode((string) ee('Encrypt')->encode(ee()->cp->get_safe_refresh()))]));
             }
         }
 
@@ -732,7 +733,7 @@ class EE_Core
 
         if (
             $forum_trigger &&
-            in_array(ee()->uri->segment(1), preg_split('/\|/', $forum_trigger, -1, PREG_SPLIT_NO_EMPTY))
+            in_array(ee()->uri->segment(1), preg_split('/\|/', (string) $forum_trigger, -1, PREG_SPLIT_NO_EMPTY))
         ) {
             require PATH_THIRD . 'forum/mod.forum.php';
             $FRM = new Forum();
@@ -752,9 +753,9 @@ class EE_Core
 
             // Clean up the URLs to remove unnecessary detail
             $this->set_newrelic_transaction(function () {
-                $request = preg_replace('/\/[\d]+$/', '', ee()->uri->uri_string);
+                $request = preg_replace('/\/[\d]+$/', '', (string) ee()->uri->uri_string);
 
-                return preg_replace('/search\/.*$/', 'search', $request);
+                return preg_replace('/search\/.*$/', 'search', (string) $request);
             });
 
             $member = new Member();
@@ -785,12 +786,12 @@ class EE_Core
 
             // If we have pages, we'll look for an entry id
             if ($pages && isset($pages[$site_id]['uris'])) {
-                $match_uri = '/' . trim(ee()->uri->uri_string, '/');  // will result in '/' if uri_string is blank
+                $match_uri = '/' . trim((string) ee()->uri->uri_string, '/');  // will result in '/' if uri_string is blank
                 $page_uris = $pages[$site_id]['uris'];
 
                 // trim page uris in case there's a trailing slash on any of them
                 foreach ($page_uris as $index => $value) {
-                    $page_uris[$index] = '/' . trim($value, '/');
+                    $page_uris[$index] = '/' . trim((string) $value, '/');
                 }
 
                 // case insensitive URI comparison
@@ -950,8 +951,8 @@ class EE_Core
                     (REQ == 'ACTION' && ee()->config->item('website_session_type') != 's')
                 )
             ) {
-                $cookie_domain = strpos(ee()->config->item('cookie_domain'), '.') === 0 ? substr(ee()->config->item('cookie_domain'), 1) : ee()->config->item('cookie_domain');
-                $domain_matches = (REQ == 'CP') ? strpos(ee()->config->item('cp_url'), $cookie_domain) : strpos(ee()->config->item('site_url'), $cookie_domain);
+                $cookie_domain = strpos((string) ee()->config->item('cookie_domain'), '.') === 0 ? substr((string) ee()->config->item('cookie_domain'), 1) : ee()->config->item('cookie_domain');
+                $domain_matches = (REQ == 'CP') ? strpos((string) ee()->config->item('cp_url'), (string) $cookie_domain) : strpos((string) ee()->config->item('site_url'), (string) $cookie_domain);
                 if ($domain_matches === false) {
                     $error = lang('cookie_domain_mismatch');
                 }

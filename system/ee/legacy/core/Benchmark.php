@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -61,7 +62,7 @@ class EE_Benchmark
             $this->marker[$point2] = microtime();
         }
 
-        list($sm, $ss) = explode(' ', $this->marker[$point1]);
+        list($sm, $ss) = explode(' ', (string) $this->marker[$point1]);
         list($em, $es) = explode(' ', $this->marker[$point2]);
 
         return number_format(($em + $es) - ($sm + $ss), $decimals);
@@ -94,7 +95,7 @@ class EE_Benchmark
         foreach ($this->marker as $key => $val) {
             // We match the "end" marker so that the list ends
             // up in the order that it was defined
-            if (preg_match("/(.+?)_end/i", $key, $match)) {
+            if (preg_match("/(.+?)_end/i", (string) $key, $match)) {
                 if (isset($this->marker[$match[1] . '_end']) and isset($this->marker[$match[1] . '_start'])) {
                     $timings[ucwords(str_replace(array('_', '-'), ' ', $match[1]))] = $this->elapsed_time($match[1] . '_start', $key);
                 }

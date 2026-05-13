@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -259,7 +260,7 @@ class Grid_lib
         if (isset($data['rows'])) {
             $total_rows = count($data['rows']);
             foreach ($data['rows'] as $key => $row) {
-                if (substr($key, 0, 6) == 'row_id') {
+                if (substr((string) $key, 0, 6) == 'row_id') {
                     $row_key = str_replace('row_id_', '', $key);
 
                     if (! in_array($row_key, $valid_rows)) {
@@ -487,7 +488,7 @@ class Grid_lib
                 );
 
                 // Pass Grid row ID to fieldtype if it's an existing row
-                if (strpos($row_id, 'row_id_') !== false) {
+                if (strpos((string) $row_id, 'row_id_') !== false) {
                     $fieldtype->settings['grid_row_id'] = str_replace('row_id_', '', $row_id);
                 }
 
@@ -548,8 +549,8 @@ class Grid_lib
                     // we're validating
                     if (ee()->input->is_ajax_request() && $field = ee()->input->post('ee_fv_field')) {
                         if (
-                            strpos($field, 'field_id_' . $this->field_id . '[rows][' . $row_id . '][' . $col_id . ']') === 0
-                            || strpos($field, '[field_id_' . $this->field_id . '][rows][' . $row_id . '][' . $col_id . ']') !== false
+                            strpos((string) $field, 'field_id_' . $this->field_id . '[rows][' . $row_id . '][' . $col_id . ']') === 0
+                            || strpos((string) $field, '[field_id_' . $this->field_id . '][rows][' . $row_id . '][' . $col_id . ']') !== false
                         ) {
                             return $error;
                         }
@@ -675,7 +676,7 @@ class Grid_lib
     public function validate_settings($settings)
     {
         foreach ($settings['cols'] as $col_field => $column) {
-            $column['col_id'] = (strpos($col_field, 'new_') === false)
+            $column['col_id'] = (strpos((string) $col_field, 'new_') === false)
                 ? str_replace('col_id_', '', $col_field) : false;
             $column['col_settings']['field_required'] = $column['col_required'];
 
@@ -730,7 +731,7 @@ class Grid_lib
             if (defined('CLONING_MODE') && CLONING_MODE === true) {
                 $col_field = 'new_' . str_replace('col_id_', '', $col_field);
             }
-            $column['col_id'] = (strpos($col_field, 'new_') === false)
+            $column['col_id'] = (strpos((string) $col_field, 'new_') === false)
                 ? str_replace('col_id_', '', $col_field) : false;
 
             $column['col_settings'] = $this->_save_settings($column);
@@ -1108,8 +1109,8 @@ class Grid_lib
     {
         return preg_replace(
             '/(<[input|select|textarea][^>]*)name=["\']([^"\'\[\]]+)([^"\']*)["\']/',
-            $replace,
-            $search
+            (string) $replace,
+            (string) $search
         );
     }
 }

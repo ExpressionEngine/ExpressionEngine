@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -47,7 +48,7 @@ class ExtensionHookGenerator extends AbstractGenerator
 
     public function build()
     {
-        $hookData = Hooks::getByKey(trim(strtoupper($this->name)));
+        $hookData = Hooks::getByKey(trim(strtoupper((string) $this->name)));
 
         // If we didnt get a real hook, set up a default
         if ($hookData === false) {
@@ -59,7 +60,7 @@ class ExtensionHookGenerator extends AbstractGenerator
         }
 
         $extensionHookStub = $this->filesystem->read($this->stub('ExtensionStub.php'));
-        $extensionHookStub = $this->write('namespace', ucfirst($this->namespace), $extensionHookStub);
+        $extensionHookStub = $this->write('namespace', ucfirst((string) $this->namespace), $extensionHookStub);
         $extensionHookStub = $this->write('hook_name_studly', $this->ExtensionHookName, $extensionHookStub);
         $extensionHookStub = $this->write('hook_methods', $hookData['params'], $extensionHookStub);
 

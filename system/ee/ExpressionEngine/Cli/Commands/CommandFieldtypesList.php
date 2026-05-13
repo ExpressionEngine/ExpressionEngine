@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -110,7 +111,7 @@ class CommandFieldtypesList extends Cli
             }
 
             // If addon filter is set, skip non-matching providers
-            if (!empty($addonFiltersLower) && !in_array(strtolower($addon->getPrefix()), $addonFiltersLower, true)) {
+            if (!empty($addonFiltersLower) && !in_array(strtolower((string) $addon->getPrefix()), $addonFiltersLower, true)) {
                 continue;
             }
 
@@ -118,7 +119,7 @@ class CommandFieldtypesList extends Cli
 
             foreach ($names as $short => $display) {
                 // If fieldtype short filter is set, skip non-matching fieldtypes
-                if (!empty($shortFiltersLower) && !in_array(strtolower($short), $shortFiltersLower, true)) {
+                if (!empty($shortFiltersLower) && !in_array(strtolower((string) $short), $shortFiltersLower, true)) {
                     continue;
                 }
 
@@ -152,10 +153,10 @@ class CommandFieldtypesList extends Cli
                 $settings = isset($installedFieldtypeSettings[$short]) ? $installedFieldtypeSettings[$short] : null;
 
                 // If global settings are not present and a specific shortname was requested, optionally derive defaults
-                if ((empty($settings) || !is_array($settings)) && !empty($shortFiltersLower) && in_array(strtolower($short), $shortFiltersLower, true)) {
+                if ((empty($settings) || !is_array($settings)) && !empty($shortFiltersLower) && in_array(strtolower((string) $short), $shortFiltersLower, true)) {
                     // For Structure, use install() defaults which represent field settings
-                    if (strtolower($short) === 'structure' && file_exists($filePath)) {
-                        $defaults = $this->getFieldtypeDefaultSettings($filePath, ucfirst($short) . '_ft');
+                    if (strtolower((string) $short) === 'structure' && file_exists($filePath)) {
+                        $defaults = $this->getFieldtypeDefaultSettings($filePath, ucfirst((string) $short) . '_ft');
                         if (is_array($defaults) && !empty($defaults)) {
                             $settings = $defaults;
                         }
@@ -169,7 +170,7 @@ class CommandFieldtypesList extends Cli
                     'addon_name' => $addon->getName(),
                     'installed' => (bool) $installedForShort,
                     'version' => $version ?: null,
-                    'class' => ucfirst($short) . '_ft',
+                    'class' => ucfirst((string) $short) . '_ft',
                     'path' => file_exists($filePath) ? $filePath : null,
                     'has_global_settings' => $hasGlobalSettings,
                     'settings' => $settings,
@@ -182,19 +183,23 @@ class CommandFieldtypesList extends Cli
 
         if (empty($fieldtypes)) {
             $this->info('command_fieldtypes_list_no_fieldtypes_found');
+
             return;
         }
 
         switch ($format) {
             case 'json':
                 $this->displayJson($fieldtypes);
+
                 break;
             case 'csv':
                 $this->displayCsv($fieldtypes);
+
                 break;
             case 'table':
             default:
                 $this->displayTable($fieldtypes);
+
                 break;
         }
     }
@@ -237,6 +242,7 @@ class CommandFieldtypesList extends Cli
     private function getChannelFieldUsageCounts()
     {
         $counts = [];
+
         try {
             $table = ee()->db->dbprefix . 'channel_fields';
             $query = ee()->db->query("SELECT field_type, COUNT(*) AS cnt FROM `{$table}` GROUP BY field_type");
@@ -246,6 +252,7 @@ class CommandFieldtypesList extends Cli
         } catch (\Throwable $e) {
             // ignore and return empty
         }
+
         return $counts;
     }
 
@@ -254,7 +261,8 @@ class CommandFieldtypesList extends Cli
         $this->info('command_fieldtypes_list_header');
         $this->write('');
 
-        $this->write(sprintf($this->tableMask,
+        $this->write(sprintf(
+            $this->tableMask,
             lang('command_fieldtypes_list_shortname'),
             lang('command_fieldtypes_list_name'),
             lang('command_fieldtypes_list_addon')
@@ -263,7 +271,8 @@ class CommandFieldtypesList extends Cli
         $this->write(str_repeat('-', 90));
 
         foreach ($fieldtypes as $ft) {
-            $this->write(sprintf($this->tableMask,
+            $this->write(sprintf(
+                $this->tableMask,
                 $ft['short'],
                 $ft['name'],
                 $ft['addon']
@@ -292,5 +301,3 @@ class CommandFieldtypesList extends Cli
         }
     }
 }
-
-

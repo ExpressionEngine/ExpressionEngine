@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -62,7 +63,7 @@ class ExpressionEngineLicense extends License
             return false;
         }
 
-        if (! preg_match('/^[\d]{4}-[\d]{4}-[\d]{4}-[\d]{4}$/', $license)) {
+        if (! preg_match('/^[\d]{4}-[\d]{4}-[\d]{4}-[\d]{4}$/', (string) $license)) {
             return false;
         }
 

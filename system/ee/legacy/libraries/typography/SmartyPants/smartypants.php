@@ -33,9 +33,9 @@ define('SMARTYPANTS_PARSER_CLASS', 'SmartyPants_Parser');
 
 function SmartyPants($text, $attr = SMARTYPANTS_ATTR)
 {
-#
+    #
     # Initialize the parser and return the result of its transform method.
-#
+    #
     # Setup static parser array.
     static $parser = array();
     if (!isset($parser[$attr])) {
@@ -53,10 +53,10 @@ function SmartQuotes($text, $attr = null)
         case 0:  return $text;
         case 2:  $attr = 'qb';
 
-break;
+            break;
         default: $attr = 'q';
 
-break;
+            break;
     }
 
     return SmartyPants($text, $attr);
@@ -68,13 +68,13 @@ function SmartDashes($text, $attr = null)
         case 0:  return $text;
         case 2:  $attr = 'D';
 
-break;
+            break;
         case 3:  $attr = 'i';
 
-break;
+            break;
         default: $attr = 'd';
 
-break;
+            break;
     }
 
     return SmartyPants($text, $attr);
@@ -86,7 +86,7 @@ function SmartElipsis($text, $attr = null)
         case 0:  return $text;
         default: $attr = 'e';
 
-break;
+            break;
     }
 
     return SmartyPants($text, $attr);
@@ -192,7 +192,7 @@ class SmartyPants_Parser
             # Special "stupefy" mode.
             $this->do_stupefy = 1;
         } else {
-            $chars = preg_split('//', $attr);
+            $chars = preg_split('//', (string) $attr);
             foreach ($chars as $c) {
                 if ($c == "q") {
                     $this->do_quotes = 1;
@@ -238,12 +238,12 @@ class SmartyPants_Parser
             if ($cur_token[0] == "tag") {
                 # Don't mess with quotes inside tags.
                 $result .= $cur_token[1];
-                if (preg_match('@<(/?)(?:' . SMARTYPANTS_TAGS_TO_SKIP . ')[\s>]@', $cur_token[1], $matches)) {
+                if (preg_match('@<(/?)(?:' . SMARTYPANTS_TAGS_TO_SKIP . ')[\s>]@', (string) $cur_token[1], $matches)) {
                     $in_pre = isset($matches[1]) && $matches[1] == '/' ? 0 : 1;
                 }
             } else {
                 $t = $cur_token[1];
-                $last_char = substr($t, -1); # Remember last char of this token before processing.
+                $last_char = substr((string) $t, -1); # Remember last char of this token before processing.
                 if (! $in_pre) {
                     $t = $this->educate($t, $prev_token_last_char);
                 }
@@ -260,7 +260,7 @@ class SmartyPants_Parser
         $t = $this->processEscapes($t);
 
         if ($this->convert_quot) {
-            $t = preg_replace('/&quot;/', '"', $t);
+            $t = preg_replace('/&quot;/', '"', (string) $t);
         }
 
         if ($this->do_dashes) {
@@ -290,14 +290,14 @@ class SmartyPants_Parser
         if ($this->do_quotes) {
             if ($t == "'") {
                 # Special case: single-character ' token
-                if (preg_match('/\S/', $prev_token_last_char)) {
+                if (preg_match('/\S/', (string) $prev_token_last_char)) {
                     $t = "&#8217;";
                 } else {
                     $t = "&#8216;";
                 }
             } elseif ($t == '"') {
                 # Special case: single-character " token
-                if (preg_match('/\S/', $prev_token_last_char)) {
+                if (preg_match('/\S/', (string) $prev_token_last_char)) {
                     $t = "&#8221;";
                 } else {
                     $t = "&#8220;";
@@ -334,7 +334,7 @@ class SmartyPants_Parser
         $_ = preg_replace(
             array("/^'(?=$punct_class\\B)/", "/^\"(?=$punct_class\\B)/"),
             array('&#8217;',                 '&#8221;'),
-            $_
+            (string) $_
         );
 
         # Special case for double sets of quotes, e.g.:
@@ -342,11 +342,11 @@ class SmartyPants_Parser
         $_ = preg_replace(
             array("/\"'(?=\w)/",    "/'\"(?=\w)/"),
             array('&#8220;&#8216;', '&#8216;&#8220;'),
-            $_
+            (string) $_
         );
 
         # Special case for decade abbreviations (the '80s):
-        $_ = preg_replace("/'(?=\\d{2}s)/", '&#8217;', $_);
+        $_ = preg_replace("/'(?=\\d{2}s)/", '&#8217;', (string) $_);
 
         $close_class = '[^\ \t\r\n\[\{\(\-]';
         $dec_dashes = '&\#8211;|&\#8212;';
@@ -363,7 +363,7 @@ class SmartyPants_Parser
 			)
 			'                   # the quote
 			(?=\\w)              # followed by a word character
-			}x", '\1&#8216;', $_);
+			}x", '\1&#8216;', (string) $_);
         # Single closing quotes:
         $_ = preg_replace("{
 			($close_class)?
@@ -373,7 +373,7 @@ class SmartyPants_Parser
 			)               # char or an 's' at a word ending position. This
 							# is a special case to handle something like:
 							# \"<i>Custer</i>'s Last Stand.\"
-			}xi", '\1&#8217;', $_);
+			}xi", '\1&#8217;', (string) $_);
 
         # Any remaining single quotes should be opening ones:
         $_ = str_replace("'", '&#8216;', $_);
@@ -398,7 +398,7 @@ class SmartyPants_Parser
 			\"
 			(?(1)|(?=\\s))   # If $1 captured, then do nothing;
 							   # if not, then make sure the next char is whitespace.
-			}x", '\1&#8221;', $_);
+			}x", '\1&#8221;', (string) $_);
 
         # Any remaining quotes should be opening ones.
         $_ = str_replace('"', '&#8220;', $_);
@@ -603,7 +603,7 @@ class SmartyPants_Parser
                                                 # regular tags
                  '(?:<[/!$]?[-a-zA-Z0-9:]+\b(?>[^"\'>]+|"[^"]*"|\'[^\']*\')*>)';
 
-        $parts = preg_split("{($match)}", $str, -1, PREG_SPLIT_DELIM_CAPTURE);
+        $parts = preg_split("{($match)}", (string) $str, -1, PREG_SPLIT_DELIM_CAPTURE);
 
         foreach ($parts as $part) {
             if (++$index % 2 && $part != '') {

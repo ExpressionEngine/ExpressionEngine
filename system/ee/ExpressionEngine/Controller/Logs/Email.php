@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -36,7 +37,7 @@ class Email extends Logs
 
         if (ee()->input->post('delete')) {
             $this->delete('EmailConsoleCache', lang('email_log'));
-            if (strtolower(ee()->input->post('delete')) == 'all') {
+            if (strtolower((string) ee()->input->post('delete')) == 'all') {
                 return ee()->functions->redirect(ee('CP/URL')->make('logs/email'));
             }
         }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -127,7 +128,7 @@ class Training
      */
     public function classifier($collection)
     {
-        $stop_words = explode("\n", ee()->lang->load('spam/stopwords', null, true, false));
+        $stop_words = explode("\n", (string) ee()->lang->load('spam/stopwords', null, true, false));
 
         // Grab the trained parameters
         $training = array(
@@ -152,9 +153,9 @@ class Training
             ->where('class', $class)
             ->where('kernel_id', $this->kernel->kernel_id)
             ->get();
-		
+
         $result = array();
-		
+
         if ($parameters->num_rows() == 0) {
             return $result;
         }

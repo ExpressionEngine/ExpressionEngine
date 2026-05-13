@@ -77,7 +77,7 @@ class RteHelper
     {
         $tags = static::_getFileTags();
         $data = str_replace($tags[1], $tags[0], $data);
-        
+
         $filedirReplacements = static::getFileUsageReplacements($data);
         if (!empty($filedirReplacements)) {
             foreach ($filedirReplacements as $file_id => $replacements) {
@@ -149,7 +149,7 @@ class RteHelper
                 // of their url.  This prevents shorter segments that
                 // are part of longer segments from being replaced
                 uasort($pageData, function ($a, $b) {
-                    return (strlen($a->uri) < strlen($b->uri)) ? 1 : -1;
+                    return (strlen((string) $a->uri) < strlen((string) $b->uri)) ? 1 : -1;
                 });
                 foreach ($pageData as $page) {
                     if (isset($page->entry_id)) {
@@ -224,10 +224,10 @@ class RteHelper
         // 1. The site URL (with or without protocol)
         // 2. The index.php (with or without question mark)
         // 3. The page URI
-        $regex = '/"((?:(?:https?:)?\/\/)?' . str_replace('/', '\/', preg_quote($siteUrlSansProtocol)) . ')?(\/(?:' . str_replace('/', '\/', preg_quote(ee()->config->item('site_index'))) . ')?\??)?(\/__PAGE_URL__\/?)(?:\?[\S]*|&[\S]*|#[\S]*)?"/uU';
+        $regex = '/"((?:(?:https?:)?\/\/)?' . str_replace('/', '\/', preg_quote($siteUrlSansProtocol)) . ')?(\/(?:' . str_replace('/', '\/', preg_quote((string) ee()->config->item('site_index'))) . ')?\??)?(\/__PAGE_URL__\/?)(?:\?[\S]*|&[\S]*|#[\S]*)?"/uU';
 
         foreach ($tags[1] as $key => $pageUrl) {
-            $pageUrl = str_replace('/', '\/', preg_quote(trim($pageUrl, '/')));
+            $pageUrl = str_replace('/', '\/', preg_quote(trim((string) $pageUrl, '/')));
             $search = str_replace('__PAGE_URL__', $pageUrl, $regex);
             $hasMatch = preg_match_all($search, $data, $matches);
             if (!empty($hasMatch)) {
@@ -259,7 +259,7 @@ class RteHelper
 
         $cache_key = 'rte_' . $site_id;
         if (!empty($search)) {
-            $cache_key .= '_' . urlencode($search);
+            $cache_key .= '_' . urlencode((string) $search);
         }
         $pages = ee()->cache->get('/site_pages/' . md5($cache_key), \Cache::GLOBAL_SCOPE);
 
@@ -326,7 +326,7 @@ class RteHelper
         }
 
         // Load proper toolset
-        $serviceName = ucfirst($toolset->toolset_type) . 'Service';
+        $serviceName = ucfirst((string) $toolset->toolset_type) . 'Service';
         $configHandle = ee('rte:' . $serviceName)->init([], $toolset);
 
         return $configHandle;

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -7,7 +8,6 @@
  * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -484,7 +484,7 @@ class Pro_search_index
                 $val = $cat[$key];
 
                 // Set field to ID if applicable
-                if (preg_match('/^field_id_(\d+)$/', $key, $match)) {
+                if (preg_match('/^field_id_(\d+)$/', (string) $key, $match)) {
                     $key = $match[1];
                 }
 
@@ -563,7 +563,7 @@ class Pro_search_index
                 $obj = new $ftype['class']();
 
                 // Add settings to object
-                if ($settings = @unserialize(base64_decode($field->field_settings))) {
+                if ($settings = @unserialize(base64_decode((string) $field->field_settings))) {
                     $settings = array_merge((array) $field, $settings);
                 }
 
@@ -604,7 +604,7 @@ class Pro_search_index
             // Determine proper field id
             // --------------------------------------
 
-            $field_id = (preg_match('/^field_id_(\d+)$/', $field_name, $match))
+            $field_id = (preg_match('/^field_id_(\d+)$/', (string) $field_name, $match))
                 ? $match[1]
                 : false;
 
@@ -692,7 +692,7 @@ class Pro_search_index
             // Determine proper settings ID
             // --------------------------------------
 
-            $key = (preg_match('/^field_id_(\d+)$/', $key, $match))
+            $key = (preg_match('/^field_id_(\d+)$/', (string) $key, $match))
                 ? $match[1]
                 : $key;
 
@@ -700,7 +700,7 @@ class Pro_search_index
             // Get weight
             // --------------------------------------
 
-            $weight = array_key_exists($key, $col['settings'])
+            $weight = array_key_exists((string) $key, $col['settings'])
                 ? $col['settings'][$key]
                 : false;
 

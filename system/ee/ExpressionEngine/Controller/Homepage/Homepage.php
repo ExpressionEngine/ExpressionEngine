@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -193,7 +194,7 @@ class Homepage extends CP_Controller
         if (empty(ee('Request')->get('owner'))) {
             ee()->output->send_ajax_response(['error']);
         }
-        $state = json_decode(ee()->input->cookie('secondary_sidebar'));
+        $state = json_decode((string) ee()->input->cookie('secondary_sidebar'));
         if (is_null($state)) {
             $state = new \stdClass();
         }

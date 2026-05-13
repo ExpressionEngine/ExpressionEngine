@@ -63,7 +63,7 @@ function decode_multi_field($data = '')
     }
 
     // Explode at non-escaped pipes ([\\\\] == one backslash, thanks to php + regex escaping)
-    $data = preg_split("#(?<![\\\\])[|]#", $data);
+    $data = preg_split("#(?<![\\\\])[|]#", (string) $data);
 
     // Reduce slashes
     return str_replace(array('\|', '\\\\'), array('|', '\\'), $data);

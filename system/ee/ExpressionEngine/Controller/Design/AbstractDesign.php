@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -124,6 +125,7 @@ abstract class AbstractDesign extends CP_Controller
                         }
                         ee()->logger->developer($message, true, 60 * 60 * 24 * 30);
                     }
+
                     continue;
                 }
                 $item = $template_group_list->addItem($group->group_name, ee('CP/URL')->make('design/manager/' . $group->group_name));
@@ -441,7 +443,7 @@ abstract class AbstractDesign extends CP_Controller
         $template_id = ee()->session->flashdata('template_id');
 
         $hidden_indicator = (ee()->config->item('hidden_template_indicator') != '') ? ee()->config->item('hidden_template_indicator') : '_';
-        $hidden_indicator_length = strlen($hidden_indicator);
+        $hidden_indicator_length = strlen((string) $hidden_indicator);
 
         $filters = ee('CP/Filter')
             ->add('Perpage', $total, 'show_all_templates');
@@ -457,8 +459,8 @@ abstract class AbstractDesign extends CP_Controller
             'hits' => 'hits', // if they have enabled hit tracking
         ];
 
-        if (! array_key_exists($sort_col, $sort_map)) {
-            throw new \Exception("Invalid sort column: " . htmlentities($sort_col));
+        if (! array_key_exists((string) $sort_col, $sort_map)) {
+            throw new \Exception("Invalid sort column: " . htmlentities((string) $sort_col));
         }
 
         $template_data = $templates->order($sort_map[$sort_col], $table->sort_dir)
@@ -468,7 +470,7 @@ abstract class AbstractDesign extends CP_Controller
 
         foreach ($template_data as $template) {
             $group = $template->getTemplateGroup();
-            $template_name = htmlentities($template->template_name, ENT_QUOTES, 'UTF-8');
+            $template_name = htmlentities((string) $template->template_name, ENT_QUOTES, 'UTF-8');
             $edit_url = ee('CP/URL', 'design/template/edit/' . $template->template_id);
 
             if ($include_group_name) {
@@ -491,7 +493,7 @@ abstract class AbstractDesign extends CP_Controller
                 $template_name = '<i class="fal fa-key fa-sm icon-left" title="' . lang('http_auth_protected') . '"></i>' . $template_name;
             }
 
-            if (strncmp($template->template_name, $hidden_indicator, $hidden_indicator_length) == 0) {
+            if (strncmp((string) $template->template_name, (string) $hidden_indicator, $hidden_indicator_length) == 0) {
                 $template_name = '<i class="fal fa-sm fa-eye-slash icon-left"></i>' . $template_name;
             }
 
@@ -500,7 +502,7 @@ abstract class AbstractDesign extends CP_Controller
             }
 
             $view_url = ee()->functions->fetch_site_index();
-            $view_url = rtrim($view_url, '/') . '/';
+            $view_url = rtrim((string) $view_url, '/') . '/';
 
             if ($template->template_type == 'css') {
                 $view_url .= QUERY_MARKER . 'css=' . $group->group_name . '/' . $template->template_name;
@@ -554,7 +556,7 @@ abstract class AbstractDesign extends CP_Controller
                 'value' => $template->template_id,
                 'disabled' => (bool_config_item('save_tmpl_files') && $template->template_name == 'index') ? true : false,
                 'data' => array(
-                    'confirm' => lang('template') . ': <b>' . htmlentities($template->template_name, ENT_QUOTES, 'UTF-8') . '</b>'
+                    'confirm' => lang('template') . ': <b>' . htmlentities((string) $template->template_name, ENT_QUOTES, 'UTF-8') . '</b>'
                 )
             );
 

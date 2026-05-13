@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ExpressionEngine Pro
  * @link      https://expressionengine.com/
@@ -22,7 +23,7 @@ class Cookie extends Core\Cookie
         $cookie_prefix = (! ee()->config->item('cookie_prefix')) ? 'exp_' : ee()->config->item('cookie_prefix') . '_';
         $allCookies = ee('Model')->get('CookieSetting')->all();
         $filteredCookies = $allCookies;
-        $typeParam = trim(ee()->TMPL->fetch_param('type'));
+        $typeParam = trim((string) ee()->TMPL->fetch_param('type'));
         if (!empty($typeParam)) {
             $include = true;
             if (stripos($typeParam, 'not ') === 0) {
@@ -44,7 +45,7 @@ class Cookie extends Core\Cookie
                 $allCookies = $filteredCookies;
             }
         }
-        $providerParam = trim(ee()->TMPL->fetch_param('provider'));
+        $providerParam = trim((string) ee()->TMPL->fetch_param('provider'));
         if (!empty($providerParam)) {
             $include = true;
             if (stripos($providerParam, 'not ') === 0) {
@@ -77,6 +78,7 @@ class Cookie extends Core\Cookie
         if (empty($vars)) {
             return ee()->TMPL->no_results();
         }
+
         return ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $vars);
     }
 }

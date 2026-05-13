@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -22,7 +23,7 @@ class File
     public $query;
     public $return_data = '';
     public $temp_array = array();
-    public $cat_array= array();
+    public $cat_array = array();
 
     /**
       * Constructor
@@ -194,10 +195,10 @@ class File
 
         // Set order and sort
         $allowed_orders = array('title', 'date', 'upload_date', 'random');
-        $order_by = strtolower(ee()->TMPL->fetch_param('orderby', 'upload_date'));
+        $order_by = strtolower((string) ee()->TMPL->fetch_param('orderby', 'upload_date'));
         $order_by = ($order_by == 'date' or ! in_array($order_by, $allowed_orders)) ? 'upload_date' : $order_by;
         $random = ($order_by == 'random') ? true : false;
-        $sort = strtolower(ee()->TMPL->fetch_param('sort', 'desc'));
+        $sort = strtolower((string) ee()->TMPL->fetch_param('sort', 'desc'));
         $sort = ($random) ? 'random' : $sort;
 
         if (! $random) {
@@ -303,7 +304,7 @@ class File
                                 array('/C' . $row['cat_id'], array('path_variable' => true));
 
                     foreach ($row as $k => $v) {
-                        if (strpos($k, 'field') !== false) {
+                        if (strpos((string) $k, 'field') !== false) {
                             $this->temp_array[$row['cat_id']][$k] = $v;
                         }
                     }
@@ -391,8 +392,8 @@ class File
         // We'll grab the category data now to avoid processing cycles in the foreach loop below
 
         $cat_chunk = array();
-        if (strpos(ee()->TMPL->tagdata, LD . '/categories' . RD) !== false) {
-            if (preg_match_all("/" . LD . "categories(.*?)" . RD . "(.*?)" . LD . '\/' . 'categories' . RD . "/s", ee()->TMPL->tagdata, $matches)) {
+        if (strpos((string) ee()->TMPL->tagdata, LD . '/categories' . RD) !== false) {
+            if (preg_match_all("/" . LD . "categories(.*?)" . RD . "(.*?)" . LD . '\/' . 'categories' . RD . "/s", (string) ee()->TMPL->tagdata, $matches)) {
                 for ($j = 0; $j < count($matches[0]); $j++) {
                     $cat_chunk[] = array($matches[2][$j], ee('Variables/Parser')->parseTagParameters($matches[1][$j]), $matches[0][$j]);
                 }
@@ -457,7 +458,7 @@ class File
     {
         $viewable_image = array('bmp','gif','jpeg','jpg','jpe','png');
 
-        $ext = strtolower(substr(strrchr($file, '.'), 1));
+        $ext = strtolower(substr(strrchr((string) $file, '.'), 1));
 
         $viewable = (in_array($ext, $viewable_image)) ? true : false;
 
@@ -534,7 +535,7 @@ class File
         ee()->output->set_output(file_get_contents($path));
 
         if (ee()->config->item('send_headers') == 'y') {
-            @header('Content-Length: ' . strlen(ee()->output->final_output));
+            @header('Content-Length: ' . strlen((string) ee()->output->final_output));
         }
     }
 
@@ -550,7 +551,7 @@ class File
         );
 
         if ($disable = ee()->TMPL->fetch_param('disable')) {
-            foreach (explode("|", $disable) as $val) {
+            foreach (explode("|", (string) $disable) as $val) {
                 if (isset($this->enable[$val])) {
                     $this->enable[$val] = false;
                 }

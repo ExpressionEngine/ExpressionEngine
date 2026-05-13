@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -43,7 +44,7 @@ class CpSettings extends Profile
                 // No channels? Let them know
                 if (empty($field['allowed_channels'][$site->getId()])) {
                     $all_sites_have_channels = false;
-                    $field['allowed_channels'][$site->getId()][0] = strip_tags(lang('no_channels'));
+                    $field['allowed_channels'][$site->getId()][0] = strip_tags((string) lang('no_channels'));
                 }
             }
         } else {
@@ -58,7 +59,7 @@ class CpSettings extends Profile
 
             if (empty($field['allowed_channels'])) {
                 $all_sites_have_channels = false;
-                $field['allowed_channels'][0] = strip_tags(lang('no_channels'));
+                $field['allowed_channels'][0] = strip_tags((string) lang('no_channels'));
             }
 
             $site_id = ee()->config->item('site_id');

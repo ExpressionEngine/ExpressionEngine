@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -100,8 +101,8 @@ class Layouts extends AbstractChannelsController
         if ($search = $filter_values['filter_by_keyword']) {
             $layouts = array_filter($layouts, function ($layout) use ($search) {
                 return strpos(
-                    strtolower($layout->layout_name),
-                    strtolower($search)
+                    strtolower((string) $layout->layout_name),
+                    strtolower((string) $search)
                 ) !== false;
             });
         }
@@ -197,7 +198,7 @@ class Layouts extends AbstractChannelsController
 
             $channel_layout->field_layout = $field_layout;
         } else {
-            $channel_layout->field_layout = json_decode(ee()->input->post('field_layout'), true);
+            $channel_layout->field_layout = json_decode((string) ee()->input->post('field_layout'), true);
         }
 
         ee()->load->library('form_validation');
@@ -241,11 +242,11 @@ class Layouts extends AbstractChannelsController
                 ee()->functions->redirect(ee('CP/URL')->make('channels/layouts/edit/' . $channel_layout->getId()));
             }
         } elseif (ee()->form_validation->errors_exist()) {
-               ee('CP/Alert')->makeInline('layout-form')
-                    ->asIssue()
-                    ->withTitle(lang('create_layout_error'))
-                    ->addToBody(lang('create_layout_error_desc'))
-                    ->now();
+            ee('CP/Alert')->makeInline('layout-form')
+                ->asIssue()
+                ->withTitle(lang('create_layout_error'))
+                ->addToBody(lang('create_layout_error_desc'))
+                ->now();
 
             // Error with cloning mode roles?
             if (defined('CLONING_MODE') && CLONING_MODE === true) {
@@ -338,6 +339,7 @@ class Layouts extends AbstractChannelsController
             if (empty($_POST['roles'])) {
                 unset($_POST['roles']);
             }
+
             return $this->create($channel_layout->channel_id);
         }
 
@@ -352,7 +354,7 @@ class Layouts extends AbstractChannelsController
         $entry->Channel = $channel;
 
         if (ee()->input->post('field_layout')) {
-            $channel_layout->field_layout = json_decode(ee()->input->post('field_layout'), true);
+            $channel_layout->field_layout = json_decode((string) ee()->input->post('field_layout'), true);
         }
 
         ee()->load->library('form_validation');

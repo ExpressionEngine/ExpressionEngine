@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -60,7 +61,7 @@ class Layout_model extends CI_Model
                             continue;
                         }
 
-                        if (array_key_exists($tab, $layout) !== true) {
+                        if (array_key_exists((string) $tab, $layout) !== true) {
                             $layout[$tab] = $fields;
                         } else {
                             $layout[$tab] = $layout[$tab] + $fields;
@@ -75,7 +76,7 @@ class Layout_model extends CI_Model
                             continue;
                         }
 
-                        if (array_key_exists($tab, $layout) !== true) {
+                        if (array_key_exists((string) $tab, $layout) !== true) {
                             $layout[$tab] = $fields;
                         } else {
                             $layout[$tab] = $layout[$tab] + $fields;
@@ -85,7 +86,7 @@ class Layout_model extends CI_Model
                     foreach ($layout_info as $tab => $fields) {
                         $k_field = (is_array($fields)) ? key($fields) : $fields;
 
-                        if ($action == 'delete_tabs' && array_key_exists($tab, $layout) == true) {
+                        if ($action == 'delete_tabs' && array_key_exists((string) $tab, $layout) == true) {
                             unset($layout[$tab]);
                         }
 
@@ -144,9 +145,9 @@ class Layout_model extends CI_Model
     public function clean_field($name)
     {
         // Check for hinkiness in field names
-        if (preg_match('/[^a-z0-9\_\-]/i', $name)) {
+        if (preg_match('/[^a-z0-9\_\-]/i', (string) $name)) {
             return false;
-        } elseif (trim($name) == '') {
+        } elseif (trim((string) $name) == '') {
             return false;
         }
 
@@ -314,7 +315,7 @@ class Layout_model extends CI_Model
 
                 if ($flatten === true) {
                     // Check to see if the key starts with an underscore, we don't need those
-                    if (strncmp($field_key, '_', 1) === 0) {
+                    if (strncmp((string) $field_key, '_', 1) === 0) {
                         continue;
                     }
 

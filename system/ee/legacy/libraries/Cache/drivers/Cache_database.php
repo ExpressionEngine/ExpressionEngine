@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -51,10 +52,10 @@ class EE_Cache_database extends CI_Driver
     {
         $key = $this->_namespaced_key($key, $scope);
 
-        if(array_key_exists($key, $this->_local_cache)) {
+        if (array_key_exists($key, $this->_local_cache)) {
             $row = $this->_local_cache[$key];
 
-            if($row === false) {
+            if ($row === false) {
                 return false;
             }
         } else {
@@ -65,6 +66,7 @@ class EE_Cache_database extends CI_Driver
 
             if ($query->num_rows() == 0) {
                 $this->_local_cache[$key] = false;
+
                 return false;
             }
 
@@ -74,6 +76,7 @@ class EE_Cache_database extends CI_Driver
         // Check if cache has expired
         if ($row->ttl > 0 && ee()->localize->now > $row->created_at + $row->ttl) {
             $this->delete($key, $scope);
+
             return false;
         }
 
@@ -112,11 +115,13 @@ class EE_Cache_database extends CI_Driver
         if ($query->num_rows() > 0) {
             // Update existing record
             ee()->db->where('cache_key', $key);
+
             return ee()->db->update($this->_cache_table, $row);
         }
 
         // Insert new record
         $row['cache_key'] = $key;
+
         return ee()->db->insert($this->_cache_table, $row);
     }
 
@@ -141,17 +146,19 @@ class EE_Cache_database extends CI_Driver
             $this->removeNamespaceFromLocalCache($namespace);
 
             ee()->db->like('cache_key', $namespace, 'right');
+
             return ee()->db->delete($this->_cache_table);
         }
 
         // Delete specific key
         $key = $this->_namespaced_key($key, $scope);
 
-        if(array_key_exists($key, $this->_local_cache)) {
+        if (array_key_exists($key, $this->_local_cache)) {
             unset($this->_local_cache[$key]);
         }
-        
+
         ee()->db->where('cache_key', $key);
+
         return ee()->db->delete($this->_cache_table);
     }
 
@@ -168,6 +175,7 @@ class EE_Cache_database extends CI_Driver
         $this->removeNamespaceFromLocalCache($namespace);
 
         ee()->db->like('cache_key', $namespace, 'right');
+
         return ee()->db->delete($this->_cache_table);
     }
 
@@ -184,6 +192,7 @@ class EE_Cache_database extends CI_Driver
 
         if ($query->num_rows() > 0) {
             $row = $query->row();
+
             return array(
                 'total_items' => $row->total_items,
                 'total_size' => $row->total_size
@@ -272,7 +281,6 @@ class EE_Cache_database extends CI_Driver
         return $key;
     }
 
-
     /**
      * Remove all keys from the local cache that begin with the specified namespace
      *
@@ -281,11 +289,11 @@ class EE_Cache_database extends CI_Driver
      */
     protected function removeNamespaceFromLocalCache($namespace)
     {
-        $localKeys = array_filter(array_keys($this->_local_cache), function($key) use($namespace) {
+        $localKeys = array_filter(array_keys($this->_local_cache), function ($key) use ($namespace) {
             return strpos($key, $namespace) === 0;
         });
 
-        foreach($localKeys as $localKey) {
+        foreach ($localKeys as $localKey) {
             unset($this->_local_cache[$localKey]);
         }
     }

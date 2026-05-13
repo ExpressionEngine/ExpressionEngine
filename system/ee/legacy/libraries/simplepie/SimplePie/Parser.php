@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SimplePie
  *
@@ -80,18 +81,18 @@ class SimplePie_Parser
             // Check for both h-feed and h-entry, as both a feed with no entries
             // and a list of entries without an h-feed wrapper are both valid.
             $position = 0;
-            while ($position = strpos($data, 'h-feed', $position)) {
+            while ($position = strpos((string) $data, 'h-feed', $position)) {
                 $start = $position < 200 ? 0 : $position - 200;
-                $check = substr($data, $start, 400);
+                $check = substr((string) $data, $start, 400);
                 if (preg_match('/class="[^"]*h-feed/', $check)) {
                     return $this->parse_microformats($data, $url);
                 }
                 $position += 7;
             }
             $position = 0;
-            while ($position = strpos($data, 'h-entry', $position)) {
+            while ($position = strpos((string) $data, 'h-entry', $position)) {
                 $start = $position < 200 ? 0 : $position - 200;
-                $check = substr($data, $start, 400);
+                $check = substr((string) $data, $start, 400);
                 if (preg_match('/class="[^"]*h-entry/', $check)) {
                     return $this->parse_microformats($data, $url);
                 }
@@ -100,7 +101,7 @@ class SimplePie_Parser
         }
 
         // Use UTF-8 if we get passed US-ASCII, as every US-ASCII character is a UTF-8 character
-        if (strtoupper($encoding) === 'US-ASCII') {
+        if (strtoupper((string) $encoding) === 'US-ASCII') {
             $this->encoding = 'UTF-8';
         } else {
             $this->encoding = $encoding;
@@ -108,30 +109,30 @@ class SimplePie_Parser
 
         // Strip BOM:
         // UTF-32 Big Endian BOM
-        if (substr($data, 0, 4) === "\x00\x00\xFE\xFF") {
-            $data = substr($data, 4);
+        if (substr((string) $data, 0, 4) === "\x00\x00\xFE\xFF") {
+            $data = substr((string) $data, 4);
         }
         // UTF-32 Little Endian BOM
-        elseif (substr($data, 0, 4) === "\xFF\xFE\x00\x00") {
-            $data = substr($data, 4);
+        elseif (substr((string) $data, 0, 4) === "\xFF\xFE\x00\x00") {
+            $data = substr((string) $data, 4);
         }
         // UTF-16 Big Endian BOM
-        elseif (substr($data, 0, 2) === "\xFE\xFF") {
-            $data = substr($data, 2);
+        elseif (substr((string) $data, 0, 2) === "\xFE\xFF") {
+            $data = substr((string) $data, 2);
         }
         // UTF-16 Little Endian BOM
-        elseif (substr($data, 0, 2) === "\xFF\xFE") {
-            $data = substr($data, 2);
+        elseif (substr((string) $data, 0, 2) === "\xFF\xFE") {
+            $data = substr((string) $data, 2);
         }
         // UTF-8 BOM
-        elseif (substr($data, 0, 3) === "\xEF\xBB\xBF") {
-            $data = substr($data, 3);
+        elseif (substr((string) $data, 0, 3) === "\xEF\xBB\xBF") {
+            $data = substr((string) $data, 3);
         }
 
-        if (substr($data, 0, 5) === '<?xml' && strspn(substr($data, 5, 1), "\x09\x0A\x0D\x20") && ($pos = strpos($data, '?>')) !== false) {
-            $declaration = $this->registry->create('XML_Declaration_Parser', array(substr($data, 5, $pos - 5)));
+        if (substr((string) $data, 0, 5) === '<?xml' && strspn(substr((string) $data, 5, 1), "\x09\x0A\x0D\x20") && ($pos = strpos((string) $data, '?>')) !== false) {
+            $declaration = $this->registry->create('XML_Declaration_Parser', array(substr((string) $data, 5, $pos - 5)));
             if ($declaration->parse()) {
-                $data = substr($data, $pos + 2);
+                $data = substr((string) $data, $pos + 2);
                 $data = '<?xml version="' . $declaration->version . '" encoding="' . $encoding . '" standalone="' . (($declaration->standalone) ? 'yes' : 'no') . '"?>' . "\n" . $this->declare_html_entities() . $data;
             } else {
                 $this->error_string = 'SimplePie bug! Please report this!';
@@ -146,26 +147,28 @@ class SimplePie_Parser
         if ($xml_is_sane === null) {
             $parser_check = xml_parser_create();
             xml_parse_into_struct($parser_check, '<foo>&amp;</foo>', $values);
-            xml_parser_free($parser_check);
+            if (PHP_VERSION_ID < 80000) {
+                xml_parser_free($parser_check);
+            }
             $xml_is_sane = isset($values[0]['value']);
         }
 
         // Create the parser
         if ($xml_is_sane) {
-            $xml = xml_parser_create_ns($this->encoding, $this->separator);
+            $xml = xml_parser_create_ns($this->encoding, (string) $this->separator);
             xml_parser_set_option($xml, XML_OPTION_SKIP_WHITE, 1);
             xml_parser_set_option($xml, XML_OPTION_CASE_FOLDING, 0);
-            xml_set_character_data_handler($xml, function($parser, $cdata) {
+            xml_set_character_data_handler($xml, function ($parser, $cdata) {
                 return $this->cdata($parser, $cdata);
             });
-            xml_set_element_handler($xml, function($parser, $tag, $attributes) {
+            xml_set_element_handler($xml, function ($parser, $tag, $attributes) {
                 return $this->tag_open($parser, $tag, $attributes);
-            }, function($parser, $tag) {
+            }, function ($parser, $tag) {
                 return $this->tag_close($parser, $tag);
             });
 
             // Parse!
-            if (!xml_parse($xml, $data, true)) {
+            if (!xml_parse($xml, (string) $data, true)) {
                 $this->error_code = xml_get_error_code($xml);
                 $this->error_string = xml_error_string($this->error_code);
                 $return = false;
@@ -173,7 +176,9 @@ class SimplePie_Parser
             $this->current_line = xml_get_current_line_number($xml);
             $this->current_column = xml_get_current_column_number($xml);
             $this->current_byte = xml_get_current_byte_index($xml);
-            xml_parser_free($xml);
+            if (PHP_VERSION_ID < 80000) {
+                xml_parser_free($xml);
+            }
 
             return $return;
         } else {
@@ -298,7 +303,7 @@ class SimplePie_Parser
                 $this->data['data'] .= '<' . end($this->element);
                 if (isset($attribs[''])) {
                     foreach ($attribs[''] as $name => $value) {
-                        $this->data['data'] .= ' ' . $name . '="' . htmlspecialchars($value, ENT_COMPAT, $this->encoding) . '"';
+                        $this->data['data'] .= ' ' . $name . '="' . htmlspecialchars((string) $value, ENT_COMPAT, $this->encoding) . '"';
                     }
                 }
                 $this->data['data'] .= '>';
@@ -320,7 +325,7 @@ class SimplePie_Parser
     public function cdata($parser, $cdata)
     {
         if ($this->current_xhtml_construct >= 0) {
-            $this->data['data'] .= htmlspecialchars($cdata, ENT_QUOTES, $this->encoding);
+            $this->data['data'] .= htmlspecialchars((string) $cdata, ENT_QUOTES, $this->encoding);
         } else {
             $this->data['data'] .= $cdata;
         }
@@ -350,13 +355,13 @@ class SimplePie_Parser
     {
         static $cache = array();
         if (!isset($cache[$string])) {
-            if ($pos = strpos($string, $this->separator)) {
+            if ($pos = strpos((string) $string, (string) $this->separator)) {
                 static $separator_length;
                 if (!$separator_length) {
-                    $separator_length = strlen($this->separator);
+                    $separator_length = strlen((string) $this->separator);
                 }
-                $namespace = substr($string, 0, $pos);
-                $local_name = substr($string, $pos + $separator_length);
+                $namespace = substr((string) $string, 0, $pos);
+                $local_name = substr((string) $string, $pos + $separator_length);
                 if (strtolower($namespace) === SIMPLEPIE_NAMESPACE_ITUNES) {
                     $namespace = SIMPLEPIE_NAMESPACE_ITUNES;
                 }
@@ -518,7 +523,7 @@ class SimplePie_Parser
                     $photo_list = array();
                     for ($j = 0; $j < count($entry['properties']['photo']); $j++) {
                         $photo = $entry['properties']['photo'][$j];
-                        if (strpos($content, $photo) === false) {
+                        if (strpos($content, (string) $photo) === false) {
                             $photo_list[] = $photo;
                         }
                     }
@@ -593,10 +598,10 @@ class SimplePie_Parser
         }
         // Use the a name given for the h-feed, or get the title from the html.
         if ($feed_title !== '') {
-            $feed_title = array(array('data' => htmlspecialchars($feed_title)));
-        } elseif ($position = strpos($data, '<title>')) {
+            $feed_title = array(array('data' => htmlspecialchars((string) $feed_title)));
+        } elseif ($position = strpos((string) $data, '<title>')) {
             $start = $position < 200 ? 0 : $position - 200;
-            $check = substr($data, $start, 400);
+            $check = substr((string) $data, $start, 400);
             $matches = array();
             if (preg_match('/<title>(.+)<\/title>/', $check, $matches)) {
                 $feed_title = array(array('data' => htmlspecialchars($matches[1])));

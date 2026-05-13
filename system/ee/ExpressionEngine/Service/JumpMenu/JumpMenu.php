@@ -1975,7 +1975,7 @@ class JumpMenu extends AbstractJumpMenu
             return [];
         }
 
-        $items = ee()->cache->file->get('jumpmenu/' . md5(ee()->session->getMember()->getId()));
+        $items = ee()->cache->file->get('jumpmenu/' . md5((string) ee()->session->getMember()->getId()));
         if (!empty($items)) {
             return $items;
         }
@@ -1998,7 +1998,7 @@ class JumpMenu extends AbstractJumpMenu
      */
     public function primeCache()
     {
-        ee()->cache->file->delete('jumpmenu/' . md5(ee()->session->getMember()->getId()));
+        ee()->cache->file->delete('jumpmenu/' . md5((string) ee()->session->getMember()->getId()));
 
         //load language for all the jumps
         ee()->lang->load('jump_menu');
@@ -2290,7 +2290,7 @@ class JumpMenu extends AbstractJumpMenu
 
         //member quick links
         if (!empty(ee()->session->getMember()->quick_links)) {
-            foreach (explode("\n", ee()->session->getMember()->quick_links) as $i => $row) {
+            foreach (explode("\n", (string) ee()->session->getMember()->quick_links) as $i => $row) {
                 $x = explode('|', $row);
                 $items[1]['quicklink_' . $i] = array(
                     'icon' => 'fa-link',
@@ -2317,7 +2317,7 @@ class JumpMenu extends AbstractJumpMenu
         // Cache our items. We're bypassing the checks for the default
         // cache driver because we want this to be cached and working
         // even if the dev has set caching to disabled.
-        ee()->cache->file->save('jumpmenu/' . md5(ee()->session->getMember()->getId()), $items, 3600);
+        ee()->cache->file->save('jumpmenu/' . md5((string) ee()->session->getMember()->getId()), $items, 3600);
 
         // Assign our combined item list back to our static variable.
         self::$items = $items;

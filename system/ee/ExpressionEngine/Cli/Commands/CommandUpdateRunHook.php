@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -64,7 +65,7 @@ class CommandUpdateRunHook extends Cli
         $this->setHooks();
 
         foreach ($this->arguments as $hook) {
-            if (array_key_exists($hook, $this->hooks)) {
+            if (array_key_exists((string) $hook, $this->hooks)) {
                 $this->info(lang('command_update_run_hook_running') . $hook);
 
                 call_user_func($this->hooks[$hook]);
@@ -101,7 +102,7 @@ class CommandUpdateRunHook extends Cli
 
     private function getConfigPath($path)
     {
-        $customConfig = ($path ? rtrim($path, '/') : SYSPATH) . '/upgrade.config.php';
+        $customConfig = ($path ? rtrim((string) $path, '/') : SYSPATH) . '/upgrade.config.php';
 
         if (! file_exists($customConfig)) {
             return false;

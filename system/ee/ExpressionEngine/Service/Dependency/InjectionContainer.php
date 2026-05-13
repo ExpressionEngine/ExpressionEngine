@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -24,7 +25,7 @@ class InjectionContainer implements ServiceProvider
     /**
      * @var string Native prefix
      */
-    const NATIVE_PREFIX = 'ee:';
+    public const NATIVE_PREFIX = 'ee:';
 
     /**
      * @var array An associative array of registered dependencies
@@ -157,7 +158,7 @@ class InjectionContainer implements ServiceProvider
             $name = array_shift($arguments);
         }
 
-        if (strpos($name, ':') === false) {
+        if (strpos((string) $name, ':') === false) {
             $name = static::NATIVE_PREFIX . $name;
         }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -51,7 +52,7 @@ class EE_FTP
         }
 
         // Prep the hostname
-        $this->hostname = preg_replace('|.+?://|', '', $this->hostname);
+        $this->hostname = preg_replace('|.+?://|', '', (string) $this->hostname);
     }
 
     /**
@@ -354,7 +355,7 @@ class EE_FTP
         }
 
         // Add a trailing slash to the file path if needed
-        $filepath = preg_replace("/(.+?)\/*$/", "\\1/", $filepath);
+        $filepath = preg_replace("/(.+?)\/*$/", "\\1/", (string) $filepath);
 
         $list = $this->list_files($filepath);
 
@@ -492,11 +493,11 @@ class EE_FTP
      */
     public function _getext($filename)
     {
-        if (false === strpos($filename, '.')) {
+        if (false === strpos((string) $filename, '.')) {
             return 'txt';
         }
 
-        $x = explode('.', $filename);
+        $x = explode('.', (string) $filename);
 
         return end($x);
     }

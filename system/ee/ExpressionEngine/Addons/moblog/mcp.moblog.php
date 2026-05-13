@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -98,14 +99,14 @@ EOT;
                     'txt-only' => array(
                         'href' => ee('CP/URL')->make('addons/settings/moblog/check/' . $moblog['moblog_id']),
                         'title' => (lang('check_now')),
-                        'content' => strtolower(lang('check_now'))
+                        'content' => strtolower((string) lang('check_now'))
                     )
                 )),
                 array(
                     'name' => 'moblogs[]',
                     'value' => $moblog['moblog_id'],
                     'data' => array(
-                        'confirm' => lang('moblog') . ': <b>' . htmlentities($moblog['moblog_full_name'], ENT_QUOTES, 'UTF-8') . '</b>'
+                        'confirm' => lang('moblog') . ': <b>' . htmlentities((string) $moblog['moblog_full_name'], ENT_QUOTES, 'UTF-8') . '</b>'
                     )
                 )
             );
@@ -231,7 +232,7 @@ EOT;
             $moblog->set($_POST);
 
             // Need to convert this field from its presentation serialization
-            $moblog->moblog_valid_from = explode(',', trim(preg_replace("/[\s,|]+/", ',', $_POST['moblog_valid_from']), ','));
+            $moblog->moblog_valid_from = explode(',', trim((string) preg_replace("/[\s,|]+/", ',', (string) $_POST['moblog_valid_from']), ','));
 
             $result = $moblog->validate();
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -117,10 +118,10 @@ class EntryList
 
             foreach ($limit_authors as $author) {
                 switch ($author[0]) {
-                    case 'g': $roles[] = substr($author, 2);
+                    case 'g': $roles[] = substr((string) $author, 2);
 
                         break;
-                    case 'm': $members[] = substr($author, 2);
+                    case 'm': $members[] = substr((string) $author, 2);
 
                         break;
                 }
@@ -222,7 +223,7 @@ class EntryList
                 'instructions' => $entry->Channel->channel_title,
                 'channel_id' => $entry->Channel->channel_id,
                 'can_edit' => ($entry->author_id == ee()->session->userdata('member_id')) ? ee('Permission')->has('can_edit_self_entries_channel_id_' . $entry->channel_id) : ee('Permission')->has('can_edit_other_entries_channel_id_' . $entry->channel_id),
-                'editable' => (ee('Permission')->isSuperAdmin() || array_key_exists($entry->Channel->getId(), ee()->session->userdata('assigned_channels'))),
+                'editable' => (ee('Permission')->isSuperAdmin() || array_key_exists((string) $entry->Channel->getId(), ee()->session->userdata('assigned_channels'))),
                 'status' => $entry->status
             ];
         }

@@ -123,7 +123,7 @@ if (! function_exists('get_clickable_smileys')) {
         }
 
         // Add a trailing slash to the file path if needed
-        $image_url = rtrim($image_url, '/') . '/';
+        $image_url = rtrim((string) $image_url, '/') . '/';
 
         $used = array();
         foreach ($smileys as $key => $val) {
@@ -168,7 +168,7 @@ if (! function_exists('parse_smileys')) {
         }
 
         // Add a trailing slash to the file path if needed
-        $image_url = preg_replace("/(.+?)\/*$/", "\\1/", $image_url);
+        $image_url = preg_replace("/(.+?)\/*$/", "\\1/", (string) $image_url);
 
         foreach ($smileys as $key => $val) {
             $str = str_replace($key, "<img src=\"" . $image_url . $smileys[$key][0] . "\" width=\"" . $smileys[$key][1] . "\" height=\"" . $smileys[$key][2] . "\" alt=\"" . $smileys[$key][3] . "\" style=\"border:0;\" />", $str);

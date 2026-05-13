@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -111,12 +112,12 @@ class Member_subscriptions extends Member
         ee()->load->library('subscription');
 
         foreach ($_POST['toggle'] as $key => $val) {
-            switch (substr($val, 0, 1)) {
-                case "b": ee()->subscription->init('comment', array('entry_id' => substr($val, 1)), true);
-                              ee()->subscription->unsubscribe(ee()->session->userdata('member_id'));
+            switch (substr((string) $val, 0, 1)) {
+                case "b": ee()->subscription->init('comment', array('entry_id' => substr((string) $val, 1)), true);
+                    ee()->subscription->unsubscribe(ee()->session->userdata('member_id'));
 
                     break;
-                case "f": ee()->db->query("DELETE FROM exp_forum_subscriptions WHERE topic_id = '" . substr($val, 1) . "' AND member_id = '" . ee()->session->userdata['member_id'] . "'");
+                case "f": ee()->db->query("DELETE FROM exp_forum_subscriptions WHERE topic_id = '" . substr((string) $val, 1) . "' AND member_id = '" . ee()->session->userdata['member_id'] . "'");
 
                     break;
             }

@@ -136,7 +136,7 @@ class Member_settings extends Member
         /** ----------------------------------------*/
 
         // Fetch the template tag data
-        $tagdata = trim(ee()->TMPL->tagdata);
+        $tagdata = trim((string) ee()->TMPL->tagdata);
 
         // If there is tag data, it's a tag pair, otherwise it's a single tag which means it's a legacy speciality template.
         $content = '';
@@ -199,7 +199,7 @@ class Member_settings extends Member
             /** ----------------------------------------
             /**  Assign the rank stars
             /** ----------------------------------------*/
-            if (preg_match("/{if\s+rank_stars\}(.+?){\/if\}/i", $content, $matches)) {
+            if (preg_match("/{if\s+rank_stars\}(.+?){\/if\}/i", (string) $content, $matches)) {
                 $rank_stars = $matches['1'];
                 $content = str_replace($matches['0'], '{rank_stars}', $content);
             }
@@ -283,7 +283,7 @@ class Member_settings extends Member
         if ($this->in_forum == true) {
             $search_path = $this->forum_path . 'member_search/' . $this->cur_id . '/';
         } else {
-            $search_path = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Search', 'do_search') . '&amp;mbr=' . urlencode($row['member_id']);
+            $search_path = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Search', 'do_search') . '&amp;mbr=' . urlencode((string) $row['member_id']);
         }
 
         $ignore_form = array('hidden_fields' => array('toggle[]' => '', 'name' => '', 'daction' => ''),
@@ -345,10 +345,10 @@ class Member_settings extends Member
             /** ----------------------------------------*/
             $cond = ee()->functions->prep_conditional($val['0']);
 
-            $lcond = substr($cond, 0, strpos($cond, ' '));
-            $rcond = substr($cond, strpos($cond, ' '));
+            $lcond = substr((string) $cond, 0, strpos((string) $cond, ' '));
+            $rcond = substr((string) $cond, strpos((string) $cond, ' '));
 
-            if (array_key_exists($val['3'], $row)) {
+            if (array_key_exists((string) $val['3'], $row)) {
                 $lcond = str_replace($val['3'], "\$row['" . $val['3'] . "']", $lcond);
                 $cond = $lcond . ' ' . $rcond;
                 $cond = str_replace("\|", "|", $cond);
@@ -356,38 +356,38 @@ class Member_settings extends Member
                 eval("\$result = " . $cond . ";");
 
                 if ($result) {
-                    $content = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "\\1", $content);
+                    $content = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "\\1", (string) $content);
                 } else {
-                    $content = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "", $content);
+                    $content = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "", (string) $content);
                 }
             }
 
             /** ----------------------------------------
             /**  {if accept_email}
             /** ----------------------------------------*/
-            if (preg_match("/^if\s+accept_email.*/i", $val['0'])) {
+            if (preg_match("/^if\s+accept_email.*/i", (string) $val['0'])) {
                 if ($row['accept_user_email'] == 'n') {
-                    $content = preg_replace("/" . LD . $val['0'] . RD . "(.+?)" . LD . '\/if' . RD . "/s", "", $content);
+                    $content = preg_replace("/" . LD . $val['0'] . RD . "(.+?)" . LD . '\/if' . RD . "/s", "", (string) $content);
                 } else {
-                    $content = preg_replace("/" . LD . $val['0'] . RD . "(.+?)" . LD . '\/if' . RD . "/s", "\\1", $content);
+                    $content = preg_replace("/" . LD . $val['0'] . RD . "(.+?)" . LD . '\/if' . RD . "/s", "\\1", (string) $content);
                 }
             }
 
             /** ----------------------------------------
             /**  {if can_private_message}
             /** ----------------------------------------*/
-            if (stristr($val['0'], 'can_private_message')) {
+            if (stristr((string) $val['0'], 'can_private_message')) {
                 if (! $member->can('send_private_messages') or $row['accept_messages'] == 'n') {
-                    $content = preg_replace("/" . LD . $val['0'] . RD . "(.+?)" . LD . '\/if' . RD . "/s", "", $content);
+                    $content = preg_replace("/" . LD . $val['0'] . RD . "(.+?)" . LD . '\/if' . RD . "/s", "", (string) $content);
                 } else {
-                    $content = preg_replace("/" . LD . $val['0'] . RD . "(.+?)" . LD . '\/if' . RD . "/s", "\\1", $content);
+                    $content = preg_replace("/" . LD . $val['0'] . RD . "(.+?)" . LD . '\/if' . RD . "/s", "\\1", (string) $content);
                 }
             }
 
             /** -------------------------------------
             /**  {if ignore}
             /** -------------------------------------*/
-            if (stristr($val['0'], 'ignore')) {
+            if (stristr((string) $val['0'], 'ignore')) {
                 if ($row['member_id'] == ee()->session->userdata['member_id']) {
                     $content = $this->_deny_if('ignore', $content);
                 } else {
@@ -423,35 +423,35 @@ class Member_settings extends Member
             /** ----------------------------------------
             /**  "last_visit"
             /** ----------------------------------------*/
-            if (strncmp($key, 'last_visit', 10) == 0) {
+            if (strncmp((string) $key, 'last_visit', 10) == 0) {
                 $content = $this->_var_swap_single($key, ($row['last_activity'] > 0) ? ee()->localize->format_date($val, $row['last_activity']) : '', $content);
             }
 
             /** ----------------------------------------
             /**  "join_date"
             /** ----------------------------------------*/
-            if (strncmp($key, 'join_date', 9) == 0) {
+            if (strncmp((string) $key, 'join_date', 9) == 0) {
                 $content = $this->_var_swap_single($key, ($row['join_date'] > 0) ? ee()->localize->format_date($val, $row['join_date']) : '', $content);
             }
 
             /** ----------------------------------------
             /**  "last_entry_date"
             /** ----------------------------------------*/
-            if (strncmp($key, 'last_entry_date', 15) == 0) {
+            if (strncmp((string) $key, 'last_entry_date', 15) == 0) {
                 $content = $this->_var_swap_single($key, ($row['last_entry_date'] > 0) ? ee()->localize->format_date($val, $row['last_entry_date']) : '', $content);
             }
 
             /** ----------------------------------------
             /**  "last_forum_post_date"
             /** ----------------------------------------*/
-            if (strncmp($key, 'last_forum_post_date', 20) == 0) {
+            if (strncmp((string) $key, 'last_forum_post_date', 20) == 0) {
                 $content = $this->_var_swap_single($key, ($row['last_forum_post_date'] > 0) ? ee()->localize->format_date($val, $row['last_forum_post_date']) : '', $content);
             }
 
             /** ----------------------------------------
             /**  parse "recent_comment"
             /** ----------------------------------------*/
-            if (strncmp($key, 'last_comment_date', 17) == 0) {
+            if (strncmp((string) $key, 'last_comment_date', 17) == 0) {
                 $content = $this->_var_swap_single($key, ($row['last_comment_date'] > 0) ? ee()->localize->format_date($val, $row['last_comment_date']) : '', $content);
             }
 
@@ -494,7 +494,7 @@ class Member_settings extends Member
             /** ----------------------
             /**  {local_time}
             /** ----------------------*/
-            if (strncmp($key, 'local_time', 10) == 0) {
+            if (strncmp((string) $key, 'local_time', 10) == 0) {
                 $content = $this->_var_swap_single(
                     $key,
                     ee()->localize->format_date($val, null, $timezone),
@@ -519,8 +519,8 @@ class Member_settings extends Member
             /** ----------------------------------------*/
 
             // array_key_exists instead of isset since some columns may be NULL
-            if (array_key_exists($val, $row)) {
-                $content = $this->_var_swap_single($val, strip_tags($row[$val]), $content);
+            if (array_key_exists((string) $val, $row)) {
+                $content = $this->_var_swap_single($val, strip_tags((string) $row[$val]), $content);
             }
         }
 
@@ -559,10 +559,10 @@ class Member_settings extends Member
                 // Prep the conditional
                 $cond = ee()->functions->prep_conditional($val['0']);
 
-                $lcond = substr($cond, 0, strpos($cond, ' '));
-                $rcond = substr($cond, strpos($cond, ' '));
+                $lcond = substr((string) $cond, 0, strpos((string) $cond, ' '));
+                $rcond = substr((string) $cond, strpos((string) $cond, ' '));
 
-                if (array_key_exists($val['3'], $fnames)) {
+                if (array_key_exists((string) $val['3'], $fnames)) {
                     $m_field_id_name = 'm_field_id_' . $fnames[$val['3']]['0'];
 
                     $lcond = str_replace($val['3'], "\$row['" . $m_field_id_name . "']", $lcond);
@@ -574,9 +574,9 @@ class Member_settings extends Member
                     eval("\$rez = " . $cond . ";");
 
                     if ($rez) {
-                        $content = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "\\1", $content);
+                        $content = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "\\1", (string) $content);
                     } else {
-                        $content = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "", $content);
+                        $content = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "", (string) $content);
                     }
                 }
             }
@@ -670,10 +670,10 @@ class Member_settings extends Member
 
                         $cond = ee()->functions->prep_conditional($val['0']);
 
-                        $lcond = substr($cond, 0, strpos($cond, ' '));
-                        $rcond = substr($cond, strpos($cond, ' '));
+                        $lcond = substr((string) $cond, 0, strpos((string) $cond, ' '));
+                        $rcond = substr((string) $cond, strpos((string) $cond, ' '));
 
-                        if (array_key_exists($val['3'], $field_row)) {
+                        if (array_key_exists((string) $val['3'], $field_row)) {
                             $lcond = str_replace($val['3'], "\$field_row['" . $val['3'] . "']", $lcond);
                             $cond = $lcond . ' ' . $rcond;
                             $cond = str_replace("\|", "|", $cond);
@@ -722,7 +722,7 @@ class Member_settings extends Member
         /** ----------------------------------------*/
 
         // Fetch the template tag data
-        $tagdata = trim(ee()->TMPL->tagdata);
+        $tagdata = trim((string) ee()->TMPL->tagdata);
 
         // If there is tag data, it's a tag pair, otherwise it's a single tag which means it's a legacy speciality template.
         $template = '';
@@ -733,15 +733,15 @@ class Member_settings extends Member
         }
 
         // Find out if we have sub-tag data for our `custom_profile_fields` tag. If not, use the legacy speciality template.
-        if (strpos($template, '{/custom_profile_fields}') !== false) {
+        if (strpos((string) $template, '{/custom_profile_fields}') !== false) {
             $custom_profile_fields_tag_length = strlen(LD . 'custom_profile_fields' . RD);
 
             // Find the starting and ending position of our subtag and calculate the difference so we can grab it.
-            $custom_profile_fields_start = strpos($template, LD . 'custom_profile_fields' . RD) + $custom_profile_fields_tag_length;
-            $custom_profile_fields_end = strpos($template, LD . '/custom_profile_fields' . RD);
+            $custom_profile_fields_start = strpos((string) $template, LD . 'custom_profile_fields' . RD) + $custom_profile_fields_tag_length;
+            $custom_profile_fields_end = strpos((string) $template, LD . '/custom_profile_fields' . RD);
             $custom_profile_fields_diff = $custom_profile_fields_end - $custom_profile_fields_start;
 
-            $profile_fields_template = substr($template, $custom_profile_fields_start, $custom_profile_fields_diff);
+            $profile_fields_template = substr((string) $template, $custom_profile_fields_start, $custom_profile_fields_diff);
         } else {
             $profile_fields_template = $this->_load_element('custom_profile_fields');
         }
@@ -782,18 +782,18 @@ class Member_settings extends Member
 
         $hasFileField = false;
         $fields = [];
-        if (strpos($template, '{/custom_profile_fields}') !== false || !is_null(ee()->TMPL->template_engine)) {
+        if (strpos((string) $template, '{/custom_profile_fields}') !== false || !is_null(ee()->TMPL->template_engine)) {
             if ($query->num_rows() > 0) {
                 // Find out if we have an {options}{/options} tag pair within {custom_profile_fields}{/custom_profile_fields} tag pair
-                if (strpos($template, '{/options}') !== false) {
+                if (strpos((string) $template, '{/options}') !== false) {
                     $options_tag_length = strlen(LD . 'options' . RD);
-        
+
                     // Find the starting and ending position of our options tags and calculate the difference so we can grab it.
-                    $options_start = strpos($template, LD . 'options' . RD) + $options_tag_length;
-                    $options_end = strpos($template, LD . '/options' . RD);
+                    $options_start = strpos((string) $template, LD . 'options' . RD) + $options_tag_length;
+                    $options_end = strpos((string) $template, LD . '/options' . RD);
                     $options_diff = $options_end - $options_start;
                 }
-                
+
                 foreach ($member->getDisplay()->getFields() as $field) {
                     if (! ee('Permission')->isSuperAdmin() && $field->get('field_public') != 'y') {
                         continue;
@@ -813,7 +813,7 @@ class Member_settings extends Member
                     $hasFileField = (in_array($field->getType(), ['file', 'file_grid'])) ? true : $hasFileField;
 
                     $temp = ee()->functions->prep_conditionals($temp, [
-                        'has_error' => !empty(ee()->session->flashdata('errors')['error:'. $field->getShortName()] ?? '')
+                        'has_error' => !empty(ee()->session->flashdata('errors')['error:' . $field->getShortName()] ?? '')
                     ]);
 
                     $variables = [
@@ -830,13 +830,13 @@ class Member_settings extends Member
                         'maxlength' => $field->get('field_maxl'),
                         'field_required' => $field->isRequired(),
                         'field_type' => $field->getType(),
-                        'error' => ee()->session->flashdata('errors')['error:'. $field->getShortName()] ?? '',
+                        'error' => ee()->session->flashdata('errors')['error:' . $field->getShortName()] ?? '',
                     ];
 
                     // Replace the field variables in the template
                     $temp = str_replace(
-                        array_map(function($variable) {
-                            return '{'.$variable.'}';
+                        array_map(function ($variable) {
+                            return '{' . $variable . '}';
                         }, array_keys($variables)),
                         array_values($variables),
                         $temp
@@ -857,18 +857,18 @@ class Member_settings extends Member
                         $options_start = strpos($temp, LD . 'options' . RD) + $options_tag_length;
                         $options_end = strpos($temp, LD . '/options' . RD);
                         $options_diff = $options_end - $options_start;
-                                                
+
                         $options_tagdata = substr($temp, $options_start, $options_diff);
                         $options_temp = '';
-                        
-                        foreach($field->get('field_settings')['value_label_pairs'] as $value => $name) {
+
+                        foreach ($field->get('field_settings')['value_label_pairs'] as $value => $name) {
                             $options_selected = ($field->getData() == $value ? 'selected' : '');
-                            $options_temp .= str_replace('{selected}', $options_selected , str_replace('{option_name}', $name, str_replace('{option_value}', $value, $options_tagdata)));
+                            $options_temp .= str_replace('{selected}', $options_selected, str_replace('{option_name}', $name, str_replace('{option_value}', $value, $options_tagdata)));
                         }
 
                         $temp = substr_replace($temp, $options_temp, $options_start, $options_diff);
                     }
-                    
+
                     $r .= $temp;
 
                     $fields[$field->getName()] = $variables;
@@ -898,8 +898,8 @@ class Member_settings extends Member
         }
 
         if (! empty($custom_profile_fields_diff)) {
-            $custom_profile_fields_start = strpos($template, LD . 'custom_profile_fields' . RD);
-            $custom_profile_fields_end = strpos($template, LD . '/custom_profile_fields' . RD) + $custom_profile_fields_tag_length + 1;
+            $custom_profile_fields_start = strpos((string) $template, LD . 'custom_profile_fields' . RD);
+            $custom_profile_fields_end = strpos((string) $template, LD . '/custom_profile_fields' . RD) + $custom_profile_fields_tag_length + 1;
             $custom_profile_fields_diff = $custom_profile_fields_end - $custom_profile_fields_start;
 
             $template = substr_replace($template, $r, $custom_profile_fields_start, $custom_profile_fields_diff);
@@ -911,7 +911,7 @@ class Member_settings extends Member
             foreach ($member->getDisplay()->getFields() as $field) {
                 if (ee('Permission')->isSuperAdmin() || $field->get('field_public') == 'y') {
                     $template = str_replace(LD . 'field:' . $field->get('field_name') . RD, $field->getForm(), $template);
-                }else{
+                } else {
                     // Remove any inline errors for fields that are not visible
                     $template = str_replace(LD . 'error:' . $field->get('field_name') . RD, '', $template);
                 }
@@ -934,7 +934,7 @@ class Member_settings extends Member
             }
 
             $data['id'] = !empty(ee()->TMPL->form_id) ? ee()->TMPL->form_id : 'cform';
-            $data['class'] = (get_bool_from_string(ee()->TMPL->fetch_param('include_assets', 'n') || strpos($template, LD . 'form_assets' . RD) !== false) ? 'ee-cform ' : '');
+            $data['class'] = (get_bool_from_string(ee()->TMPL->fetch_param('include_assets', 'n') || strpos((string) $template, LD . 'form_assets' . RD) !== false) ? 'ee-cform ' : '');
             $data['class'] .= ee()->TMPL->form_class;
 
             $data['hidden_fields'] = array(
@@ -943,14 +943,14 @@ class Member_settings extends Member
             );
 
             // check the template for file fields
-            if (strpos($template, '_hidden_file') !== false || (!is_null(ee()->TMPL->template_engine) && $hasFileField)) {
+            if (strpos((string) $template, '_hidden_file') !== false || (!is_null(ee()->TMPL->template_engine) && $hasFileField)) {
                 $data['enctype'] = 'multi';
             }
 
             $open = ee()->functions->form_declaration($data);
             $close = '</form>';
             //make head appear by default
-            if (strpos($template, LD . 'form_assets' . RD) !== false) {
+            if (strpos((string) $template, LD . 'form_assets' . RD) !== false) {
                 $template = ee()->TMPL->swap_var_single('form_assets', ee()->channel_form_lib->head, $template);
             } elseif (get_bool_from_string(ee()->TMPL->fetch_param('include_assets'), 'n')) {
                 // Head should only be there if the param is there
@@ -1160,7 +1160,7 @@ class Member_settings extends Member
         }
 
         if ($result->failed()) {
-            $aliases = array_reduce($member->getDisplay()->getFields(), function($carry, $field) {
+            $aliases = array_reduce($member->getDisplay()->getFields(), function ($carry, $field) {
                 return array_merge($carry, [
                     $field->getName() => [
                         'field' => $field->getShortName(),
@@ -1189,7 +1189,7 @@ class Member_settings extends Member
             }
 
             // Make sure it's an actual URL.
-            if (substr($return_link, 0, 4) !== 'http' && substr($return_link, 0, 1) !== '/') {
+            if (substr((string) $return_link, 0, 4) !== 'http' && substr((string) $return_link, 0, 1) !== '/') {
                 $return_link = '/' . $return_link;
             }
 
@@ -1297,7 +1297,7 @@ class Member_settings extends Member
         $query = ee()->db->query("SELECT email, accept_admin_email, accept_user_email, notify_by_default, notify_of_pm, smart_notifications FROM exp_members WHERE member_id = '" . ee()->session->userdata('member_id') . "'");
 
         // Fetch the template tag data
-        $tagdata = trim(ee()->TMPL->tagdata);
+        $tagdata = trim((string) ee()->TMPL->tagdata);
 
         // If there is tag data, it's a tag pair, otherwise it's a single tag which means it's a legacy speciality template.
         $template = '';
@@ -1388,7 +1388,7 @@ class Member_settings extends Member
             }
 
             // Make sure it's an actual URL.
-            if (substr($return_link, 0, 4) !== 'http' && substr($return_link, 0, 1) !== '/') {
+            if (substr((string) $return_link, 0, 4) !== 'http' && substr((string) $return_link, 0, 1) !== '/') {
                 $return_link = '/' . $return_link;
             }
 
@@ -1414,7 +1414,7 @@ class Member_settings extends Member
         $query = ee()->db->query("SELECT username, screen_name FROM exp_members WHERE member_id = '" . ee()->session->userdata('member_id') . "'");
 
         // Fetch the template tag data
-        $tagdata = trim(ee()->TMPL->tagdata);
+        $tagdata = trim((string) ee()->TMPL->tagdata);
 
         // If there is tag data, it's a tag pair, otherwise it's a single tag which means it's a legacy speciality template.
         $template = '';
@@ -1515,7 +1515,7 @@ class Member_settings extends Member
             }
 
             // Make sure it's an actual URL.
-            if (substr($return_link, 0, 4) !== 'http' && substr($return_link, 0, 1) !== '/') {
+            if (substr((string) $return_link, 0, 4) !== 'http' && substr((string) $return_link, 0, 1) !== '/') {
                 $return_link = '/' . $return_link;
             }
 
@@ -1643,7 +1643,7 @@ class Member_settings extends Member
         if ($query->num_rows() == 0) {
             return ee()->output->show_user_error('general', array(ee()->lang->line('not_authorized')));
         } else {
-            $ignored = ($query->row('ignore_list') == '') ? array() : explode('|', $query->row('ignore_list'));
+            $ignored = ($query->row('ignore_list') == '') ? array() : explode('|', (string) $query->row('ignore_list'));
         }
 
         $query = ee()->db->query("SELECT screen_name, member_id FROM exp_members WHERE member_id IN ('" . implode("', '", $ignored) . "') ORDER BY screen_name");
@@ -2049,11 +2049,11 @@ UNGA;
     /** ----------------------------------*/
     public function unpw_update()
     {
-        if ($this->cur_id == '' or strpos($this->cur_id, '_') === false) {
+        if ($this->cur_id == '' or strpos((string) $this->cur_id, '_') === false) {
             return;
         }
 
-        $x = explode('_', $this->cur_id);
+        $x = explode('_', (string) $this->cur_id);
 
         if (count($x) != 3) {
             return;
@@ -2179,7 +2179,7 @@ UNGA;
         $return = ee()->functions->form_backtrack();
 
         if (ee()->config->item('website_session_type') != 'c') {
-            if (ee()->config->item('force_query_string') == 'y' && substr($return, 0, -3) == "php") {
+            if (ee()->config->item('force_query_string') == 'y' && substr((string) $return, 0, -3) == "php") {
                 $return .= '?';
             }
 

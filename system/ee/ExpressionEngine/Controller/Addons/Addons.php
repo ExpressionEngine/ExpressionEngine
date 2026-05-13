@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -37,7 +38,7 @@ class Addons extends CP_Controller
 
         if (! ee('Permission')->can('access_addons')) {
             // possible exception for FilePicker
-            if (strncmp(ee()->uri->uri_string, 'cp/addons/settings/filepicker', 29) == 0) {
+            if (strncmp((string) ee()->uri->uri_string, 'cp/addons/settings/filepicker', 29) == 0) {
                 if (! ee('Permission')->can('access_files')) {
                     show_error(lang('unauthorized_access'), 403);
                 }
@@ -78,9 +79,9 @@ class Addons extends CP_Controller
 
         // Status
         $status = ee('CP/Filter')->make('filter_by_first_status', 'filter_by_status', array(
-            'installed' => strtolower(lang('installed')),
-            'uninstalled' => strtolower(lang('uninstalled')),
-            'updates' => strtolower(lang('needs_updates'))
+            'installed' => strtolower((string) lang('installed')),
+            'uninstalled' => strtolower((string) lang('uninstalled')),
+            'updates' => strtolower((string) lang('needs_updates'))
         ));
         $status->disableCustomValue();
 
@@ -92,9 +93,9 @@ class Addons extends CP_Controller
 
         // Status
         $status = ee('CP/Filter')->make('filter_by_third_status', 'filter_by_status', array(
-            'installed' => strtolower(lang('installed')),
-            'uninstalled' => strtolower(lang('uninstalled')),
-            'updates' => strtolower(lang('needs_updates'))
+            'installed' => strtolower((string) lang('installed')),
+            'uninstalled' => strtolower((string) lang('uninstalled')),
+            'updates' => strtolower((string) lang('needs_updates'))
         ));
         $status->disableCustomValue();
 
@@ -1443,8 +1444,8 @@ class Addons extends CP_Controller
                 show_404();
             }
 
-            $name = (lang(strtolower($module) . '_module_name') != strtolower($module) . '_module_name')
-                ? lang(strtolower($module) . '_module_name') : $info->getName();
+            $name = (lang(strtolower((string) $module) . '_module_name') != strtolower((string) $module) . '_module_name')
+                ? lang(strtolower((string) $module) . '_module_name') : $info->getName();
         }
 
         return $name;
@@ -1469,8 +1470,8 @@ class Addons extends CP_Controller
                 show_404();
             }
 
-            $name = (lang(strtolower($module) . '_module_name') != strtolower($module) . '_module_name')
-                ? lang(strtolower($module) . '_module_name') : $info->getName();
+            $name = (lang(strtolower((string) $module) . '_module_name') != strtolower((string) $module) . '_module_name')
+                ? lang(strtolower((string) $module) . '_module_name') : $info->getName();
         }
 
         return $name;
@@ -1505,7 +1506,7 @@ class Addons extends CP_Controller
     private function uninstallFieldtype($fieldtype)
     {
         $name = null;
-        $fieldtype = ee()->security->sanitize_filename(strtolower($fieldtype));
+        $fieldtype = ee()->security->sanitize_filename(strtolower((string) $fieldtype));
 
         // Note, the addons_installer will loop through all fieldtypes for the addon path and delete them
         if (ee()->addons_installer->uninstall($fieldtype, 'fieldtype', false)) {
@@ -1607,7 +1608,7 @@ class Addons extends CP_Controller
             show_error(lang('unauthorized_access'), 403);
         }
 
-        $addon = ee()->security->sanitize_filename(strtolower($name));
+        $addon = ee()->security->sanitize_filename(strtolower((string) $name));
 
         $extension = $this->getExtension($addon);
 
@@ -1615,7 +1616,7 @@ class Addons extends CP_Controller
             show_error(lang('requested_module_not_installed') . NBS . $addon);
         }
 
-        ee()->lang->loadfile(strtolower($addon));
+        ee()->lang->loadfile(strtolower((string) $addon));
 
         $extension_model = ee('Model')->get('Extension')
             ->filter('enabled', 'y')
@@ -1759,7 +1760,7 @@ class Addons extends CP_Controller
             show_error(lang('unauthorized_access'), 403);
         }
 
-        $addon = ee()->security->sanitize_filename(strtolower($name));
+        $addon = ee()->security->sanitize_filename(strtolower((string) $name));
 
         $extension = $this->getExtension($addon);
 
@@ -1767,7 +1768,7 @@ class Addons extends CP_Controller
             show_error(lang('requested_module_not_installed') . NBS . $addon);
         }
 
-        ee()->lang->loadfile(strtolower($addon));
+        ee()->lang->loadfile(strtolower((string) $addon));
 
         $class_name = $extension['class'];
         $OBJ = new $class_name();

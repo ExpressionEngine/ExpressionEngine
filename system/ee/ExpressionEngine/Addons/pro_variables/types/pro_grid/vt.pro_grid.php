@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -58,7 +59,7 @@ class Pro_grid extends Pro_variables_type
         if ($result->isNotValid()) {
             $errors = [];
             foreach ($result->getAllErrors() as $field => $resultErrors) {
-                if (substr($field, 0, strlen('grid[')) === 'grid[') {
+                if (substr((string) $field, 0, strlen('grid[')) === 'grid[') {
                     $errors[] = $field . ': ' . current($result->getErrors($field));
                 }
             }

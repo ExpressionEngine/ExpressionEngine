@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -62,7 +63,7 @@ class Notifications
         // We don't want to send a notification to the user
         // triggering the event
 
-        if ( ! empty(ee()->session->userdata('email')) && strpos($notify_address, ee()->session->userdata('email')) !== false) {
+        if (! empty(ee()->session->userdata('email')) && strpos($notify_address, (string) ee()->session->userdata('email')) !== false) {
             $notify_address = str_replace(ee()->session->userdata('email'), "", $notify_address);
         }
 
@@ -82,7 +83,7 @@ class Notifications
             // To use their mail format setting of HTML, and if their template contains no markup,
             // we need to preserve linebreaks. If they are already trying to use HTML in it, leave their
             // template alone, hence the strip_tags() check.
-            if (ee()->config->item('mail_format') == 'html' && $email_msg == strip_tags($email_msg)) {
+            if (ee()->config->item('mail_format') == 'html' && $email_msg == strip_tags((string) $email_msg)) {
                 $email_msg = str_replace("\n", "<br>\n", $email_msg);
             }
 

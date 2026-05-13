@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -33,7 +34,7 @@ class AlphaDashPeriodEmoji extends ValidationRule
     protected function stripEmojis($value)
     {
         $regex = '/(?:[' . ee('Emoji')->emojiRegex . '])/iu';
-        $value = preg_replace($regex, '', $value);
+        $value = preg_replace($regex, '', (string) $value);
 
         return $value;
     }

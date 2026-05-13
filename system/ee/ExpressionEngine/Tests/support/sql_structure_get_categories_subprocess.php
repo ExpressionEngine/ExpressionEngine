@@ -16,7 +16,38 @@ $captured = (object) [
 ];
 $returned = false;
 $target = realpath(PATH_ADDONS . 'structure/sql.structure.php');
-$linesToTrack = array_flip([83, 85, 87, 90, 91, 92, 94]);
+$method = new ReflectionMethod('Sql_structure', 'get_categories');
+$methodStartLine = $method->getStartLine();
+$methodEndLine = $method->getEndLine();
+$sourceLines = file($target);
+$lineNumbers = [
+    'sql_line' => null,
+    'query_line' => null,
+    'result_array_line' => null,
+    'header_line' => null,
+    'warning_line' => null,
+    'return_line' => null,
+];
+
+for ($line = $methodStartLine; $line <= $methodEndLine; $line++) {
+    $sourceLine = $sourceLines[$line - 1] ?? '';
+
+    if (strpos($sourceLine, '$sql = "SELECT * from exp_categories') !== false) {
+        $lineNumbers['sql_line'] = $line;
+    } elseif (strpos($sourceLine, 'ee()->db->query($sql)') !== false) {
+        $lineNumbers['query_line'] = $line;
+    } elseif (strpos($sourceLine, '$data = $result->result_array()') !== false) {
+        $lineNumbers['result_array_line'] = $line;
+    } elseif (strpos($sourceLine, "header('Content-Type: text/plain; charset=iso-8859-1')") !== false) {
+        $lineNumbers['header_line'] = $line;
+    } elseif (strpos($sourceLine, 'print_r($cats)') !== false) {
+        $lineNumbers['warning_line'] = $line;
+    } elseif (strpos($sourceLine, 'return $data') !== false) {
+        $lineNumbers['return_line'] = $line;
+    }
+}
+
+$linesToTrack = array_flip(array_filter($lineNumbers));
 $xdebugAvailable = function_exists('xdebug_start_code_coverage') && function_exists('xdebug_get_code_coverage');
 
 ee()->setMock('db', new class($captured) {
@@ -52,7 +83,7 @@ ee()->setMock('db', new class($captured) {
     }
 });
 
-register_shutdown_function(function () use (&$returned, $outputFile, $captured, $target, $linesToTrack, $xdebugAvailable) {
+register_shutdown_function(function () use (&$returned, $outputFile, $captured, $target, $linesToTrack, $lineNumbers, $xdebugAvailable) {
     $coverage = [];
 
     if ($xdebugAvailable) {
@@ -75,6 +106,7 @@ register_shutdown_function(function () use (&$returned, $outputFile, $captured, 
         'result_array_calls' => $captured->result_array_calls,
         'output' => $bufferedOutput,
         'xdebug_available' => $xdebugAvailable,
+        'line_numbers' => $lineNumbers,
         'lines' => array_intersect_key($fileCoverage['lines'] ?? [], $linesToTrack),
         'branches' => $functionCoverage['branches'],
         'paths' => $functionCoverage['paths'],

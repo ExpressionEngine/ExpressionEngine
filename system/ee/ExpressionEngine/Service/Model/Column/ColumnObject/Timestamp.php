@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -43,9 +44,9 @@ class Timestamp extends SerializedType
             // is it a timestamp as a string (see https://stackoverflow.com/a/2524761/6475781)?
             return intval($data);
         } else {
-            // is it a descriptive date string of some kind? 
+            // is it a descriptive date string of some kind?
             // strtotime fails to 'false' so if string does not contain date info this will cause function to fail to false
-            return strtotime($data);
+            return strtotime((string) $data);
         }
     }
 }

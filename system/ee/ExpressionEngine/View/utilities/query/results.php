@@ -8,7 +8,7 @@
 
 	<div class="typography">
 
-		<pre><code><?=htmlentities($thequery, ENT_QUOTES, 'UTF-8');?></code></pre>
+		<pre><code><?=htmlentities((string) $thequery, ENT_QUOTES, 'UTF-8');?></code></pre>
 
 		<p>
 			<?php if ($write): ?>
@@ -29,7 +29,7 @@
 			<div class="title-bar__extra-tools">
 			<?php if (! $write): ?>
 				<div class="search-input">
-					<input class="search-input__input input--small" placeholder="<?=lang('search')?>" type="text" name="search" value="<?=htmlentities($table['search'], ENT_QUOTES, 'UTF-8')?>">
+					<input class="search-input__input input--small" placeholder="<?=lang('search')?>" type="text" name="search" value="<?=htmlentities((string) $table['search'], ENT_QUOTES, 'UTF-8')?>">
 				</div>
 			<?php endif ?>
 			</div>

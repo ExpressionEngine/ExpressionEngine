@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -70,8 +71,9 @@ class CommandListCommands extends Cli
         $available = $this->availableCommands();
 
         // Simple flag just lists the commands without the description
-        if($this->option('--simple')) {
+        if ($this->option('--simple')) {
             $this->write(implode("\n", array_keys($available)));
+
             return;
         }
 
@@ -94,7 +96,7 @@ class CommandListCommands extends Cli
             $availableHydratedClass = new $availableClass();
 
             // Get the command header
-            $commandSegments = explode(':', $availableCommand);
+            $commandSegments = explode(':', (string) $availableCommand);
             $header = $commandSegments[0];
 
             // If this is a new header, we print a new line and then print the command header
@@ -124,7 +126,7 @@ class CommandListCommands extends Cli
 
     public function changeColumnColor($line, $color, $column = 1)
     {
-        $lineArray = explode('|', $line);
+        $lineArray = explode('|', (string) $line);
         $lineArray[$column] = "<<{$color}>>{$lineArray[$column]}<<reset>>";
 
         return implode('|', $lineArray);
@@ -138,7 +140,7 @@ class CommandListCommands extends Cli
     protected function generateMask(array $available)
     {
         foreach ($available as $availableCommand => $availableClass) {
-            $length = strlen($availableCommand);
+            $length = strlen((string) $availableCommand);
             if ($length >= $this->command_col_width) {
                 $this->command_col_width = $length;
             }

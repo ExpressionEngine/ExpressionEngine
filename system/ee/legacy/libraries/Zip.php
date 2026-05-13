@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -48,7 +49,7 @@ class EE_Zip
     public function add_dir($directory)
     {
         foreach ((array) $directory as $dir) {
-            if (! preg_match("|.+/$|", $dir)) {
+            if (! preg_match("|.+/$|", (string) $dir)) {
                 $dir .= '/';
             }
 
@@ -162,10 +163,10 @@ class EE_Zip
     {
         $filepath = str_replace("\\", "/", $filepath);
 
-        $uncompressed_size = strlen($data);
-        $crc32 = crc32($data);
+        $uncompressed_size = strlen((string) $data);
+        $crc32 = crc32((string) $data);
 
-        $gzdata = gzcompress($data);
+        $gzdata = gzcompress((string) $data);
         $gzdata = substr($gzdata, 2, -4);
         $compressed_size = strlen($gzdata);
 
@@ -291,8 +292,8 @@ class EE_Zip
         $zip_data .= $this->directory . "\x50\x4b\x05\x06\x00\x00\x00\x00";
         $zip_data .= pack('v', $this->entries); // total # of entries "on this disk"
         $zip_data .= pack('v', $this->entries); // total # of entries overall
-        $zip_data .= pack('V', strlen($this->directory)); // size of central dir
-        $zip_data .= pack('V', strlen($this->zipdata)); // offset to start of central dir
+        $zip_data .= pack('V', strlen((string) $this->directory)); // size of central dir
+        $zip_data .= pack('V', strlen((string) $this->zipdata)); // offset to start of central dir
         $zip_data .= "\x00\x00"; // .zip file comment length
 
         return $zip_data;
@@ -331,7 +332,7 @@ class EE_Zip
      */
     public function download($filename = 'backup.zip')
     {
-        if (! preg_match("|.+?\.zip$|", $filename)) {
+        if (! preg_match("|.+?\.zip$|", (string) $filename)) {
             $filename .= '.zip';
         }
 

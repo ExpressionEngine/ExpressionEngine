@@ -25,7 +25,7 @@ class AdapterManager
 
     public function get($key)
     {
-        if(!array_key_exists($key, $this->adapters)) {
+        if(!array_key_exists((string) $key, $this->adapters)) {
             throw new \Exception("Missing filesystem adapter for [$key]");
         }
 

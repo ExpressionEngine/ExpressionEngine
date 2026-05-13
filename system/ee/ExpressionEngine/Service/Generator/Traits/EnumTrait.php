@@ -97,7 +97,7 @@ trait EnumTrait
 
     public static function getByKey($key)
     {
-        if (!array_key_exists($key, self::constants())) {
+        if (!array_key_exists((string) $key, self::constants())) {
             return false;
         }
 

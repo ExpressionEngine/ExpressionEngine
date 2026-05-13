@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -201,8 +202,8 @@ class CI_DB_active_record extends CI_DB_driver
      */
     public function _create_alias_from_table($item)
     {
-        if (strpos($item, '.') !== false) {
-            $item = explode('.', $item);
+        if (strpos((string) $item, '.') !== false) {
+            $item = explode('.', (string) $item);
 
             return end($item);
         }
@@ -243,8 +244,8 @@ class CI_DB_active_record extends CI_DB_driver
     public function from($from)
     {
         foreach ((array) $from as $val) {
-            if (strpos($val, ',') !== false) {
-                foreach (explode(',', $val) as $v) {
+            if (strpos((string) $val, ',') !== false) {
+                foreach (explode(',', (string) $val) as $v) {
                     $v = trim($v);
                     $this->_track_aliases($v);
 
@@ -256,7 +257,7 @@ class CI_DB_active_record extends CI_DB_driver
                     }
                 }
             } else {
-                $val = trim($val);
+                $val = trim((string) $val);
 
                 // Extract any aliases that might exist.  We use this information
                 // in the _protect_identifiers to know whether to add a table prefix
@@ -851,7 +852,7 @@ class CI_DB_active_record extends CI_DB_driver
         }
 
         foreach ($by as $val) {
-            $val = trim($val);
+            $val = trim((string) $val);
 
             if ($val != '') {
                 $this->ar_groupby[] = $this->_protect_identifiers($val);
@@ -1669,17 +1670,17 @@ class CI_DB_active_record extends CI_DB_driver
 
         // Does the string contain a comma?  If so, we need to separate
         // the string into discreet statements
-        if (strpos($table, ',') !== false) {
-            return $this->_track_aliases(explode(',', $table));
+        if (strpos((string) $table, ',') !== false) {
+            return $this->_track_aliases(explode(',', (string) $table));
         }
 
         // if a table alias is used we can recognize it by a space
-        if (strpos($table, " ") !== false) {
+        if (strpos((string) $table, " ") !== false) {
             // if the alias is written with the AS keyword, remove it
-            $table = preg_replace('/ AS /i', ' ', $table);
+            $table = preg_replace('/ AS /i', ' ', (string) $table);
 
             // Grab the alias
-            $table = trim(strrchr($table, " "));
+            $table = trim(strrchr((string) $table, " "));
 
             // Store the alias, if it doesn't already exist
             if (! in_array($table, $this->ar_aliased_tables)) {

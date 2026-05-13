@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -108,10 +109,10 @@ abstract class ContentModel extends VariableColumnModel
      */
     public function hasCustomField($name)
     {
-        if (strpos($name, $this->getCustomFieldPrefix()) !== 0) {
+        if (strpos((string) $name, $this->getCustomFieldPrefix()) !== 0) {
             $default_fields = $this->getDefaultFields();
 
-            return array_key_exists($name, $default_fields);
+            return array_key_exists((string) $name, $default_fields);
         }
 
         $this->usesCustomFields();
@@ -120,7 +121,7 @@ abstract class ContentModel extends VariableColumnModel
             return false;
         }
 
-        return array_key_exists($name, $this->_field_facades);
+        return array_key_exists((string) $name, $this->_field_facades);
     }
 
     /**
@@ -319,7 +320,7 @@ abstract class ContentModel extends VariableColumnModel
                 continue;
             }
 
-            if (strpos($name, 'field_ft_') !== false) {
+            if (strpos((string) $name, 'field_ft_') !== false) {
                 $name = str_replace('field_ft_', 'field_id_', $name);
 
                 if ($this->hasCustomField($name)) {
@@ -329,7 +330,7 @@ abstract class ContentModel extends VariableColumnModel
                 continue;
             }
 
-            if (strpos($name, 'field_dt_') !== false) {
+            if (strpos((string) $name, 'field_dt_') !== false) {
                 $name = str_replace('field_dt_', 'field_id_', $name);
 
                 if ($this->hasCustomField($name)) {
@@ -442,7 +443,7 @@ abstract class ContentModel extends VariableColumnModel
             $values = array();
 
             foreach ($field->getColumnNames() as $column) {
-                if (array_key_exists($column, $dirty)) {
+                if (array_key_exists((string) $column, $dirty)) {
                     $values[$column] = $this->$column;
                 }
             }

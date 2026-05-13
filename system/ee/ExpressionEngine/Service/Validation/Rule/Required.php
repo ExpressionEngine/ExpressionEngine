@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -22,13 +23,13 @@ class Required extends ValidationRule
         if (is_null($value)) {
             return $this->stop();
         }
-        
+
         if (! is_array($value)) {
-            $value = trim($value);
+            $value = trim((string) $value);
         }
 
         if (is_array($value)) {
-            $value = array_filter($value, function($val) { 
+            $value = array_filter($value, function ($val) {
                 return $val !== '';
             });
             if (empty($value)) {

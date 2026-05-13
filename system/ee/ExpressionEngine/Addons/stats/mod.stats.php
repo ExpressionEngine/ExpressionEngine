@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -100,7 +101,7 @@ class Stats
 
         foreach (ee()->TMPL->var_single as $key => $val) {
             foreach ($dates as $date) {
-                if (strncmp($key, $date, strlen($date)) == 0) {
+                if (strncmp((string) $key, $date, strlen($date)) == 0) {
                     ee()->TMPL->tagdata = ee()->TMPL->swap_var_single(
                         $key,
                         (! ee()->stats->statdata($date)
@@ -129,12 +130,12 @@ class Stats
 
             if (! preg_match(
                 "/" . LD . "member_names.*?backspace=[\"|'](.+?)[\"|']/",
-                ee()->TMPL->tagdata,
+                (string) ee()->TMPL->tagdata,
                 $match
             )) {
                 if (preg_match(
                     "/" . LD . "name.*?backspace=[\"|'](.+?)[\"|']/",
-                    ee()->TMPL->tagdata,
+                    (string) ee()->TMPL->tagdata,
                     $match
                 )) {
                     $backspace = $match['1'];
@@ -145,7 +146,7 @@ class Stats
 
             $member_path = (preg_match(
                 "/" . LD . "member_path=(.+?)" . RD . "/",
-                ee()->TMPL->tagdata,
+                (string) ee()->TMPL->tagdata,
                 $match
             )) ? $match['1'] : '';
             $member_path = str_replace("\"", "", $member_path);
@@ -161,19 +162,19 @@ class Stats
 
                 if ($v['1'] == 'y') {
                     if (ee('Permission')->isSuperAdmin()) {
-                        $temp = preg_replace("/" . LD . "name.*?" . RD . "/", $v['0'] . '*', $temp);
+                        $temp = preg_replace("/" . LD . "name.*?" . RD . "/", $v['0'] . '*', (string) $temp);
                     } elseif (ee()->session->userdata('member_id') == $k) {
-                        $temp = preg_replace("/" . LD . "name.*?" . RD . "/", $v['0'] . '*', $temp);
+                        $temp = preg_replace("/" . LD . "name.*?" . RD . "/", $v['0'] . '*', (string) $temp);
                     } else {
                         continue;
                     }
                 } else {
-                    $temp = preg_replace("/" . LD . "name.*?" . RD . "/", $v['0'], $temp);
+                    $temp = preg_replace("/" . LD . "name.*?" . RD . "/", (string) $v['0'], (string) $temp);
                 }
 
                 $path = ee()->functions->create_url($member_path . '/' . $k);
 
-                $temp = preg_replace("/" . LD . "member_path=(.+?)" . RD . "/", $path, $temp);
+                $temp = preg_replace("/" . LD . "member_path=(.+?)" . RD . "/", (string) $path, (string) $temp);
 
                 $names .= $temp;
             }
@@ -185,14 +186,14 @@ class Stats
 
         $names = str_replace(LD . 'name' . RD, '', $names);
 
-        ee()->TMPL->tagdata = preg_replace("/" . LD . 'member_names' . ".*?" . RD . "(.*?)" . LD . '\/' . 'member_names' . RD . "/s", $names, ee()->TMPL->tagdata);
+        ee()->TMPL->tagdata = preg_replace("/" . LD . 'member_names' . ".*?" . RD . "(.*?)" . LD . '\/' . 'member_names' . RD . "/s", $names, (string) ee()->TMPL->tagdata);
 
         //  {if member_names}
 
         if ($names != '') {
-            ee()->TMPL->tagdata = preg_replace("/" . LD . 'if member_names' . ".*?" . RD . "(.*?)" . LD . '\/' . 'if' . RD . "/s", "\\1", ee()->TMPL->tagdata);
+            ee()->TMPL->tagdata = preg_replace("/" . LD . 'if member_names' . ".*?" . RD . "(.*?)" . LD . '\/' . 'if' . RD . "/s", "\\1", (string) ee()->TMPL->tagdata);
         } else {
-            ee()->TMPL->tagdata = preg_replace("/" . LD . 'if member_names' . ".*?" . RD . "(.*?)" . LD . '\/' . 'if' . RD . "/s", "", ee()->TMPL->tagdata);
+            ee()->TMPL->tagdata = preg_replace("/" . LD . 'if member_names' . ".*?" . RD . "(.*?)" . LD . '\/' . 'if' . RD . "/s", "", (string) ee()->TMPL->tagdata);
         }
 
         $this->return_data = ee()->TMPL->tagdata;
@@ -212,6 +213,7 @@ class Stats
             $member_id = (int) ee()->session->userdata('member_id');
             if ($member_id <= 0 || !ee('Permission')->can('access_data')) {
                 show_error(lang('unauthorized_access'), 403);
+
                 return;
             }
         }

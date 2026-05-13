@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -38,10 +39,10 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
      */
     public function pre_process($tagdata, EE_Channel_preparser $pre)
     {
-        $result_path = (preg_match("/" . LD . $pre->prefix() . "member_search_path\s*=(.*?)" . RD . "/s", $tagdata, $match)) ? $match[1] : 'search/results';
+        $result_path = (preg_match("/" . LD . $pre->prefix() . "member_search_path\s*=(.*?)" . RD . "/s", (string) $tagdata, $match)) ? $match[1] : 'search/results';
         $result_path = str_replace(array('"',"'"), "", $result_path);
 
-        return (strpos($tagdata, 'member_search_path') !== false) ? ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Search', 'do_search') . '&amp;result_path=' . $result_path . '&amp;mbr=' : '';
+        return (strpos((string) $tagdata, 'member_search_path') !== false) ? ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Search', 'do_search') . '&amp;result_path=' . $result_path . '&amp;mbr=' : '';
     }
 
     /**
@@ -61,11 +62,11 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
         $data = $obj->row();
         $prefix = $obj->prefix();
 
-		// If parsing the member tags-profile in particular- the entry_site_id is null
-		// Getting the cached prefs of null can end up with the wrong site id and then the wrong config values
-		$data['entry_site_id'] = (empty($data['entry_site_id'])) ? ee()->config->item('site_id') : $data['entry_site_id'];
+        // If parsing the member tags-profile in particular- the entry_site_id is null
+        // Getting the cached prefs of null can end up with the wrong site id and then the wrong config values
+        $data['entry_site_id'] = (empty($data['entry_site_id'])) ? ee()->config->item('site_id') : $data['entry_site_id'];
 
-        $overrides = ee()->config->get_cached_site_prefs($data['entry_site_id']);	
+        $overrides = ee()->config->get_cached_site_prefs($data['entry_site_id']);
         $data['channel_url'] = parse_config_variables($data['channel_url'], $overrides);
         $data['comment_url'] = parse_config_variables($data['comment_url'], $overrides);
 
@@ -160,7 +161,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
      */
     protected function _paths($data, $tagdata, $key, $val, $prefix, $search_link)
     {
-        $unprefixed = substr($key, 0, strcspn($key, ' ='));
+        $unprefixed = substr((string) $key, 0, strcspn((string) $key, ' ='));
         $unprefixed = preg_replace('/^' . $prefix . '/', '', $unprefixed);
 
         //  parse profile path
@@ -385,7 +386,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
      */
     protected function _basic($data, $tagdata, $key, $val, $prefix)
     {
-        if ($raw_val = preg_replace('/^' . $prefix . '/', '', $val)) {
+        if ($raw_val = preg_replace('/^' . $prefix . '/', '', (string) $val)) {
             if (array_key_exists($raw_val, $data)) {
                 // cast the data to string
                 if (is_null($data[$raw_val]) || $data[$raw_val] === false) {
@@ -410,7 +411,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
                         if (isset($content)) {
                             // subsequental runs
                             $content = $this->$method($content, $params);
-                        } elseif (array_key_exists($field['field_name'], $data)) {
+                        } elseif (array_key_exists((string) $field['field_name'], $data)) {
                             // first run
                             $content = $this->$method($data[$field['field_name']], $params);
                         } elseif (method_exists($this, $mismatch_getter)) {
@@ -425,7 +426,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
                         return $tagdata;
                     }
 
-                    if (array_key_exists($field['field_name'], $data)) {
+                    if (array_key_exists((string) $field['field_name'], $data)) {
                         $content = $this->$method($data[$field['field_name']], $field['params']);
                     } elseif (method_exists($this, $mismatch_getter)) {
                         $content = $this->$method($this->$mismatch_getter($data), $field['params']);

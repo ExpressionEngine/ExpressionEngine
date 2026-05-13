@@ -57,6 +57,7 @@ class EE_Upload
     {
         if (count($props) > 0) {
             $this->initialize($props);
+
             return true;
         }
 
@@ -270,11 +271,13 @@ class EE_Upload
 
                 if ($auto_resize === false) {
                     $this->set_error('upload_invalid_dimensions');
+
                     return false;
                 }
                 $this->file_size = filesize($this->file_temp);
             } else {
                 $this->set_error('upload_invalid_dimensions');
+
                 return false;
             }
             $this->image_processed = true;
@@ -303,7 +306,7 @@ class EE_Upload
 
         // Remove white spaces in the name
         if ($this->remove_spaces == true) {
-            $this->file_name = preg_replace("/\s+/", "_", $this->file_name);
+            $this->file_name = preg_replace("/\s+/", "_", (string) $this->file_name);
         }
 
         /*
@@ -418,7 +421,7 @@ class EE_Upload
     public function set_upload_path($path)
     {
         // Make sure it has a trailing slash
-        $this->upload_path = (empty($path)) ? $path : rtrim($path, '/') . '/';
+        $this->upload_path = (empty($path)) ? $path : rtrim((string) $path, '/') . '/';
     }
 
     /**
@@ -585,7 +588,7 @@ class EE_Upload
      */
     public function is_allowed_filetype($ignore_mime = false)
     {
-        $ext = strtolower(ltrim($this->file_ext, '.'));
+        $ext = strtolower(ltrim((string) $this->file_ext, '.'));
 
         if (in_array($ext, $this->blocked_extensions)) {
             return false;
@@ -657,7 +660,7 @@ class EE_Upload
      */
     public function get_extension($filename)
     {
-        $x = explode('.', $filename);
+        $x = explode('.', (string) $filename);
 
         return '.' . end($x);
     }
@@ -712,18 +715,18 @@ class EE_Upload
      */
     public function limit_filename_length($filename, $length)
     {
-        if (strlen($filename) < $length) {
+        if (strlen((string) $filename) < $length) {
             return $filename;
         }
 
         $ext = '';
-        if (strpos($filename, '.') !== false) {
-            $parts = explode('.', $filename);
+        if (strpos((string) $filename, '.') !== false) {
+            $parts = explode('.', (string) $filename);
             $ext = '.' . array_pop($parts);
             $filename = implode('.', $parts);
         }
 
-        return substr($filename, 0, ($length - strlen($ext))) . $ext;
+        return substr((string) $filename, 0, ($length - strlen($ext))) . $ext;
     }
 
     /**
@@ -784,7 +787,7 @@ class EE_Upload
         }
 
         $checkAsImage = true;
-        if (strpos($this->file_type, 'image/svg') === 0) {
+        if (strpos((string) $this->file_type, 'image/svg') === 0) {
             $checkAsImage = false;
 
             // if it's an SVG, we need to check for XSS in the SVG itself
@@ -895,7 +898,7 @@ class EE_Upload
         // If renaming a file, it should have same file type suffix as the original
         if ($type_match === true) {
             $filename_parts = explode('.', $this->file_name);
-            $original_parts = explode('.', $original_file);
+            $original_parts = explode('.', (string) $original_file);
 
             if (sizeof($filename_parts) == 1 || (array_pop($filename_parts) != array_pop($original_parts))) {
                 $this->set_error('invalid_filetype');
@@ -906,7 +909,7 @@ class EE_Upload
 
         if ($this->remove_spaces == 1) {
             $this->file_name = preg_replace("/\s+/", "_", $this->file_name);
-            $original_file = preg_replace("/\s+/", "_", $original_file);
+            $original_file = preg_replace("/\s+/", "_", (string) $original_file);
         }
 
         // Check to make sure the file doesn't already exist
@@ -976,7 +979,7 @@ class EE_Upload
             return false;
         }
 
-        $this->upload_path = preg_replace("/(.+?)\/*$/", "\\1/", $this->upload_path);
+        $this->upload_path = preg_replace("/(.+?)\/*$/", "\\1/", (string) $this->upload_path);
 
         return true;
     }
@@ -1105,11 +1108,11 @@ class EE_Upload
      */
     protected function _prep_filename($filename)
     {
-        if (strpos($filename, '.') === false || $this->allowed_types == '*') {
+        if (strpos((string) $filename, '.') === false || $this->allowed_types == '*') {
             return $filename;
         }
 
-        $parts = explode('.', $filename);
+        $parts = explode('.', (string) $filename);
         $ext = array_pop($parts);
         $filename = array_shift($parts);
 

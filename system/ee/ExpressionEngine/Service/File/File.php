@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -33,12 +34,12 @@ class File extends SplFileObject
 
     public function setUrl($url)
     {
-        $this->url = rtrim($url, '/');
+        $this->url = rtrim((string) $url, '/');
     }
 
     public function setThumbnailUrl($url)
     {
-        $this->thumb_url = rtrim($url, '/');
+        $this->thumb_url = rtrim((string) $url, '/');
     }
 
     public function getUrl()
@@ -63,7 +64,7 @@ class File extends SplFileObject
 
     public function isImage()
     {
-        return (strpos($this->getMimeType(), 'image/') === 0);
+        return (strpos((string) $this->getMimeType(), 'image/') === 0);
     }
 
     public function __get($key)

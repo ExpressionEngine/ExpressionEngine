@@ -72,7 +72,7 @@ class TemplateAdvisor
 
             $template_data = ee()->template->remove_ee_comments($template_data);
 
-            $tags_found = preg_match_all($regexp, $template_data, $keys, PREG_PATTERN_ORDER);
+            $tags_found = preg_match_all($regexp, (string) $template_data, $keys, PREG_PATTERN_ORDER);
 
             $tmpl_info['details'][] = $keys;
 
@@ -110,6 +110,7 @@ class TemplateAdvisor
             ->group_by('group_name, site_id')
             ->having('COUNT(group_name) > 1')
             ->get();
+
         return $duplicatesCheckQuery->num_rows();
     }
 
@@ -135,8 +136,10 @@ class TemplateAdvisor
                 ->order_by('group_name', 'asc')
                 ->order_by('group_id', 'asc')
                 ->get();
+
             return $duplicatesQuery->result_array();
         }
+
         return array();
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -132,11 +133,11 @@ class Pro_variables_type
         }
 
         // Old encoded
-        if (substr($var, 0, 3) == 'YTo') {
+        if (substr((string) $var, 0, 3) == 'YTo') {
             $var = str_replace('_', '/', $var);
             $var = @unserialize(base64_decode($var));
         } else {
-            $var = json_decode($var, true);
+            $var = json_decode((string) $var, true);
         }
 
         // Make sure an array is returned
@@ -217,7 +218,7 @@ class Pro_variables_type
     public function settings($which = null, $default = null)
     {
         return ($which)
-            ? (array_key_exists($which, $this->settings) ? $this->settings[$which] : $default)
+            ? (array_key_exists((string) $which, $this->settings) ? $this->settings[$which] : $default)
             : $this->settings;
     }
 
@@ -312,7 +313,7 @@ class Pro_variables_type
             // First method: var_x
             if (method_exists($this->_ft, 'var_' . $fn)) {
                 $it = 'var_' . $fn;
-            } elseif (array_key_exists($fn, $this->_map) && method_exists($this->_ft, $this->_map[$fn])) {
+            } elseif (array_key_exists((string) $fn, $this->_map) && method_exists($this->_ft, $this->_map[$fn])) {
                 // Second method: old bridge methods
                 $it = $this->_map[$fn];
             } elseif ($this->call_ft('accepts_content_type', static::CONTENT_TYPE)) {
@@ -494,7 +495,7 @@ class Pro_variables_type
             $labels = PVUI::choices($this->settings('options'));
 
             // Empty data? No results
-            if (! strlen($this->data)) {
+            if (! strlen((string) $this->data)) {
                 return ee()->TMPL->no_results();
             }
 

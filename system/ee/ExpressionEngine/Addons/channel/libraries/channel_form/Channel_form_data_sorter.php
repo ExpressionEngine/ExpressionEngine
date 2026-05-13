@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -85,7 +86,7 @@ class Channel_form_data_sorter
             case '<>':
                 return $a <> $b;
             case 'in_array':
-                return in_array($a, is_array($b) ? $b : explode('|', $b));
+                return in_array($a, is_array($b) ? $b : explode('|', (string) $b));
         }
     }
 
@@ -98,7 +99,7 @@ class Channel_form_data_sorter
             return 0;
         }
 
-        $compare = (strtolower($this->direction) == 'desc') ? ($a < $b) : ($a > $b);
+        $compare = (strtolower((string) $this->direction) == 'desc') ? ($a < $b) : ($a > $b);
 
         return ($compare) ? 1 : -1;
     }

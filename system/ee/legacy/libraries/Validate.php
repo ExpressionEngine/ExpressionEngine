@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -108,19 +109,19 @@ class EE_Validate
 
         // Is username formatting correct?
         // Reserved characters:  |  "  '  !
-        if (preg_match("/[\|'\"!<>\{\}]/", $this->username)) {
+        if (preg_match("/[\|'\"!<>\{\}]/", (string) $this->username)) {
             $this->errors[] = ee()->lang->line('invalid_characters_in_username');
         }
 
         // Is username min length correct?
         $len = ee()->config->item('un_min_len');
 
-        if (strlen($this->username) < $len) {
+        if (strlen((string) $this->username) < $len) {
             $this->errors[] = sprintf(lang('username_too_short'), $len);
         }
 
         // Is username max length correct?
-        if (strlen($this->username) > USERNAME_MAX_LENGTH) {
+        if (strlen((string) $this->username) > USERNAME_MAX_LENGTH) {
             $this->errors[] = ee()->lang->line('username_too_long');
         }
 
@@ -144,7 +145,7 @@ class EE_Validate
             // Is username taken?
             ee()->db->from('members');
             ee()->db->where('username = LOWER(' . ee()->db->escape($this->username) . ')', null, false);
-            ee()->db->where('LOWER(username) = ' . ee()->db->escape(strtolower($this->username)), null, false);
+            ee()->db->where('LOWER(username) = ' . ee()->db->escape(strtolower((string) $this->username)), null, false);
             $count = ee()->db->count_all_results();
 
             if ($count > 0) {
@@ -184,6 +185,7 @@ class EE_Validate
             foreach ($result->getErrors('screen_name') as $key => $error) {
                 $this->errors[] = $error;
             }
+
             return $this->errors;
         }
     }
@@ -219,6 +221,7 @@ class EE_Validate
             foreach ($result->getErrors('password_confirm') as $key => $error) {
                 $this->errors[] = lang('missmatched_passwords');
             }
+
             return $this->errors;
         }
     }

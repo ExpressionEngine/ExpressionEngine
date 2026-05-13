@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -373,7 +374,7 @@ class Member extends ContentModel
         if (REQ == 'CP') {
             if (isset($changed['password'])) {
                 // Did the hash length change? Then the algorithm changed
-                $password_change_type = (strlen($changed['password']) != strlen($this->password)) ? 'member_hash_algo_changed' : 'member_changed_password';
+                $password_change_type = (strlen($changed['password']) != strlen((string) $this->password)) ? 'member_hash_algo_changed' : 'member_changed_password';
 
                 ee()->logger->log_action(sprintf(
                     lang($password_change_type),
@@ -413,7 +414,7 @@ class Member extends ContentModel
         }
 
         if (isset($changed['password'])) {
-            if (strlen($changed['password']) == strlen($this->password)) {
+            if (strlen($changed['password']) == strlen((string) $this->password)) {
                 // email the current email address telling them their password changed
                 $this->notifyOfChanges('password_changed_notification', $this->email);
             }
@@ -440,7 +441,7 @@ class Member extends ContentModel
     public function onAfterSave()
     {
         parent::onAfterSave();
-        ee()->cache->file->delete('jumpmenu/' . md5($this->member_id));
+        ee()->cache->file->delete('jumpmenu/' . md5((string) $this->member_id));
     }
 
     public function onAfterDelete()
@@ -950,7 +951,7 @@ class Member extends ContentModel
      */
     public function isAnonymized()
     {
-        return (bool) preg_match('/^redacted\d+$/', $this->email);
+        return (bool) preg_match('/^redacted\d+$/', (string) $this->email);
     }
 
     /**
@@ -1183,7 +1184,7 @@ class Member extends ContentModel
 
         $permissions = $this->getPermissions();
 
-        return array_key_exists($permission, $permissions);
+        return array_key_exists((string) $permission, $permissions);
     }
 
     /**

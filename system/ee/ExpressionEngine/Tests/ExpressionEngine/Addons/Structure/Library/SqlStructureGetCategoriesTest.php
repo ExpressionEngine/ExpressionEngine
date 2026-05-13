@@ -45,18 +45,19 @@ class SqlStructureGetCategoriesTest extends TestCase
         );
         $this->assertSame(1, $result['result_array_calls']);
         $this->assertStringContainsString('Undefined variable', $result['output']);
-        $this->assertStringContainsString('sql.structure.php on line 91', $result['output']);
+        $this->assertStringContainsString(
+            'sql.structure.php on line ' . $result['line_numbers']['warning_line'],
+            $result['output']
+        );
 
         $lineCoverage = $result['lines'] ?? [];
 
         if (($result['xdebug_available'] ?? false) && ! empty($lineCoverage)) {
-            $this->assertSame(1, $lineCoverage['83'] ?? null);
-            $this->assertSame(1, $lineCoverage['85'] ?? null);
-            $this->assertSame(1, $lineCoverage['87'] ?? null);
-            $this->assertSame(1, $lineCoverage['90'] ?? null);
-            $this->assertSame(1, $lineCoverage['91'] ?? null);
-            $this->assertSame(1, $lineCoverage['92'] ?? null);
-            $this->assertSame(-2, $lineCoverage['94'] ?? null);
+            foreach (['sql_line', 'query_line', 'result_array_line', 'header_line', 'warning_line'] as $lineKey) {
+                $this->assertSame(1, $lineCoverage[$result['line_numbers'][$lineKey]] ?? null);
+            }
+
+            $this->assertSame(-2, $lineCoverage[$result['line_numbers']['return_line']] ?? null);
             $this->assertSame(1, $result['branches'][0]['hit'] ?? null);
         }
     }

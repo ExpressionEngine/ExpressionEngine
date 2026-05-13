@@ -1,5 +1,5 @@
 <?php
-$message = sprintf(lang('replaced_x_with_y'), htmlspecialchars($feedback['keywords']), htmlspecialchars($feedback['replacement']));
+$message = sprintf(lang('replaced_x_with_y'), htmlspecialchars((string) $feedback['keywords']), htmlspecialchars((string) $feedback['replacement']));
 if ($feedback['total_entries'] == 1) {
     $message .= lang('in_1_entry');
 } else {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -28,24 +29,27 @@ class ValidPassword extends ValidationRule
         $pw_length = ee()->config->item('pw_min_len');
         if (strlen($password) < $pw_length) {
             $this->last_error = sprintf(lang('password_too_short'), $pw_length);
+
             return false;
         }
 
         // Is password max length correct?
         if (strlen($password) > PASSWORD_MAX_LENGTH) {
             $this->last_error = 'password_too_long';
+
             return false;
         }
 
         //  Username may not be set if resetting password
         if (! empty($this->all_values['username'])) {
             //  Make UN/PW lowercase for testing
-            $lc_user = strtolower($this->all_values['username']);
+            $lc_user = strtolower((string) $this->all_values['username']);
             $lc_pass = strtolower($password);
             $nm_pass = strtr($lc_pass, 'elos', '3105');
 
             if ($lc_user == $lc_pass or $lc_user == strrev($lc_pass) or $lc_user == $nm_pass or $lc_user == strrev($nm_pass)) {
                 $this->last_error = 'password_based_on_username';
+
                 return false;
             }
         }
@@ -59,6 +63,7 @@ class ValidPassword extends ValidationRule
                 foreach ($word_file as $word) {
                     if (trim(strtolower($word)) == $lc_pass) {
                         $this->last_error = 'password_in_dictionary';
+
                         return false;
                     }
                 }

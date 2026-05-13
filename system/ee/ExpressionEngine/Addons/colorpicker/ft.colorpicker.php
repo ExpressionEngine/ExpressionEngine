@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ExpressionEngine (https://expressionengine.com)
  *
@@ -49,7 +50,7 @@ class Colorpicker_ft extends EE_Fieldtype
      */
     public function validate($value)
     {
-        $value = trim($value);
+        $value = trim((string) $value);
 
         if ($value == '') {
             return true;
@@ -96,7 +97,7 @@ class Colorpicker_ft extends EE_Fieldtype
         if (REQ != 'CP') {
             $swatches = $this->getSwatches();
 
-            if(empty($swatches)) {
+            if (empty($swatches)) {
                 return '<input type="color" name="' . $this->field_name . '" value="' . $data . '" />';
             }
 
@@ -168,8 +169,8 @@ class Colorpicker_ft extends EE_Fieldtype
         $collection = [];
 
         foreach ($swatches as $swatch) {
-            if (strpos($swatch, '|') !== false) {
-                $parts = explode('|', $swatch);
+            if (strpos((string) $swatch, '|') !== false) {
+                $parts = explode('|', (string) $swatch);
                 $collection[$parts[0]] = $parts[1];
             }
         }
@@ -349,7 +350,7 @@ class Colorpicker_ft extends EE_Fieldtype
         if ($this->get_setting('populate_swatches') == 'm') {
             $manual_colors = [];
 
-            foreach (explode("\n", $this->get_setting('manual_swatches')) as $color) {
+            foreach (explode("\n", (string) $this->get_setting('manual_swatches')) as $color) {
                 $manual_colors[] = trim($color);
             }
 
@@ -359,8 +360,8 @@ class Colorpicker_ft extends EE_Fieldtype
             $collection = [];
 
             foreach ($swatches as $swatch) {
-                if (strpos($swatch, '|') !== false) {
-                    $parts = explode('|', $swatch);
+                if (strpos((string) $swatch, '|') !== false) {
+                    $parts = explode('|', (string) $swatch);
                     $collection[] = $parts[0];
                 } else {
                     $collection[] = $swatch;
@@ -407,8 +408,8 @@ class Colorpicker_ft extends EE_Fieldtype
                 if (is_array($color)) {
                     $name = $color['name'];
                     $color = $color['color'];
-                } elseif (strpos($color, '|') !== false) {
-                    $parts = explode('|', $color);
+                } elseif (strpos((string) $color, '|') !== false) {
+                    $parts = explode('|', (string) $color);
                     $color = $parts[0];
                     $name = $parts[1];
                 }

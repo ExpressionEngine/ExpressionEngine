@@ -57,10 +57,10 @@ if (AJAX_REQUEST) {
 
     <?php if (!empty($errors)):
         foreach ($errors->getFailed() as $fieldName => $item) {
-            if (strpos($fieldName, 'condition') !== 0) {
+            if (strpos((string) $fieldName, 'condition') !== 0) {
                 continue;
             }
-            $fl_array = preg_match_all("/\[(.*?)\]/", $fieldName, $found);
+            $fl_array = preg_match_all("/\[(.*?)\]/", (string) $fieldName, $found);
             $setId = $found[1][0];
             $rowId = $found[1][1];
 

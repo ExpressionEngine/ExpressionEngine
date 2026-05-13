@@ -25,8 +25,8 @@
                             <div class="list-item list-item--action">
                                 <a class="list-item__content" href="<?=$row['edit_entry_url']?>">
                                     <div class="list-item__title">
-                                        <?=htmlspecialchars($channels[$row['channel_id']]['channel_title'])?>:
-                                        <b><?=htmlspecialchars($row['title'])?></b>
+                                        <?=htmlspecialchars((string) $channels[$row['channel_id']]['channel_title'])?>:
+                                        <b><?=htmlspecialchars((string) $row['title'])?></b>
                                     </div>
                                     <div class="list-item__secondary">
                                         <dl>

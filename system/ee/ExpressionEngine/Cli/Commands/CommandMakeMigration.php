@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -214,7 +215,7 @@ class CommandMakeMigration extends Cli
     {
         $action = $this->ask(lang('command_make_migration_ask_migration_action') . ' (generic/create/update)?', $this->migrationAction);
 
-        $action = trim(strtolower($action));
+        $action = trim(strtolower((string) $action));
 
         if (in_array($action, array('create', 'update', 'generic'))) {
             $this->migrationAction = $action;
@@ -241,7 +242,7 @@ class CommandMakeMigration extends Cli
     {
         $category = $this->ask(lang('command_make_migration_ask_migration_category') . ' (generic/table)?', $this->migrationCategory);
 
-        $category = trim(strtolower($category));
+        $category = trim(strtolower((string) $category));
 
         if (in_array($category, array('table', 'status', 'generic'))) {
             $this->migrationCategory = $category;

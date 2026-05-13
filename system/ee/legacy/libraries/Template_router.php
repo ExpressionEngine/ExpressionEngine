@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -8,7 +9,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-use  ExpressionEngine\Model\Template\TemplateRoute;
+use ExpressionEngine\Model\Template\TemplateRoute;
 
 /**
  * Template Router
@@ -41,7 +42,7 @@ class EE_Template_Router extends CI_Router
         }
 
         foreach ($this->end_points as $route => $end_point) {
-            if (preg_match_all("/$route/i", $request, $matches) == 1) {
+            if (preg_match_all("/$route/i", (string) $request, $matches) == 1) {
                 $route = $this->fetch_route($end_point['group'], $end_point['template']);
 
                 return new EE_Route_match($end_point, $matches, $route);
@@ -64,7 +65,7 @@ class EE_Template_Router extends CI_Router
 
         if (! empty($config)) {
             foreach ($config as $template => $route) {
-                list($group_name, $template_name) = explode('/', $template);
+                list($group_name, $template_name) = explode('/', (string) $template);
                 $route_parsed = new EE_Route($route);
 
                 $this->end_points[$route_parsed->compile()] = array(

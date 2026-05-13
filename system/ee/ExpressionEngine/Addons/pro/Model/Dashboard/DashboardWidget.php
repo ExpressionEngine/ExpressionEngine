@@ -171,15 +171,17 @@ class DashboardWidget extends Model
                     return $html; // addon does not exist
                 }
                 include_once($file_path);
-                $widgetClass = trim($this->_addon->getProvider()->getNamespace(), '\\') . '\\Widgets\\' . ucfirst($this->widget_file);
+                $widgetClass = trim((string) $this->_addon->getProvider()->getNamespace(), '\\') . '\\Widgets\\' . ucfirst((string) $this->widget_file);
                 if (!$this->_addon::implementsDashboardWidgetInterface($widgetClass)) {
                     return $html;
                 }
+
                 try {
                     $widget = new $widgetClass($this, $edit_mode, $enabled);// we will load the widget instance into contructor
                     $html = $widget->getHtml();
                 } catch (\Throwable $e) {
                 }
+
                 break;
             case 'html':
             default:
@@ -194,8 +196,10 @@ class DashboardWidget extends Model
                 $html = $this->_parse_widget_declaration($html, $edit_mode, $enabled);
                 ee()->TMPL->parse($html, false, ee()->config->item('site_id'));
                 $html = ee()->TMPL->parse_globals(ee()->TMPL->final_template);
+
                 break;
         }
+
         return $html;
     }
 
@@ -246,7 +250,7 @@ class DashboardWidget extends Model
             'width' => '',
             'right_head' => ''
         ];
-        if (preg_match('/(' . LD . 'widget\s)(.*?)' . RD . '/s', $template, $declaration)) {
+        if (preg_match('/(' . LD . 'widget\s)(.*?)' . RD . '/s', (string) $template, $declaration)) {
             $template = str_replace($declaration[0], '', $template);
             foreach ($vars as $var_name => $var) {
                 if (preg_match('/(' . $var_name . '\s*=")(.*?)"/s', $declaration[2], $match)) {

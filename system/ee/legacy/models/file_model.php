@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -66,8 +67,8 @@ class File_model extends CI_Model
         if (! empty($parameters['date_start'])
             and ! empty($parameters['date_end'])
             and empty($parameters['date_range'])) {
-            $this->db->where('upload_date >=', strtotime($parameters['date_start']));
-            $this->db->where('upload_date <=', strtotime($parameters['date_end']));
+            $this->db->where('upload_date >=', strtotime((string) $parameters['date_start']));
+            $this->db->where('upload_date <=', strtotime((string) $parameters['date_end']));
         }
         // Date range based on number of days
         elseif (! empty($parameters['date_range'])) {
@@ -485,7 +486,7 @@ class File_model extends CI_Model
                 $allowed_type = array();
             }
 
-            $dir_name_length = strlen(reduce_double_slashes($directory)); // used to create relative paths below
+            $dir_name_length = strlen((string) reduce_double_slashes($directory)); // used to create relative paths below
 
             if ($directory_files) {
                 foreach ($directory_files as $file) {
@@ -499,7 +500,7 @@ class File_model extends CI_Model
                         reduce_double_slashes($file['relative_path']) :
                         reduce_double_slashes($directory);
 
-                    $file['encrypted_path'] = rawurlencode(ee('Encrypt')->encode($file['relative_path'] . $file['name'], ee()->config->item('session_crypt_key')));
+                    $file['encrypted_path'] = rawurlencode((string) ee('Encrypt')->encode($file['relative_path'] . $file['name'], ee()->config->item('session_crypt_key')));
 
                     $file['mime'] = ee('MimeType')->ofFile($file['relative_path'] . $file['name']);
 
@@ -515,7 +516,7 @@ class File_model extends CI_Model
                     }
 
                     // Add relative directory path information to name
-                    $file['name'] = substr($file['relative_path'], $dir_name_length) . $file['name'];
+                    $file['name'] = substr((string) $file['relative_path'], $dir_name_length) . $file['name'];
 
                     // Don't include server paths - useful for ajax requests
                     if ($hide_sensitive_data) {

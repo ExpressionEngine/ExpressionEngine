@@ -18,11 +18,11 @@
 
                     <?php foreach ($channels as $channel_id => $row) : ?>
                     <div class="pro-boxes">
-                        <h4><span><?=htmlspecialchars($row['channel_title'])?></span></h4>
+                        <h4><span><?=htmlspecialchars((string) $row['channel_title'])?></span></h4>
                         <?php foreach ($row['fields'] as $field_id => $field_name) : ?>
                             <label>
                                 <input type="checkbox" name="fields[<?=$channel_id?>][]" value="<?=$field_id?>" />
-                                <?=htmlspecialchars($field_name)?>
+                                <?=htmlspecialchars((string) $field_name)?>
                             </label>
                         <?php endforeach; ?>
                     </div>
@@ -40,7 +40,7 @@
 
                         <?php foreach ($categories as $group_id => $row) : ?>
                         <div class="pro-boxes">
-                            <h4><span><?=htmlspecialchars($row['group_name'])?></span></h4>
+                            <h4><span><?=htmlspecialchars((string) $row['group_name'])?></span></h4>
                             <?php foreach ($row['cats'] as $cat_id => $cat) : ?>
                                 <label>
                                     <?=$cat['indent']?>

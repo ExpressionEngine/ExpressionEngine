@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * This file is part of Aura for PHP.
@@ -113,7 +114,7 @@ class Formatter
      */
     protected function formatCallback(array $matches)
     {
-        $str = preg_replace('/(\s+)/msi', ';', $matches[1]);
+        $str = preg_replace('/(\s+)/msi', ';', (string) $matches[1]);
 
         return chr(27) . '[' . strtr($str, $this->codes) . 'm';
     }

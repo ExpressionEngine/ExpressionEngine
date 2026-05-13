@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -53,7 +54,7 @@ class Api_channel_form_channel_entries extends Api_channel_entries
         foreach ($data as $key => $value) {
             $fields = ee()->db->list_fields('channel_data');
 
-            if (preg_match('/^field_(id|ft|dt)/', $key) && ! in_array($key, $fields)) {
+            if (preg_match('/^field_(id|ft|dt)/', (string) $key) && ! in_array($key, $fields)) {
                 unset($data[$key]);
             }
         }

@@ -43,7 +43,7 @@ class Rte
                 $closed_parents = array();
 
                 foreach ($structure_data as $key => $entry_data) {
-                    if (in_array(strtolower($entry_data['status']), $exclude_status_list) || (isset($entry_data['parent_id']) && in_array($entry_data['parent_id'], $closed_parents))) {
+                    if (in_array(strtolower((string) $entry_data['status']), $exclude_status_list) || (isset($entry_data['parent_id']) && in_array($entry_data['parent_id'], $closed_parents))) {
                         $closed_parents[] = $entry_data['entry_id'];
                         unset($structure_data[$key]);
                     }

@@ -499,7 +499,7 @@ class Structure_upd
 
             foreach ($uris as $entry_id => $uri) {
                 if ($uri != "/") {
-                    $site_pages['uris'][$entry_id] = rtrim($uri, '/');
+                    $site_pages['uris'][$entry_id] = rtrim((string) $uri, '/');
                 }
             }
 
@@ -682,7 +682,7 @@ class Structure_upd
         $site_pages = $this->sql->get_site_pages();
 
         foreach ($site_pages['uris'] as $entry_id => $uri) {
-            $slug = explode('/', $uri);
+            $slug = explode('/', (string) $uri);
 
             // Knock the first and last elements off the array, they're blank.
             array_pop($slug);
@@ -780,11 +780,11 @@ class Structure_upd
                 continue;
             }
 
-            if (strpos($setting['var'], 'type_weblog_') !== false) {
+            if (strpos((string) $setting['var'], 'type_weblog_') !== false) {
                 $channel_id = str_replace('type_weblog_', '', $setting['var']);
                 $structure_channels[$channel_id]['channel_id'] = $channel_id;
                 $structure_channels[$channel_id]['type'] = $this->resolve_channel_type($setting['var_value']);
-            } elseif (strpos($setting['var'], 'template_weblog_') !== false) {
+            } elseif (strpos((string) $setting['var'], 'template_weblog_') !== false) {
                 $channel_id = str_replace('template_weblog_', '', $setting['var']);
                 $structure_channels[$channel_id]['channel_id'] = $channel_id;
                 $structure_channels[$channel_id]['template_id'] = $setting['var_value'];

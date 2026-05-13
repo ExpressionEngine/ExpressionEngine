@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -7,7 +8,6 @@
  * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -151,7 +151,7 @@ class Pro_search_params
 
             // If query is given (not FALSE or empty string), try and decode it
             // Also ignore pagination segment
-            if (! empty($query_param) && ! preg_match('/^P\d+$/', $query_param)) {
+            if (! empty($query_param) && ! preg_match('/^P\d+$/', (string) $query_param)) {
                 $query_val = pro_search_decode($query_param);
                 $this->_query = (empty($query_val)) ? false : $query_val;
             }
@@ -165,7 +165,7 @@ class Pro_search_params
 
                 // Strip slashes if < PHP 5.4
                 if (version_compare(PHP_VERSION, '5.4', '<')) {
-                    $val = stripslashes($val);
+                    $val = stripslashes((string) $val);
                 }
 
                 $this->_query[$key] = $val;
@@ -222,7 +222,7 @@ class Pro_search_params
     {
         foreach ($this->_tagparams as $key => &$val) {
             // Param should start with SELECT
-            if (! preg_match('/^(=?not |=|[<>]=?)?\s?(select .*?);(.*)$/i', $val, $match)) {
+            if (! preg_match('/^(=?not |=|[<>]=?)?\s?(select .*?);(.*)$/i', (string) $val, $match)) {
                 continue;
             }
 
@@ -521,8 +521,8 @@ class Pro_search_params
         }
 
         // Check for search fields and add parameter to either tagparams or search_fields
-        if (strpos($key, 'search:') === 0) {
-            $key = substr($key, 7);
+        if (strpos((string) $key, 'search:') === 0) {
+            $key = substr((string) $key, 7);
             $array = 'search_fields';
         } else {
             $array = 'tagparams';
@@ -560,7 +560,7 @@ class Pro_search_params
         }
 
         // Return two values in an array
-        return array(preg_split('/(&?&(?![\da-z]{2,6};|#\d{2,4};|#x[\da-f]{2,4};)|\|)/iu', $str), $in);
+        return array(preg_split('/(&?&(?![\da-z]{2,6};|#\d{2,4};|#x[\da-f]{2,4};)|\|)/iu', (string) $str), $in);
     }
 
     /**
@@ -593,7 +593,7 @@ class Pro_search_params
         // Prep the haystack
         if (! is_array($haystack)) {
             // Explode the param, forget about the 'not '
-            list($haystack, ) = $this->explode($haystack);
+            list($haystack) = $this->explode($haystack);
         }
 
         // Prep the needles
@@ -650,7 +650,7 @@ class Pro_search_params
             list($items, $in) = $this->explode($val);
 
             foreach ($items as &$item) {
-                if (substr($item, -2) != '\W') {
+                if (substr((string) $item, -2) != '\W') {
                     $item .= '\W';
                 }
             }
@@ -663,7 +663,7 @@ class Pro_search_params
         // --------------------------------------
 
         if ($this->in_param($key, 'require_all')) {
-            $amp = (substr($key, 0, 7) == 'search:') ? '&&' : '&';
+            $amp = (substr((string) $key, 0, 7) == 'search:') ? '&&' : '&';
             $val = str_replace('|', $amp, $val);
         }
 
@@ -682,7 +682,7 @@ class Pro_search_params
         );
 
         foreach ($prepend as $param => $str) {
-            if ($this->in_param($key, $param) && substr($val, 0, strlen($str)) != $str) {
+            if ($this->in_param($key, $param) && substr((string) $val, 0, strlen($str)) != $str) {
                 $val = $str . $val;
             }
         }
@@ -696,7 +696,7 @@ class Pro_search_params
         );
 
         foreach ($append as $param => $str) {
-            if ($this->in_param($key, $param) && substr($val, -strlen($str)) != $str) {
+            if ($this->in_param($key, $param) && substr((string) $val, -strlen($str)) != $str) {
                 $val = $val . $str;
             }
         }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -180,7 +181,7 @@ trait ModifiableTrait
      */
     public function replace_rot13($data, $params = array(), $tagdata = false)
     {
-        return str_rot13($data);
+        return str_rot13((string) $data);
     }
 
     /**

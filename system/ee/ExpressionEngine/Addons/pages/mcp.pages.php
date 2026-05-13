@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -103,7 +104,7 @@ class Pages_mcp
                     'name' => 'selection[]',
                     'value' => $entry_id,
                     'data' => array(
-                        'confirm' => lang('page') . ': <b>' . htmlentities($titles[$entry_id], ENT_QUOTES, 'UTF-8') . '</b>'
+                        'confirm' => lang('page') . ': <b>' . htmlentities((string) $titles[$entry_id], ENT_QUOTES, 'UTF-8') . '</b>'
                     )
                 );
 
@@ -198,7 +199,7 @@ class Pages_mcp
         $lookup = array();
 
         foreach ($pages[$site_id]['uris'] as $entry_id => $uri) {
-            $lookup[trim($uri, '/')] = $entry_id;
+            $lookup[trim((string) $uri, '/')] = $entry_id;
         }
 
         $entries = ee('Model')->get('ChannelEntry', array_values($lookup))
@@ -221,7 +222,7 @@ class Pages_mcp
             $page = array(
                 'id' => $entry_id,
                 'parent_id' => null,
-                'title' => htmlentities($titles[$entry_id], ENT_QUOTES, 'UTF-8'),
+                'title' => htmlentities((string) $titles[$entry_id], ENT_QUOTES, 'UTF-8'),
                 'uri' => $uri
             );
 
@@ -400,7 +401,7 @@ class Pages_mcp
         foreach ($_POST as $key => $value) {
             if ($key == 'homepage_display' && in_array($value, array('nested', 'not_nested'))) {
                 $data[$key] = $value;
-            } elseif (is_numeric($value) && $value != '0' && ($key == 'default_channel' or substr($key, 0, strlen('template_channel_')) == 'template_channel_')) {
+            } elseif (is_numeric($value) && $value != '0' && ($key == 'default_channel' or substr((string) $key, 0, strlen('template_channel_')) == 'template_channel_')) {
                 $data[$key] = $value;
             }
         }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -127,9 +128,10 @@ class LivePreview
         foreach ($entry->getStructure()->getAllCustomFields() as $field) {
             $key = 'field_id_' . $field->getId();
             if (array_key_exists($key, $_POST) && !empty($data[$key])) {
-                $ftClass = ucfirst($field->field_type) . '_ft';
+                $ftClass = ucfirst((string) $field->field_type) . '_ft';
                 ee()->api_channel_fields->include_handler($field->field_type);
                 $justTheFt = new $ftClass();
+
                 try {
                     $saved = $justTheFt->save($_POST[$key]);
                     if (!empty($saved)) {
@@ -162,7 +164,7 @@ class LivePreview
 
         if (! empty($_POST['pages__pages_uri']) &&
             ! empty($_POST['pages__pages_template_id'])
-           ) {
+        ) {
             //pages data passed with POST
             $values = [
                 'pages_uri' => $_POST['pages__pages_uri'],

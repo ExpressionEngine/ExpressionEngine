@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -120,7 +121,7 @@ class Members extends Jumps
 
         if (!empty($searchString)) {
             // Break the search string into individual keywords so we can partially match them.
-            $keywords = explode(' ', $searchString);
+            $keywords = explode(' ', (string) $searchString);
 
             foreach ($keywords as $keyword) {
                 $fields->filter('m_field_label', 'LIKE', '%' . ee()->db->escape_like_str($keyword) . '%');
@@ -136,7 +137,7 @@ class Members extends Jumps
 
         if (!empty($searchString)) {
             // Break the search string into individual keywords so we can partially match them.
-            $keywords = explode(' ', $searchString);
+            $keywords = explode(' ', (string) $searchString);
 
             foreach ($keywords as $keyword) {
                 $roles->filter('name', 'LIKE', '%' . ee()->db->escape_like_str($keyword) . '%');
@@ -152,7 +153,7 @@ class Members extends Jumps
 
         if (!empty($searchString)) {
             // Break the search string into individual keywords so we can partially match them.
-            $keywords = explode(' ', $searchString);
+            $keywords = explode(' ', (string) $searchString);
 
             foreach ($keywords as $keyword) {
                 $members->filter('username', 'LIKE', '%' . ee()->db->escape_like_str($keyword) . '%');

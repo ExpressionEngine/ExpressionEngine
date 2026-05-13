@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -330,12 +331,12 @@ class CI_DB_utility extends CI_DB_forge
         // Was a Zip file requested?
         if ($prefs['format'] == 'zip') {
             // If they included the .zip file extension we'll remove it
-            if (preg_match("|.+?\.zip$|", $prefs['filename'])) {
+            if (preg_match("|.+?\.zip$|", (string) $prefs['filename'])) {
                 $prefs['filename'] = str_replace('.zip', '', $prefs['filename']);
             }
 
             // Tack on the ".sql" file extension if needed
-            if (! preg_match("|.+?\.sql$|", $prefs['filename'])) {
+            if (! preg_match("|.+?\.sql$|", (string) $prefs['filename'])) {
                 $prefs['filename'] .= '.sql';
             }
 

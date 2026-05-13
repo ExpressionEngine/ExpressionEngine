@@ -201,7 +201,7 @@ class Block_and_allow_mcp
 
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {
-                $old_values = explode('|', trim($row['blockedlist_value']));
+                $old_values = explode('|', trim((string) $row['blockedlist_value']));
                 for ($i = 0, $s = count($old_values); $i < $s; $i++) {
                     if (trim($old_values[$i]) != '') {
                         $old[$row['blockedlist_type']][] = preg_quote($old_values[$i]);
@@ -225,9 +225,9 @@ class Block_and_allow_mcp
             $old['ip'] = array_slice($old['ip'], 50);
         }
 
-        $site = parse_url(ee()->config->item('site_url'));
+        $site = parse_url((string) ee()->config->item('site_url'));
 
-        $domain = (! ee()->config->item('cookie_domain')) ? '' : 'SetEnvIfNoCase Referer ".*(' . preg_quote(ee()->config->item('cookie_domain')) . ').*" GoodHost' . $this->LB;
+        $domain = (! ee()->config->item('cookie_domain')) ? '' : 'SetEnvIfNoCase Referer ".*(' . preg_quote((string) ee()->config->item('cookie_domain')) . ').*" GoodHost' . $this->LB;
 
         $domain .= 'SetEnvIfNoCase Referer "^$" GoodHost' . $this->LB;  // If no referrer, they be safe!
 
@@ -324,7 +324,7 @@ class Block_and_allow_mcp
 
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {
-                $old_values = explode('|', $row['blockedlist_value']);
+                $old_values = explode('|', (string) $row['blockedlist_value']);
                 for ($i = 0; $i < count($old_values); $i++) {
                     $old[$row['blockedlist_type']][] = $old_values[$i];
                 }
@@ -339,7 +339,7 @@ class Block_and_allow_mcp
 
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {
-                $white_values = explode('|', $row['allowedlist_value']);
+                $white_values = explode('|', (string) $row['allowedlist_value']);
                 for ($i = 0; $i < count($white_values); $i++) {
                     if (trim($white_values[$i]) != '') {
                         $white[$row['allowedlist_type']][] = ee()->db->escape_str($white_values[$i]);
@@ -417,7 +417,7 @@ class Block_and_allow_mcp
 
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {
-                $old_values = explode('|', $row['allowedlist_value']);
+                $old_values = explode('|', (string) $row['allowedlist_value']);
                 for ($i = 0; $i < count($old_values); $i++) {
                     $old[$row['allowedlist_type']][] = $old_values[$i];
                 }
@@ -504,9 +504,9 @@ class Block_and_allow_mcp
         // Array of our returned info
         $remote_info = ee()->xmlrpc->display_response();
 
-        $new['url'] = (! isset($remote_info['urls']) || strlen($remote_info['urls']) == 0) ? array() : explode('|', $remote_info['urls']);
-        $new['agent'] = (! isset($remote_info['agents']) || strlen($remote_info['agents']) == 0) ? array() : explode('|', $remote_info['agents']);
-        $new['ip'] = (! isset($remote_info['ips']) || strlen($remote_info['ips']) == 0) ? array() : explode('|', $remote_info['ips']);
+        $new['url'] = (! isset($remote_info['urls']) || strlen($remote_info['urls']) == 0) ? array() : explode('|', (string) $remote_info['urls']);
+        $new['agent'] = (! isset($remote_info['agents']) || strlen($remote_info['agents']) == 0) ? array() : explode('|', (string) $remote_info['agents']);
+        $new['ip'] = (! isset($remote_info['ips']) || strlen($remote_info['ips']) == 0) ? array() : explode('|', (string) $remote_info['ips']);
 
         //  Add current list
         $query = ee()->db->get("{$listtype}list");
@@ -516,7 +516,7 @@ class Block_and_allow_mcp
 
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {
-                $old_values = explode('|', $row["{$listtype}list_value"]);
+                $old_values = explode('|', (string) $row["{$listtype}list_value"]);
                 for ($i = 0; $i < count($old_values); $i++) {
                     $old[$row["{$listtype}list_type"]][] = $old_values[$i];
                 }
@@ -531,7 +531,7 @@ class Block_and_allow_mcp
 
         if ($query->num_rows() > 0) {
             foreach ($query->result_array() as $row) {
-                $white_values = explode('|', $row['allowedlist_value']);
+                $white_values = explode('|', (string) $row['allowedlist_value']);
                 for ($i = 0; $i < count($white_values); $i++) {
                     if (trim($white_values[$i]) != '') {
                         $white[$row['allowedlist_type']][] = $white_values[$i];

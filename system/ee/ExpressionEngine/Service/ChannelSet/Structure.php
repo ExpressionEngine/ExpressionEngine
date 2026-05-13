@@ -84,7 +84,7 @@ class Structure
     {
         $name = $model->getName();
 
-        if (array_key_exists($name, static::$hierarchy)) {
+        if (array_key_exists((string) $name, static::$hierarchy)) {
             return array_keys(static::$hierarchy[$name]);
         }
 
@@ -101,7 +101,7 @@ class Structure
     {
         $name = $model->getName();
 
-        if (array_key_exists($name, static::$title_fields)) {
+        if (array_key_exists((string) $name, static::$title_fields)) {
             return static::$title_fields[$name];
         }
 
@@ -122,7 +122,7 @@ class Structure
     {
         $name = $model->getName();
 
-        if (array_key_exists($name, static::$identity_fields)) {
+        if (array_key_exists((string) $name, static::$identity_fields)) {
             return static::$identity_fields[$name];
         }
 
@@ -144,7 +144,7 @@ class Structure
     {
         $name = $model->getName();
 
-        if (array_key_exists($name, static::$short_names)) {
+        if (array_key_exists((string) $name, static::$short_names)) {
             if (array_key_exists($field, static::$short_names[$name])) {
                 return static::$short_names[$name][$field];
             }

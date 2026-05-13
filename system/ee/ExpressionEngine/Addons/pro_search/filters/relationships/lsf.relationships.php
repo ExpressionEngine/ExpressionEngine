@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -7,7 +8,6 @@
  * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -63,7 +63,7 @@ class Pro_search_filter_relationships extends Pro_search_filter
 
         foreach ($rels as $key => $val) {
             // Split param into [child|parent] [field_name]
-            list($type, $field) = explode(':', $key, 2);
+            list($type, $field) = explode(':', (string) $key, 2);
 
             // Initiate some variables
             $field_id = $table = $grid = $col_id = $col_type = false;
@@ -135,7 +135,7 @@ class Pro_search_filter_relationships extends Pro_search_filter
                 list($ids, $in) = $this->params->explode($val);
 
                 // Match all?
-                $all = (bool) strpos($val, '&');
+                $all = (bool) strpos((string) $val, '&');
 
                 // Check if $ids are numeric
                 if (! pro_array_is_numeric($ids)) {

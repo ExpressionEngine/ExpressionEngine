@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -294,7 +295,7 @@ class EE_Session
         }
 
         $match = (string) $match;
-        foreach (explode('|', $ban) as $val) {
+        foreach (explode('|', (string) $ban) as $val) {
             if ($val == '*') {
                 continue;
             }
@@ -389,7 +390,7 @@ class EE_Session
 
         $this->sdata['session_id'] = ee()->functions->random();
         $this->sdata['ip_address'] = ee()->input->ip_address();
-        $this->sdata['user_agent'] = substr(ee()->input->user_agent(), 0, 120);
+        $this->sdata['user_agent'] = substr((string) ee()->input->user_agent(), 0, 120);
         $this->sdata['member_id'] = (int) $member_id;
         $this->sdata['last_activity'] = ee()->localize->now;
         $this->sdata['sess_start'] = $this->sdata['last_activity'];
@@ -648,7 +649,7 @@ class EE_Session
         $this->userdata['mfa_enabled'] = $this->member_model->enable_mfa;
 
         // Create the array for the Ignore List
-        $this->userdata['ignore_list'] = ($this->userdata['ignore_list'] == '') ? array() : explode('|', $this->userdata['ignore_list']);
+        $this->userdata['ignore_list'] = ($this->userdata['ignore_list'] == '') ? array() : explode('|', (string) $this->userdata['ignore_list']);
 
         // Fix the values for forum posts and replies
         $this->userdata['total_forum_posts'] = $member_query->row('total_forum_topics') + $member_query->row('total_forum_posts') ;
@@ -804,7 +805,7 @@ class EE_Session
         // all IPv4 go to IPv6 mapped
         $addr = ee()->input->ip_address();
 
-        if (strpos($addr, ':') === false && strpos($addr, '.') !== false) {
+        if (strpos((string) $addr, ':') === false && strpos((string) $addr, '.') !== false) {
             $addr = '::' . $addr;
         }
 
@@ -907,7 +908,7 @@ class EE_Session
         $tracker = ee()->input->cookie('tracker');
 
         if ($tracker != false) {
-            $tracker = json_decode($tracker, true);
+            $tracker = json_decode((string) $tracker, true);
         }
 
         if (! is_array($tracker)) {
@@ -946,8 +947,8 @@ class EE_Session
 
             if (! isset($tracker['0'])) {
                 $tracker[] = $uri;
-            // Do not track requests inside the themes folder
-            } else if(strpos($uri, 'themes/') !== 0) {
+                // Do not track requests inside the themes folder
+            } elseif (strpos($uri, 'themes/') !== 0) {
                 if (count($tracker) == 5) {
                     array_pop($tracker);
                 }
@@ -1110,9 +1111,9 @@ class EE_Session
     public function _age_flashdata()
     {
         foreach ($this->flashdata as $key => $val) {
-            if (strpos($key, ':old:') !== 0) {
-                if (strpos($key, ':new:') === 0) {
-                    $this->flashdata[substr($key, 5)] = $val;
+            if (strpos((string) $key, ':old:') !== 0) {
+                if (strpos((string) $key, ':new:') === 0) {
+                    $this->flashdata[substr((string) $key, 5)] = $val;
                 } else {
                     $this->flashdata[':old:' . $key] = $val;
                 }
@@ -1131,8 +1132,8 @@ class EE_Session
     public function benjaminButtonFlashdata()
     {
         foreach ($this->flashdata as $key => $val) {
-            if (strpos($key, ':new:') === false &&
-                strpos($key, ':old:') === false) {
+            if (strpos((string) $key, ':new:') === false &&
+                strpos((string) $key, ':old:') === false) {
                 $this->flashdata[':new:' . $key] = $val;
             }
 
@@ -1162,7 +1163,8 @@ class EE_Session
 
                         break;
                     case 'bounce':
-                        ee()->functions->redirect(ee()->config->item('ban_destination')); exit;
+                        ee()->functions->redirect(ee()->config->item('ban_destination'));
+                        exit;
 
                         break;
                     default:
@@ -1246,7 +1248,7 @@ class EE_Session
             'admin_sess' => 0,
             'mfa_flag' => 'skip',
             'ip_address' => ee()->input->ip_address(),
-            'user_agent' => substr(ee()->input->user_agent(), 0, 120),
+            'user_agent' => substr((string) ee()->input->user_agent(), 0, 120),
             'last_activity' => 0,
             'sess_start' => 0
         );

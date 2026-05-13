@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -210,7 +211,7 @@ class Pro_variables_mcp
                 $obj = $this->types->get($var);
 
                 // Split by 3 newlines to seperate var header from description
-                $tmp = explode("\n\n\n", $var['variable_notes'], 2);
+                $tmp = explode("\n\n\n", (string) $var['variable_notes'], 2);
 
                 // If we have a header, overwrite $section var
                 if (count($tmp) == 2) {
@@ -230,8 +231,8 @@ class Pro_variables_mcp
                 }
 
                 // Add optional error to attributes
-                if (array_key_exists($obj->id(), $skipped)) {
-                    $attrs['data-error'] = htmlspecialchars(lang($skipped[$obj->id()]), ENT_QUOTES);
+                if (array_key_exists((string) $obj->id(), $skipped)) {
+                    $attrs['data-error'] = htmlspecialchars((string) lang($skipped[$obj->id()]), ENT_QUOTES);
                     $labels[] = '<li>' . ($var['variable_label'] ?: $var['variable_name']) . '</li>';
                 }
 
@@ -273,7 +274,7 @@ class Pro_variables_mcp
                 $clear = ee()->pro_variables_settings->get('clear_cache');
 
                 // Opt in for clear cache
-                if (substr($clear, 0, 1) == 'o') {
+                if (substr((string) $clear, 0, 1) == 'o') {
                     $buttons[] = array(
                         'name' => 'clear_cache',
                         'type' => 'submit',
@@ -538,7 +539,7 @@ class Pro_variables_mcp
             );
 
             // Type
-            $type = array_key_exists($var['variable_type'], $types)
+            $type = array_key_exists((string) $var['variable_type'], $types)
                 ? $var['variable_type']
                 : ($var['variable_type'] == 'pro_rte' ? 'rte' : Pro_variables_types::DEFAULT_TYPE);
 
@@ -569,7 +570,7 @@ class Pro_variables_mcp
                 'name'  => 'variable_id[]',
                 'value' => $id,
                 'data'  => array(
-                    'confirm' => htmlspecialchars($var['variable_name'], ENT_QUOTES)
+                    'confirm' => htmlspecialchars((string) $var['variable_name'], ENT_QUOTES)
                 )
             );
 
@@ -662,7 +663,7 @@ class Pro_variables_mcp
                 // Delete confirmation should be handled by EE
                 $this->delete($vars);
                 $msg = 'pro_variables_deleted';
-            } elseif (array_key_exists($action, $types)) {
+            } elseif (array_key_exists((string) $action, $types)) {
                 $data['variable_type'] = $action;
             } elseif ($action == 'show') {
                 $data['is_hidden'] = 'n';
@@ -1015,7 +1016,7 @@ class Pro_variables_mcp
         // -------------------------------------
 
         // Determine fallback
-        $type = array_key_exists($var['variable_type'], $types)
+        $type = array_key_exists((string) $var['variable_type'], $types)
             ? $var['variable_type']
             : ($var['variable_type'] == 'pro_rte' ? 'rte' : Pro_variables_types::DEFAULT_TYPE);
 
@@ -1650,7 +1651,7 @@ class Pro_variables_mcp
         // Clean up suffix
         // -------------------------------------
 
-        $suffix = trim(preg_replace('/[^\w\-_:]/', '', $suffix), '_');
+        $suffix = trim((string) preg_replace('/[^\w\-_:]/', '', (string) $suffix), '_');
 
         // Still valid?
         if (! $suffix) {
@@ -1684,8 +1685,8 @@ class Pro_variables_mcp
         // -------------------------------------
 
         foreach ($rows as $row) {
-            if ($with_suffix == 'replace' && strpos($row['variable_name'], '_') !== false) {
-                $new_name = preg_replace('/_[0-9a-z]+$/i', "_{$suffix}", $row['variable_name']);
+            if ($with_suffix == 'replace' && strpos((string) $row['variable_name'], '_') !== false) {
+                $new_name = preg_replace('/_[0-9a-z]+$/i', "_{$suffix}", (string) $row['variable_name']);
             } else {
                 $new_name = $row['variable_name'] . '_' . $suffix;
             }
@@ -1822,9 +1823,9 @@ class Pro_variables_mcp
         // --------------------------------------
 
         $choices = array(
-            'n' => ucfirst(lang('no')),
+            'n' => ucfirst((string) lang('no')),
             'o' => lang('clear_cache_opt'),
-            'y' => ucfirst(lang('yes'))
+            'y' => ucfirst((string) lang('yes'))
         );
 
         $sections[0][] = array(
@@ -1833,7 +1834,7 @@ class Pro_variables_mcp
             'fields' => array(
                 'clear_cache' => array(
                     'type'    => 'select',
-                    'value'   => substr($this->settings->get('clear_cache'), 0, 1),
+                    'value'   => substr((string) $this->settings->get('clear_cache'), 0, 1),
                     'choices' => $choices
                 )
             )
@@ -1844,7 +1845,7 @@ class Pro_variables_mcp
         // --------------------------------------
 
         $choices = array(
-            'n' => ucfirst(lang('no')),
+            'n' => ucfirst((string) lang('no')),
             'y' => lang('register_globals_before'),
             'a' => lang('register_globals_after')
         );
@@ -2012,8 +2013,8 @@ class Pro_variables_mcp
         // Check path backslashes
         // -------------------------------------
 
-        if (strpos($settings['file_path'], '\\')) {
-            $settings['file_path'] = addslashes($settings['file_path']);
+        if (strpos((string) $settings['file_path'], '\\')) {
+            $settings['file_path'] = addslashes((string) $settings['file_path']);
         }
 
         // -------------------------------------
@@ -2100,7 +2101,7 @@ class Pro_variables_mcp
         if (! empty($extra)) {
             // convert to array
             if (! is_array($extra)) {
-                parse_str($extra, $extra);
+                parse_str((string) $extra, $extra);
             }
 
             // And add to the url
@@ -2205,7 +2206,7 @@ class Pro_variables_mcp
 
         // Loop through groups and add var count to them
         foreach ($groups as &$g) {
-            $g['var_count'] = array_key_exists($g['group_id'], $counts)
+            $g['var_count'] = array_key_exists((string) $g['group_id'], $counts)
                 ? $counts[$g['group_id']]
                 : 0;
         }

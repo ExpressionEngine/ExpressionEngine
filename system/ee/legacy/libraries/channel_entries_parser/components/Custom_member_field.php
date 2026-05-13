@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -128,7 +129,7 @@ class EE_Channel_custom_member_field_parser implements EE_Channel_parser_compone
             }
 
             // prevent accidental parsing of other channel variables in custom field data
-            if (strpos($entry, '{') !== false) {
+            if (strpos((string) $entry, '{') !== false) {
                 $entry = str_replace(
                     array('{', '}'),
                     array(unique_marker('channel_bracket_open'), unique_marker('channel_bracket_close')),

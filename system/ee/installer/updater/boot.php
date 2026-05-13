@@ -4,9 +4,10 @@
 date_default_timezone_set('UTC');
 
 $needFullBootstrap = isset($_GET['step']) &&
-(strpos($_GET['step'], 'backupDatabase') === 0 or
-    strpos($_GET['step'], 'updateDatabase') === 0 or
-    strpos($_GET['step'], 'selfDestruct') === 0 or
+(
+    strpos((string) $_GET['step'], 'backupDatabase') === 0 or
+    strpos((string) $_GET['step'], 'updateDatabase') === 0 or
+    strpos((string) $_GET['step'], 'selfDestruct') === 0 or
     in_array($_GET['step'], ['addLegacyFiles', 'checkForDbUpdates', 'restoreDatabase'])
 );
 if (file_exists(SYSPATH . 'ee/ExpressionEngine/Boot/boot.php') && $needFullBootstrap) {
@@ -58,7 +59,7 @@ ExpressionEngine\Updater\Core\Autoloader::getInstance()
  */
 
 if (REQ != 'CLI') {
-    if (strtoupper($_SERVER['REQUEST_METHOD']) !== 'POST') {
+    if (strtoupper((string) $_SERVER['REQUEST_METHOD']) !== 'POST') {
         exit('The updater folder is still present. Delete the folder at system/ee/updater to access the control panel.');
     }
 
@@ -82,7 +83,7 @@ if (REQ != 'CLI') {
 
 function routeRequest($directory, $controller, $method = '')
 {
-    $class = 'ExpressionEngine\Updater\Controller\\' . ucfirst($directory) . '\\' . ucfirst($controller);
+    $class = 'ExpressionEngine\Updater\Controller\\' . ucfirst((string) $directory) . '\\' . ucfirst((string) $controller);
 
     if (class_exists($class)) {
         $controller_methods = array_map(

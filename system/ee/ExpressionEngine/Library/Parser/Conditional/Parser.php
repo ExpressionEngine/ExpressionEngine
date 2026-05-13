@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -61,8 +62,8 @@ class Parser extends AbstractParser
         // If the output starts with \n and ends with \n remove just the first
         // and last (not trim() which will remove ALL); this is to remove any
         // whitespace we added with annotations
-        if ($out && $out[0] == "\n" && substr($out, -1) == "\n") {
-            $out = substr($out, 1);
+        if ($out && $out[0] == "\n" && substr((string) $out, -1) == "\n") {
+            $out = substr((string) $out, 1);
             $out = substr($out, 0, strlen($out) - 1);
         }
 
@@ -325,7 +326,7 @@ class Parser extends AbstractParser
     {
         $name = $this->value();
 
-        if (array_key_exists($name, $this->variables)) {
+        if (array_key_exists((string) $name, $this->variables)) {
             $value = $this->variables[$name];
 
             // can't do arrays
@@ -409,7 +410,7 @@ class Parser extends AbstractParser
      */
     protected function whitespace()
     {
-        if (! $this->ignore_whitespace && substr($this->output, -1) != ' ') {
+        if (! $this->ignore_whitespace && substr((string) $this->output, -1) != ' ') {
             $this->output(' ');
         }
     }
@@ -431,7 +432,7 @@ class Parser extends AbstractParser
         $out = array_pop($this->output_buffers);
         $this->initBuffer();
 
-        return $trim ? trim($out) : $out;
+        return $trim ? trim((string) $out) : $out;
     }
 
     /**
@@ -554,8 +555,8 @@ class Parser extends AbstractParser
         $location = $this->token->context;
         $lineno = $this->token->lineno;
 
-        if ($found_type != 'VARIABLE' && strlen($value) > 23) {
-            $value = substr($value, 0, 20) . '...';
+        if ($found_type != 'VARIABLE' && strlen((string) $value) > 23) {
+            $value = substr((string) $value, 0, 20) . '...';
         }
 
         if ($found_type == 'EOS') {

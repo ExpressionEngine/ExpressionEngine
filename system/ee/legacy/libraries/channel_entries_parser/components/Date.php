@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -66,7 +67,7 @@ class EE_Channel_date_parser implements EE_Channel_parser_component
 
         $offset = 0;
 
-        if (strtolower(ee()->TMPL->fetch_param('start_day')) == 'monday') {
+        if (strtolower((string) ee()->TMPL->fetch_param('start_day')) == 'monday') {
             $day_of_week = ee()->localize->format_date('%w', $data['entry_date']);
 
             if ($day_of_week == '0') {

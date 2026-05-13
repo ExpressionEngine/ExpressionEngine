@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -106,7 +107,7 @@ class Sql extends Utilities
             ee()->view->table_heading = sprintf(
                 lang('search_results_heading'),
                 $vars['table']['total_rows'],
-                htmlspecialchars($vars['table']['search'], ENT_QUOTES, 'UTF-8')
+                htmlspecialchars((string) $vars['table']['search'], ENT_QUOTES, 'UTF-8')
             );
         }
 
@@ -176,7 +177,7 @@ class Sql extends Utilities
         $table->setNoResultsText('no_tables_match');
         $vars['table'] = $table->viewData(ee('CP/URL')->make('utilities/sql/op-results'));
 
-        ee()->view->cp_page_title = lang(strtolower($action) . '_tables_results');
+        ee()->view->cp_page_title = lang(strtolower((string) $action) . '_tables_results');
         ee()->view->cp_breadcrumbs = array(
             ee('CP/URL')->make('utilities/sql')->compile() => lang('sql_manager'),
             '' => lang('results')

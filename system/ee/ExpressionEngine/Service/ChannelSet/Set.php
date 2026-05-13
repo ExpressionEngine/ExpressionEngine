@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -269,13 +270,13 @@ class Set
     private function assignFieldGroupsToChannels()
     {
         foreach ($this->assignments['previously_created_field_groups'] as $channel_title => $field_groups) {
-          $channel = $this->channels[$channel_title];
+            $channel = $this->channels[$channel_title];
 
-          $channel->FieldGroups = ee('Model')->get('ChannelFieldGroup')
-              ->filter('group_name', 'IN', $field_groups)
-              ->all();
+            $channel->FieldGroups = ee('Model')->get('ChannelFieldGroup')
+                ->filter('group_name', 'IN', $field_groups)
+                ->all();
 
-          $channel->save();
+            $channel->save();
         }
         unset($channel_title, $field_group_ids);
 
@@ -389,7 +390,7 @@ class Set
         $version = (isset($data->version)) ? $data->version : '3.0.0';
         $version = explode('.', $version);
 
-        $app_version = explode('.', ee()->config->item('app_version'));
+        $app_version = explode('.', (string) ee()->config->item('app_version'));
         if ($app_version[0] == 3 && $version[0] > $app_version[0]) {
             $this->result->addError(sprintf(lang('channel_set_incompatible'), $version[0]));
 

@@ -123,8 +123,8 @@ class General extends Settings\Pro
                         'fields' => [
                             'enable_mfa' => [
                                 'type' => 'yes_no',
-                                'disabled' => version_compare(PHP_VERSION, 7.1, '<'),
-                                'value' => version_compare(PHP_VERSION, 7.1, '<') ? 'n' : $settings['enable_mfa']
+                                'disabled' => version_compare(PHP_VERSION, '7.1', '<'),
+                                'value' => version_compare(PHP_VERSION, '7.1', '<') ? 'n' : $settings['enable_mfa']
                             ]
                         ]
                     ],

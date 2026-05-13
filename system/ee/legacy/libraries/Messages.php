@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -211,11 +212,11 @@ class EE_Messages
         if (count($this->conditionals) > 0) {
             foreach ($this->conditionals as $key => $value) {
                 if ($value == 'y') {
-                    $template = preg_replace("/\{if\s+" . $key . "\}(.+?)\{\/if\}/si", "\\1", $template);
-                    $template = preg_replace("/\{if\s+not_" . $key . "\}(.+?)\{\/if\}/si", '', $template);
+                    $template = preg_replace("/\{if\s+" . $key . "\}(.+?)\{\/if\}/si", "\\1", (string) $template);
+                    $template = preg_replace("/\{if\s+not_" . $key . "\}(.+?)\{\/if\}/si", '', (string) $template);
                 } else {
-                    $template = preg_replace("/\{if\s+" . $key . "\}.+?\{\/if\}/si", '', $template);
-                    $template = preg_replace("/\{if\s+not_" . $key . "\}(.+?)\{\/if\}/si", "\\1", $template);
+                    $template = preg_replace("/\{if\s+" . $key . "\}.+?\{\/if\}/si", '', (string) $template);
+                    $template = preg_replace("/\{if\s+not_" . $key . "\}(.+?)\{\/if\}/si", "\\1", (string) $template);
                 }
             }
         }
@@ -249,7 +250,7 @@ class EE_Messages
                             $user_input = array('subject', 'body', 'menu_items', 'current_folders', 'folder_name');
 
                             if ($key == 'input' && $key2 != 'body' && $key2 != 'folder_name') {
-                                $value2 = htmlspecialchars($value2, ENT_QUOTES);
+                                $value2 = htmlspecialchars((string) $value2, ENT_QUOTES);
                             }
 
                             if (in_array($key2, $user_input)) {
@@ -264,9 +265,9 @@ class EE_Messages
 
                     if (in_array($key, $user_input)) {
                         $value = ee()->functions->encode_ee_tags($value, true);
-                    } elseif ($key != 'title' && ! stristr($value, '<option')) {
+                    } elseif ($key != 'title' && ! stristr((string) $value, '<option')) {
                         // {title} is link title for message menu
-                        $value = htmlspecialchars($value, ENT_QUOTES);
+                        $value = htmlspecialchars((string) $value, ENT_QUOTES);
                     }
 
                     $template = str_replace(LD . $key . RD, $value, $template);
@@ -321,8 +322,8 @@ class EE_Messages
         /*  in our most precious Private Messages, and so we do a bit of conversion
         /* -----------------------------------*/
 
-        $this->return_data = preg_replace("/" . LD . "\s*path=(.*?)" . RD . "/", '&#123;path=\\1}', $this->return_data);
-        $this->return_data = preg_replace("#" . LD . "\s*(profile_path\s*=.*?)" . RD . "#", '&#123;\\1}', $this->return_data);
+        $this->return_data = preg_replace("/" . LD . "\s*path=(.*?)" . RD . "/", '&#123;path=\\1}', (string) $this->return_data);
+        $this->return_data = preg_replace("#" . LD . "\s*(profile_path\s*=.*?)" . RD . "#", '&#123;\\1}', (string) $this->return_data);
 
         /** -----------------------------------
         /**  Name to ID in Form Switch - Fixeroo
@@ -772,12 +773,12 @@ class EE_Messages
 
         // Check to see if the old style pagination exists
         // @deprecated 2.8
-        if (stripos($template, LD . 'if paginate' . RD) !== false) {
-            $template = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $template);
+        if (stripos((string) $template, LD . 'if paginate' . RD) !== false) {
+            $template = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", (string) $template);
             ee()->load->library('logger');
             ee()->logger->developer('{if paginate} has been deprecated, use normal {paginate} tags in your message folder template.', true, 604800);
         }
-        if (stripos($template, LD . 'include:pagination_link' . RD) !== false) {
+        if (stripos((string) $template, LD . 'include:pagination_link' . RD) !== false) {
             $template = str_replace('{include:pagination_link}', '{pagination_links}', $template);
             ee()->load->library('logger');
             ee()->logger->developer('{include:pagination_link} has been deprecated, use the {pagination_links} tag in your message folder template.', true, 604800);
@@ -839,12 +840,12 @@ class EE_Messages
             // This Requires Extra Queries and Processing
             // So We Only Do It When Those Variables Are Found
 
-            if (stristr($folder_rows_template, '{recipients}') !== false) {
-                $data['recipients'] = htmlspecialchars($this->convert_recipients($row['message_recipients']), ENT_QUOTES);
+            if (stristr((string) $folder_rows_template, '{recipients}') !== false) {
+                $data['recipients'] = htmlspecialchars((string) $this->convert_recipients($row['message_recipients']), ENT_QUOTES);
             }
 
-            if (stristr($folder_rows_template, '{cc}') !== false) {
-                $data['cc'] = htmlspecialchars($this->convert_recipients($row['message_cc']), ENT_QUOTES);
+            if (stristr((string) $folder_rows_template, '{cc}') !== false) {
+                $data['cc'] = htmlspecialchars((string) $this->convert_recipients($row['message_cc']), ENT_QUOTES);
             }
 
             $r .= $this->_process_template($folder_rows_template, $data);
@@ -883,7 +884,7 @@ class EE_Messages
                 if ($this->cur_id == '') {
                     $folder_id = 1;
                 } else {
-                    $x = explode('_', $this->cur_id);
+                    $x = explode('_', (string) $this->cur_id);
 
                     $folder_id = (! is_numeric($x['0'])) ? 1 : $x['0'];
                 }
@@ -975,12 +976,12 @@ class EE_Messages
 
         // Check to see if the old style pagination exists
         // @deprecated 2.8
-        if (stripos($template, LD . 'if paginate' . RD) !== false) {
-            $template = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $template);
+        if (stripos((string) $template, LD . 'if paginate' . RD) !== false) {
+            $template = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", (string) $template);
             ee()->load->library('logger');
             ee()->logger->developer('{if paginate} has been deprecated, use normal {paginate} tags in your message folder template.', true, 604800);
         }
-        if (stripos($template, LD . 'include:pagination_link' . RD) !== false) {
+        if (stripos((string) $template, LD . 'include:pagination_link' . RD) !== false) {
             $template = str_replace('{include:pagination_link}', '{pagination_links}', $template);
             ee()->load->library('logger');
             ee()->logger->developer('{include:pagination_link} has been deprecated, use the {pagination_links} tag in your message folder template.', true, 604800);
@@ -1029,7 +1030,7 @@ class EE_Messages
             $data = $row;
             $message_ids[] = $row['message_id'];
 
-            $data['message_subject'] = htmlentities($data['message_subject'], ENT_QUOTES, 'UTF-8');
+            $data['message_subject'] = htmlentities((string) $data['message_subject'], ENT_QUOTES, 'UTF-8');
             $data['msg_id'] = ($row['message_read'] == 'n') ? 'u' . $row['msg_id'] : $row['msg_id'];
             $data['message_date'] = ee()->localize->human_time($data['message_date']);
             $data['style'] = ($i % 2) ? 'tableCellTwo' : 'tableCellOne';
@@ -1061,12 +1062,12 @@ class EE_Messages
             // This Requires Extra Queries and Processing
             // So We Only Do It When Those Variables Are Found
 
-            if (stristr($folder_rows_template, '{recipients}') !== false) {
-                $data['recipients'] = htmlspecialchars($this->convert_recipients($row['message_recipients']), ENT_QUOTES);
+            if (stristr((string) $folder_rows_template, '{recipients}') !== false) {
+                $data['recipients'] = htmlspecialchars((string) $this->convert_recipients($row['message_recipients']), ENT_QUOTES);
             }
 
-            if (stristr($folder_rows_template, '{cc}') !== false) {
-                $data['cc'] = htmlspecialchars($this->convert_recipients($row['message_cc']), ENT_QUOTES);
+            if (stristr((string) $folder_rows_template, '{cc}') !== false) {
+                $data['cc'] = htmlspecialchars((string) $this->convert_recipients($row['message_cc']), ENT_QUOTES);
             }
 
             $r .= $this->_process_template($folder_rows_template, $data);
@@ -1229,7 +1230,7 @@ class EE_Messages
                 'heading' => ee()->lang->line('general_error'),
                 'content' => ee()->lang->line('nonexistent_page'),
                 'redirect' => '',
-                'link' => array(ee()->config->item('site_url'), stripslashes(ee()->config->item('site_name')))
+                'link' => array(ee()->config->item('site_url'), stripslashes((string) ee()->config->item('site_name')))
             );
 
             return ee()->output->show_message($data, 0);
@@ -1665,15 +1666,15 @@ DOH;
 
             if ($val[0] == 'u') {
                 $unread = true;
-                $val = substr($val, 1);
+                $val = substr((string) $val, 1);
             }
 
             if (ee()->input->post('daction') == 'delete') {
-                if (substr($val, 0, 1) == 'd') {
+                if (substr((string) $val, 0, 1) == 'd') {
                     // We're deleting a draft
                     ee()->db->query("DELETE FROM exp_message_data
 								WHERE sender_id = '{$this->member_id}'
-								AND message_id = '" . ee()->db->escape_str(substr($val, 1)) . "'
+								AND message_id = '" . ee()->db->escape_str(substr((string) $val, 1)) . "'
 								AND message_status = 'draft'");
                 } else {
                     ee()->db->query("UPDATE exp_message_copies SET message_deleted = 'y', message_read = 'y'
@@ -1800,7 +1801,7 @@ DOH;
                 if ($query->num_rows() > 0) {
                     foreach ($query->result_array() as $row) {
                         // No trailing double slashes
-                        $base_path = rtrim(ee()->config->item('prv_msg_upload_path'), '/') . '/';
+                        $base_path = rtrim((string) ee()->config->item('prv_msg_upload_path'), '/') . '/';
 
                         @unlink($base_path . $row['attachment_location']);
                     }
@@ -1841,7 +1842,7 @@ DOH;
         /** -------------------------------------*/
         $protected = array();
 
-        if (preg_match_all("/\<(.*?)\>/", $str, $matches)) {
+        if (preg_match_all("/\<(.*?)\>/", (string) $str, $matches)) {
             for ($i = 0, $s = count($matches['1']); $i < $s; ++$i) {
                 $protected[] = $matches['1'][$i];
                 $str = str_replace($matches['0'][$i], '', $str);
@@ -2116,7 +2117,7 @@ DOH;
                 $prefix = lang($prefix);
 
                 // Ensure only one prefix
-                $prefix = (substr($data['subject'], 0, strlen($prefix)) == $prefix) ? '' : $prefix;
+                $prefix = (substr((string) $data['subject'], 0, strlen((string) $prefix)) == $prefix) ? '' : $prefix;
 
                 $this->single_parts['input']['subject'] = ($data === false) ? '' : $prefix . $subject;
                 $this->single_parts['input']['body'] = '';
@@ -2140,8 +2141,8 @@ DOH;
                     $this->single_parts['input']['cc'] = '';
                 } else {
                     $cc = $this->convert_recipients($data['recipients'] . ',' . $data['cc']);
-                    $x = explode(', ', $cc);
-                    $y = explode(', ', $this->single_parts['input']['recipients']);
+                    $x = explode(', ', (string) $cc);
+                    $y = explode(', ', (string) $this->single_parts['input']['recipients']);
 
                     // Make sure CC does not contain members in Recipients
                     $cc = array_diff($x, $y);
@@ -2298,7 +2299,7 @@ DOH;
         );
 
         $this->single_parts['include']['parsed_message'] = ee()->typography->parse_type(
-            stripslashes($data['body']),
+            stripslashes((string) $data['body']),
             array(
                 'text_format' => 'xhtml',
                 'html_format' => $this->html_format,
@@ -2435,7 +2436,7 @@ DOH;
         // Load the XML Helper
         ee()->load->helper('xml');
 
-        $this->single_parts['include']['subject'] = htmlentities($data['subject'], ENT_QUOTES, 'UTF-8');
+        $this->single_parts['include']['subject'] = htmlentities((string) $data['subject'], ENT_QUOTES, 'UTF-8');
         $this->single_parts['include']['body'] = $data['body'];
         $this->single_parts['include']['recipients'] = xml_convert($this->convert_recipients($data['recipients'], 'string', 'screen_name'));
         $this->single_parts['include']['cc'] = ($data['cc'] == '') ? '' : xml_convert($this->convert_recipients($data['cc'], 'string', 'screen_name'));
@@ -2445,7 +2446,7 @@ DOH;
 
         if ($data['sender'] == ee()->session->userdata['screen_name'] && isset($data['folder_id']) && $data['folder_id'] == 2) {
             $this->conditionals['show_cc'] = 'y';
-        } elseif (in_array($this->member_id, explode(', ', $data['cc']))) {
+        } elseif (in_array($this->member_id, explode(', ', (string) $data['cc']))) {
             $this->conditionals['show_cc'] = 'y';
             $this->single_parts['include']['cc'] = ee()->session->userdata['screen_name'];
         } elseif ($data['hide_cc'] == 'y' or $data['cc'] == '') {
@@ -2543,13 +2544,13 @@ DOH;
         }
 
         // No trailing double slashes
-        $base_path = rtrim(ee()->config->item('prv_msg_upload_path'), '/') . '/';
+        $base_path = rtrim((string) ee()->config->item('prv_msg_upload_path'), '/') . '/';
 
         $filepath = $base_path . $query->row('attachment_location') ;
 
         try {
             $mime = ee('MimeType')->ofFile($filepath);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             show_error(sprintf(lang('file_not_found'), $filepath));
         }
 
@@ -2683,13 +2684,13 @@ DOH;
 
         // Check to see if the old style pagination exists
         // @deprecated 2.8
-        if (stripos($template, LD . 'if paginate' . RD) !== false) {
-            $template = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", $template);
+        if (stripos((string) $template, LD . 'if paginate' . RD) !== false) {
+            $template = preg_replace("/{if paginate}(.*?){\/if}/uis", "{paginate}$1{/paginate}", (string) $template);
             ee()->load->library('logger');
             ee()->logger->developer('{if paginate} has been deprecated, use normal {paginate} tags in your bulletin board template.', true, 604800);
         }
 
-        if (stripos($template, LD . 'include:pagination_link' . RD) !== false) {
+        if (stripos((string) $template, LD . 'include:pagination_link' . RD) !== false) {
             $template = str_replace('{include:pagination_link}', '{pagination_links}', $template);
             ee()->load->library('logger');
             ee()->logger->developer('{include:pagination_link} has been deprecated, use the {pagination_links} tag in your bulletin board template.', true, 604800);
@@ -2887,7 +2888,7 @@ DOH;
             return false;
         }
 
-        if (! isset($_POST['bulletin_message']) or trim($_POST['bulletin_message']) == '') {
+        if (! isset($_POST['bulletin_message']) or trim((string) $_POST['bulletin_message']) == '') {
             return $this->send_bulletin();
         }
 
@@ -4289,7 +4290,7 @@ DOD;
         $str = '';
 
         for ($i = 0, $s = count($this->buddies); $i < $s; $i++) {
-            $str .= NL . "\tbuddies_email[{$i}] = ['" . htmlspecialchars($this->buddies[$i]['2'], ENT_QUOTES) . "'];" . NL;
+            $str .= NL . "\tbuddies_email[{$i}] = ['" . htmlspecialchars((string) $this->buddies[$i]['2'], ENT_QUOTES) . "'];" . NL;
         }
 
         return <<<DIRT

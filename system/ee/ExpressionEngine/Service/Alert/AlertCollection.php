@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -71,8 +72,8 @@ class AlertCollection
     private function recallFromSession()
     {
         foreach ($this->session->flashdata as $key => $value) {
-            if (strpos($key, 'alert:') === 0) {
-                list($keyword, $type, $name) = explode(':', $key, 3);
+            if (strpos((string) $key, 'alert:') === 0) {
+                list($keyword, $type, $name) = explode(':', (string) $key, 3);
 
                 $alert = $this->make($name, $type);
                 $alert->title = $value['title'];
@@ -81,22 +82,27 @@ class AlertCollection
                 switch ($value['severity']) {
                     case 'error':
                         $alert->asIssue();
+
                         break;
 
                     case 'success':
                         $alert->asSuccess();
+
                         break;
 
                     case 'tip':
                         $alert->asTip();
+
                         break;
 
                     case 'important':
                         $alert->asWarning();
+
                         break;
 
                     case 'attention':
                         $alert->asAttention();
+
                         break;
                 }
 
@@ -113,22 +119,27 @@ class AlertCollection
                     switch ($value['sub_alert']['severity']) {
                         case 'error':
                             $sub_alert->asIssue();
+
                             break;
 
                         case 'success':
                             $sub_alert->asSuccess();
+
                             break;
 
                         case 'tip':
                             $sub_alert->asTip();
+
                             break;
 
                         case 'important':
                             $sub_alert->asWarning();
+
                             break;
 
                         case 'attention':
                             $sub_alert->asAttention();
+
                             break;
                     }
                     $alert->setSubAlert($sub_alert);

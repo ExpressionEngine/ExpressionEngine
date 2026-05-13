@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -147,7 +148,7 @@ class Pro_text_input extends Pro_variables_type
         //  Check if pattern is defined
         // -------------------------------------
 
-        if (($pattern = $this->settings('pattern')) && ! preg_match($pattern, $var_data, $match)) {
+        if (($pattern = $this->settings('pattern')) && ! preg_match($pattern, (string) $var_data, $match)) {
             $this->error_msg = 'invalid_value';
             $var_data = false;
         }
@@ -172,7 +173,7 @@ class Pro_text_input extends Pro_variables_type
                 continue;
             }
 
-            $out[] = sprintf('%s="%s"', htmlspecialchars($key, ENT_QUOTES), htmlspecialchars($val, ENT_QUOTES));
+            $out[] = sprintf('%s="%s"', htmlspecialchars((string) $key, ENT_QUOTES), htmlspecialchars((string) $val, ENT_QUOTES));
         }
 
         return implode(' ', $out);

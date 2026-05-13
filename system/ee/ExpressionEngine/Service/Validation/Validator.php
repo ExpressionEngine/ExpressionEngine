@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -66,7 +67,7 @@ class Validator
      */
     public function addRule($key, $rule_string)
     {
-        if (! array_key_exists($key, $this->rules)) {
+        if (! array_key_exists((string) $key, $this->rules)) {
             $this->rules[$key] = $rule_string;
         } else {
             $this->rules[$key] = $this->rules[$key] . '|' . $rule_string;
@@ -165,7 +166,7 @@ class Validator
         foreach ($this->rules as $key => $rules) {
             $originalValue = null;
 
-            if (array_key_exists($key, $values)) {
+            if (array_key_exists((string) $key, $values)) {
                 $originalValue = $values[$key];
             }
 
@@ -179,7 +180,7 @@ class Validator
                 }
 
                 // categories are special case, we'll take care of them separately
-                if (strpos($key, 'categories[cat_group_id_') === 0 && $rule instanceof Rule\Required) {
+                if (strpos((string) $key, 'categories[cat_group_id_') === 0 && $rule instanceof Rule\Required) {
                     continue;
                 }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -7,7 +8,6 @@
  * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -131,13 +131,13 @@ abstract class Pro_search_filter
             }
 
             // Escape
-            $pfx = preg_quote($pfx);
+            $pfx = preg_quote((string) $pfx);
 
             // Strip vars from tagdata
             ee()->TMPL->tagdata = preg_replace(
                 "/\{{$pfx}[\w\-:]+?\}/",
                 '',
-                ee()->TMPL->tagdata
+                (string) ee()->TMPL->tagdata
             );
         }
     }

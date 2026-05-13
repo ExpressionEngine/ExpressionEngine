@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -92,7 +93,7 @@ class CommandConfigEnv extends Cli
 
     private function keyIsInEnv($key)
     {
-        return (strpos($this->getEnvFileContents(), $key) !== false);
+        return (strpos((string) $this->getEnvFileContents(), (string) $key) !== false);
     }
 
     private function writeNewEnvValue($key, $value)

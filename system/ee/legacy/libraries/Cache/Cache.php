@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -19,11 +20,11 @@ class Cache extends EE_Driver_Library
      * current site, or it should be globally accessible by the EE
      * installation across MSM sites
      */
-    const GLOBAL_SCOPE = 1;	// Scoped to the current site
-    const LOCAL_SCOPE = 2;	// Scoped to global EE install
+    public const GLOBAL_SCOPE = 1;	// Scoped to the current site
+    public const LOCAL_SCOPE = 2;	// Scoped to global EE install
 
     // separator character used to separate nested namespace names
-    const NAMESPACE_SEPARATOR = '/';
+    public const NAMESPACE_SEPARATOR = '/';
 
     /**
      * Valid cache drivers
@@ -254,7 +255,7 @@ class Cache extends EE_Driver_Library
 
         // Create options array fit for a dropdown
         foreach ($this->valid_drivers as $driver) {
-            $field['choices'][$driver] = ucwords($driver);
+            $field['choices'][$driver] = ucwords((string) $driver);
         }
 
         // Rename dummy driver for presentation
@@ -266,7 +267,7 @@ class Cache extends EE_Driver_Library
             $error_key = ($adapter == 'file')
                 ? 'caching_driver_file_fail' : 'caching_driver_failover';
 
-            $field['note'] = sprintf(lang($error_key), ucwords($adapter), ucwords($this->get_adapter()));
+            $field['note'] = sprintf(lang($error_key), ucwords((string) $adapter), ucwords($this->get_adapter()));
         }
 
         return $field;

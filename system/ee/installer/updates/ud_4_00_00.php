@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -421,9 +422,9 @@ class Updater
                         $r['member_id'] = $row->member_id;
                         $r['m_field_id_' . $map['birthday']] = 0;
                     } else {
-                        $year = (! empty($row->bday_y) and strlen($row->bday_y) == 4) ? $row->bday_y : '1900';
-                        $month = (! empty($row->bday_m)) ? str_pad($row->bday_m, 2, "0", STR_PAD_LEFT) : '01';
-                        $day = (! empty($row->bday_d)) ? str_pad($row->bday_d, 2, "0", STR_PAD_LEFT) : '01';
+                        $year = (! empty($row->bday_y) and strlen((string) $row->bday_y) == 4) ? $row->bday_y : '1900';
+                        $month = (! empty($row->bday_m)) ? str_pad((string) $row->bday_m, 2, "0", STR_PAD_LEFT) : '01';
+                        $day = (! empty($row->bday_d)) ? str_pad((string) $row->bday_d, 2, "0", STR_PAD_LEFT) : '01';
 
                         $bday_timestamp = ee()->localize->string_to_timestamp($year . '-' . $month . '-' . $day . ' 01:00 AM');
                         $bday_timestamp = (int) $bday_timestamp;
@@ -477,7 +478,7 @@ class Updater
         $warnings = false;
         $tag = LD . 'birthday' . RD;
         foreach ($templates as $template) {
-            if (strpos($template->template_data, $tag) !== false) {
+            if (strpos((string) $template->template_data, $tag) !== false) {
                 $temp_warnings[] = $template->get_group()->group_name . '/' . $template->template_name;
                 $warnings = true;
             }
@@ -488,7 +489,7 @@ class Updater
         $snippets = ee()->snippet_model->fetch();
 
         foreach ($snippets as $snippet) {
-            if (strpos($snippet->snippet_contents, $tag) !== false) {
+            if (strpos((string) $snippet->snippet_contents, $tag) !== false) {
                 $snip_warnings[] = $snippet->snippet_name;
                 $warnings = true;
             }
@@ -812,8 +813,8 @@ class Updater
         $dbprefix = ee()->db->dbprefix;
 
         foreach ($tables as $table) {
-            if (strpos($table, $dbprefix) === 0) {
-                $table = substr($table, strlen($dbprefix));
+            if (strpos((string) $table, (string) $dbprefix) === 0) {
+                $table = substr((string) $table, strlen((string) $dbprefix));
             }
 
             ee()->smartforge->add_column(

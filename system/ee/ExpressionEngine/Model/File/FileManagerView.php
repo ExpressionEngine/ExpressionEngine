@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -54,7 +55,7 @@ class FileManagerView extends Model
     public function getColumns()
     {
         if (!is_array($this->columns)) {
-            return json_decode($this->columns);
+            return json_decode((string) $this->columns);
         }
 
         return $this->columns;

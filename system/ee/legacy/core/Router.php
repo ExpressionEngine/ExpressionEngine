@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -53,7 +54,7 @@ class EE_Router
         $segments = array();
         if ($this->config->item('enable_query_strings') === true and isset($_GET[$this->config->item('controller_trigger')])) {
             if (isset($_GET[$this->config->item('directory_trigger')])) {
-                $this->set_directory(trim($this->uri->_filter_uri($_GET[$this->config->item('directory_trigger')])));
+                $this->set_directory(trim((string) $this->uri->_filter_uri($_GET[$this->config->item('directory_trigger')])));
                 $segments[] = rtrim($this->fetch_directory(), '/');
             } elseif (isset($_GET['/cp'])) {
                 // weird mix of old and new routing?
@@ -61,12 +62,12 @@ class EE_Router
             }
 
             if (isset($_GET[$this->config->item('controller_trigger')])) {
-                $this->set_class(trim($this->uri->_filter_uri($_GET[$this->config->item('controller_trigger')])));
+                $this->set_class(trim((string) $this->uri->_filter_uri($_GET[$this->config->item('controller_trigger')])));
                 $segments[] = $this->fetch_class();
             }
 
             if (isset($_GET[$this->config->item('function_trigger')])) {
-                $this->set_method(trim($this->uri->_filter_uri($_GET[$this->config->item('function_trigger')])));
+                $this->set_method(trim((string) $this->uri->_filter_uri($_GET[$this->config->item('function_trigger')])));
                 $segments[] = $this->fetch_method();
             }
         }
@@ -83,7 +84,7 @@ class EE_Router
 
         // Set the default controller so we can display it in the event
         // the URI doesn't correlated to a valid controller.
-        $this->default_controller = (! isset($this->routes['default_controller']) or $this->routes['default_controller'] == '') ? false : strtolower($this->routes['default_controller']);
+        $this->default_controller = (! isset($this->routes['default_controller']) or $this->routes['default_controller'] == '') ? false : strtolower((string) $this->routes['default_controller']);
 
         // Were there any query string segments?  If so, we'll validate them and bail out since we're done.
         if (count($segments) > 0) {
@@ -298,8 +299,8 @@ class EE_Router
         // If we've gotten this far it means that the URI does not correlate to a valid
         // controller class.  We will now see if there is an override
         if ($override === true && isset($this->routes['404_override']) && $this->routes['404_override'] != '') {
-            if (strpos($this->routes['404_override'], '/') !== false) {
-                $x = $this->_validate_request(explode('/', $this->routes['404_override']), false);
+            if (strpos((string) $this->routes['404_override'], '/') !== false) {
+                $x = $this->_validate_request(explode('/', (string) $this->routes['404_override']), false);
                 $x[1] = (empty($x[1])) ? 'index' : $x[1];
 
                 $this->set_class($x[0]);
@@ -341,11 +342,11 @@ class EE_Router
             // Does the RegEx match?
             if (preg_match('#^' . $key . '$#', $uri)) {
                 // Do we have a back-reference?
-                if (strpos($val, '$') !== false and strpos($key, '(') !== false) {
-                    $val = preg_replace('#^' . $key . '$#', $val, $uri);
+                if (strpos((string) $val, '$') !== false and strpos($key, '(') !== false) {
+                    $val = preg_replace('#^' . $key . '$#', (string) $val, $uri);
                 }
 
-                return $this->_set_request(explode('/', $val));
+                return $this->_set_request(explode('/', (string) $val));
             }
         }
 

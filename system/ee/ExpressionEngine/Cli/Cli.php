@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -425,14 +426,14 @@ class Cli
         // Determine the width of each column based on the headers and data
         $widths = [];
         foreach ($headers as $header) {
-            $widths[] = strlen($header);
+            $widths[] = strlen((string) $header);
         }
 
         // Loop through the data and determine the max width of each column
         foreach ($data as $row) {
             $count = 0;
             foreach ($row as $value) {
-                $widths[$count] = max($widths[$count], strlen($value));
+                $widths[$count] = max($widths[$count], strlen((string) $value));
                 $count++;
             }
         }
@@ -474,7 +475,7 @@ class Cli
         }
 
         // if the data is empty, print no results
-        if(empty($data)) {
+        if (empty($data)) {
             $this->write(lang('cli_table_no_results'));
         }
     }
@@ -520,7 +521,7 @@ class Cli
             }
         }
 
-        return $result ? addslashes($result) : $default;
+        return $result ? addslashes((string) $result) : $default;
     }
 
     public function getFirstUnnamedArgument($question = null, $default = null, $required = false)
@@ -706,6 +707,7 @@ class Cli
                 if ($this->signature == 'generate:templates' && $error instanceof Exception\OptionNotDefined) {
                     // a very specific exception that we make for command that's dynamically loading options
                     unset($errors[$i]);
+
                     continue;
                 }
                 // print error messages to stderr using a Stdio object
@@ -781,7 +783,7 @@ class Cli
         $answer = $this->askAddon(lang($askText), $addonList, $default);
 
         // If it was a required field and no answer was passed, fail
-        if ($required && empty(trim($answer))) {
+        if ($required && empty(trim((string) $answer))) {
             $this->fail(lang('cli_error_is_required_field') . $option);
         }
 
@@ -874,7 +876,7 @@ class Cli
 
         foreach ($options as $option => $description) {
             // Parse option string (e.g., "help,h" or "verbose")
-            $optionParts = explode(',', $option);
+            $optionParts = explode(',', (string) $option);
             $longOption = $optionParts[0];
             $shortOption = isset($optionParts[1]) ? $optionParts[1] : null;
 

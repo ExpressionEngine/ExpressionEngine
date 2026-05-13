@@ -14,9 +14,9 @@ namespace ExpressionEngine\Library\Resource;
 
 class Request
 {
-    const CACHE_NAMESPACE = 'resource_cache/';
+    public const CACHE_NAMESPACE = 'resource_cache/';
 
-    const TYPES = array('css', 'js');
+    public const TYPES = array('css', 'js');
 
     protected $type = 'plain';
     protected $cache_scope = '';
@@ -52,6 +52,7 @@ class Request
                 if (ee('Request')->get($type)) {
                     $resource = ee('Request')->get($type);
                     $this->type = $type;
+
                     break;
                 }
             }
@@ -65,9 +66,9 @@ class Request
         if ($modified_since = strtotime($modified_since)) {
             $template_version = $modified_since;
 
-            $resource = preg_replace('/\\.v\\.[0-9]{10}/', '', $resource);  // Remove version info
+            $resource = preg_replace('/\\.v\\.[0-9]{10}/', '', (string) $resource);  // Remove version info
         } else {
-            preg_match('/\\.v\\.([0-9]{10})/', $resource, $matches);  // get version info
+            preg_match('/\\.v\\.([0-9]{10})/', (string) $resource, $matches);  // get version info
 
             if (!empty($matches[0])) {
                 $resource = str_replace($matches[0], '', $resource);  // Remove version info
@@ -78,11 +79,11 @@ class Request
             }
         }
 
-        if ('' == $resource or false === strpos($resource, '/')) {
+        if ('' == $resource or false === strpos((string) $resource, '/')) {
             show_404();
         }
 
-        $group_and_name = array_map('trim', explode('/', $resource));
+        $group_and_name = array_map('trim', explode('/', (string) $resource));
 
         if (2 != count($group_and_name)) {
             show_404();
@@ -147,7 +148,7 @@ class Request
             }
 
             // Replace {site_url} in template before caching
-            $template_data = str_replace(LD . 'site_url' . RD, stripslashes(ee()->config->item('site_url')), $template_data);
+            $template_data = str_replace(LD . 'site_url' . RD, stripslashes((string) ee()->config->item('site_url')), $template_data);
 
             ee()->cache->save(
                 $cache_path,
@@ -177,10 +178,10 @@ class Request
     private function _cache_path($resource, $site_id = 0)
     {
         switch (true) {
-            case (false === strpos($resource, '/')):
+            case (false === strpos((string) $resource, '/')):
                 throw new \Exception('Invalid resource path provided');
 
-            case (false !== strpos($resource, ':')):
+            case (false !== strpos((string) $resource, ':')):
                 return self::CACHE_NAMESPACE . str_replace(':', '/', $resource);
 
             case ($site_id != 0):
@@ -205,7 +206,7 @@ class Request
 
         ee()->output->send_cache_headers($modified, 604800, null);
 
-        @header('Content-Length: ' . strlen($data));
+        @header('Content-Length: ' . strlen((string) $data));
 
         if ('css' === $type) {
             @header('Content-type: text/css');

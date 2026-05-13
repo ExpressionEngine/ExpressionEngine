@@ -142,7 +142,7 @@ class Search
             // If the search terms are too long to log we'll toss an error. We do this
             // before sanitizing because with a long enough input that process can take
             // enough time to be a DDoS attack point. :sigh:
-            if (strlen($_POST['keywords']) > $this->max_length) {
+            if (strlen((string) $_POST['keywords']) > $this->max_length) {
                 $text = lang('search_max_length');
 
                 $text = str_replace("%x", $this->max_length, $text);
@@ -155,7 +155,7 @@ class Search
             /** ----------------------------------------
             /**  Is the search term long enough?
             /** ----------------------------------------*/
-            if (strlen($this->keywords) < $this->min_length) {
+            if (strlen((string) $this->keywords) < $this->min_length) {
                 $text = lang('search_min_length');
 
                 $text = str_replace("%x", $this->min_length, $text);
@@ -174,7 +174,7 @@ class Search
             $ignore = ee()->config->loadFile('stopwords');
 
             if ((! isset($_POST['exact_keyword']) or $_POST['exact_keyword'] != 'y')) {
-                $parts = explode('"', $this->keywords);
+                $parts = explode('"', (string) $this->keywords);
 
                 $this->keywords = '';
 
@@ -182,7 +182,7 @@ class Search
                     // The odd breaks contain quoted strings.
                     if ($num % 2 == 0) {
                         foreach ($ignore as $badword) {
-                            $part = preg_replace("/\b" . preg_quote($badword, '/') . "\b/iu", "", $part);
+                            $part = preg_replace("/\b" . preg_quote((string) $badword, '/') . "\b/iu", "", (string) $part);
                         }
                     }
 
@@ -364,10 +364,10 @@ class Search
         $joins = '';
 
         // no need to do this unless there are keywords to search
-        if (trim($this->keywords) != '') {
+        if (trim((string) $this->keywords) != '') {
             if (empty($this->custom_fields)) {
                 $channels = ($this->_meta['site_ids'])
-                    ?  ee('Model')->get('Channel')
+                    ? ee('Model')->get('Channel')
                         ->filter('site_id', 'IN', $this->_meta['site_ids'])
                         ->all()
                     : ee('Model')->get('Channel')
@@ -543,7 +543,6 @@ class Search
         /** ---------------------------------------
         /**  Build the main query
         /** ---------------------------------------*/
-
         $sql = "SELECT
 			DISTINCT(exp_channel_titles.entry_id), exp_channel_titles.channel_id
 			FROM exp_channel_titles ";
@@ -571,7 +570,6 @@ class Search
         /** ----------------------------------------------
         /**  START THE WHERE clauses
         /** ----------------------------------------------*/
-
         $sql .= "WHERE ";
 
         if (!empty($this->_meta['site_ids']) && empty($channels)) {
@@ -645,7 +643,7 @@ class Search
         // Check for different sets of category IDs, checking the parameters
         // first, then the $_POST
         if (isset($this->_meta['category']) && $this->_meta['category'] != '' && !is_array($this->_meta['category'])) {
-            $this->_meta['category'] = explode('|', $this->_meta['category']);
+            $this->_meta['category'] = explode('|', (string) $this->_meta['category']);
         } elseif (
             (!isset($this->_meta['category']) or $this->_meta['category'] == '') &&
             (isset($_POST['cat_id']) && is_array($_POST['cat_id']))
@@ -672,14 +670,14 @@ class Search
         /** ----------------------------------------------
         /**  Add keyword to the query
         /** ----------------------------------------------*/
-        if (trim($this->keywords) != '' || ! empty($this->terms)) {
+        if (trim((string) $this->keywords) != '' || ! empty($this->terms)) {
             // So it begins
             $sql .= "\nAND (";
 
             /** -----------------------------------------
             /**  Process our Keywords into Search Terms
             /** -----------------------------------------*/
-            $this->keywords = stripslashes($this->keywords);
+            $this->keywords = stripslashes((string) $this->keywords);
             $criteria = (isset($this->_meta['where']) && $this->_meta['where'] == 'all') ? 'AND' : 'OR';
 
             if (preg_match_all("/\-*\"(.*?)\"/", $this->keywords, $matches)) {
@@ -711,17 +709,17 @@ class Search
                     $sql .= ") \n";
                 }
             } elseif (! isset($_POST['exact_keyword'])) {  // Any terms, all terms
-                $mysql_function = (substr($this->terms['0'], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
-                $search_term = (substr($this->terms['0'], 0, 1) == '-') ? substr($terms_like['0'], 1) : $terms_like['0'];
+                $mysql_function = (substr((string) $this->terms['0'], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
+                $search_term = (substr((string) $this->terms['0'], 0, 1) == '-') ? substr((string) $terms_like['0'], 1) : $terms_like['0'];
 
                 // We have three parentheses in the beginning in case
                 // there are any NOT LIKE's being used and to allow for a member clause
                 $sql .= "\n(((exp_channel_titles.title $mysql_function '%" . $search_term . "%' ";
 
                 for ($i = 1; $i < count($this->terms); $i++) {
-                    $mysql_criteria = ($mysql_function == 'NOT LIKE' or substr($this->terms[$i], 0, 1) == '-') ? $not_and : $criteria;
-                    $mysql_function = (substr($this->terms[$i], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
-                    $search_term = (substr($this->terms[$i], 0, 1) == '-') ? substr($terms_like[$i], 1) : $terms_like[$i];
+                    $mysql_criteria = ($mysql_function == 'NOT LIKE' or substr((string) $this->terms[$i], 0, 1) == '-') ? $not_and : $criteria;
+                    $mysql_function = (substr((string) $this->terms[$i], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
+                    $search_term = (substr((string) $this->terms[$i], 0, 1) == '-') ? substr((string) $terms_like[$i], 1) : $terms_like[$i];
 
                     $sql .= "$mysql_criteria exp_channel_titles.title $mysql_function '%" . $search_term . "%' ";
                 }
@@ -758,8 +756,8 @@ class Search
                     }
                     $concat_fields = "CAST(CONCAT_WS(' ', " . implode(', ', $concat_tables) . ") AS CHAR)";
 
-                    $mysql_function = (substr($this->terms['0'], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
-                    $search_term = (substr($this->terms['0'], 0, 1) == '-') ? substr($this->terms['0'], 1) : $this->terms['0'];
+                    $mysql_function = (substr((string) $this->terms['0'], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
+                    $search_term = (substr((string) $this->terms['0'], 0, 1) == '-') ? substr((string) $this->terms['0'], 1) : $this->terms['0'];
 
                     // Since Title is always required in a search we use OR
                     // And then three parentheses just like above in case
@@ -767,9 +765,9 @@ class Search
                     $sql .= "\nOR ((($concat_fields $mysql_function '%" . $search_term . "%' ";
 
                     for ($i = 1; $i < count($this->terms); $i++) {
-                        $mysql_criteria = ($mysql_function == 'NOT LIKE' or substr($this->terms[$i], 0, 1) == '-') ? $not_and : $criteria;
-                        $mysql_function = (substr($this->terms[$i], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
-                        $search_term = (substr($this->terms[$i], 0, 1) == '-') ? substr($terms_like[$i], 1) : $terms_like[$i];
+                        $mysql_criteria = ($mysql_function == 'NOT LIKE' or substr((string) $this->terms[$i], 0, 1) == '-') ? $not_and : $criteria;
+                        $mysql_function = (substr((string) $this->terms[$i], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
+                        $search_term = (substr((string) $this->terms[$i], 0, 1) == '-') ? substr((string) $terms_like[$i], 1) : $terms_like[$i];
 
                         $sql .= "$mysql_criteria $concat_fields $mysql_function '%" . $search_term . "%' ";
                     }
@@ -796,8 +794,8 @@ class Search
                                 $sql .= ") ";
                             }
                         } elseif (! isset($_POST['exact_keyword'])) {
-                            $mysql_function = (substr($this->terms['0'], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
-                            $search_term = (substr($this->terms['0'], 0, 1) == '-') ? substr($terms_like['0'], 1) : $terms_like['0'];
+                            $mysql_function = (substr((string) $this->terms['0'], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
+                            $search_term = (substr((string) $this->terms['0'], 0, 1) == '-') ? substr((string) $terms_like['0'], 1) : $terms_like['0'];
 
                             // Since Title is always required in a search we use OR
                             // And then three parentheses just like above in case
@@ -805,9 +803,9 @@ class Search
                             $sql .= "\nOR ((({$table}.field_id_" . $val . " $mysql_function '%" . $search_term . "%' ";
 
                             for ($i = 1; $i < count($this->terms); $i++) {
-                                $mysql_criteria = ($mysql_function == 'NOT LIKE' or substr($this->terms[$i], 0, 1) == '-') ? $not_and : $criteria;
-                                $mysql_function = (substr($this->terms[$i], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
-                                $search_term = (substr($this->terms[$i], 0, 1) == '-') ? substr($terms_like[$i], 1) : $terms_like[$i];
+                                $mysql_criteria = ($mysql_function == 'NOT LIKE' or substr((string) $this->terms[$i], 0, 1) == '-') ? $not_and : $criteria;
+                                $mysql_function = (substr((string) $this->terms[$i], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
+                                $search_term = (substr((string) $this->terms[$i], 0, 1) == '-') ? substr((string) $terms_like[$i], 1) : $terms_like[$i];
 
                                 $sql .= "$mysql_criteria {$table}.field_id_" . $val . " $mysql_function '%" . $search_term . "%' ";
                             }
@@ -852,17 +850,17 @@ class Search
                         $sql .= ") \n";
                     }
                 } elseif (! isset($_POST['exact_keyword'])) {
-                    $mysql_function = (substr($this->terms['0'], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
-                    $search_term = (substr($this->terms['0'], 0, 1) == '-') ? substr($terms_like['0'], 1) : $terms_like['0'];
+                    $mysql_function = (substr((string) $this->terms['0'], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
+                    $search_term = (substr((string) $this->terms['0'], 0, 1) == '-') ? substr((string) $terms_like['0'], 1) : $terms_like['0'];
 
                     // We have three parentheses in the beginning in case
                     // there are any NOT LIKE's being used and to allow a member clause
                     $sql .= "\nOR (((exp_comments.comment $mysql_function '%" . $search_term . "%' ";
 
                     for ($i = 1; $i < count($this->terms); $i++) {
-                        $mysql_criteria = ($mysql_function == 'NOT LIKE' or substr($this->terms[$i], 0, 1) == '-') ? $not_and : $criteria;
-                        $mysql_function = (substr($this->terms[$i], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
-                        $search_term = (substr($this->terms[$i], 0, 1) == '-') ? substr($terms_like[$i], 1) : $terms_like[$i];
+                        $mysql_criteria = ($mysql_function == 'NOT LIKE' or substr((string) $this->terms[$i], 0, 1) == '-') ? $not_and : $criteria;
+                        $mysql_function = (substr((string) $this->terms[$i], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
+                        $search_term = (substr((string) $this->terms[$i], 0, 1) == '-') ? substr((string) $terms_like[$i], 1) : $terms_like[$i];
 
                         $sql .= "$mysql_criteria exp_comments.comment $mysql_function '%" . $search_term . "%' ";
                     }
@@ -978,7 +976,6 @@ class Search
         /** ----------------------------------------------
         /**  Set sort order
         /** ----------------------------------------------*/
-
         $order_by = isset($this->_meta['orderby']) ? $this->_meta['orderby'] : 'entry_date';
         $order_by = (! isset($_POST['order_by'])) ? $order_by : $_POST['order_by'];
         $orderby = (! isset($_POST['orderby'])) ? $order_by : $_POST['orderby'];
@@ -1112,12 +1109,12 @@ class Search
 
         // Retrieve the search_id
         if (! $search_id) {
-            $qstring = explode('/', ee()->uri->query_string);
+            $qstring = explode('/', (string) ee()->uri->query_string);
             $search_id = trim($qstring[0]);
         }
 
         // Check search ID number
-        if (strlen($search_id) < 32) {
+        if (strlen((string) $search_id) < 32) {
             return false;
         }
 
@@ -1175,7 +1172,7 @@ class Search
             }
         }
 
-        $fields = ($query->row('custom_fields') == '') ? array() : unserialize(stripslashes($query->row('custom_fields')));
+        $fields = ($query->row('custom_fields') == '') ? array() : unserialize(stripslashes((string) $query->row('custom_fields')));
         $query_parts = unserialize($query->row('query'));
 
         $this->num_rows = (int) $query->row('total_results');
@@ -1247,13 +1244,13 @@ class Search
         unset(ee()->TMPL->var_single['switch']);
 
         foreach (ee()->TMPL->var_single as $key => $value) {
-            if (substr($key, 0, strlen('member_path')) == 'member_path') {
+            if (substr((string) $key, 0, strlen('member_path')) == 'member_path') {
                 unset(ee()->TMPL->var_single[$key]);
             }
         }
 
         $switch = ee()->TMPL->fetch_param('switch');
-        if (! empty($switch) && strpos(ee()->TMPL->tagdata, '{switch}') !== false) {
+        if (! empty($switch) && strpos((string) ee()->TMPL->tagdata, '{switch}') !== false) {
             ee()->TMPL->tagdata = str_replace("{switch}", "{switch='{$switch}'}", ee()->TMPL->tagdata);
             ee()->load->library('logger');
             ee()->logger->developer('The search module\'s {switch} variable has been deprecated, use standard {switch=} tags in your search results template.', true, 604800);
@@ -1321,10 +1318,10 @@ class Search
             // Replace block HTML tags with spaces so words don't run together in case
             // they're saved with no spaces in between the markup
             $full_text = strip_tags(
-                preg_replace(
+                (string) preg_replace(
                     '/\s+/',
                     ' ',
-                    preg_replace('/<[\/?][p|br|div|h1|h2|h3|h4|h5|h6]*>/', ' ', $row['field_id_' . $row['search_excerpt']])
+                    (string) preg_replace('/<[\/?][p|br|div|h1|h2|h3|h4|h5|h6]*>/', ' ', (string) $row['field_id_' . $row['search_excerpt']])
                 )
             );
 
@@ -1377,9 +1374,9 @@ class Search
         if (count($m_paths) > 0) {
             foreach ($m_paths as $val) {
                 $tagdata = preg_replace(
-                    "/" . preg_quote($val['0'], '/') . "/",
-                    ee()->functions->create_url($val['1'] . '/' . $row['member_id']),
-                    $tagdata,
+                    "/" . preg_quote((string) $val['0'], '/') . "/",
+                    (string) ee()->functions->create_url($val['1'] . '/' . $row['member_id']),
+                    (string) $tagdata,
                     1
                 );
             }
@@ -1407,7 +1404,7 @@ class Search
         // We do it here in case it's used in multiple places.
         $this->m_paths = array();
 
-        if (preg_match_all("/" . LD . "member_path(\s*=.*?)" . RD . "/s", ee()->TMPL->tagdata, $matches)) {
+        if (preg_match_all("/" . LD . "member_path(\s*=.*?)" . RD . "/s", (string) ee()->TMPL->tagdata, $matches)) {
             for ($j = 0; $j < count($matches['0']); $j++) {
                 $this->m_paths[] = array($matches['0'][$j], ee()->functions->extract_path($matches['1'][$j]));
             }
@@ -1426,7 +1423,7 @@ class Search
     {
         $tagdata = ($tagdata) ?: ee()->TMPL->tagdata;
 
-        return substr_count($tagdata, LD . $tag_name . RD);
+        return substr_count((string) $tagdata, LD . $tag_name . RD);
     }
 
     /**
@@ -1456,14 +1453,14 @@ class Search
 
         if (
             ee()->TMPL->fetch_param('name') !== false &&
-            preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('name'))
+            preg_match("#^[a-zA-Z0-9_\-]+$#i", (string) ee()->TMPL->fetch_param('name'))
         ) {
             $data['name'] = ee()->TMPL->fetch_param('name');
         }
 
         if (
             ee()->TMPL->fetch_param('id') !== false &&
-            preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('id'))
+            preg_match("#^[a-zA-Z0-9_\-]+$#i", (string) ee()->TMPL->fetch_param('id'))
         ) {
             $data['id'] = ee()->TMPL->fetch_param('id');
             ee()->TMPL->log_item('Simple Search Form:  The \'id\' parameter has been deprecated.  Please use form_id');
@@ -1476,7 +1473,7 @@ class Search
         $res = ee()->functions->form_declaration($data);
         ee()->TMPL->set_data($res);
 
-        $res .= stripslashes(ee()->TMPL->tagdata);
+        $res .= stripslashes((string) ee()->TMPL->tagdata);
 
         $res .= "</form>";
 
@@ -1609,14 +1606,14 @@ class Search
 
         if (
             ee()->TMPL->fetch_param('name') !== false &&
-            preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('name'))
+            preg_match("#^[a-zA-Z0-9_\-]+$#i", (string) ee()->TMPL->fetch_param('name'))
         ) {
             $data['name'] = ee()->TMPL->fetch_param('name');
         }
 
         if (
             ee()->TMPL->fetch_param('id') !== false &&
-            preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('id'))
+            preg_match("#^[a-zA-Z0-9_\-]+$#i", (string) ee()->TMPL->fetch_param('id'))
         ) {
             $data['id'] = ee()->TMPL->fetch_param('id');
             ee()->TMPL->log_item('Advanced Search Form:  The \'id\' parameter has been deprecated.  Please use form_id');
@@ -1630,7 +1627,7 @@ class Search
 
         $res .= $this->search_js_switcher($nested, $data['id']);
 
-        $res .= stripslashes($tagdata);
+        $res .= stripslashes((string) $tagdata);
 
         $res .= "</form>";
 
@@ -1709,14 +1706,14 @@ function changemenu(index)
                 $last_group = 0;
 
                 foreach ($cat_array as $k => $v) {
-                    if (in_array($v['0'], explode('|', $val['1']))) {
+                    if (in_array($v['0'], explode('|', (string) $val['1']))) {
                         if ($last_group == 0 or $last_group != $v['0']) {?>
 			categories[i] = new Option("-------", ""); i++; <?php echo "\n";
                             $last_group = $v['0'];
                         }
 
                         // Note: this kludgy indentation is so that the JavaScript will look nice when it's renedered on the page?>
-			categories[i] = new Option("<?php echo addslashes($v['2']); ?>", "<?php echo $v['1']; ?>"); i++; <?php echo "\n";
+			categories[i] = new Option("<?php echo addslashes((string) $v['2']); ?>", "<?php echo $v['1']; ?>"); i++; <?php echo "\n";
                     }
                 }
             } ?>

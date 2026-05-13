@@ -195,7 +195,7 @@ class Pro_variables_variable_model extends Pro_variables_model
         $result = false;
 
         if ($var = $this->get_one($var_id)) {
-            if (array_key_exists($type, $var)) {
+            if (array_key_exists((string) $type, $var)) {
                 $this->update($var_id, array(
                     $type => ($var[$type] == 'n' ? 'y' : 'n')
                 ));

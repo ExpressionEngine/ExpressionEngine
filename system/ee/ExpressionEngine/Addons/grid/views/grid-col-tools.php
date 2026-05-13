@@ -7,7 +7,7 @@
 	<?php if (isset($col_label)):
         $col_type = $col_type ?: 'text'; ?>
 		<div class="toggle-header">
-			<b><?=$col_label?></b> <span class="txt-fade">(<?=strtolower($col_type)?>)</span>
+			<b><?=$col_label?></b> <span class="txt-fade">(<?=strtolower((string) $col_type)?>)</span>
 		</div>
 	<?php endif?>
 </div>

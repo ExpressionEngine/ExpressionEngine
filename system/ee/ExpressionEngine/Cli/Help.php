@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * This file is part of Aura for PHP.
@@ -396,7 +397,7 @@ class Help
         $text = '';
         foreach ($this->options as $option => $descr) {
             // check if $option contains a colon
-            $needsValue = (strpos($option, ':') !== false);
+            $needsValue = (strpos((string) $option, ':') !== false);
 
             // Remove the ':' from the option
             $option = str_replace(':', '', $option);
@@ -446,7 +447,7 @@ class Help
         }
 
         return $text
-             . "        " . trim($option->descr) . PHP_EOL . PHP_EOL;
+             . "        " . trim((string) $option->descr) . PHP_EOL . PHP_EOL;
     }
 
     /**

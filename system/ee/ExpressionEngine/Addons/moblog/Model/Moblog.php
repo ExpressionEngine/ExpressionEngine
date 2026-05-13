@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -92,7 +93,7 @@ class Moblog extends Model
         }
 
         foreach ($value as $email) {
-            if (trim($email) != '' && (bool) filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+            if (trim((string) $email) != '' && (bool) filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
                 return 'valid_emails';
             }
         }

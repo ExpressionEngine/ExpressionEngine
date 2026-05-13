@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -263,7 +264,7 @@ class Status extends AbstractChannelsController
             $status->status = ee()->input->post('status');
         }
 
-        $status->highlight = ltrim(ee()->input->post('highlight'), '#');
+        $status->highlight = ltrim((string) ee()->input->post('highlight'), '#');
 
         $access = ee()->input->post('status_access') ?: array();
 

@@ -11,7 +11,9 @@ if (! $outputFile) {
 }
 
 $target = realpath(PATH_ADDONS . 'structure/sql.structure.php');
-$linesToTrack = [490, 491, 492, 494, 497];
+$method = new ReflectionMethod('Sql_structure', 'count_segments');
+$methodStartLine = $method->getStartLine();
+$methodEndLine = $method->getEndLine();
 $xdebugAvailable = function_exists('xdebug_start_code_coverage') && function_exists('xdebug_get_code_coverage');
 
 if ($xdebugAvailable) {
@@ -56,9 +58,19 @@ $fileCoverage = $coverage[$target] ?? ['lines' => [], 'functions' => []];
 $functionCoverage = $fileCoverage['functions']['Sql_structure->count_segments'] ?? ['branches' => [], 'paths' => []];
 $coveredLines = [];
 
-foreach ($linesToTrack as $line) {
-    $coveredLines[$line] = (($fileCoverage['lines'][$line] ?? 0) > 0);
+foreach (($fileCoverage['lines'] ?? []) as $line => $hitCount) {
+    if ($line < $methodStartLine || $line > $methodEndLine) {
+        continue;
+    }
+
+    if ($hitCount === -2) {
+        continue;
+    }
+
+    $coveredLines[$line] = ($hitCount > 0);
 }
+
+ksort($coveredLines);
 
 $coveredPaths = [];
 
@@ -81,7 +93,9 @@ file_put_contents($outputFile, json_encode([
     'empty_result' => $emptyResult,
     'null_result' => $nullResult,
     'xdebug_available' => $xdebugAvailable,
-    'lines' => array_intersect_key($fileCoverage['lines'] ?? [], array_flip($linesToTrack)),
+    'lines' => array_intersect_key($fileCoverage['lines'] ?? [], $coveredLines),
+    'method_start_line' => $methodStartLine,
+    'method_end_line' => $methodEndLine,
     'branches' => $functionCoverage['branches'] ?? [],
     'paths' => $functionCoverage['paths'] ?? [],
     'line_percentage' => $linePercentage,

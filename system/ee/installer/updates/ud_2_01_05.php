@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -95,7 +96,7 @@ class Updater
         $qry = ee()->db->get('blogger');
 
         foreach ($qry->result() as $row) {
-            list($channel_id, $custom_field_id) = explode(':', $row->blogger_field_id);
+            list($channel_id, $custom_field_id) = explode(':', (string) $row->blogger_field_id);
 
             $qry = ee()->db->select('field_group')
                 ->where('channel_id', $channel_id)
@@ -537,7 +538,7 @@ class Updater
         $qry = ee()->db->get('channel_fields');
 
         foreach ($qry->result() as $row) {
-            $settings = unserialize(base64_decode($row->field_settings));
+            $settings = unserialize(base64_decode((string) $row->field_settings));
             $settings['field_content_type'] = $row->field_content_type;
 
             $settings = base64_encode(serialize($settings));

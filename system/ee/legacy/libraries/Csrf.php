@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -20,7 +21,7 @@ class Csrf
     private $request_token;
     private $session_token;
 
-    const TOKEN_LENGTH = 40; // the token is always the sha1 of a random string
+    public const TOKEN_LENGTH = 40; // the token is always the sha1 of a random string
 
     public function __construct()
     {
@@ -179,11 +180,11 @@ class Csrf
      **/
     private function token_is_valid_format($token = '')
     {
-        if (empty($token) or strlen($token) != self::TOKEN_LENGTH) {
+        if (empty($token) or strlen((string) $token) != self::TOKEN_LENGTH) {
             return false;
         }
 
-        return preg_match('/^[a-f0-9]{' . self::TOKEN_LENGTH . '}$/', $token);
+        return preg_match('/^[a-f0-9]{' . self::TOKEN_LENGTH . '}$/', (string) $token);
     }
 }
 

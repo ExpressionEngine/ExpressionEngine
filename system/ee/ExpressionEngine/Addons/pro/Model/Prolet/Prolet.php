@@ -75,6 +75,7 @@ class Prolet extends Model
                 $this->_prolet = new $class();
             }
         }
+
         return $this->_prolet;
     }
 
@@ -88,6 +89,7 @@ class Prolet extends Model
         if (is_null($this->_addon)) {
             $this->_addon = ee('pro:Addon')->get($this->source);
         }
+
         return $this->_addon;
     }
 
@@ -101,6 +103,7 @@ class Prolet extends Model
         if ($this->prolet) {
             return ee('Security/XSS')->clean($this->prolet->getName());
         }
+
         return '';
     }
 
@@ -145,10 +148,13 @@ class Prolet extends Model
                     }
                     $url = str_replace(array_keys($replacements), $replacements, $url);
                 }
+
                 return $url;
             }
+
             return ee('CP/URL')->make('pro/prolet/' . $this->getId(), $params, ee()->config->item('cp_url'))->compile();
         }
+
         return '';
     }
 
@@ -163,6 +169,7 @@ class Prolet extends Model
         if (empty($action)) {
             $action = 'index';
         }
+
         return ee('Security/XSS')->clean($action);
     }
 
@@ -211,7 +218,7 @@ class Prolet extends Model
                         'type'          => 'button',
                         'text'          => lang($button),
                         'buttonStyle'   => 'primary',
-                        'callback'      => strtolower($button),
+                        'callback'      => strtolower((string) $button),
                     ];
                 }
                 if ($buttons[$i]['text'] == 'save') {
@@ -221,8 +228,10 @@ class Prolet extends Model
                     unset($buttons[$i]);
                 }
             }
+
             return ee('Security/XSS')->clean($buttons);
         }
+
         return [];
     }
 
@@ -236,11 +245,13 @@ class Prolet extends Model
         if ($this->prolet) {
             $icon = $this->prolet->getIcon();
             //don't allow going up the directories
-            if (strpos($icon, '../') !== false) {
+            if (strpos((string) $icon, '../') !== false) {
                 return null;
             }
+
             return $this->addon->getPath() . '/' . $icon;
         }
+
         return null;
     }
 
@@ -287,6 +298,7 @@ class Prolet extends Model
         }
 
         $func = $this->action;
+
         return $this->prolet->$func();
     }
 
@@ -320,7 +332,8 @@ class Prolet extends Model
             }
         }
 
-        $view = preg_match('/<div(.+)class="(.*)panel([\"\s])/i', $rawOutput) === 1 ? 'pro:prolet-unwrapped' : 'pro:prolet';
+        $view = preg_match('/<div(.+)class="(.*)panel([\"\s])/i', (string) $rawOutput) === 1 ? 'pro:prolet-unwrapped' : 'pro:prolet';
+
         return ee('View')->make($view)->render([
             'pro_class'   => 'pro-frontend-modal',
             'hide_topbar' => true,

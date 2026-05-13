@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -95,7 +96,7 @@ class Spam implements SpamProtocol
     protected function loadDefaultClassifier()
     {
         $training = ee('spam:Training', 'default');
-        $stop_words = explode("\n", ee()->lang->load('spam/stopwords', null, true, false));
+        $stop_words = explode("\n", (string) ee()->lang->load('spam/stopwords', null, true, false));
         $tokenizer = ee('spam:Tokenizer');
 
         // Prep the the TFIDF vectorizer with the vocabulary we have stored

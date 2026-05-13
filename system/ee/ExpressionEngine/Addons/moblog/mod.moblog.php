@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -203,9 +204,9 @@ class Moblog
         /**  Email Login Check
         /** ------------------------------*/
         $port = 110;
-        $ssl = (substr($this->moblog_array['moblog_email_server'], 0, 6) == 'ssl://');
+        $ssl = (substr((string) $this->moblog_array['moblog_email_server'], 0, 6) == 'ssl://');
 
-        if ($ssl or stripos($this->moblog_array['moblog_email_server'], 'gmail') !== false) {
+        if ($ssl or stripos((string) $this->moblog_array['moblog_email_server'], 'gmail') !== false) {
             if (! $ssl) {
                 $this->moblog_array['moblog_email_server'] = 'ssl://' . $this->moblog_array['moblog_email_server'];
             }
@@ -237,13 +238,13 @@ class Moblog
             return false;
         }
 
-        if (strncasecmp($this->pop_command("USER " . base64_decode($this->moblog_array['moblog_email_login'])), '+OK', 3) != 0) {
+        if (strncasecmp($this->pop_command("USER " . base64_decode((string) $this->moblog_array['moblog_email_login'])), '+OK', 3) != 0) {
             // Windows servers something require a different line break.
             // So, we change the line break and try again.
 
             $this->pop_newline = "\r\n";
 
-            if (strncasecmp($this->pop_command("USER " . base64_decode($this->moblog_array['moblog_email_login'])), '+OK', 3) != 0) {
+            if (strncasecmp($this->pop_command("USER " . base64_decode((string) $this->moblog_array['moblog_email_login'])), '+OK', 3) != 0) {
                 $this->message_array[] = 'invalid_username';
                 $line = $this->pop_command("QUIT");
                 @fclose($this->fp);
@@ -252,7 +253,7 @@ class Moblog
             }
         }
 
-        if (strncasecmp($this->pop_command("PASS " . base64_decode($this->moblog_array['moblog_email_password'])), '+OK', 3) != 0) {
+        if (strncasecmp($this->pop_command("PASS " . base64_decode((string) $this->moblog_array['moblog_email_password'])), '+OK', 3) != 0) {
             $this->message_array[] = 'invalid_password';
             $line = $this->pop_command("QUIT");
             @fclose($this->fp);
@@ -318,7 +319,7 @@ class Moblog
         /**  Find Valid Emails
         /** ------------------------------*/
         $valid_emails = array();
-        $valid_froms = explode("|", $this->moblog_array['moblog_valid_from']);
+        $valid_froms = explode("|", (string) $this->moblog_array['moblog_valid_from']);
 
         for ($i = 1; $i <= $total; $i++) {
             if (strncasecmp($this->pop_command("TOP {$i} 0"), '+OK', 3) != 0) {
@@ -348,7 +349,7 @@ class Moblog
                 if ($this->moblog_array['moblog_subject_prefix'] == '') {
                     $valid_subject = 'y';
                 } elseif (preg_match("/Subject:(.*)/", $str, $subject)) {
-                    if (strpos(trim($subject['1']), $this->moblog_array['moblog_subject_prefix']) !== false) {
+                    if (strpos(trim($subject['1']), (string) $this->moblog_array['moblog_subject_prefix']) !== false) {
                         $valid_subject = 'y';
                     }
                 }
@@ -446,7 +447,7 @@ class Moblog
             if (preg_match("/Subject:(.*)/", trim($email_data), $subject)) {
                 if ($this->moblog_array['moblog_subject_prefix'] == '') {
                     $this->post_data['subject'] = (trim($subject['1']) != '') ? trim($subject['1']) : 'Moblog Entry';
-                } elseif (strpos(trim($subject['1']), $this->moblog_array['moblog_subject_prefix']) !== false) {
+                } elseif (strpos(trim($subject['1']), (string) $this->moblog_array['moblog_subject_prefix']) !== false) {
                     $str_subject = str_replace($this->moblog_array['moblog_subject_prefix'], '', $subject['1']);
                     $this->post_data['subject'] = (trim($str_subject) != '') ? trim($str_subject) : 'Moblog Entry';
                 }
@@ -457,13 +458,13 @@ class Moblog
                     // If subject header was processed with MB or Iconv functions, then the internal encoding
                     // must be used to decode the subject, not the charset used by the email
                     if (function_exists('mb_convert_encoding')) {
-                        $this->post_data['subject'] = mb_convert_encoding($this->post_data['subject'], strtoupper(ee()->config->item('charset')), mb_internal_encoding());
+                        $this->post_data['subject'] = mb_convert_encoding($this->post_data['subject'], strtoupper((string) ee()->config->item('charset')), mb_internal_encoding());
                     } elseif (function_exists('iconv')) {
-                        $this->post_data['subject'] = iconv(iconv_get_encoding('internal_encoding'), strtoupper(ee()->config->item('charset')), $this->post_data['subject']);
-                    } elseif (strtolower(ee()->config->item('charset')) == 'utf-8' && strtolower($this->charset) == 'iso-8859-1') {
-                        $this->post_data['subject'] = utf8_encode($this->post_data['subject']);
-                    } elseif (strtolower(ee()->config->item('charset')) == 'iso-8859-1' && strtolower($this->charset) == 'utf-8') {
-                        $this->post_data['subject'] = utf8_decode($this->post_data['subject']);
+                        $this->post_data['subject'] = iconv(iconv_get_encoding('internal_encoding'), strtoupper((string) ee()->config->item('charset')), $this->post_data['subject']);
+                    } elseif (strtolower((string) ee()->config->item('charset')) == 'utf-8' && strtolower((string) $this->charset) == 'iso-8859-1') {
+                        $this->post_data['subject'] = mb_convert_encoding($this->post_data['subject'], 'UTF-8', 'ISO-8859-1');
+                    } elseif (strtolower((string) ee()->config->item('charset')) == 'iso-8859-1' && strtolower((string) $this->charset) == 'utf-8') {
+                        $this->post_data['subject'] = mb_convert_encoding($this->post_data['subject'], 'ISO-8859-1');
                     }
                 }
             }
@@ -551,13 +552,13 @@ class Moblog
 
                     if ($this->charset != ee()->config->item('charset')) {
                         if (function_exists('mb_convert_encoding')) {
-                            $this->body = mb_convert_encoding($this->body, strtoupper(ee()->config->item('charset')), strtoupper($this->charset));
-                        } elseif (function_exists('iconv') and ($iconvstr = @iconv(strtoupper($this->charset), strtoupper(ee()->config->item('charset')), $this->body)) !== false) {
+                            $this->body = mb_convert_encoding($this->body, strtoupper((string) ee()->config->item('charset')), strtoupper((string) $this->charset));
+                        } elseif (function_exists('iconv') and ($iconvstr = @iconv(strtoupper((string) $this->charset), strtoupper((string) ee()->config->item('charset')), $this->body)) !== false) {
                             $this->body = $iconvstr;
-                        } elseif (strtolower(ee()->config->item('charset')) == 'utf-8' && strtolower($this->charset) == 'iso-8859-1') {
-                            $this->body = utf8_encode($this->body);
-                        } elseif (strtolower(ee()->config->item('charset')) == 'iso-8859-1' && strtolower($this->charset) == 'utf-8') {
-                            $this->body = utf8_decode($this->body);
+                        } elseif (strtolower((string) ee()->config->item('charset')) == 'utf-8' && strtolower((string) $this->charset) == 'iso-8859-1') {
+                            $this->body = mb_convert_encoding($this->body, 'UTF-8', 'ISO-8859-1');
+                        } elseif (strtolower((string) ee()->config->item('charset')) == 'iso-8859-1' && strtolower((string) $this->charset) == 'utf-8') {
+                            $this->body = mb_convert_encoding($this->body, 'ISO-8859-1');
                         }
                     }
                 }
@@ -618,7 +619,7 @@ class Moblog
             /**  Format Flow Fix - Oh Joy!
             /** -----------------------------*/
             if ($format_flow == 'y') {
-                $x = explode($this->newline, $this->body);
+                $x = explode($this->newline, (string) $this->body);
                 $wrap_point = 10;
 
                 if (count($x) > 1) {
@@ -643,8 +644,8 @@ class Moblog
             /**  Image Archive set in email?
             /** -----------------------------*/
             if ($allow_overrides == 'y' &&
-                (preg_match("/\{file_archive\}(.*)\{\/file_archive\}/s", $this->body, $matches) or
-                 preg_match("/\<file_archive\>(.*)\<\/file_archive\>/s", $this->body, $matches))) {
+                (preg_match("/\{file_archive\}(.*)\{\/file_archive\}/s", (string) $this->body, $matches) or
+                 preg_match("/\<file_archive\>(.*)\<\/file_archive\>/s", (string) $this->body, $matches))) {
                 $matches['1'] = trim($matches['1']);
 
                 if ($matches['1'] == 'y' or $matches['1'] == 'true' or $matches['1'] == '1') {
@@ -659,9 +660,9 @@ class Moblog
             /** -----------------------------
             /**  Categories set in email?
             /** -----------------------------*/
-            if ($allow_overrides == 'n' or (! preg_match("/\{category\}(.*)\{\/category\}/s", $this->body, $cats) &&
-                                             ! preg_match("/\<category\>(.*)\<\/category\>/s", $this->body, $cats))) {
-                $this->post_data['categories'] = trim($this->moblog_array['moblog_categories']);
+            if ($allow_overrides == 'n' or (! preg_match("/\{category\}(.*)\{\/category\}/s", (string) $this->body, $cats) &&
+                                             ! preg_match("/\<category\>(.*)\<\/category\>/s", (string) $this->body, $cats))) {
+                $this->post_data['categories'] = trim((string) $this->moblog_array['moblog_categories']);
             } else {
                 $cats['1'] = str_replace(':', '|', $cats['1']);
                 $cats['1'] = str_replace(',', '|', $cats['1']);
@@ -672,9 +673,9 @@ class Moblog
             /** -----------------------------
             /**  Status set in email
             /** -----------------------------*/
-            if ($allow_overrides == 'n' or (! preg_match("/\{status\}(.*)\{\/status\}/s", $this->body, $cats) &&
-                                             ! preg_match("/\<status\>(.*)\<\/status\>/s", $this->body, $cats))) {
-                $this->post_data['status'] = trim($this->moblog_array['moblog_status']);
+            if ($allow_overrides == 'n' or (! preg_match("/\{status\}(.*)\{\/status\}/s", (string) $this->body, $cats) &&
+                                             ! preg_match("/\<status\>(.*)\<\/status\>/s", (string) $this->body, $cats))) {
+                $this->post_data['status'] = trim((string) $this->moblog_array['moblog_status']);
             } else {
                 $this->post_data['status'] = trim($cats['1']);
                 $this->body = str_replace($cats['0'], '', $this->body);
@@ -683,8 +684,8 @@ class Moblog
             /** -----------------------------
             /**  Sticky Set in Email
             /** -----------------------------*/
-            if ($allow_overrides == 'n' or (! preg_match("/\{sticky\}(.*)\{\/sticky\}/s", $this->body, $mayo) &&
-                                             ! preg_match("/\<sticky\>(.*)\<\/sticky\>/s", $this->body, $mayo))) {
+            if ($allow_overrides == 'n' or (! preg_match("/\{sticky\}(.*)\{\/sticky\}/s", (string) $this->body, $mayo) &&
+                                             ! preg_match("/\<sticky\>(.*)\<\/sticky\>/s", (string) $this->body, $mayo))) {
                 $this->post_data['sticky'] = (! isset($this->moblog_array['moblog_sticky_entry'])) ? $this->sticky : $this->moblog_array['moblog_sticky_entry'];
             } else {
                 $this->post_data['sticky'] = (trim($mayo['1']) == 'yes' or trim($mayo['1']) == 'y') ? 'y' : 'n';
@@ -694,8 +695,8 @@ class Moblog
             /** -----------------------------
             /**  Default Field set in email?
             /** -----------------------------*/
-            if ($allow_overrides == 'y' && (preg_match("/\{field\}(.*)\{\/field\}/s", $this->body, $matches) or
-                                            preg_match("/\<field\>(.*)\<\/field\>/s", $this->body, $matches))) {
+            if ($allow_overrides == 'y' && (preg_match("/\{field\}(.*)\{\/field\}/s", (string) $this->body, $matches) or
+                                            preg_match("/\<field\>(.*)\<\/field\>/s", (string) $this->body, $matches))) {
                 $matches[1] = trim($matches[1]);
 
                 ee()->db->select('field_id');
@@ -714,7 +715,7 @@ class Moblog
                 $results = ee()->db->get();
 
                 if ($results->num_rows() > 0) {
-                    $this->moblog_array['moblog_field_id'] = trim($results->row('field_id'));
+                    $this->moblog_array['moblog_field_id'] = trim((string) $results->row('field_id'));
                 }
 
                 $this->body = str_replace($matches['0'], '', $this->body);
@@ -723,7 +724,7 @@ class Moblog
             /** -----------------------------
             /**  Set Entry Title in Email
             /** -----------------------------*/
-            if (preg_match("/\{entry_title\}(.*)\{\/entry_title\}/", $this->body, $matches) or preg_match("/\<entry_title\>(.*)\<\/entry_title\>/", $this->body, $matches)) {
+            if (preg_match("/\{entry_title\}(.*)\{\/entry_title\}/", (string) $this->body, $matches) or preg_match("/\<entry_title\>(.*)\<\/entry_title\>/", (string) $this->body, $matches)) {
                 if (strlen($matches['1']) > 1) {
                     $this->post_data['subject'] = trim(str_replace($this->newline, "\n", $matches['1']));
                 }
@@ -740,9 +741,9 @@ class Moblog
                 $tag = 'field';
 
                 if ($this->moblog_array['moblog_field_id'] != 'none' or
-                    preg_match("/" . LD . 'field:' . "(.*?)" . RD . "(.*?)" . LD . '\/' . 'field:' . "(.*?)" . RD . "/s", $this->template, $matches) or
-                    preg_match("/[\<\{]field\:(.*?)[\}\>](.*?)[\<\{]\/field\:(.*?)[\}\>]/", $this->body, $matches)
-                    ) {
+                    preg_match("/" . LD . 'field:' . "(.*?)" . RD . "(.*?)" . LD . '\/' . 'field:' . "(.*?)" . RD . "/s", (string) $this->template, $matches) or
+                    preg_match("/[\<\{]field\:(.*?)[\}\>](.*?)[\<\{]\/field\:(.*?)[\}\>]/", (string) $this->body, $matches)
+                ) {
                     $this->post_entry();
                 } else {
                     $this->emails_done++;
@@ -807,7 +808,7 @@ class Moblog
 
         // Collect the meta data
 
-        $this->post_data['subject'] = strip_tags($this->post_data['subject']);
+        $this->post_data['subject'] = strip_tags((string) $this->post_data['subject']);
 
         $this->moblog_array['moblog_author_id'] = ($this->moblog_array['moblog_author_id'] == 'none') ? '1' : $this->moblog_array['moblog_author_id'];
         $author_id = ($this->author != '') ? $this->author : $this->moblog_array['moblog_author_id'];
@@ -840,12 +841,12 @@ class Moblog
 
         // Remove ignore text
 
-        $this->body = preg_replace("#<img\s+src=\s*[\"']cid:(.*?)\>#si", '', $this->body);  // embedded images
+        $this->body = preg_replace("#<img\s+src=\s*[\"']cid:(.*?)\>#si", '', (string) $this->body);  // embedded images
 
         $this->moblog_array['moblog_ignore_text'] = $this->remove_newlines($this->moblog_array['moblog_ignore_text'], $this->newline);
 
         // One biggo chunk
-        if ($this->moblog_array['moblog_ignore_text'] != '' && stristr($this->body, $this->moblog_array['moblog_ignore_text']) !== false) {
+        if ($this->moblog_array['moblog_ignore_text'] != '' && stristr((string) $this->body, $this->moblog_array['moblog_ignore_text']) !== false) {
             $this->body = str_replace($this->moblog_array['moblog_ignore_text'], '', $this->body);
         } elseif ($this->moblog_array['moblog_ignore_text'] != '') {
             // By line
@@ -864,7 +865,7 @@ class Moblog
         /** -------------------------------------
         /**  Specified Fields for Email Text
         /** -------------------------------------*/
-        if (preg_match_all("/[\<\{]field\:(.*?)[\}\>](.*?)[\<\{]\/field\:(.*?)[\}\>]/", $this->body, $matches)) {
+        if (preg_match_all("/[\<\{]field\:(.*?)[\}\>](.*?)[\<\{]\/field\:(.*?)[\}\>]/", (string) $this->body, $matches)) {
             ee()->db->select('channel_fields.field_id, channel_fields.field_name, channel_fields.field_label, channel_fields.field_fmt');
             ee()->db->from('channel_fields');
 
@@ -922,7 +923,7 @@ class Moblog
 
         $tag = 'field';
 
-        if (! preg_match_all("/" . LD . $tag . "(.*?)" . RD . "(.*?)" . LD . '\/' . $tag . RD . "/s", $this->template, $matches)) {
+        if (! preg_match_all("/" . LD . $tag . "(.*?)" . RD . "(.*?)" . LD . '\/' . $tag . RD . "/s", (string) $this->template, $matches)) {
             $this->parse_field($this->moblog_array['moblog_field_id'], $this->template);
         } else {
             for ($i = 0; $i < count($matches['0']) ; $i++) {
@@ -935,7 +936,7 @@ class Moblog
                 $this->template = str_replace($matches['0'], '', $this->template);
             }
 
-            if (trim($this->template) != '') {
+            if (trim((string) $this->template) != '') {
                 $this->parse_field($this->moblog_array['moblog_field_id'], $this->template);
             }
         }
@@ -958,7 +959,7 @@ class Moblog
                 ee()->load->helper('text');
 
                 $combined_data = $value['data'];
-                $combined_data = (ee()->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities(trim($combined_data)) : trim($combined_data);
+                $combined_data = (ee()->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities(trim((string) $combined_data)) : trim((string) $combined_data);
 
                 $data['field_id_' . $key] = $combined_data;
                 $data['field_ft_' . $key] = $value['format'];
@@ -979,7 +980,7 @@ class Moblog
 
             $data['category'] = array_unique($data['category']);
         } elseif ($this->post_data['categories'] != 'none') {
-            $data['category'] = explode('|', $this->post_data['categories']);
+            $data['category'] = explode('|', (string) $this->post_data['categories']);
             $data['category'] = array_unique($data['category']);
         }
 
@@ -1004,7 +1005,7 @@ class Moblog
         // Insert the Entry
 
         // Max URL title length, minus uniqid length, minus separator
-        $url_title = substr(ee('Format')->make('Text', $data['title'])->urlSlug()->compile(), 0, URL_TITLE_MAX_LENGTH - 23 - 1);
+        $url_title = substr((string) ee('Format')->make('Text', $data['title'])->urlSlug()->compile(), 0, URL_TITLE_MAX_LENGTH - 23 - 1);
 
         $separator = (ee()->config->item('word_separator') == 'dash') ? '-' : '_';
 
@@ -1125,7 +1126,7 @@ class Moblog
             foreach (array('thumb', 'image') as $which) {
                 if ($row->id == $this->moblog_array['moblog_' . $which . '_size']) {
                     $var = $which . '_data';
-                    $$var= array(
+                    $$var = array(
                         'dir' => '_' . $row->short_name . '/',
                         'height' => $row->height,
                         'width' => $row->width
@@ -1142,7 +1143,7 @@ class Moblog
         $params = array();
 
         foreach ($pair_array as $type) {
-            if (! preg_match_all("/" . LD . $type . "(.*?)" . RD . "(.*?)" . LD . '\/' . $type . RD . "/s", $field_data, $matches)) {
+            if (! preg_match_all("/" . LD . $type . "(.*?)" . RD . "(.*?)" . LD . '\/' . $type . RD . "/s", (string) $field_data, $matches)) {
                 continue;
             }
 
@@ -1177,7 +1178,7 @@ class Moblog
                     }
 
                     foreach ($float_data as $ftype => $value) {
-                        if (! in_array($ftype, $pair_array) or ! ($params['match'] == 'all' or stristr($params['match'], $ftype))) {
+                        if (! in_array($ftype, $pair_array) or ! ($params['match'] == 'all' or stristr((string) $params['match'], (string) $ftype))) {
                             continue;
                         }
 
@@ -1291,7 +1292,7 @@ class Moblog
         ee()->load->library('filemanager');
 
         $boundary = ($type != 'norm') ? $this->multi_boundary : $this->boundary;
-        $email_data = str_replace('boundary=' . substr($boundary, 2), 'BOUNDARY_HERE', $email_data);
+        $email_data = str_replace('boundary=' . substr((string) $boundary, 2), 'BOUNDARY_HERE', $email_data);
 
         $email_parts = explode($boundary, $email_data);
 
@@ -1394,8 +1395,7 @@ class Moblog
 
                     /** ------------------------------------
                     /**  Check for Base 64 encoding:  MIME
-                    /** ------------------------------------*/
-                    elseif (stristr($encoding, "base64")) {
+                    /** ------------------------------------*/ elseif (stristr($encoding, "base64")) {
                         $text = str_replace($this->newline, "\n", $text);
                         $text = base64_decode(trim($text));
                         $text = $this->remove_newlines($text, $this->newline);
@@ -1411,13 +1411,13 @@ class Moblog
 
                 if ($this->charset != ee()->config->item('charset')) {
                     if (function_exists('mb_convert_encoding')) {
-                        $text = mb_convert_encoding($text, strtoupper(ee()->config->item('charset')), strtoupper($this->charset));
-                    } elseif (function_exists('iconv') and ($iconvstr = @iconv(strtoupper($this->charset), strtoupper(ee()->config->item('charset')), $text)) !== false) {
+                        $text = mb_convert_encoding($text, strtoupper((string) ee()->config->item('charset')), strtoupper((string) $this->charset));
+                    } elseif (function_exists('iconv') and ($iconvstr = @iconv(strtoupper((string) $this->charset), strtoupper((string) ee()->config->item('charset')), $text)) !== false) {
                         $text = $iconvstr;
-                    } elseif (strtolower(ee()->config->item('charset')) == 'utf-8' && strtolower($this->charset) == 'iso-8859-1') {
-                        $text = utf8_encode($text);
-                    } elseif (strtolower(ee()->config->item('charset')) == 'iso-8859-1' && strtolower($this->charset) == 'utf-8') {
-                        $text = utf8_decode($text);
+                    } elseif (strtolower((string) ee()->config->item('charset')) == 'utf-8' && strtolower((string) $this->charset) == 'iso-8859-1') {
+                        $text = mb_convert_encoding($text, 'UTF-8', 'ISO-8859-1');
+                    } elseif (strtolower((string) ee()->config->item('charset')) == 'iso-8859-1' && strtolower((string) $this->charset) == 'utf-8') {
+                        $text = mb_convert_encoding($text, 'ISO-8859-1');
                     }
                 }
 
@@ -1569,7 +1569,7 @@ class Moblog
             $upload_dir_id,
             array('ignore_dupes' => false)
         );
-        $filename = basename($file_path);
+        $filename = basename((string) $file_path);
 
         /** ---------------------------
         /**  Put Info in Post Data array
@@ -1627,13 +1627,13 @@ class Moblog
         }
 
         // Check to see if we're dealing with relative paths
-        if (strncmp($file_path, '..', 2) == 0) {
-            $directory = dirname($file_path);
+        if (strncmp((string) $file_path, '..', 2) == 0) {
+            $directory = dirname((string) $file_path);
             $file_path = realpath(substr($directory, 1)) . '/' . $filename;
         }
 
         // Upload the file
-        $config = array('upload_path' => dirname($file_path));
+        $config = array('upload_path' => dirname((string) $file_path));
         $mime = $type . '/' . $subtype;
         ee()->load->library('upload', $config);
 
@@ -1689,14 +1689,14 @@ class Moblog
      */
     public function appledouble($data)
     {
-        if (stristr($data, 'boundary=') === false) {
+        if (stristr((string) $data, 'boundary=') === false) {
             return false;
         }
 
         $boundary = "--" . $this->find_data($data, "boundary=", $this->newline);
         $boundary = trim(str_replace('"', '', $boundary));
         $boundary = str_replace("+", "\+", $boundary);
-        $email_parts = explode($boundary, $data);
+        $email_parts = explode($boundary, (string) $data);
 
         if (count($email_parts) < 2) {
             return false;
@@ -1725,7 +1725,7 @@ class Moblog
      */
     public function check_login()
     {
-        $this->body = trim($this->body);
+        $this->body = trim((string) $this->body);
         $login = $this->find_data($this->body, '', $this->newline);
 
         if ($login == '' or ! stristr($login, ':')) {
@@ -1765,7 +1765,7 @@ class Moblog
      */
     public function find_boundary($email_data)
     {
-        if (stristr($email_data, 'boundary=') === false) {
+        if (stristr((string) $email_data, 'boundary=') === false) {
             return false;
         } else {
             $this->boundary = "--" . $this->find_data($email_data, "boundary=", $this->newline);
@@ -1808,7 +1808,7 @@ class Moblog
      */
     public function remove_newlines($str, $replace = '')
     {
-        if (strpos($str, "\r") !== false or strpos($str, "\n") !== false) {
+        if (strpos((string) $str, "\r") !== false or strpos((string) $str, "\n") !== false) {
             $str = str_replace(array("\r\n", "\r", "\n"), $replace, $str);
         }
 
@@ -1823,7 +1823,7 @@ class Moblog
      */
     public function iso_clean($str)
     {
-        if (stristr($str, '=?') === false) {
+        if (stristr((string) $str, '=?') === false) {
             return $str;
         }
 
@@ -1842,24 +1842,24 @@ class Moblog
         //  function just in case.
         // -------------------------------------------------
 
-        if (function_exists('imap_utf8') && strtoupper(ee()->config->item('charset')) == 'UTF-8') {
+        if (function_exists('imap_utf8') && strtoupper((string) ee()->config->item('charset')) == 'UTF-8') {
             return rtrim(imap_utf8($str)) . "\r\n";
         }
 
         if (function_exists('mb_decode_mimeheader')) {
             // mb_decode_mimeheader() doesn't replace underscores
-            return str_replace('_', ' ', rtrim(mb_decode_mimeheader($str))) . "\r\n";
+            return str_replace('_', ' ', rtrim(mb_decode_mimeheader((string) $str))) . "\r\n";
         }
 
         if (function_exists('iconv_mime_decode')) {
-            return rtrim(iconv_mime_decode($str)) . "\r\n";
+            return rtrim(iconv_mime_decode((string) $str)) . "\r\n";
         }
 
-        if (substr(trim($str), -2) != '?=') {
-            $str = trim($str) . '?=';
+        if (substr(trim((string) $str), -2) != '?=') {
+            $str = trim((string) $str) . '?=';
         }
 
-        if (preg_match("|\=\?iso\-(.*?)\?[A-Z]{1}\?(.*?)\?\=|i", trim($str), $mime)) {
+        if (preg_match("|\=\?iso\-(.*?)\?[A-Z]{1}\?(.*?)\?\=|i", trim((string) $str), $mime)) {
             if ($mime['1'] == '8859-1') {
                 $charHex = array('0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F');
 
@@ -1877,7 +1877,7 @@ class Moblog
             $str = str_replace('_', ' ', $str);
         }
 
-        return ltrim($str);
+        return ltrim((string) $str);
     }
 
     /**
@@ -1895,24 +1895,24 @@ class Moblog
         if ($begin == '') {
             $p1 = 0;
         } else {
-            if (strpos(strtolower($str), strtolower($begin)) === false) {
+            if (strpos(strtolower((string) $str), strtolower((string) $begin)) === false) {
                 return $new;
             }
 
-            $p1 = strpos(strtolower($str), strtolower($begin)) + strlen($begin);
+            $p1 = strpos(strtolower((string) $str), strtolower((string) $begin)) + strlen((string) $begin);
         }
 
         if ($end == '') {
-            $p2 = strlen($str);
+            $p2 = strlen((string) $str);
         } else {
-            if (strpos(strtolower($str), strtolower($end), $p1) === false) {
+            if (strpos(strtolower((string) $str), strtolower((string) $end), $p1) === false) {
                 return $new;
             }
 
-            $p2 = strpos(strtolower($str), strtolower($end), $p1);
+            $p2 = strpos(strtolower((string) $str), strtolower((string) $end), $p1);
         }
 
-        $new = substr($str, $p1, ($p2 - $p1));
+        $new = substr((string) $str, $p1, ($p2 - $p1));
 
         return $new;
     }

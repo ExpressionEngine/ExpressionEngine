@@ -12,7 +12,7 @@
                                 $menus = ee()->menu->generate_menu();
                                 foreach ($menus['channels']['create'] as $channel_name => $link):
                                 ?>
-									<div class="search-channel" data-search="<?=strtolower($channel_name)?>"><a href="<?=$link?>" class="dropdown__link"><?=$channel_name?></a></div>
+									<div class="search-channel" data-search="<?=strtolower((string) $channel_name)?>"><a href="<?=$link?>" class="dropdown__link"><?=$channel_name?></a></div>
 								<?php endforeach ?>
 							</div>
 						</div>

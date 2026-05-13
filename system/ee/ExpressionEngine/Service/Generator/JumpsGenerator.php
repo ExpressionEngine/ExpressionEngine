@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -39,7 +40,7 @@ class JumpsGenerator extends AbstractGenerator
     public function build()
     {
         $jumpStub = $this->filesystem->read($this->stub('jumps.php'));
-        $jumpStub = $this->write('Addon', ucfirst($this->addon), $jumpStub);
+        $jumpStub = $this->write('Addon', ucfirst((string) $this->addon), $jumpStub);
         $jumpStub = $this->write('addon', $this->addon, $jumpStub);
 
         $this->putFile('jump.' . $this->addon . '.php', $jumpStub);

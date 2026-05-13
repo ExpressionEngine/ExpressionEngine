@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -62,40 +63,46 @@ class Thumbnail
         if ($file) {
             if (! $file->exists()) {
                 $this->setMissing();
+
                 return;
             } elseif ($file->isDirectory()) {
                 $this->tag = '<i class="fal fa-folder fa-3x"></i>';
             } elseif ($file->isEditableImage() || $file->isSVG()) {
                 $this->url = $file->getAbsoluteThumbnailURL() . "?v={$file->modified_date}";
                 $this->path = $file->getAbsoluteThumbnailPath();
-                $this->tag = '<img src="' . $this->url . '" alt="' . $file->title . '" title="' . $file->title .'" class="thumbnail_img" />';
+                $this->tag = '<img src="' . $this->url . '" alt="' . $file->title . '" title="' . $file->title . '" class="thumbnail_img" />';
             } else {
                 switch ($file->file_type) {
                     case 'doc':
                         $this->tag = '<span class="sr-only">' . lang('file_icon') . '</span><i class="fal fa-file-alt fa-3x"></i>';
-                        if (strpos($file->mime_type, 'pdf') !== false) {
+                        if (strpos((string) $file->mime_type, 'pdf') !== false) {
                             $this->tag = '<span class="sr-only">' . lang('pdf_file_icon') . '</span><i class="fal fa-file-pdf fa-3x"></i>';
-                        } elseif (strpos($file->mime_type, 'html') !== false || strpos($file->mime_type, 'css') !== false || strpos($file->mime_type, 'xml') !== false) {
+                        } elseif (strpos((string) $file->mime_type, 'html') !== false || strpos((string) $file->mime_type, 'css') !== false || strpos((string) $file->mime_type, 'xml') !== false) {
                             $this->tag = '<span class="sr-only">' . lang('file_icon') . '</span><i class="fal fa-file-code fa-3x"></i>';
-                        } elseif (strpos($file->mime_type, 'excel') !== false || strpos($file->mime_type, 'spreadsheet') !== false || strpos($file->mime_type, 'csv') !== false) {
+                        } elseif (strpos((string) $file->mime_type, 'excel') !== false || strpos((string) $file->mime_type, 'spreadsheet') !== false || strpos((string) $file->mime_type, 'csv') !== false) {
                             $this->tag = '<span class="sr-only">' . lang('spreadsheet_file_icon') . '</span><i class="fal fa-file-spreadsheet fa-3x"></i>';
-                        } elseif (strpos($file->mime_type, 'word') !== false || strpos($file->mime_type, 'document.text') !== false || strpos($file->mime_type, 'richtext') !== false || strpos($file->mime_type, 'rtf') !== false) {
+                        } elseif (strpos((string) $file->mime_type, 'word') !== false || strpos((string) $file->mime_type, 'document.text') !== false || strpos((string) $file->mime_type, 'richtext') !== false || strpos((string) $file->mime_type, 'rtf') !== false) {
                             $this->tag = '<span class="sr-only">' . lang('word_icon') . '</span><i class="fal fa-file-word fa-3x"></i>';
-                        } elseif (strpos($file->mime_type, 'powerpoint') !== false || strpos($file->mime_type, 'presentation') !== false) {
+                        } elseif (strpos((string) $file->mime_type, 'powerpoint') !== false || strpos((string) $file->mime_type, 'presentation') !== false) {
                             $this->tag = '<span class="sr-only">' . lang('powerpoint_icon') . '</span><i class="fal fa-file-powerpoint fa-3x"></i>';
                         }
+
                         break;
                     case 'archive':
                         $this->tag = '<span class="sr-only">' . lang('archive_icon') . '</span><i class="fal fa-file-archive fa-3x"></i>';
+
                         break;
                     case 'audio':
                         $this->tag = '<span class="sr-only">' . lang('audio_icon') . '</span><i class="fal fa-file-audio fa-3x"></i>';
+
                         break;
                     case 'video':
                         $this->tag = '<span class="sr-only">' . lang('video_icon') . '</span><i class="fal fa-file-video fa-3x"></i>';
+
                         break;
                     default:
                         $this->tag = '<span class="sr-only">' . lang('text_icon') . '</span><i class="fal fa-file fa-3x"></i>';
+
                         break;
                 }
             }
@@ -147,6 +154,7 @@ class Thumbnail
         if (! is_null($this->_exists)) {
             return $this->_exists;
         }
+
         return $this->_exists = ($this->filesystem) ? $this->filesystem->exists($this->path) : false;
     }
 

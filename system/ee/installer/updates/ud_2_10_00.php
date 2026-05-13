@@ -165,7 +165,7 @@ class Updater
             if ($query->num_rows() > 0) {
                 $sites = array();
                 foreach ($query->result_array() as $row) {
-                    if (! array_key_exists($row['site_id'], $sites)) {
+                    if (! array_key_exists((string) $row['site_id'], $sites)) {
                         $sites[$row['site_id']] = array();
                     }
                     $sites[$row['site_id']][] = $row['group_id'];

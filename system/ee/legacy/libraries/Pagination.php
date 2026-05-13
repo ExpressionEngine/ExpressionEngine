@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -210,9 +211,9 @@ class EE_Pagination
         // Is pagination being used over GET or POST?  If get, add a per_page query
         // string. If post, add a trailing slash to the base URL if needed
         if (ee()->config->item('enable_query_strings') === true or $this->page_query_string === true) {
-            $this->base_url = rtrim($this->base_url) . '&amp;' . $this->query_string_segment . '=';
+            $this->base_url = rtrim((string) $this->base_url) . '&amp;' . $this->query_string_segment . '=';
         } else {
-            $this->base_url = rtrim($this->base_url, '/') . '/';
+            $this->base_url = rtrim((string) $this->base_url, '/') . '/';
         }
 
         // And here we go...
@@ -343,7 +344,7 @@ class EE_Pagination
             if (ee()->uri->segment($this->uri_segment) != 0) {
                 $this->cur_page = ee()->uri->segment($this->uri_segment);
 
-                $this->cur_page = ltrim($this->cur_page, $this->prefix);
+                $this->cur_page = ltrim((string) $this->cur_page, $this->prefix);
                 $this->cur_page = rtrim($this->cur_page, $this->suffix);
 
                 // Prep the current page - no funny business!
@@ -555,7 +556,7 @@ class Pagination_object
             // Determine the offset
             if ($this->offset === 0 || !is_numeric($this->offset)) {
                 $query_string = (ee()->uri->page_query_string != '') ? ee()->uri->page_query_string : ee()->uri->query_string;
-                if (preg_match("#^{$this->prefix}(\d+)$|/{$this->prefix}(\d+)$#", $query_string, $match)) {
+                if (preg_match("#^{$this->prefix}(\d+)$|/{$this->prefix}(\d+)$#", (string) $query_string, $match)) {
                     $this->offset = (isset($match[2])) ? (int) $match[2] : (int) $match[1];
                     $this->basepath = reduce_double_slashes(
                         str_replace($match[0], '', $this->basepath)
@@ -626,7 +627,7 @@ class Pagination_object
                 $this->current_page = floor(($this->offset / $this->per_page) + 1);
 
                 if (isset($m_fields[$this->offset])) {
-                    ee()->TMPL->tagdata = preg_replace("/" . LD . "multi_field\=[\"'].+?[\"']" . RD . "/s", LD . $m_fields[$this->offset] . RD, ee()->TMPL->tagdata);
+                    ee()->TMPL->tagdata = preg_replace("/" . LD . "multi_field\=[\"'].+?[\"']" . RD . "/s", LD . $m_fields[$this->offset] . RD, (string) ee()->TMPL->tagdata);
                     ee()->TMPL->var_single[$m_fields[$this->offset]] = $m_fields[$this->offset];
                 }
             }
@@ -640,7 +641,7 @@ class Pagination_object
 
             // Last check to make sure we actually need to paginate
             if ($this->total_items > $this->per_page) {
-                if (strpos($this->basepath, EESELF) === false && ee()->config->item('site_index') != '' && strpos($this->basepath, ee()->config->item('site_index')) === false) {
+                if (strpos((string) $this->basepath, EESELF) === false && ee()->config->item('site_index') != '' && strpos((string) $this->basepath, (string) ee()->config->item('site_index')) === false) {
                     $this->basepath .= EESELF;
                 }
 
@@ -652,7 +653,7 @@ class Pagination_object
                 }
 
                 $config = array(
-                    'first_url' => rtrim($this->basepath, '/'),
+                    'first_url' => rtrim((string) $this->basepath, '/'),
                     'base_url' => $this->basepath,
                     'prefix' => $this->prefix,
                     'total_rows' => $this->total_items,
@@ -730,7 +731,7 @@ class Pagination_object
 
             // Check to see if page_links is being used as a single
             // variable or as a variable pair
-            if (strpos($template_data, LD . '/pagination_links' . RD) !== false) {
+            if (strpos((string) $template_data, LD . '/pagination_links' . RD) !== false) {
                 $parse_array['pagination_links'] = array($this->_page_array);
             } else {
                 $parse_array['pagination_links'] = $this->_page_links;
@@ -776,11 +777,11 @@ class Pagination_object
 
         switch ($this->_position) {
             case "top":
-                return implode($this->_template_data) . $return_data;
+                return implode('', $this->_template_data) . $return_data;
 
                 break;
             case "both":
-                return implode($this->_template_data) . $return_data . implode($this->_template_data);
+                return implode('', $this->_template_data) . $return_data . implode('', $this->_template_data);
 
                 break;
             case "inline":
@@ -796,12 +797,12 @@ class Pagination_object
 
                 break;
 
-            return $return_data;
+                return $return_data;
 
-            break;
+                break;
             case "bottom":
             default:
-                return $return_data . implode($this->_template_data);
+                return $return_data . implode('', $this->_template_data);
 
                 break;
         }
@@ -815,26 +816,25 @@ class Pagination_object
     public function getVariables()
     {
         $variables = [
-                'first_url' => rtrim($this->basepath, '/'),
-                'base_url' => $this->basepath,
-                'prefix' => $this->prefix,
-                'total' => $this->total_items,
-                'per_page' => $this->per_page,
-                'from' => $this->offset * $this->per_page,
-                'to' => min($this->total_items, $this->offset + 1 * $this->per_page),
-                'current_page' => $this->offset + 1,
-                'num_links' => $this->_page_links_limit,
-                'links' => $this->_page_array,
-                'first_link' => lang('pag_first_link'),
-                'last_link' => lang('pag_last_link'),
+            'first_url' => rtrim((string) $this->basepath, '/'),
+            'base_url' => $this->basepath,
+            'prefix' => $this->prefix,
+            'total' => $this->total_items,
+            'per_page' => $this->per_page,
+            'from' => $this->offset * $this->per_page,
+            'to' => min($this->total_items, $this->offset + 1 * $this->per_page),
+            'current_page' => $this->offset + 1,
+            'num_links' => $this->_page_links_limit,
+            'links' => $this->_page_array,
+            'first_link' => lang('pag_first_link'),
+            'last_link' => lang('pag_last_link'),
         ];
 
         // Flatten named single page links
         $links = ['next_page', 'previous_page', 'first_page', 'last_page'];
 
-        foreach($links as $link)
-        {
-            if($variables['links'][$link] ?? false) {
+        foreach ($links as $link) {
+            if ($variables['links'][$link] ?? false) {
                 $variables['links'][$link] = $variables['links'][$link][0];
             }
         }

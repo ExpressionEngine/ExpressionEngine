@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -7,7 +8,6 @@
  * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -229,7 +229,7 @@ class Pro_variables_ft extends EE_Fieldtype
 
         // Loop through found vars and group by group label
         foreach ($vars as $row) {
-            $group = array_key_exists($row['group_id'], $groups)
+            $group = array_key_exists((string) $row['group_id'], $groups)
                 ? $groups[$row['group_id']]
                 : $groups['0'];
 
@@ -329,7 +329,7 @@ class Pro_variables_ft extends EE_Fieldtype
         // -------------------------------------
 
         if ($tagdata) {
-            foreach (explode("\n", $data) as $var) {
+            foreach (explode("\n", (string) $data) as $var) {
                 $it .= str_replace(LD . 'var' . RD, $var, $tagdata);
             }
         } else {

@@ -4,7 +4,7 @@
             <div class="redactor-toolbar cke_toolbox">
                 <?php foreach ($buttons as $button => $label): ?>
                     <?php
-                        $lc_class = str_replace(':', '', strtolower($button));
+                        $lc_class = str_replace(':', '', strtolower((string) $button));
                         $id = 'tb-option-' . $lc_class;
                         switch ($lc_class) {
                             case 'fullscreen':
@@ -29,7 +29,7 @@
                     ?>
                     <span id="<?php echo $id ?>" class="cke_toolbar tb-option tb-selected">
                         <span class="cke_toolgroup">
-                            <a class="re-button re-button-icon re-<?php echo $lc_class ?> <?php if (!in_array($button, $selection)) { echo 'redactor-button-active';} ?>" title="<?php echo htmlspecialchars($label) ?>">
+                            <a class="re-button re-button-icon re-<?php echo $lc_class ?> <?php if (!in_array($button, $selection)) { echo 'redactor-button-active';} ?>" title="<?php echo htmlspecialchars((string) $label) ?>">
                                 <i class="re-icon-<?php echo $icon_class ?>">
                                     <?php if ($icon_class == 'rte_definedlinks') { ?>
                                         <svg height="16" width="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="m11 1c2.209139 0 4 1.790861 4 4s-1.790861 4-4 4c-.7656675 0-1.48108924-.21512764-2.08911866-.58823636-.0308598.0700602-.07139598.13787279-.12058595.2011358l-.08318861.09420734-.26034513.261909c.35153112.59529459.55323835 1.28958382.55323835 2.03098422 0 2.209139-1.790861 4-4 4s-4-1.790861-4-4 1.790861-4 4-4c.74181883 0 1.43647323.20193496 2.03199196.55383363l.26090126-.26094041c.08817393-.08817393.18871724-.15643965.29604433-.20479715-.37380991-.60700683-.58893755-1.32242858-.58893755-2.08809607 0-2.209139 1.790861-4 4-4zm-6 8c-1.1045695 0-2 .8954305-2 2s.8954305 2 2 2 2-.8954305 2-2-.8954305-2-2-2zm6-6c-1.1045695 0-2 .8954305-2 2s.8954305 2 2 2 2-.8954305 2-2-.8954305-2-2-2z"></path></svg>

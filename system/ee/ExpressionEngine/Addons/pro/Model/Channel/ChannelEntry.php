@@ -21,7 +21,7 @@ class ChannelEntry extends Core\ChannelEntry
         if (ee('Request')->get('field_id')) {
             $field_id = ee('Request')->get('field_id');
             foreach ($data as $key => $value) {
-                if ($field_id != $key && strrpos($key, '_' . $field_id) !== (strlen($key) - strlen('_' . $field_id))) {
+                if ($field_id != $key && strrpos((string) $key, '_' . $field_id) !== (strlen((string) $key) - strlen('_' . $field_id))) {
                     unset($data[$key]);
                 }
             }

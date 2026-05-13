@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -69,13 +70,14 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component
             }
 
             $disabledFeatures = $pre->disabledFeatures();
-            if (strpos($tagdata, 'categories') === false) {
+            if (strpos((string) $tagdata, 'categories') === false) {
                 $disableCategories = true;
                 $tagStrings = array_merge($pre->pairs, $pre->singles);
                 if (!empty($tagStrings)) {
                     foreach ($tagStrings as $string => $data) {
-                        if (strpos($string, 'category') !== false) {
+                        if (strpos((string) $string, 'category') !== false) {
                             $disableCategories = false;
+
                             break;
                         }
                     }

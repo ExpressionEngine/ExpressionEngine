@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -125,13 +126,13 @@ class Msm extends CP_Controller
                     'content' => $site->site_label,
                     'href' => $edit_url
                 ),
-                '<var>{' . htmlentities($site->site_name, ENT_QUOTES) . '}</var>',
+                '<var>{' . htmlentities((string) $site->site_name, ENT_QUOTES) . '}</var>',
                 $status,
                 array(
                     'name' => 'selection[]',
                     'value' => $site->site_id,
                     'data' => array(
-                        'confirm' => lang('site') . ': <b>' . htmlentities($site->site_label, ENT_QUOTES, 'UTF-8') . '</b>'
+                        'confirm' => lang('site') . ': <b>' . htmlentities((string) $site->site_label, ENT_QUOTES, 'UTF-8') . '</b>'
                     )
                 )
             );
@@ -489,7 +490,7 @@ class Msm extends CP_Controller
         if (ee('Request')->post('custom_site_color') == 'n') {
             $site->site_color = '';
         } else {
-            $site->site_color = ltrim(ee('Request')->post('site_color'), '#');
+            $site->site_color = ltrim((string) ee('Request')->post('site_color'), '#');
         }
         $result = $site->validate();
         if (ee('Request')->post('custom_site_color') == 'y') {
@@ -571,7 +572,7 @@ class Msm extends CP_Controller
         } elseif (ee()->session->userdata['assigned_sites'] != '') {
             $result = ee('Model')->get('Site')
                 ->fields('site_id', 'site_label')
-                ->filter('site_id', explode('|', ee()->session->userdata['assigned_sites']))
+                ->filter('site_id', explode('|', (string) ee()->session->userdata['assigned_sites']))
                 ->order('site_label', 'asc')
                 ->all();
         }

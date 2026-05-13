@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -71,7 +72,7 @@ class Addon
             }
         }
 
-        if (array_key_exists($this->shortname, self::$installed_modules)) {
+        if (array_key_exists((string) $this->shortname, self::$installed_modules)) {
             return true;
         }
 
@@ -81,12 +82,12 @@ class Addon
             self::$installed_extensions = array();
 
             foreach ($query->result() as $row) {
-                $name = strtolower(preg_replace('/^(.*?)(_(ext|mcp))?$/', '$1', $row->class));
+                $name = strtolower((string) preg_replace('/^(.*?)(_(ext|mcp))?$/', '$1', (string) $row->class));
                 self::$installed_extensions[$name] = $row;
             }
         }
 
-        if (array_key_exists($this->shortname, self::$installed_extensions)) {
+        if (array_key_exists((string) $this->shortname, self::$installed_extensions)) {
             return true;
         }
 
@@ -103,9 +104,9 @@ class Addon
         $paths = $this->getFilesMatching('ft.*.php');
 
         foreach ($paths as $path) {
-            $shortname = preg_replace('/ft.(.*?).php/', '$1', basename($path));
+            $shortname = preg_replace('/ft.(.*?).php/', '$1', basename((string) $path));
 
-            if (array_key_exists($shortname, self::$installed_fieldtypes)) {
+            if (array_key_exists((string) $shortname, self::$installed_fieldtypes)) {
                 return true;
             }
         }
@@ -131,7 +132,7 @@ class Addon
             //always return true if the table does not exist
             //e.g. when running update from EE2 to EE6
             //some older version also don't use . as separator
-            if (version_compare(ee()->config->item('app_version'), '3.0.0', '<') || strpos(ee()->config->item('app_version'), '.') === false) {
+            if (version_compare(ee()->config->item('app_version'), '3.0.0', '<') || strpos((string) ee()->config->item('app_version'), '.') === false) {
                 return true;
             }
 
@@ -203,7 +204,7 @@ class Addon
 
         // Extension
         if ($this->hasExtension()) {
-            $class = ucfirst($this->shortname) . '_ext';
+            $class = ucfirst((string) $this->shortname) . '_ext';
 
             $addon = ee('Model')->get('Extension')
                 ->fields('version')
@@ -237,7 +238,7 @@ class Addon
         if ($this->hasModule()) {
             ee()->lang->loadfile($this->shortname, '', false);
 
-            $lang_key = strtolower($this->shortname) . '_module_name';
+            $lang_key = strtolower((string) $this->shortname) . '_module_name';
             $name = lang($lang_key);
 
             if ($name != strtolower($lang_key)) {
@@ -271,7 +272,7 @@ class Addon
     {
         $this->requireFile('mod');
 
-        $class = ucfirst($this->shortname);
+        $class = ucfirst((string) $this->shortname);
 
         return $this->getFullyQualified($class);
     }
@@ -285,7 +286,7 @@ class Addon
     {
         $this->requireFile('pi');
 
-        $class = ucfirst($this->shortname);
+        $class = ucfirst((string) $this->shortname);
 
         return $this->getFullyQualified($class);
     }
@@ -299,7 +300,7 @@ class Addon
     {
         $this->requireFile('upd');
 
-        $class = ucfirst($this->shortname) . '_upd';
+        $class = ucfirst((string) $this->shortname) . '_upd';
 
         return $this->getFullyQualified($class);
     }
@@ -313,7 +314,7 @@ class Addon
     {
         $this->requireFile('upgrade');
 
-        $class = ucfirst($this->shortname) . '_upgrade';
+        $class = ucfirst((string) $this->shortname) . '_upgrade';
 
         return $this->getFullyQualified($class);
     }
@@ -327,7 +328,7 @@ class Addon
     {
         $this->requireFile('mcp');
 
-        $class = ucfirst($this->shortname) . '_mcp';
+        $class = ucfirst((string) $this->shortname) . '_mcp';
 
         return $this->getFullyQualified($class);
     }
@@ -341,7 +342,7 @@ class Addon
     {
         $this->requireFile('ext');
 
-        $class = ucfirst($this->shortname) . '_ext';
+        $class = ucfirst((string) $this->shortname) . '_ext';
 
         return $this->getFullyQualified($class);
     }
@@ -355,7 +356,7 @@ class Addon
     {
         $this->requireFile('spam');
 
-        $class = ucfirst($this->shortname) . '_spam';
+        $class = ucfirst((string) $this->shortname) . '_spam';
 
         return $this->getFullyQualified($class);
     }
@@ -369,7 +370,7 @@ class Addon
     {
         $this->requireFile('jump');
 
-        $class = ucfirst($this->shortname) . '_jump';
+        $class = ucfirst((string) $this->shortname) . '_jump';
 
         return $this->getFullyQualified($class);
     }
@@ -383,14 +384,14 @@ class Addon
     {
         $this->requireFile('rtefb');
 
-        $class = ucfirst($this->shortname) . '_rtefb';
+        $class = ucfirst((string) $this->shortname) . '_rtefb';
 
         return $this->getFullyQualified($class);
     }
 
     public function getEvaluationRuleClass($rule)
     {
-        return $this->getFullyQualified("EvaluationRules\\" . ucfirst($rule));
+        return $this->getFullyQualified("EvaluationRules\\" . ucfirst((string) $rule));
     }
 
     /**
@@ -516,7 +517,6 @@ class Addon
         return $this->hasFile('spam');
     }
 
-
     /**
      * Has a tab.* file?
      *
@@ -559,9 +559,9 @@ class Addon
 
                 if ($items[$newKey]['addon'] === true) {
                     if ($item['dynamic'] === true) {
-                        $items[$newKey]['target'] = 'addons/' . $this->shortname . '/' . ltrim($item['target'], '/');
+                        $items[$newKey]['target'] = 'addons/' . $this->shortname . '/' . ltrim((string) $item['target'], '/');
                     } else {
-                        $items[$newKey]['target'] = 'addons/settings/' . $this->shortname . '/' . ltrim($item['target'], '/');
+                        $items[$newKey]['target'] = 'addons/settings/' . $this->shortname . '/' . ltrim((string) $item['target'], '/');
                     }
                 }
             }
@@ -599,7 +599,7 @@ class Addon
         $fieldtypes = $this->get('fieldtypes');
 
         foreach ($this->getFilesMatching('ft.*.php') as $path) {
-            $ft_name = preg_replace('/ft.(.*?).php/', '$1', basename($path));
+            $ft_name = preg_replace('/ft.(.*?).php/', '$1', basename((string) $path));
             $names[$ft_name] = (isset($fieldtypes[$ft_name]['name'])) ? $fieldtypes[$ft_name]['name'] : $this->getName();
         }
 
@@ -735,8 +735,8 @@ class Addon
 
         foreach ($files as $path) {
             require_once $path;
-            $class = preg_replace('/ft.(.*?).php/', '$1', basename($path));
-            $classes[] = ucfirst($class) . '_ft';
+            $class = preg_replace('/ft.(.*?).php/', '$1', basename((string) $path));
+            $classes[] = ucfirst((string) $class) . '_ft';
         }
 
         return $classes;
@@ -807,7 +807,7 @@ class Addon
             return false;
         }
 
-        list($cache, $integrity) = explode('||s=', $cached);
+        list($cache, $integrity) = explode('||s=', (string) $cached);
 
         // Make sure the cache exists and has the proper integrity to use.
         if (empty($cache) || empty($integrity) || hash('sha256', $cache) !== $integrity) {
@@ -818,7 +818,7 @@ class Addon
 
         $json = ee('Encrypt')->decode($cache, ee()->config->item('session_crypt_key'));
 
-        if (empty($json) || !$data = json_decode($json, true)) {
+        if (empty($json) || !$data = json_decode((string) $json, true)) {
             $this->logLicenseError('license_error_file_broken');
 
             return false;
@@ -881,7 +881,7 @@ class Addon
      */
     protected function getFullyQualified($class)
     {
-        $ns = trim($this->provider->getNamespace(), '\\');
+        $ns = trim((string) $this->provider->getNamespace(), '\\');
 
         $ns_class = "\\{$ns}\\{$class}";
 

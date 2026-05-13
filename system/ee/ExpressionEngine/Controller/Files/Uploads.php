@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -113,7 +114,7 @@ class Uploads extends AbstractFilesController
                 $field = ee()->input->post('ee_fv_field');
 
                 // We may be validating a field in a Grid
-                preg_match("/\[rows\]\[(\w+)\]\[(\w+)\]/", $field, $matches);
+                preg_match("/\[rows\]\[(\w+)\]\[(\w+)\]/", (string) $field, $matches);
 
                 // Error is present for the validating field, send it back
                 if (! empty($matches) && isset($this->upload_errors['image_sizes'][$matches[1]][$matches[2]])) {
@@ -192,7 +193,7 @@ class Uploads extends AbstractFilesController
                     foreach ($field['fields'] as $input_name => $input) {
                         $prefixed_name = implode('', [
                             "_for_adapter[{$key}]",
-                            (strpos($input_name, '[') !== false) ? '['. str_replace('[', '][', $input_name) : "[{$input_name}]"
+                            (strpos((string) $input_name, '[') !== false) ? '[' . str_replace('[', '][', $input_name) : "[{$input_name}]"
                         ]);
                         $field['fields'][$prefixed_name] = $input;
                         unset($field['fields'][$input_name]);
@@ -231,7 +232,9 @@ class Uploads extends AbstractFilesController
             )
         );
         $vars['sections'][0] = array_merge($vars['sections'][0], $adapter_settings);
-        $vars['sections'][0] = array_merge($vars['sections'][0], array(
+        $vars['sections'][0] = array_merge(
+            $vars['sections'][0],
+            array(
                 array(
                     'title' => 'upload_allowed_types',
                     'desc' => '',
@@ -687,7 +690,7 @@ class Uploads extends AbstractFilesController
             //and then do extra validation
             //but only on form submission
             if (! AJAX_REQUEST && ee('Request')->post('adapter') == 'local' && !empty($adapterSettings['server_path'])) {
-                $parsedServerPath = rtrim(parse_config_variables($adapterSettings['server_path']), '\\/') . DIRECTORY_SEPARATOR;
+                $parsedServerPath = rtrim((string) parse_config_variables($adapterSettings['server_path']), '\\/') . DIRECTORY_SEPARATOR;
                 if ((DIRECTORY_SEPARATOR == '/' && strpos($parsedServerPath, '/') === 0) || (DIRECTORY_SEPARATOR == '\\' && strpos($parsedServerPath, ':') === 1)) {
                     ee('Filesystem')->mkDir($parsedServerPath);
                 }
@@ -715,7 +718,7 @@ class Uploads extends AbstractFilesController
         // collect existing to keep, and new ones to add
         if (isset($image_sizes['rows'])) {
             foreach ($image_sizes['rows'] as $row_id => $columns) {
-                if (strpos($row_id, 'row_id_') !== false) {
+                if (strpos((string) $row_id, 'row_id_') !== false) {
                     $existing_ids[] = str_replace('row_id_', '', $row_id);
                 } else {
                     $new_sizes[$row_id] = $columns;
@@ -970,7 +973,6 @@ class Uploads extends AbstractFilesController
                     'errors' => $synced
                 ));
             }
-
 
         }
     }

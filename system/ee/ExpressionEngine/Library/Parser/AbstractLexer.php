@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -43,7 +44,7 @@ abstract class AbstractLexer
      */
     protected function peek($n = 1)
     {
-        return substr($this->str, 0, $n);
+        return substr((string) $this->str, 0, $n);
     }
 
     /**
@@ -55,7 +56,7 @@ abstract class AbstractLexer
      */
     protected function peekRegex($regex, $flags = 'us')
     {
-        if (preg_match('/' . $regex . '/A' . $flags, $this->str, $matches)) {
+        if (preg_match('/' . $regex . '/A' . $flags, (string) $this->str, $matches)) {
             return $matches[0];
         }
 
@@ -75,7 +76,7 @@ abstract class AbstractLexer
         // if mbstring.func_overload is enabled strcspn here and substr in move()
         // will not have matching lengths, so only use strcspn when they match
         // and fall back to regex otherwise
-        if ($n = preg_match('/^[^' . preg_quote($char_mask, '/') . ']*/', $this->str, $matches)) {
+        if ($n = preg_match('/^[^' . preg_quote($char_mask, '/') . ']*/', (string) $this->str, $matches)) {
             $n = strlen($matches[0]);
         }
 
@@ -100,8 +101,8 @@ abstract class AbstractLexer
      */
     protected function move($n)
     {
-        $buffer = substr($this->str, 0, $n);
-        $this->str = substr($this->str, $n);
+        $buffer = substr((string) $this->str, 0, $n);
+        $this->str = substr((string) $this->str, $n);
 
         return $buffer;
     }

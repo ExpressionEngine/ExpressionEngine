@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SimplePie
  *
@@ -1287,7 +1288,9 @@ class SimplePie
             if ($xml_is_sane === null) {
                 $parser_check = xml_parser_create();
                 xml_parse_into_struct($parser_check, '<foo>&amp;</foo>', $values);
-                xml_parser_free($parser_check);
+                if (PHP_VERSION_ID < 80000) {
+                    xml_parser_free($parser_check);
+                }
                 $xml_is_sane = isset($values[0]['value']);
             }
             if (!$xml_is_sane) {
@@ -1362,7 +1365,7 @@ class SimplePie
 
         // First check to see if input has been overridden.
         if ($this->input_encoding !== false) {
-            $encodings[] = strtoupper($this->input_encoding);
+            $encodings[] = strtoupper((string) $this->input_encoding);
         }
 
         $application_types = array('application/xml', 'application/xml-dtd', 'application/xml-external-parsed-entity');
@@ -1580,18 +1583,18 @@ class SimplePie
                         // Check for both h-feed and h-entry, as both a feed with no entries
                         // and a list of entries without an h-feed wrapper are both valid.
                         $position = 0;
-                        while ($position = strpos($file->body, 'h-feed', $position)) {
+                        while ($position = strpos((string) $file->body, 'h-feed', $position)) {
                             $start = $position < 200 ? 0 : $position - 200;
-                            $check = substr($file->body, $start, 400);
+                            $check = substr((string) $file->body, $start, 400);
                             if ($microformats = preg_match('/class="[^"]*h-feed/', $check)) {
                                 break;
                             }
                             $position += 7;
                         }
                         $position = 0;
-                        while ($position = strpos($file->body, 'h-entry', $position)) {
+                        while ($position = strpos((string) $file->body, 'h-entry', $position)) {
                             $start = $position < 200 ? 0 : $position - 200;
-                            $check = substr($file->body, $start, 400);
+                            $check = substr((string) $file->body, $start, 400);
                             if ($microformats = preg_match('/class="[^"]*h-entry/', $check)) {
                                 break;
                             }
@@ -2394,8 +2397,8 @@ class SimplePie
                     } else {
                         $this->data['links'][SIMPLEPIE_IANA_LINK_RELATIONS_REGISTRY . $key] = & $this->data['links'][$key];
                     }
-                } elseif (substr($key, 0, 41) === SIMPLEPIE_IANA_LINK_RELATIONS_REGISTRY) {
-                    $this->data['links'][substr($key, 41)] = & $this->data['links'][$key];
+                } elseif (substr((string) $key, 0, 41) === SIMPLEPIE_IANA_LINK_RELATIONS_REGISTRY) {
+                    $this->data['links'][substr((string) $key, 41)] = & $this->data['links'][$key];
                 }
                 $this->data['links'][$key] = array_unique($this->data['links'][$key]);
             }
@@ -2524,7 +2527,7 @@ class SimplePie
     {
         if ($return = $this->get_channel_tags(SIMPLEPIE_NAMESPACE_W3C_BASIC_GEO, 'lat')) {
             return (float) $return[0]['data'];
-        } elseif (($return = $this->get_channel_tags(SIMPLEPIE_NAMESPACE_GEORSS, 'point')) && preg_match('/^((?:-)?[0-9]+(?:\.[0-9]+)) ((?:-)?[0-9]+(?:\.[0-9]+))$/', trim($return[0]['data']), $match)) {
+        } elseif (($return = $this->get_channel_tags(SIMPLEPIE_NAMESPACE_GEORSS, 'point')) && preg_match('/^((?:-)?[0-9]+(?:\.[0-9]+)) ((?:-)?[0-9]+(?:\.[0-9]+))$/', trim((string) $return[0]['data']), $match)) {
             return (float) $match[1];
         } else {
             return null;
@@ -2549,7 +2552,7 @@ class SimplePie
             return (float) $return[0]['data'];
         } elseif ($return = $this->get_channel_tags(SIMPLEPIE_NAMESPACE_W3C_BASIC_GEO, 'lon')) {
             return (float) $return[0]['data'];
-        } elseif (($return = $this->get_channel_tags(SIMPLEPIE_NAMESPACE_GEORSS, 'point')) && preg_match('/^((?:-)?[0-9]+(?:\.[0-9]+)) ((?:-)?[0-9]+(?:\.[0-9]+))$/', trim($return[0]['data']), $match)) {
+        } elseif (($return = $this->get_channel_tags(SIMPLEPIE_NAMESPACE_GEORSS, 'point')) && preg_match('/^((?:-)?[0-9]+(?:\.[0-9]+)) ((?:-)?[0-9]+(?:\.[0-9]+))$/', trim((string) $return[0]['data']), $match)) {
             return (float) $match[2];
         } else {
             return null;

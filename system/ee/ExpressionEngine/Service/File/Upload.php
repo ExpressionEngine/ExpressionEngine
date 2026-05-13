@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -32,7 +33,7 @@ class Upload
         $html = '';
 
         if (! $file->isNew()) {
-            $dimensions = explode(" ", $file->file_hw_original);
+            $dimensions = explode(" ", (string) $file->file_hw_original);
             $metadata = [
                 'name' => $file->file_name,
                 'size' => ee('Format')->make('Number', $file->file_size)->bytes(),
@@ -397,10 +398,10 @@ class Upload
         );
 
         // Ensure the file extension of the original name matches the file's current name
-        $original_ext_pos = strrpos($original_name, '.');
-        $file_ext_pos = strrpos($file->file_name, '.');
+        $original_ext_pos = strrpos((string) $original_name, '.');
+        $file_ext_pos = strrpos((string) $file->file_name, '.');
 
-        if ($original_ext_pos === false || $file_ext_pos === false || substr($original_name, $original_ext_pos) != substr($file->file_name, $file_ext_pos)) {
+        if ($original_ext_pos === false || $file_ext_pos === false || substr((string) $original_name, $original_ext_pos) != substr((string) $file->file_name, $file_ext_pos)) {
             ee('CP/Alert')->makeInline('shared-form')
                 ->asIssue()
                 ->withTitle(lang('file_conflict'))
@@ -411,7 +412,7 @@ class Upload
         }
 
         // Ensure the file extension of the original name matches the file's current name
-        if (substr($original_name, $original_ext_pos) != substr($file->file_name, $file_ext_pos)) {
+        if (substr((string) $original_name, $original_ext_pos) != substr((string) $file->file_name, $file_ext_pos)) {
             ee('CP/Alert')->makeInline('shared-form')
                 ->asIssue()
                 ->withTitle(lang('file_conflict'))
@@ -434,8 +435,8 @@ class Upload
                 return $result;
             }
 
-            $original_extension = substr($original_name, strrpos($original_name, '.'));
-            $new_extension = substr($new_name, strrpos($new_name, '.'));
+            $original_extension = substr((string) $original_name, strrpos((string) $original_name, '.'));
+            $new_extension = substr((string) $new_name, strrpos((string) $new_name, '.'));
 
             if ($new_extension != $original_extension) {
                 $new_name .= $original_extension;
@@ -582,7 +583,8 @@ class Upload
         return $result;
     }
 
-    public function syncUploadDirectory($id, $sizes = [], $db_sync = false) {
+    public function syncUploadDirectory($id, $sizes = [], $db_sync = false)
+    {
         $uploadDestination = ee('Model')->get('UploadDestination', $id)->first();
 
         if (empty($uploadDestination)) {
@@ -636,7 +638,7 @@ class Upload
         foreach ($current_files as $filePath) {
             $fileInfo = $filesystem->getWithMetadata($filePath);
             if (!isset($fileInfo['basename'])) {
-                $fileInfo['basename'] = basename($fileInfo['path']);
+                $fileInfo['basename'] = basename((string) $fileInfo['path']);
             }
             $mime = ($fileInfo['type'] != 'dir') ? $filesystem->getMimetype($filePath) : 'directory';
 
@@ -668,6 +670,7 @@ class Upload
                 // Rename the file
                 if (! $filesystem->rename($fileInfo['path'], $clean_filename)) {
                     $errors[$fileInfo['path']] = lang('invalid_filename');
+
                     continue;
                 }
 
@@ -717,7 +720,7 @@ class Upload
                 );
 
                 // Update dimensions
-                $image_dimensions = $file->actLocally(function($path) {
+                $image_dimensions = $file->actLocally(function ($path) {
                     return ee()->filemanager->get_image_dimensions($path);
                 });
                 $file->setRawProperty('file_hw_original', $image_dimensions['height'] . ' ' . $image_dimensions['width']);
@@ -727,6 +730,7 @@ class Upload
                     foreach ($fileTypes as $fileType) {
                         if (in_array($file->getProperty('mime_type'), $mimes[$fileType])) {
                             $file->setProperty('file_type', $fileType);
+
                             break;
                         }
                     }
@@ -764,7 +768,7 @@ class Upload
                 $image_dimensions = $file->actLocally(function ($path) {
                     return ee()->filemanager->get_image_dimensions($path);
                 });
-                $file_data['file_hw_original'] =  $image_dimensions['height'] . ' ' . $image_dimensions['width'];
+                $file_data['file_hw_original'] = $image_dimensions['height'] . ' ' . $image_dimensions['width'];
                 $file->setRawProperty('file_hw_original', $file_data['file_hw_original']);
             }
             //$file->save(); need to fallback to old saving because of the checks

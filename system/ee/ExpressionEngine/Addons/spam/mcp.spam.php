@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -119,11 +120,11 @@ class Spam_mcp
                     'href' => '#',
                     'class' => 'spam-detail',
                     'rel' => 'spam-modal',
-                    'title' => strtolower(lang('edit')),
-                    'data-content' => htmlentities(nl2br($spam->document), ENT_QUOTES, 'UTF-8'),
-                    'data-type' => htmlentities($spam->content_type, ENT_QUOTES, 'UTF-8'),
+                    'title' => strtolower((string) lang('edit')),
+                    'data-content' => htmlentities(nl2br((string) $spam->document), ENT_QUOTES, 'UTF-8'),
+                    'data-type' => htmlentities((string) $spam->content_type, ENT_QUOTES, 'UTF-8'),
                     'data-date' => ee()->localize->human_time($spam->trap_date->getTimestamp()),
-                    'data-ip' => htmlentities($spam->ip_address, ENT_QUOTES, 'UTF-8'),
+                    'data-ip' => htmlentities((string) $spam->ip_address, ENT_QUOTES, 'UTF-8'),
                 )
             ));
 
@@ -133,9 +134,9 @@ class Spam_mcp
                 $author = lang('guest');
             }
 
-            $summary = substr($spam->document, 0, 60) . '...';
+            $summary = substr((string) $spam->document, 0, 60) . '...';
             $title = htmlentities($summary, ENT_QUOTES, 'UTF-8');
-            $title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities($author, ENT_QUOTES, 'UTF-8') . '</span>';
+            $title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities((string) $author, ENT_QUOTES, 'UTF-8') . '</span>';
 
             $trapped[] = array(
                 'content' => $title,
@@ -832,7 +833,7 @@ class Spam_mcp
         $classes = $data->pluck('class');
         $documents = $data->pluck('source');
 
-        $stopwords = explode("\n", ee()->lang->load('spam/stopwords', null, true, false));
+        $stopwords = explode("\n", (string) ee()->lang->load('spam/stopwords', null, true, false));
         $tokenizer = ee('spam:Tokenizer');
         $tfidf = ee('spam:Vectorizers/Tfidf', $documents, $tokenizer, $stopwords);
 

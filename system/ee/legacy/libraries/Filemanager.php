@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -87,11 +88,11 @@ class Filemanager
         $dirname = ($filesystem->dirname($filename) !== '.') ? $filesystem->dirname($filename) . '/' : '';
 
         // Remove invisible control characters
-        $basename = preg_replace('#\\p{C}+#u', '', $basename);
+        $basename = preg_replace('#\\p{C}+#u', '', (string) $basename);
 
         // clean up the filename
         if ($parameters['convert_spaces'] === true) {
-            $basename = preg_replace("/\s+/", "_", $basename);
+            $basename = preg_replace("/\s+/", "_", (string) $basename);
         }
 
         $basename = ee()->security->sanitize_filename($basename);
@@ -408,7 +409,7 @@ class Filemanager
                 return $this->_save_file_response(false, lang('gd_not_installed'));
             }
 
-            if(!($prefs['image_processed'] ?? false)) {
+            if (!($prefs['image_processed'] ?? false)) {
                 // Check and fix orientation
                 $orientation = $this->orientation_check($image_path, $prefs);
 
@@ -427,7 +428,7 @@ class Filemanager
             }
 
             // Write $image_path to $file_path
-            if($image_path !== $file_path) {
+            if ($image_path !== $file_path) {
                 $directory['upload_destination']->getFilesystem()->write($file_path, file_get_contents($image_path), true);
             }
 
@@ -1465,7 +1466,7 @@ class Filemanager
             exit;
         } else {
             // Worked, let's return the thumb path
-            echo rtrim($dir['server_path'], '/') . '/' . '_thumbs/' . 'thumb_' . $data['name'];
+            echo rtrim((string) $dir['server_path'], '/') . '/' . '_thumbs/' . 'thumb_' . $data['name'];
         }
     }
 
@@ -1533,7 +1534,7 @@ class Filemanager
      */
     public function find_thumbs($dir, $files)
     {
-        $thumb_path = rtrim($dir['server_path'], '/') . '/_thumbs';
+        $thumb_path = rtrim((string) $dir['server_path'], '/') . '/_thumbs';
 
         if (! is_dir($thumb_path)) {
             return $files;
@@ -1724,7 +1725,7 @@ class Filemanager
         $files = $files['results']->result_array();
 
         foreach ($files as &$file) {
-            $file['file_name'] = rawurlencode($file['file_name']);
+            $file['file_name'] = rawurlencode((string) $file['file_name']);
 
             // Get thumb information
             $thumb_info = $this->get_thumb($file, $dir['id']);
@@ -1738,7 +1739,7 @@ class Filemanager
                     title="' . $file['file_name'] . '"
                     onclick="$.ee_filebrowser.placeImage(' . $file['file_id'] . '); return false;"
                 >
-                    ' . urldecode($file['file_name']) . '
+                    ' . urldecode((string) $file['file_name']) . '
                 </a>';
 
             $file['short_name'] = ellipsize($file['title'], 13, 0.5);
@@ -1837,7 +1838,7 @@ class Filemanager
             $type_query = ee()->db->get_where('channel_fields', array('field_id' => $field_id));
 
             if ($type_query->num_rows()) {
-                $settings = unserialize(base64_decode($type_query->row('field_settings')));
+                $settings = unserialize(base64_decode((string) $type_query->row('field_settings')));
 
                 // Permissions can only get more strict!
                 if (isset($settings['field_content_type']) && $settings['field_content_type'] == 'image') {
@@ -2259,7 +2260,7 @@ class Filemanager
         ee()->output->set_header("Cache-Control: no-store, no-cache, must-revalidate");
         ee()->output->set_header("Pragma: no-cache");
 
-        $file = str_replace(DIRECTORY_SEPARATOR, '/', ee('Encrypt')->decode(rawurldecode(ee()->input->get_post('file')), ee()->config->item('session_crypt_key')));
+        $file = str_replace(DIRECTORY_SEPARATOR, '/', ee('Encrypt')->decode(rawurldecode((string) ee()->input->get_post('file')), ee()->config->item('session_crypt_key')));
 
         if ($file == '') {
             // nothing for you here
@@ -2452,7 +2453,7 @@ class Filemanager
 
         foreach ($source->getDirectoryContents() as $path) {
             // Remove '.', '..', and hidden files [optional]
-            if (!trim($path, '.') || ($hidden == false && $path[0] == '.')) {
+            if (!trim((string) $path, '.') || ($hidden == false && $path[0] == '.')) {
                 continue;
             }
 
@@ -2628,7 +2629,7 @@ class Filemanager
         $upload_prefs = $this->fetch_upload_dir_prefs($upload_dir_id);
 
         // Clean up the filename and add the full path
-        $file_name = ee()->security->sanitize_filename(urldecode($file_name));
+        $file_name = ee()->security->sanitize_filename(urldecode((string) $file_name));
         $file_path = reduce_double_slashes(
             $upload_prefs['server_path'] . DIRECTORY_SEPARATOR . $file_name
         );
@@ -2681,7 +2682,7 @@ class Filemanager
             $file_path,
             array(
                 'server_path' => $upload_prefs['server_path'],
-                'file_name' => basename($file_name),
+                'file_name' => basename((string) $file_name),
                 'dimensions' => $dimensions
             ),
             true, // Regenerate thumbnails

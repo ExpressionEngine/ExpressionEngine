@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -92,7 +93,7 @@ class EE_Config
         }
 
         // ACT exception
-        if (isset($_GET['ACT']) && preg_match("/^(\w)+$/i", $_GET['ACT'])) {
+        if (isset($_GET['ACT']) && preg_match("/^(\w)+$/i", (string) $_GET['ACT'])) {
             $assign_to_config['enable_query_strings'] = true;
         }
 
@@ -320,7 +321,7 @@ class EE_Config
             if ($name == 'site_pages') {
                 $config['site_pages'] = $this->site_pages($row['site_id'], $data);
             } elseif ($name == 'site_bootstrap_checksums') {
-                $data = base64_decode($data);
+                $data = base64_decode((string) $data);
 
                 if (! is_string($data) or substr($data, 0, 2) != 'a:') {
                     $config['site_bootstrap_checksums'] = array();
@@ -795,7 +796,7 @@ class EE_Config
         if (isset($new_values['censored_words'])) {
             $new_values['censored_words'] = trim($new_values['censored_words']);
             $new_values['censored_words'] = preg_replace("/[\n,|]+/", '|', $new_values['censored_words']);
-            $new_values['censored_words'] = trim($new_values['censored_words'], '|');
+            $new_values['censored_words'] = trim((string) $new_values['censored_words'], '|');
         }
 
         // To enable CI's helpers and native functions that deal with URLs
@@ -899,7 +900,7 @@ class EE_Config
                 ->get();
 
             if ($query->num_rows() > 0) {
-                show_error(lang('category_trigger_duplication') . ' (' . htmlentities($new_values['reserved_category_word']) . ')');
+                show_error(lang('category_trigger_duplication') . ' (' . htmlentities((string) $new_values['reserved_category_word']) . ')');
             }
         }
     }
@@ -915,7 +916,7 @@ class EE_Config
 
         foreach ($paths as $val) {
             if (isset($site_prefs[$val]) and $site_prefs[$val] != '') {
-                if (substr($site_prefs[$val], -1) != '/' && substr($site_prefs[$val], -1) != '\\') {
+                if (substr((string) $site_prefs[$val], -1) != '/' && substr((string) $site_prefs[$val], -1) != '\\') {
                     $site_prefs[$val] .= '/';
                 }
 
@@ -970,7 +971,7 @@ class EE_Config
         // Because Pages is a special snowflake
         if (ee()->config->item('site_pages') !== false) {
             if (isset($site_prefs['site_url']) or isset($site_prefs['site_index'])) {
-                $pages = unserialize(base64_decode($query->row('site_pages')));
+                $pages = unserialize(base64_decode((string) $query->row('site_pages')));
 
                 $url = (isset($site_prefs['site_url'])) ? $site_prefs['site_url'] . '/' : $this->config['site_url'] . '/';
                 $url .= (isset($site_prefs['site_index'])) ? $site_prefs['site_index'] . '/' : $this->config['site_index'] . '/';
@@ -998,7 +999,7 @@ class EE_Config
     private function _update_preferences($site_id, $site_prefs, $query, $find, $replace)
     {
         foreach (array('system', 'channel', 'template', 'member') as $type) {
-            $prefs = !empty($query->row('site_' . $type . '_preferences')) ? unserialize(base64_decode($query->row('site_' . $type . '_preferences'))) : [];
+            $prefs = !empty($query->row('site_' . $type . '_preferences')) ? unserialize(base64_decode((string) $query->row('site_' . $type . '_preferences'))) : [];
             $changes = 'n';
 
             foreach ($this->divination($type) as $value) {
@@ -1108,7 +1109,7 @@ class EE_Config
                 $config_file = preg_replace(
                     '#\$' . "config\[(\042|\047)" . $key . "\\1\].*?;\n#is",
                     "",
-                    $config_file
+                    (string) $config_file
                 );
                 unset($config[$key]);
             }
@@ -1158,13 +1159,13 @@ class EE_Config
                         $config_file = preg_replace(
                             $base_regex . '(.*?;)#s',
                             "\${1}{$val};",
-                            $config_file
+                            (string) $config_file
                         );
                     } else { // Otherwise, use the one-liner match
                         $config_file = preg_replace(
                             $base_regex . '((\042|\047)[^\\4]*?\\4);#',
                             "\${1}\${4}{$val}\${4};",
-                            $config_file
+                            (string) $config_file
                         );
                     }
                 }
@@ -1177,7 +1178,7 @@ class EE_Config
         if (count($to_be_added) > 0) {
             // First we will determine the newline character used in the file
             // so we can use the same one
-            $newline = (preg_match("#(\r\n|\r|\n)#", $config_file, $match)) ? $match[1] : "\n";
+            $newline = (preg_match("#(\r\n|\r|\n)#", (string) $config_file, $match)) ? $match[1] : "\n";
 
             $new_data = '';
             foreach ($to_be_added as $key => $val) {
@@ -1190,14 +1191,14 @@ class EE_Config
 
             // First we look for our comment marker in the config file. If found, we'll swap
             // it out with the new config data
-            if (preg_match("#.*// END EE config items.*#i", $config_file)) {
+            if (preg_match("#.*// END EE config items.*#i", (string) $config_file)) {
                 $new_data .= $newline . '// END EE config items' . $newline;
 
-                $config_file = preg_replace("#\n.*// END EE config items.*#i", $new_data, $config_file);
+                $config_file = preg_replace("#\n.*// END EE config items.*#i", $new_data, (string) $config_file);
             }
             // If we didn't find the marker we'll remove the opening PHP line and
             // add the new config data to the top of the file
-            elseif (preg_match("#<\?php.*#i", $config_file, $match)) {
+            elseif (preg_match("#<\?php.*#i", (string) $config_file, $match)) {
                 // Remove the opening PHP line
                 $config_file = str_replace($match[0], '', $config_file);
 
@@ -1210,9 +1211,9 @@ class EE_Config
             // If that didn't work we'll add the new config data to the bottom of the file
             else {
                 // Remove the closing PHP tag
-                $config_file = preg_replace("#\?>$#", "", $config_file);
+                $config_file = preg_replace("#\?>$#", "", (string) $config_file);
 
-                $config_file = trim($config_file);
+                $config_file = trim((string) $config_file);
 
                 // Add the new data string
                 $config_file .= $newline . $newline . $new_data . $newline;
@@ -1226,7 +1227,7 @@ class EE_Config
         $fp = fopen($this->config_path, "r+");
         if (flock($fp, LOCK_EX)) {
             ftruncate($fp, 0);
-            fwrite($fp, $config_file, strlen($config_file));
+            fwrite($fp, (string) $config_file, strlen((string) $config_file));
             fflush($fp);
             flock($fp, LOCK_UN);
         } else {
@@ -1796,7 +1797,7 @@ class EE_Config
                 $uri = implode('/', $uri);
             }
 
-            return reduce_double_slashes($this->slash_item('base_url') . $this->item('index_page') . trim($uri, '/'));
+            return reduce_double_slashes($this->slash_item('base_url') . $this->item('index_page') . trim((string) $uri, '/'));
         } else {
             if (is_array($uri)) {
                 $i = 0;
@@ -1835,7 +1836,7 @@ class EE_Config
 
         $pref = $this->config[$item];
 
-        if ($pref != '' && substr($pref, -1) != '/') {
+        if ($pref != '' && substr((string) $pref, -1) != '/') {
             $pref .= '/';
         }
 
@@ -1846,10 +1847,10 @@ class EE_Config
         $pref = parse_config_variables($pref);
 
         if (
-            strpos($pref, '/') !== 0
-            && stripos($pref, 'http:') !== 0
-            && stripos($pref, 'https:') !== 0
-            && strpos($pref, ':/') !== 1 //Windows path
+            strpos((string) $pref, '/') !== 0
+            && stripos((string) $pref, 'http:') !== 0
+            && stripos((string) $pref, 'https:') !== 0
+            && strpos((string) $pref, ':/') !== 1 //Windows path
         ) {
             $pref = '/' . $pref;
         }
@@ -1865,7 +1866,7 @@ class EE_Config
      */
     public function system_url()
     {
-        $x = explode("/", preg_replace("|/*(.+?)/*$|", "\\1", BASEPATH));
+        $x = explode("/", (string) preg_replace("|/*(.+?)/*$|", "\\1", BASEPATH));
 
         return $this->slash_item('base_url') . end($x) . '/';
     }

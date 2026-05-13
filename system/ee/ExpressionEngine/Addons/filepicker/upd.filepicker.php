@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -48,7 +49,7 @@ class Filepicker_upd
         } else {
             $sites = ee()->db->get_where('sites', ['site_id' => $site_id]);
             $site = $sites->result_array();
-            $member_prefs = unserialize(base64_decode($site[0]['site_member_preferences']));
+            $member_prefs = unserialize(base64_decode((string) $site[0]['site_member_preferences']));
         }
 
         $member_directories['Avatars'] = array(

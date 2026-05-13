@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -51,7 +52,7 @@ class NavigationCustomSection extends NavigationSection
                     ee()->extensions->call_class($item->data, 'cp_custom_menu', $metadata, $args);
                 }
             } elseif ($item->type == 'addon') { //module
-                $custom->addItem($item->name, ee('CP/URL')->make('addons/settings/' . lcfirst($item->data)));
+                $custom->addItem($item->name, ee('CP/URL')->make('addons/settings/' . lcfirst((string) $item->data)));
             } elseif ($item->type == 'submenu') {
                 $sub = $custom->addSubmenu($item->name);
 

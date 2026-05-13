@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -261,7 +262,7 @@ class Member_model extends CI_Model
 
         $query = $this->get_member_data($this->id, array('ignore_list'));
 
-        $ignored = ($query->row('ignore_list') == '') ? array('') : explode('|', $query->row('ignore_list'));
+        $ignored = ($query->row('ignore_list') == '') ? array('') : explode('|', (string) $query->row('ignore_list'));
 
         $this->db->select('screen_name, member_id');
         $this->db->where_in('member_id', $ignored);
@@ -291,7 +292,7 @@ class Member_model extends CI_Model
         $quicklinks = array();
 
         if (! empty($quicklinks_query)) {
-            foreach (explode("\n", $quicklinks_query) as $row) {
+            foreach (explode("\n", (string) $quicklinks_query) as $row) {
                 $x = explode('|', $row);
 
                 $quicklinks[$i]['title'] = (isset($x['0'])) ? $x['0'] : '';
@@ -336,7 +337,7 @@ class Member_model extends CI_Model
         $this->db->select("m.member_id, m.screen_name, m.email");
         $this->db->from("members AS m");
         $this->db->join('roles AS r', 'r.role_id = m.role_id');
-        
+
         foreach ($additional_where as $where) {
             foreach ($where as $field => $value) {
                 if (is_array($value)) {
@@ -1040,7 +1041,7 @@ class Member_model extends CI_Model
         $this->load->helper('directory');
 
         foreach (directory_map($path, true) as $file) {
-            if (is_dir($path . $file) and strncmp('.', $file, 1) != 0) {
+            if (is_dir($path . $file) and strncmp('.', (string) $file, 1) != 0) {
                 $themes[$file] = ucfirst(str_replace("_", " ", $file));
             }
         }
@@ -1227,11 +1228,11 @@ class Member_model extends CI_Model
 
         if (ee()->session->getMember()) {
             foreach (ee()->session->getMember()->getAssignedModules()->pluck('module_name') as $assigned_module) {
-                $assigned_modules[] = strtolower($assigned_module);
+                $assigned_modules[] = strtolower((string) $assigned_module);
             }
         }
 
-        return in_array(strtolower($module), $assigned_modules);
+        return in_array(strtolower((string) $module), $assigned_modules);
     }
 
     /**
@@ -1258,7 +1259,7 @@ class Member_model extends CI_Model
                 // Clean the token name to arrive at a potential column name
                 // and prevent any shenanigans
                 $token_name = ee()->db->protect_identifiers(
-                    preg_replace('/[^\w-.]/', '', $token_name)
+                    preg_replace('/[^\w-.]/', '', (string) $token_name)
                 );
                 $this->db->like('members.' . $token_name, $token_value);
             }
@@ -1267,7 +1268,7 @@ class Member_model extends CI_Model
                 $this->db->where("(`exp_members`.`screen_name` LIKE '%" . $this->db->escape_like_str($search_value) . "%' OR `exp_members`.`username` LIKE '%" . $this->db->escape_like_str($search_value) . "%' OR `exp_members`.`email` LIKE '%" . $this->db->escape_like_str($search_value) . "%' OR `exp_members`.`member_id` LIKE '%" . $this->db->escape_like_str($search_value) . "%')", null, true);
             } else {
                 $search_in = ee()->db->protect_identifiers(
-                    preg_replace('/[^\w-.]/', '', $search_in)
+                    preg_replace('/[^\w-.]/', '', (string) $search_in)
                 );
                 $this->db->like('members.' . $search_in, $search_value);
             }

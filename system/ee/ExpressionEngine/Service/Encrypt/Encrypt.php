@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -131,7 +132,7 @@ class Encrypt
      */
     protected function addNoise($data, $key)
     {
-        $keyhash = sha1($key);
+        $keyhash = sha1((string) $key);
         $keylen = ee_mb_strlen($keyhash, 'ascii');
         $str = '';
         $len = ee_mb_strlen($data, 'ascii');
@@ -159,7 +160,7 @@ class Encrypt
      */
     protected function removeNoise($data, $key)
     {
-        $keyhash = sha1($key);
+        $keyhash = sha1((string) $key);
         $keylen = ee_mb_strlen($keyhash, 'ascii');
         $str = '';
         $len = ee_mb_strlen($data, 'ascii');

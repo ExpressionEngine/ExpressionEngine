@@ -78,7 +78,7 @@ class FieldtypeAdvisor
                 $columns = ee()->db->query("SHOW COLUMNS FROM " . $table);
                 foreach ($columns->result_array() as $row) {
                     $column = $row['Field'];
-                    if (strrpos($column, 'col_type') === strlen($column) - 8) {
+                    if (strrpos((string) $column, 'col_type') === strlen((string) $column) - 8) {
                         $fts_q = ee()->db->select($column)->get($table);
                         foreach ($fts_q->result_array() as $ft_row) {
                             if (!isset($used_fts[$ft_row[$column]])) {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -26,7 +27,7 @@ class Design_model extends CI_Model
             $this->db->where_in('t.group_id', $group_id);
         }
 
-        $keywords = trim($this->input->post('template_keywords'));
+        $keywords = trim((string) $this->input->post('template_keywords'));
 
         // add in search terms if necessary
         if ($keywords !== false and $keywords != '') {
@@ -50,8 +51,8 @@ class Design_model extends CI_Model
             $not_and = (sizeof($terms) > 2) ? ') AND (' : 'AND';
             $criteria = 'AND';
 
-            $mysql_function = (substr($terms['0'], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
-            $search_term = (substr($terms['0'], 0, 1) == '-') ? substr($terms['0'], 1) : $terms['0'];
+            $mysql_function = (substr((string) $terms['0'], 0, 1) == '-') ? 'NOT LIKE' : 'LIKE';
+            $search_term = (substr((string) $terms['0'], 0, 1) == '-') ? substr((string) $terms['0'], 1) : $terms['0'];
 
             // We have two parentheses in the beginning in case
             // there are any NOT LIKE's being used

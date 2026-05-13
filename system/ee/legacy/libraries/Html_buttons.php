@@ -470,7 +470,7 @@ function closeall()
 $i = 0;
 
         foreach ($this->buttons as $val) {
-            $style = ($i == 0) ? 'htmlButtonOuterL' : 'htmlButtonOuter'; ?><td class='<?php echo $style; ?>'><div class='htmlButtonInner'><div class='htmlButtonOff' id='button_<?php echo $i; ?>'><a href='javascript:nullo();' title="<?php echo $val['3']; ?>" name='button_<?php echo $i; ?>' onclick='taginsert(this, "<?php echo htmlspecialchars($val['1']); ?>", "<?php echo htmlspecialchars($val['2']); ?>")' ><?php echo htmlspecialchars($val['0']); ?></a></div></div></td><?php echo "\n";
+            $style = ($i == 0) ? 'htmlButtonOuterL' : 'htmlButtonOuter'; ?><td class='<?php echo $style; ?>'><div class='htmlButtonInner'><div class='htmlButtonOff' id='button_<?php echo $i; ?>'><a href='javascript:nullo();' title="<?php echo $val['3']; ?>" name='button_<?php echo $i; ?>' onclick='taginsert(this, "<?php echo htmlspecialchars((string) $val['1']); ?>", "<?php echo htmlspecialchars((string) $val['2']); ?>")' ><?php echo htmlspecialchars((string) $val['0']); ?></a></div></div></td><?php echo "\n";
 
             $i++;
         } ?>

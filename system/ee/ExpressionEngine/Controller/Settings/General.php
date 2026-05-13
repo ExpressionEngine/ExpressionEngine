@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -302,7 +303,7 @@ class General extends Settings
             // New version available
             if (!empty($version_info) && version_compare(ee()->config->item('app_version'), $version_info['version'], '<')) {
                 $version_major = explode('.', APP_VER, 2)[0];
-                $update_version_major = explode('.', $version_info['version'], 2)[0];
+                $update_version_major = explode('.', (string) $version_info['version'], 2)[0];
 
                 $isVitalUpdate = $version_info['security'];
                 $isMajorUpdate = version_compare($version_major, $update_version_major, '<');

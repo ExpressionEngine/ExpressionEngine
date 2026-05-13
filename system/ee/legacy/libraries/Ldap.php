@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -301,7 +302,7 @@ class EE_LDAP
 
         $port = (ee()->config->item('ldap_port') === false or ee()->config->item('ldap_port') == '') ? 389 : ee()->config->item('ldap_port');
 
-        if (! $this->conn = @ldap_connect(ee()->config->item('ldap_server'), $port)) {
+        if (! $this->conn = @ldap_connect("{ee()->config->item('ldap_server')}:{$port}")) {
             $this->output_error();
 
             return false;
@@ -330,7 +331,7 @@ class EE_LDAP
                 return false;
             }
         } else {
-            if (! preg_match('/^(\w+=\w+,)*\w+=\w+$/', ee()->config->item('ldap_manager_dn'))) {
+            if (! preg_match('/^(\w+=\w+,)*\w+=\w+$/', (string) ee()->config->item('ldap_manager_dn'))) {
                 $this->output_error('Manager DN is invalidly formed');
 
                 return false;

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -265,7 +266,7 @@ class EE_Exceptions
         $message = preg_replace('/&lt;a href=&quot;https:\/\/docs\.expressionengine\.com(.*)&quot;&gt;(.*)&lt;\/a&gt;/i', '<a href="https://docs.expressionengine.com${1}">${2}</a>', $message);
 
         $location = $filepath . ':' . $exception->getLine();
-        $trace = explode("\n", $exception->getTraceAsString());
+        $trace = explode("\n", (string) $exception->getTraceAsString());
         $partial_path = substr($syspath, 0, 15);
 
         // Replace the system paths in the stack trace
@@ -279,7 +280,7 @@ class EE_Exceptions
                 // Make sure we have a trailing slash for the replace
                 $path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
                 $quoted_path = preg_quote($path, '/');
-                $line = preg_replace('/^(#\d+\s+)' . $quoted_path . '/', '$1', $line);
+                $line = preg_replace('/^(#\d+\s+)' . $quoted_path . '/', '$1', (string) $line);
                 $path = dirname($path);
                 $i++;
             }
@@ -300,7 +301,7 @@ class EE_Exceptions
             $location_parts = explode('/', $location);
             $location = array_pop($location_parts);
 
-            if (strpos($message, 'SQLSTATE') !== false) {
+            if (strpos((string) $message, 'SQLSTATE') !== false) {
                 $message = 'There was a database connection error or a problem with a query. Log in as a super admin or enable debugging for more information.';
             }
         }
@@ -319,10 +320,10 @@ class EE_Exceptions
         // If the request came from the cli, show an appropriate message
         if (defined('REQ') && REQ === 'CLI') {
             echo "$error_type caught:\n";
-            echo html_entity_decode($message) . "\n";
+            echo html_entity_decode((string) $message) . "\n";
             echo html_entity_decode($location) . "\n";
             foreach ($trace as $stackItem) {
-                echo html_entity_decode($stackItem) . "\n";
+                echo html_entity_decode((string) $stackItem) . "\n";
             }
             exit;
         }

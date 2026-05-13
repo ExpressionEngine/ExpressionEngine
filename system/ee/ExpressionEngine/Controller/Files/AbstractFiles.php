@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ExpressionEngine (https://expressionengine.com)
  *
@@ -102,7 +103,7 @@ abstract class AbstractFiles extends CP_Controller
                 continue;
             }
 
-            $display_name = htmlspecialchars($destination->name, ENT_QUOTES, 'UTF-8');
+            $display_name = htmlspecialchars((string) $destination->name, ENT_QUOTES, 'UTF-8');
             $item = $list->addItem($display_name, ee('CP/URL')->make('files/directory/' . $destination->id))
                 ->withIcon('hdd')
                 ->withEditUrl(ee('CP/URL')->make('files/uploads/edit/' . $destination->id))

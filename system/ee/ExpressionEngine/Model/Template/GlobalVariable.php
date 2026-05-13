@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -262,7 +263,7 @@ class GlobalVariable extends FileSyncedModel
         if (ee()->config->item('save_tmpl_files') != 'y' || ee()->config->item('save_tmpl_globals') != 'y') {
             return [];
         }
-        
+
         $variables = [];
 
         if (! ee('Filesystem')->isDir($path)) {

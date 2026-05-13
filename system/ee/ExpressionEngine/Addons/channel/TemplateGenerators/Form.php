@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -63,7 +64,7 @@ class Form extends Entries
             // by default, we'll use generic field stub
             // but we'll let each field type to override it
             // by either providing stub property, or calling its own generator
-            $stub = explode(":", $fieldtypeGenerator['stub']);
+            $stub = explode(":", (string) $fieldtypeGenerator['stub']);
             $field = [
                 'field_type' => $fieldInfo->field_type,
                 'field_name' => $fieldInfo->field_name,
