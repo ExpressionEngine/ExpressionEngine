@@ -188,7 +188,7 @@ class EE_Cache_redis extends CI_Driver
             'port' => 6379,
             'timeout' => 0,
             'database' => 0,
-            'scheme' => 'tcp',
+            'scheme' => null,
             'verify_peer' => true,
             'verify_peer_name' => true,
             'context' => []
@@ -205,7 +205,7 @@ class EE_Cache_redis extends CI_Driver
         $result = false;
 
         try {
-            if ($config['scheme'] === 'tls') {
+            if (! empty($config['scheme']) && $config['scheme'] === 'tls') {
                 $config['context'] = [
                     'stream' => [
                         'verify_peer'      => $config['verify_peer'],
