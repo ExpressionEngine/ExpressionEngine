@@ -184,9 +184,14 @@ class EE_Cache_redis extends CI_Driver
         $config = array(
             'host' => '127.0.0.1',
             'password' => null,
+            'username' => null,
             'port' => 6379,
             'timeout' => 0,
-            'database' => 0
+            'database' => 0,
+            'scheme' => 'tcp',
+            'verify_peer' => true,
+            'verify_peer_name' => true,
+            'context' => []
         );
 
         if (($user_config = ee()->config->item('redis')) !== false) {
@@ -200,7 +205,18 @@ class EE_Cache_redis extends CI_Driver
         $result = false;
 
         try {
-            $result = $this->_redis->connect($config['host'], $config['port'], $config['timeout']);
+            if ($config['scheme'] === 'tls') {
+                $config['context'] = [
+                    'stream' => [
+                        'verify_peer'      => $config['verify_peer'],
+                        'verify_peer_name' => $config['verify_peer_name'],
+                        'peer_name'        => $config['host'],
+                    ]
+                ];
+                $config['host'] = 'tls://' . $config['host'];
+            }
+
+            $result = $this->_redis->connect($config['host'], $config['port'], $config['timeout'], null, 0, 0, $config['context']);
         } catch (RedisException $e) {
             log_message('debug', 'Redis connection refused: ' . $e->getMessage());
             $this->_redis = false;
@@ -218,7 +234,10 @@ class EE_Cache_redis extends CI_Driver
 
         // If a password is set, attempt to authenticate
         if (! empty($config['password']) && $result) {
-            $result = $this->_redis->auth($config['password']);
+            $auth = ! empty($config['username'])
+                ? [$config['username'], $config['password']]
+                : $config['password'];
+            $result = $this->_redis->auth($auth);
         }
 
         // If a database is specified, attempt to use it
