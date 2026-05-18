@@ -45,52 +45,6 @@ context('System Templates', () => {
        
     })
 
-    describe('Members without Templates', function() {
-        beforeEach(function() {
-            cy.visit('admin.php?/cp/design/members')
-        })
-
-        it('displays a helpful error when user templates are missing', function() {
-            page.get('theme_chooser').should('not.exist')
-            page.get('templates').its('length').should('eq', 1)
-            page.get('templates').eq(0).find('td:first-child').contains('No Templates found. See documentation.')
-        })
-    })
-
-    describe('Members with Templates', function() {
-        before(function() {
-            cy.installTheme('member')
-        })
-
-        beforeEach(function() {
-            cy.visit('admin.php?/cp/design/members')
-        })
-
-        it('displays when user templates are present', function() {
-            page.get('theme_chooser').should('exist')
-            page.get('templates').its('length').should('eq', 86)
-        })
-
-        
-    })
-
-    describe('Members with Templates in themes/users', function() {
-        before(function() {
-            cy.installTheme('member', true)
-        })
-
-        beforeEach(function() {
-            cy.visit('admin.php?/cp/design/members')
-        })
-
-        it('displays when user templates are present', function() {
-            page.get('theme_chooser').should('exist')
-            page.get('templates').its('length').should('eq', 86)
-        })
-
-       
-    })
-
     describe.skip('Forums', function() {
         before(function() {
             cy.authVisit('/admin.php?/cp/addons')

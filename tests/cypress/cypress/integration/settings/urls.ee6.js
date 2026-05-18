@@ -57,30 +57,10 @@ context('URL and Path Settings', () => {
 
   })
 
-  it('should only show member trigger if enabled', () => {
-    cy.eeConfig({item: 'legacy_member_templates', value: 'y'}).then(() => {
-      cy.wait(1000)
-      cy.eeConfig({item: 'profile_trigger'}).then((config) => {
-        cy.wait(1000)
-        expect(config).to.be.not.empty
-        page.load()
-        cy.hasNoErrors()
-        page.get('profile_trigger').invoke('val').then((val) => {
-          expect(val).to.be.equal(config)
-        })
-      })
-    })
-
-    cy.eeConfig({item: 'legacy_member_templates', value: 'n'}).then(() => {
-      cy.wait(3000)
-      page.load()
-      cy.hasNoErrors()
-      page.get('profile_trigger').should('not.exist')
-    })
-    
-
-    
-    
+  it('does not show legacy member trigger settings', () => {
+    page.load()
+    cy.hasNoErrors()
+    cy.get('input[name=profile_trigger]').should('not.exist')
   })
 
   it('Validate URL and Path Settings form', () => {

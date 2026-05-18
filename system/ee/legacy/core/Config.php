@@ -644,8 +644,6 @@ class EE_Config
             'mbr_notification_emails',
             'require_terms_of_service',
             'default_primary_role',
-            'profile_trigger',
-            'member_theme',
             'avatar_url',
             'avatar_path',
             'avatar_max_width',
@@ -782,14 +780,6 @@ class EE_Config
         // unset() exceptions for calls coming from POST data
         unset($new_values['return_location']);
         unset($new_values['submit']);
-
-        // Safety check for member profile trigger
-        if (isset($new_values['profile_trigger'])
-            && $new_values['profile_trigger'] == ''
-            && $new_values['members_frontend'] == 'y') {
-            ee()->lang->loadfile('admin');
-            show_error(lang('empty_profile_trigger'));
-        }
 
         // We'll format censored words if they happen to cross our path
         if (isset($new_values['censored_words'])) {
@@ -1746,7 +1736,6 @@ class EE_Config
             'force_query_string' => array('force_query_string_explanation'),
             'image_resize_protocol' => array('image_resize_protocol_exp'),
             'image_library_path' => array('image_library_path_exp'),
-            'member_theme' => array('member_theme_exp'),
             'require_terms_of_service' => array('require_terms_of_service_exp'),
             'email_console_timelock' => array('email_console_timelock_exp'),
             'log_email_console_msgs' => array('log_email_console_msgs_exp'),

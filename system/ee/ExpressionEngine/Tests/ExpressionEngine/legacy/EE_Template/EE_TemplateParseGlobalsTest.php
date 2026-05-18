@@ -81,7 +81,6 @@ class EE_TemplateParseGlobalsTest extends EE_TemplateTestBase
             'site_description' => 'Description',
             'site_index' => 'index.php',
             'webmaster_email' => 'admin@example.com',
-            'profile_trigger' => 'member',
             'xml_lang' => 'en',
             'output_charset' => 'UTF-8',
             'send_headers' => 'y',

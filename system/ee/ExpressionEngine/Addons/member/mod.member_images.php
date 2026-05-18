@@ -142,8 +142,6 @@ class Member_images extends Member
         $template = '';
         if (! empty($tagdata)) {
             $template = ee()->TMPL->tagdata;
-        } elseif (ee('Config')->getFile()->getBoolean('legacy_member_templates')) {
-            $template = $this->_load_element('edit_avatar');
         }
 
         // Does the current user have an avatar?

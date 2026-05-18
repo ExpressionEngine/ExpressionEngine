@@ -351,7 +351,6 @@ $lang = array(
     /* Menu */
     'forum_themes' => 'Forum Themes',
 
-    'member_profile_templates' => 'Member Profile Templates',
 
     'message_pages' => 'Message Pages',
 

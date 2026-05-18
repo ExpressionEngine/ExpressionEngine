@@ -576,8 +576,6 @@ class ThemeInstaller
         foreach (directory_map($from_dir) as $filename) {
             copy($from_dir . $filename, $to_dir . $filename);
         }
-
-        ee()->config->update_site_prefs(array('member_theme' => $theme_name), array(1));
     }
 
     /**

@@ -2118,35 +2118,6 @@ class JumpMenu extends AbstractJumpMenu
             );
         }
 
-        // Member Profile Trigger word
-        if (ee('Config')->getFile()->getBoolean('legacy_member_templates')) {
-            $items[1]['systemTemplatesMembers'] = array(
-                'icon' => 'fa-eye',
-                'command' => 'member_profile_templates',
-                'dynamic' => false,
-                'addon' => false,
-                'target' => 'design/members',
-                'permission' => ['can_access_design', 'can_admin_mbr_templates']
-            );
-
-            $items[1]['systemSettingsMembers']['anchors']['fieldset-member_theme'] = array(
-                'trail' => [
-                    'member_settings'
-                ],
-                'command' => 'member_theme member_theme_desc',
-                'command_title' => 'member_theme'
-            );
-
-            $items[1]['systemSettingsUrls']['anchors']['fieldset-profile_trigger'] = array(
-                'trail' => [
-                    'settings',
-                    // 'url_path_settings'
-                ],
-                'command' => 'member_segment_trigger',
-                'command_title' => 'member_segment_trigger'
-            );
-        }
-
         //check permissions for comment links
         if (! ee('Permission')->hasAny(
             'can_moderate_comments',

@@ -130,23 +130,10 @@ class Member
         ee()->functions->template_type = 'webpage';
 
         if (isset(ee()->TMPL) && is_object(ee()->TMPL)) {
-            $this->trigger = ee()->TMPL->fetch_param('profile_trigger', ee()->config->item('profile_trigger'));
             $this->member_template = false;
         } else {
             // For custom fields that use the template library
             ee()->load->library('template', null, 'TMPL');
-            $this->trigger = ee()->config->item('profile_trigger');
-        }
-
-        if ($this->member_template == true && REQ != 'ACTION' && !ee('Request')->isPost()) {
-            ee()->load->library('logger');
-            ee()->logger->developer('Member profile templates are now legacy and not recommended to use. Please use regular templates and {exp:member:...} tags.', true, 60 * 60 * 24 * 30);
-
-            if (!ee('Config')->getFile()->getBoolean('legacy_member_templates')) {
-                ee()->logger->developer('Someone tried to access legacy member template, but those are not enabled in config.php', true, 60 * 60 * 24 * 30);
-
-                return ee()->output->show_user_error('general', lang('legacy_member_templates_not_enabled'));
-            }
         }
     }
 
@@ -2022,7 +2009,7 @@ class Member
     public function _load_element($which)
     {
         if ($this->theme_path == '') {
-            $theme = (ee()->config->item('member_theme') == '') ? 'default' : ee()->config->item('member_theme');
+            $theme = (ee()->session->userdata('profile_theme') != '') ? ee()->session->userdata('profile_theme') : 'default';
             $this->theme_path = ee('Theme')->getPath('member/' . $theme . '/');
         }
 
@@ -2279,7 +2266,7 @@ class Member
         }
 
         // Set some paths
-        $theme = (ee()->session->userdata('profile_theme') != '') ? ee()->session->userdata('profile_theme') : ee()->config->item('member_theme');
+        $theme = (ee()->session->userdata('profile_theme') != '') ? ee()->session->userdata('profile_theme') : 'default';
 
         if ($this->image_url == '') {
             $theme = ($theme == '') ? 'default' : $theme;

@@ -249,8 +249,8 @@ class Member_memberlist extends Member
             $template = ee()->TMPL->tagdata;
             // Find out where our memberlist page actually is (for doing search results).
             $result_page = ee()->functions->fetch_current_uri();
-        } elseif (ee('Config')->getFile()->getBoolean('legacy_member_templates')) {
-            $template = $this->_load_element('memberlist');
+        } else {
+            $template = '';
         }
 
         $vars = ee('Variables/Parser')->extractVariables($template);
@@ -269,7 +269,7 @@ class Member_memberlist extends Member
 
             $memberlist_rows = substr($template, $member_rows_start, $member_rows_diff);
         } else {
-            $memberlist_rows = $this->_load_element('memberlist_rows');
+            $memberlist_rows = '';
         }
 
         $mvars = ee('Variables/Parser')->extractVariables($memberlist_rows);
