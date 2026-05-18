@@ -107,7 +107,7 @@ $lang = array(
     'pro_license_error_invalid' => 'The ExpressionEngine Pro license is not valid for this site.',
     'pro_license_error_expired' => 'The ExpressionEngine Pro license has expired.',
 
-    'pro_license_check_instructions' => 'Since this site has multiple members, it will also require a purchased license. %s.<br><br>Please verify your <a href="%s">Site License Key</a> and visit <a href="https://expressionengine.com/store/licenses" target="_blank">Licenses</a> section at ExpressionEngine.com',
+    'pro_license_check_instructions' => 'Since this site has multiple members, it will also require a purchased license. %s<br><br>Please verify your <a href="%s">Site License Key</a> and visit <a href="https://expressionengine.com/store/licenses" target="_blank">Licenses</a> section at ExpressionEngine.com',
 
     'pro_license_check_trial_instructions' => '%s<br><br>Please verify your <a href="%s">Site License Key</a> and visit <a href="https://expressionengine.com/store/licenses" target="_blank">Licenses</a> section at ExpressionEngine.com',
 
