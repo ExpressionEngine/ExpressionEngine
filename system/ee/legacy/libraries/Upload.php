@@ -179,6 +179,19 @@ class EE_Upload
         $this->file_temp = $_FILES[$field]['tmp_name'];
         $this->file_size = $_FILES[$field]['size'];
         $this->file_type = ee('MimeType')->ofFile($this->file_temp);
+
+        if (! $this->has_valid_filename($_FILES[$field]['name'])) {
+            $this->set_error('upload_invalid_file');
+
+            return false;
+        }
+
+        if ($this->is_disallowed_filename($_FILES[$field]['name'])) {
+            $this->set_error('upload_invalid_file');
+
+            return false;
+        }
+
         $this->file_name = $this->_prep_filename($_FILES[$field]['name']);
         $this->file_ext = $this->get_extension($this->file_name);
         $this->client_name = $this->file_name;
@@ -190,24 +203,7 @@ class EE_Upload
             return false;
         }
 
-        // Disallowed File Names
-        $disallowed_names = ee()->config->item('upload_blocked_file_names') ?: ee()->config->item('upload_file_name_blacklist');
-
-        if ($disallowed_names !== false) {
-            if (! is_array($disallowed_names)) {
-                $disallowed_names = array($disallowed_names);
-            }
-            $disallowed_names = array_map("strtolower", $disallowed_names);
-        } else {
-            $disallowed_names = array();
-        }
-
-        // Yes ".htaccess" is covered by the above hidden file check
-        // but this is here as an extra sanity-saving precation.
-        $disallowed_names[] = '.htaccess';
-        $disallowed_names[] = 'web.config';
-
-        if (in_array(strtolower($this->file_name), $disallowed_names)) {
+        if ($this->is_disallowed_filename($this->file_name)) {
             $this->set_error('upload_invalid_file');
 
             return false;
@@ -215,6 +211,19 @@ class EE_Upload
 
         // Sanitize the file name for security
         $this->file_name = $this->clean_file_name($this->file_name);
+        if (! $this->has_valid_filename($this->file_name)) {
+            $this->set_error('upload_invalid_file');
+
+            return false;
+        }
+
+        $this->file_ext = $this->get_extension($this->file_name);
+
+        if ($this->is_disallowed_filename($this->file_name)) {
+            $this->set_error('upload_invalid_file');
+
+            return false;
+        }
 
         // Is the file type allowed to be uploaded?
         if (! $this->is_allowed_filetype()) {
@@ -226,7 +235,20 @@ class EE_Upload
         // if we're overriding, let's now make sure the new name and type is allowed
         if ($this->_file_name_override != '') {
             $this->file_name = $this->_prep_filename($this->_file_name_override);
+            $this->file_name = $this->clean_file_name($this->file_name);
+            if (! $this->has_valid_filename($this->file_name)) {
+                $this->set_error('upload_invalid_file');
+
+                return false;
+            }
+
             $this->file_ext = $this->get_extension($this->file_name);
+
+            if ($this->is_disallowed_filename($this->file_name)) {
+                $this->set_error('upload_invalid_file');
+
+                return false;
+            }
 
             if (! $this->is_allowed_filetype(true)) {
                 $this->set_error('upload_invalid_file');
@@ -445,6 +467,18 @@ class EE_Upload
      */
     public function set_filename($path, $filename, $upload_destination = null)
     {
+        if (! $this->has_valid_filename($filename)) {
+            $this->set_error('upload_invalid_file');
+
+            return false;
+        }
+
+        if ($this->is_disallowed_filename($filename)) {
+            $this->set_error('upload_invalid_file');
+
+            return false;
+        }
+
         if ($this->encrypt_name == true) {
             mt_srand();
             $filename = md5(uniqid(mt_rand())) . $this->file_ext;
@@ -683,6 +717,7 @@ class EE_Upload
             ';',
             '?',
             '/',
+            '\\',
             "%20",
             "%22",
             "%3c",      // <
@@ -702,6 +737,54 @@ class EE_Upload
         $filename = str_replace($bad, '_', $filename);
 
         return stripslashes($filename);
+    }
+
+    /**
+     * Make sure the client supplied enough filename to resolve to a file.
+     */
+    protected function has_valid_filename($filename)
+    {
+        $basename = trim($this->normalized_basename($filename), " \t\n\r\0\x0B");
+
+        return $basename !== '' && $basename !== '.' && $basename !== '..' && strncmp($basename, '.', 1) !== 0;
+    }
+
+    /**
+     * Check names that web servers may interpret as configuration files.
+     */
+    protected function is_disallowed_filename($filename)
+    {
+        $disallowed_names = ee()->config->item('upload_blocked_file_names') ?: ee()->config->item('upload_file_name_blacklist');
+
+        if ($disallowed_names !== false) {
+            if (! is_array($disallowed_names)) {
+                $disallowed_names = array($disallowed_names);
+            }
+            $disallowed_names = array_map("strtolower", $disallowed_names);
+        } else {
+            $disallowed_names = array();
+        }
+
+        // Yes ".htaccess" is covered by the hidden file check, but this is here
+        // as an extra sanity-saving precaution.
+        $disallowed_names[] = '.htaccess';
+        $disallowed_names[] = 'web.config';
+
+        return in_array(rtrim(strtolower($this->normalized_basename($filename)), '. '), $disallowed_names);
+    }
+
+    /**
+     * Strip control characters and extract a basename using both path separators.
+     */
+    protected function normalized_basename($filename)
+    {
+        $filename = preg_replace('#\\p{C}+#u', '', (string) $filename);
+
+        if ($filename === null) {
+            return '';
+        }
+
+        return basename(str_replace('\\', '/', $filename));
     }
 
     /**

@@ -66,6 +66,8 @@ class Filemanager
      */
     public function clean_subdir_and_filename($filename, $dir_id, $parameters = array())
     {
+        $basename_source = str_replace('\\', '/', $filename);
+
         // at one time the third parameter was (bool) $dupe_check
         if (! is_array($parameters)) {
             $parameters = array('ignore_dupes' => ! $parameters);
@@ -83,11 +85,28 @@ class Filemanager
         $prefs = $this->fetch_upload_dir_prefs($dir_id, true);
         $filesystem = $prefs['directory']->getFilesystem();
 
-        $basename = $filesystem->basename($filename);
-        $dirname = ($filesystem->dirname($filename) !== '.') ? $filesystem->dirname($filename) . '/' : '';
+        $basename = $filesystem->basename($basename_source);
+        $dirname = $filesystem->dirname($filename);
+
+        if ($dirname !== '.') {
+            foreach (explode('/', trim(str_replace('\\', '/', $dirname), '/')) as $segment) {
+                $segment = preg_replace('#\\p{C}+#u', '', $segment);
+
+                if ($segment === null || $segment === '.' || $segment === '..') {
+                    return '';
+                }
+            }
+
+            $dirname .= '/';
+        } else {
+            $dirname = '';
+        }
 
         // Remove invisible control characters
         $basename = preg_replace('#\\p{C}+#u', '', $basename);
+        if ($basename === null) {
+            return '';
+        }
 
         // clean up the filename
         if ($parameters['convert_spaces'] === true) {
@@ -95,6 +114,10 @@ class Filemanager
         }
 
         $basename = ee()->security->sanitize_filename($basename);
+        if ($basename === '' || $basename === '.' || $basename === '..') {
+            return '';
+        }
+
         $filename = $dirname . $basename;
 
         if ($parameters['ignore_dupes'] === false) {
@@ -120,6 +143,10 @@ class Filemanager
     public function clean_filename($filename, $dir_id, $parameters = array())
     {
         $filename = $this->clean_subdir_and_filename($filename, $dir_id, $parameters);
+
+        if ($filename === '') {
+            return '';
+        }
 
         $prefs = $this->fetch_upload_dir_prefs($dir_id, true);
 
