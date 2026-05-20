@@ -303,6 +303,10 @@ class EE_Exceptions
             if (strpos($message, 'SQLSTATE') !== false) {
                 $message = 'There was a database connection error or a problem with a query. Log in as a super admin or enable debugging for more information.';
             }
+
+            if (! isset(ee()->session) || ee()->session->userdata('member_id') == 0) {
+                exit;
+            }
         }
 
         if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
