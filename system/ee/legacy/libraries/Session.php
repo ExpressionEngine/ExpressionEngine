@@ -621,6 +621,12 @@ class EE_Session
         $this->userdata['group_title'] = $this->member_model->PrimaryRole->name;
         $this->userdata['group_description'] = $this->member_model->PrimaryRole->description;
 
+        $roleSetting = $this->member_model->getRoleSettingsForSite((int) ee()->config->item('site_id'), REQ == 'CP');
+        if ($roleSetting) {
+            $roleSettings = array_diff_key($roleSetting->getValues(), array_flip(array('id', 'role_id', 'site_id')));
+            $this->userdata = array_merge($this->userdata, $roleSettings);
+        }
+
         // Add in the Permissions for backwards compatibility
         $permissions = $this->member_model->getPermissions();
         foreach ($permissions as $perm => $perm_id) {
@@ -1186,6 +1192,7 @@ class EE_Session
         // Query DB for member data.  Depending on the validation type we'll
         // either use the cookie data or the member ID gathered with the session query.
         $data = [];
+        $used_fallback_member_query = false;
 
         $member_id = $this->sdata['member_id'];
 
@@ -1204,10 +1211,27 @@ class EE_Session
             ee()->db->where('member_id', (int) $member_id);
 
             $data = ee()->db->get();
+
+            // Allow query fallback when the primary role is missing site-specific
+            // role_settings. Eligibility is validated after member model setup.
+            if ($data->num_rows() == 0) {
+                $used_fallback_member_query = true;
+                $data = ee()->db->from('members')
+                    ->where('member_id', (int) $member_id)
+                    ->get();
+            }
         }
 
         if (! is_object($this->member_model) || $this->member_model->member_id != $member_id) {
             $this->_setupMemberModel($member_id);
+        }
+
+        // If the primary-role role_settings join was not available, require an assigned role
+        // with site-specific settings before continuing session bootstrap.
+        if (! empty($used_fallback_member_query)) {
+            if (! is_object($this->member_model) || ! $this->member_model->getRoleSettingsForSite((int) ee()->config->item('site_id'), REQ == 'CP')) {
+                return [];
+            }
         }
 
         return $data;
@@ -1228,7 +1252,9 @@ class EE_Session
         if (REQ == 'CP') {
             $memberQuery->with('EntryManagerViews');
         }
-        $memberQuery->filter('RoleSettings.site_id', ee()->config->item('site_id'));
+        // Do not filter by RoleSettings.site_id - members with access via a secondary role
+        // may have a primary role with no site-specific role_settings, which would exclude
+        // them. Permission checks (e.g. can_access_cp) correctly use getAllRoles().
         $this->member_model = $memberQuery->all()->first();
     }
 

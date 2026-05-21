@@ -13,6 +13,7 @@ namespace ExpressionEngine\Model\Member;
 use DateTimeZone;
 use ExpressionEngine\Model\Content\ContentModel;
 use ExpressionEngine\Model\Member\Display\MemberFieldLayout;
+use ExpressionEngine\Model\Role\RoleSetting;
 use ExpressionEngine\Model\Content\Display\LayoutInterface;
 use ExpressionEngine\Service\Model\Collection;
 
@@ -646,11 +647,7 @@ class Member extends ContentModel
             $site_id = ee()->config->item('site_id');
         }
 
-        // Make sure to get the correct site, revert once issue #1285 is fixed
-        $primary_role = $this->getModelFacade()->get('RoleSetting')
-            ->filter('role_id', $this->role_id)
-            ->filter('site_id', $site_id)
-            ->first();
+        $role_settings = $this->getRoleSettingsForSite((int) $site_id);
 
         if (! empty($this->cp_homepage)) {
             $cp_homepage = $this->cp_homepage;
@@ -666,10 +663,10 @@ class Member extends ContentModel
                     $cp_homepage_channel = $cp_homepage_channel[$site_id];
                 }
             }
-        } elseif (! empty($primary_role->cp_homepage)) {
-            $cp_homepage = $primary_role->cp_homepage;
-            $cp_homepage_channel = $primary_role->cp_homepage_channel;
-            $cp_homepage_custom = $primary_role->cp_homepage_custom;
+        } elseif (! empty($role_settings) && ! empty($role_settings->cp_homepage)) {
+            $cp_homepage = $role_settings->cp_homepage;
+            $cp_homepage_channel = $role_settings->cp_homepage_channel;
+            $cp_homepage_custom = $role_settings->cp_homepage_custom;
         }
 
         switch ($cp_homepage) {
@@ -985,6 +982,58 @@ class Member extends ContentModel
         }
 
         return $roles;
+    }
+
+    /**
+     * Resolve role settings for a specific site from all assigned roles.
+     *
+     * @param int|null $site_id Site to resolve settings for. Defaults to current site.
+     * @param bool $requireCpAccess Restrict role candidates to roles that can access CP on this site.
+     * @return RoleSetting|null
+     */
+    public function getRoleSettingsForSite(?int $site_id = null, bool $requireCpAccess = true): ?RoleSetting
+    {
+        $site_id = $site_id ?: (int) ee()->config->item('site_id');
+        $roles = [];
+
+        foreach ($this->getAllRoles() as $role) {
+            $roles[(int) $role->role_id] = $role;
+        }
+
+        if (empty($roles)) {
+            return null;
+        }
+
+        $candidate_role_ids = array_keys($roles);
+
+        if ($requireCpAccess) {
+            $cp_role_ids = array_map('intval', ee('Permission')->rolesThatCan('access_cp', $site_id));
+            $candidate_role_ids = array_values(array_intersect($candidate_role_ids, $cp_role_ids));
+
+            if (empty($candidate_role_ids)) {
+                return null;
+            }
+        }
+
+        sort($candidate_role_ids, SORT_NUMERIC);
+
+        // Prefer primary role when it is a valid candidate for this site.
+        $primary_role_id = (int) $this->role_id;
+        if (in_array($primary_role_id, $candidate_role_ids, true)) {
+            $candidate_role_ids = array_merge(
+                [$primary_role_id],
+                array_values(array_diff($candidate_role_ids, [$primary_role_id]))
+            );
+        }
+
+        foreach ($candidate_role_ids as $role_id) {
+            $role_setting = $roles[$role_id]->RoleSettings->filter('site_id', $site_id)->first();
+            if (! empty($role_setting)) {
+                return $role_setting;
+            }
+        }
+
+        return null;
     }
 
     /**
