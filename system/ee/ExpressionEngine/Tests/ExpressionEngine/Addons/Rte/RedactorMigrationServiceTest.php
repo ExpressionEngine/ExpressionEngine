@@ -35,7 +35,7 @@ class RedactorMigrationServiceTest extends TestCase
                 'buttons' => ['bold', 'ul', 'ol'],
                 'plugins' => [],
             ],
-        ], 'Redactor Classic Basic');
+        ], 'Completely Arbitrary Name');
 
         $toolbar = $result['settings']['toolbar'];
         $this->assertSame('n', $toolbar['toolbar_addbar']);
@@ -107,18 +107,24 @@ class RedactorMigrationServiceTest extends TestCase
 
         $result = $service->migrateLegacyToolbar('redactorX', [
             'toolbar' => [
-                'topbar' => ['undo'],
-                'plugins' => [],
+                'toolbar_addbar' => 'n',
+                'toolbar_context' => 'n',
+                'toolbar_control' => 'n',
+                'toolbar_extrabar' => 'n',
+                'editor' => ['format', 'bold', 'italic', 'link'],
+                'format' => ['text', 'bulletlist', 'numberedlist'],
+                'plugins' => ['filebrowser', 'rte_definedlinks', 'pages', 'blockclass'],
             ],
-        ], 'RedactorX Basic');
+        ], 'Arbitrary Toolset');
 
         $toolbar = $result['settings']['toolbar'];
         $this->assertSame($basicDefaults['toolbar_addbar'], $toolbar['toolbar_addbar']);
         $this->assertSame($basicDefaults['toolbar_context'], $toolbar['toolbar_context']);
-        $this->assertContains('undo', $toolbar['extrabar']);
+        $this->assertSame($basicDefaults['addbar'], $toolbar['addbar']);
+        $this->assertSame($basicDefaults['plugins'], $toolbar['plugins']);
     }
 
-    public function testMigrateLegacyRedactorClassicFullMapsToFullDefaults()
+    public function testMigrateLegacyRedactorClassicFullMapsToFullDefaultsWithoutNameHint()
     {
         $service = new RedactorMigrationService();
         $fullDefaults = RedactorService::defaultToolbars()['Redactor Full'];
@@ -128,7 +134,7 @@ class RedactorMigrationServiceTest extends TestCase
                 'buttons' => ['bold', 'html'],
                 'plugins' => ['alignment'],
             ],
-        ], 'Redactor Classic Full');
+        ], 'Legacy Custom');
 
         $toolbar = $result['settings']['toolbar'];
         $this->assertSame($fullDefaults['toolbar_extrabar'], $toolbar['toolbar_extrabar']);
@@ -137,32 +143,68 @@ class RedactorMigrationServiceTest extends TestCase
         $this->assertContains('alignment', $toolbar['plugins']);
     }
 
-    public function testLegacyBasicLabelPatternsMatchConsolidationTargets()
+    public function testMigrateLegacyRedactorXFullMapsToFullDefaultsWithoutNameHint()
     {
-        $method = new ReflectionMethod(RedactorMigrationService::class, 'isLegacyBasicLabel');
-        $method->setAccessible(true);
         $service = new RedactorMigrationService();
+        $fullDefaults = RedactorService::defaultToolbars()['Redactor Full'];
 
-        foreach (['RedactorX Basic', 'redactor classic basic', 'RedactorClassic Basic (legacy)', 'Redactor Basic (Migrated 3-1)'] as $name) {
-            $this->assertTrue($method->invoke($service, strtolower($name)), "Expected basic label: {$name}");
-        }
+        $result = $service->migrateLegacyToolbar('redactorX', [
+            'toolbar' => [
+                'toolbar_extrabar' => 'y',
+                'toolbar_addbar' => 'y',
+                'toolbar_context' => 'y',
+                'toolbar_control' => 'y',
+                'topbar' => ['undo', 'redo', 'hotkeys'],
+                'addbar' => ['text', 'heading', 'table', 'line'],
+                'context' => ['bold', 'italic', 'deleted', 'link'],
+                'editor' => ['html', 'format', 'bold', 'italic', 'deleted', 'list', 'link'],
+                'format' => ['text', 'h1', 'bulletlist', 'numberedlist'],
+                'plugins' => ['underline', 'alignment', 'blockid', 'blockclass', 'blockcode', 'rte_definedlinks', 'pages', 'readmore', 'filebrowser', 'imageposition', 'imageresize'],
+            ],
+        ], 'Another Arbitrary Name');
 
-        $this->assertFalse($method->invoke($service, 'redactor full'));
-        $this->assertFalse($method->invoke($service, 'my custom toolset'));
+        $toolbar = $result['settings']['toolbar'];
+        $this->assertSame($fullDefaults['toolbar_addbar'], $toolbar['toolbar_addbar']);
+        $this->assertSame($fullDefaults['toolbar_context'], $toolbar['toolbar_context']);
+        $this->assertSame($fullDefaults['toolbar_control'], $toolbar['toolbar_control']);
+        $this->assertSame($fullDefaults['extrabar'], $toolbar['extrabar']);
+        $this->assertSame($fullDefaults['plugins'], $toolbar['plugins']);
+        $this->assertNotContains('image', $toolbar['addbar']);
     }
 
-    public function testLegacyFullLabelPatternsMatchConsolidationTargets()
+    public function testSettingsMatchCanonicalIdentifiesDefaultToolbarsFromSavedData()
     {
-        $method = new ReflectionMethod(RedactorMigrationService::class, 'isLegacyFullLabel');
+        $method = new ReflectionMethod(RedactorMigrationService::class, 'settingsMatchCanonical');
         $method->setAccessible(true);
         $service = new RedactorMigrationService();
+        $basicSettings = array_merge(
+            RedactorService::defaultConfigSettings(),
+            ['toolbar' => RedactorService::defaultToolbars()['Redactor Basic']]
+        );
+        $fullSettings = array_merge(
+            RedactorService::defaultConfigSettings(),
+            ['toolbar' => RedactorService::defaultToolbars()['Redactor Full']]
+        );
 
-        foreach (['RedactorX Full', 'redactor classic full', 'RedactorClassic Full (legacy)', 'Redactor Full (Migrated 5-2)'] as $name) {
-            $this->assertTrue($method->invoke($service, strtolower($name)), "Expected full label: {$name}");
-        }
+        $this->assertTrue($method->invoke($service, $basicSettings, $basicSettings));
+        $this->assertTrue($method->invoke($service, $fullSettings, $fullSettings));
+        $this->assertFalse($method->invoke($service, $basicSettings, $fullSettings));
+    }
 
-        $this->assertFalse($method->invoke($service, 'redactor basic'));
-        $this->assertFalse($method->invoke($service, 'legacy custom'));
+    public function testResolveAssignedToolsetIdPreservesValidSelectionsAndFallsBackByContext()
+    {
+        $method = new ReflectionMethod(RedactorMigrationService::class, 'resolveAssignedToolsetId');
+        $method->setAccessible(true);
+        $service = new RedactorMigrationService();
+        $validToolsetIds = [
+            11 => true,
+            22 => true,
+            33 => true,
+        ];
+
+        $this->assertSame(22, $method->invoke($service, 22, false, $validToolsetIds, 11, 33));
+        $this->assertSame(11, $method->invoke($service, 0, false, $validToolsetIds, 11, 33));
+        $this->assertSame(33, $method->invoke($service, 999, true, $validToolsetIds, 11, 33));
     }
 
     public function testGridRteContentUsesChannelGridFieldStorageNaming()
