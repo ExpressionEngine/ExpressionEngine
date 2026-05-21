@@ -99,13 +99,7 @@ class Rte_upd extends Installer
      */
     public function update($current = '')
     {
-        if (version_compare($current, '2.4.2', '<')) {
-            ee('rte:RedactorMigrationService')->consolidateDefaultRedactorToolsets();
-            ee('rte:RedactorMigrationService')->migrateContent();
-            ee('rte:RedactorMigrationService')->assignFieldToolsets();
-        }
-
-        if (version_compare($current, '2.4.1', '<')) {
+        if (version_compare($current, '2.3.0', '<')) {
             ee('rte:RedactorMigrationService')->migrate();
 
             $toolsets = ee('Model')->get('rte:Toolset')
@@ -138,47 +132,10 @@ class Rte_upd extends Installer
                 $toolset->toolset_name = $candidate;
                 $toolset->save();
             }
-        }
 
-        if (version_compare($current, '2.4.0', '<')) {
-            ee('rte:RedactorMigrationService')->migrate();
-
-            $legacyNamedToolsets = ee('Model')->get('rte:Toolset')
-                ->filter('toolset_type', 'redactor')
-                ->filter('toolset_name', 'LIKE', '% (legacy)')
-                ->all();
-
-            foreach ($legacyNamedToolsets as $toolset) {
-                $toolset->toolset_name = preg_replace('/\s+\(legacy\)$/', '', $toolset->toolset_name);
-                $toolset->save();
-            }
-        }
-
-        if (version_compare($current, '2.3.0', '<')) {
-            // rename old Redactor (legacy) toolsets
-            $check = ee('db')->where_in('toolset_type', ['redactor', 'redactorClassic'])->get('rte_toolsets');
-            if ($check->num_rows() > 0) {
-                foreach ($check->result() as $row) {
-                    $upd = ['toolset_type' => 'redactorClassic'];
-                    if (strpos($row->toolset_name, '(legacy)') === false) {
-                        $upd['toolset_name'] = $row->toolset_name . ' (legacy)';
-                    }
-                    ee('db')->where('toolset_id', $row->toolset_id)->update('rte_toolsets', $upd);
-                }
-            }
-            // install new Redactor
-            $check = ee('db')->where('toolset_type', 'redactor')->get('rte_toolsets');
-            if ($check->num_rows() == 0) {
-                $toolbars = ee('rte:RedactorService')->defaultToolbars();
-                foreach ($toolbars as $name => $toolbar) {
-                    $config_settings = array_merge(ee('rte:RedactorService')->defaultConfigSettings(), array('toolbar' => $toolbar));
-                    $config = ee('Model')->make('rte:Toolset');
-                    $config->toolset_name = $name;
-                    $config->toolset_type = 'redactor';
-                    $config->settings = $config_settings;
-                    $config->save();
-                }
-            }
+            ee('rte:RedactorMigrationService')->consolidateDefaultRedactorToolsets();
+            ee('rte:RedactorMigrationService')->migrateContent();
+            ee('rte:RedactorMigrationService')->assignFieldToolsets();
         }
 
         if (version_compare($current, '2.2.0', '<')) {
