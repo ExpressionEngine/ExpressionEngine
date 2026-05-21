@@ -460,6 +460,37 @@ class ProSearchFieldsTest extends ProSearchTestBase
         $sql = $this->fields->sql('field_id_5', 'val1|val2');
         $this->assertStringContainsString('LIKE', $sql);
     }
+
+    public function testSqlFullWordSearchUsesDatabaseWordBoundaryHelper()
+    {
+        $db = new class extends ProSearchFakeDb {
+            public $wordBoundaryTerms = [];
+
+            public function word_boundary_regex($term)
+            {
+                $this->wordBoundaryTerms[] = $term;
+
+                return '(\\b|^)' . preg_quote((string) $term) . '(\\b|$)';
+            }
+        };
+        ee()->setMock('db', $db);
+
+        $sql = $this->fields->sql('field_id_5', 'term\W');
+
+        $this->assertSame(['term'], $db->wordBoundaryTerms);
+        $this->assertSame("(field_id_5 REGEXP '(\\\\b|^)term(\\\\b|$)')", $sql);
+    }
+
+    public function testSqlFullWordSearchUsesLegacyBoundaryForMariaDb()
+    {
+        $db = new ProSearchFakeDb();
+        $db->versionString = '10.6.18-MariaDB';
+        ee()->setMock('db', $db);
+
+        $sql = $this->fields->sql('field_id_5', 'term\W');
+
+        $this->assertSame("(field_id_5 REGEXP '([[:<:]]|^)term([[:>:]]|$)')", $sql);
+    }
     
     public function testInvalidMethodCall()
     {
@@ -473,4 +504,3 @@ class ProSearchFieldsTest extends ProSearchTestBase
         $this->fields->is_native();
     }
 }
-

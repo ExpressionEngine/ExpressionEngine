@@ -434,9 +434,7 @@ class Pro_search_fields
             // whole word? Regexp search
             if (substr($item, -2) == '\W') {
                 $operand = $exclude ? 'NOT REGEXP' : 'REGEXP';
-                $item = preg_quote(substr($item, 0, -2));
-                $item = str_replace("'", "\'", $item);
-                $item = "'[[:<:]]{$item}[[:>:]]'";
+                $item = "'" . ee()->db->escape_str(ee()->db->word_boundary_regex(substr($item, 0, -2))) . "'";
             } else {
                 if (preg_match('/^([<>]=?)([\d\.]+)$/', $item, $match)) {
                     // Numeric operator!
