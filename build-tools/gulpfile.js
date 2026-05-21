@@ -42,10 +42,6 @@ if (process.env.PRO_REPO_PATH) {
     properties.local_repositories.pro = process.env.PRO_REPO_PATH;
 }
 
-if (process.env.REDACTORX_REPO_PATH) {
-    properties.local_repositories.redactorx = process.env.REDACTORX_REPO_PATH;
-}
-
 if (process.env.REDACTOR_REPO_PATH) {
     properties.local_repositories.redactor = process.env.REDACTOR_REPO_PATH;
 }
@@ -143,7 +139,6 @@ gulp.task('_preflight', ['_properties'], function (cb) {
 	runSequence(
 		clone_or_archive,
 		'_archive_pro',
-		'_archive_redactorx',
 		'_archive_redactor',
 		'_version_bump',
 		['_update_exists', '_set_debug', '_boot_hack', '_wizard_hack', '_create_config', '_dp_config', '_dp_license', '_fill_updater_dependencies', 'build_php_dependencies'],
@@ -173,14 +168,6 @@ gulp.task('_archive_pro', function (cb) {
 	} else {
 		archive_repo('pro', cb);
 	}
-});
-
-gulp.task('_archive_redactorx', function (cb) {
-    if (process.argv.indexOf('--skip-redactorx') > -1) {
-        cb();
-    } else {
-        archive_repo('redactorx', cb);
-    }
 });
 
 gulp.task('_archive_redactor', function (cb) {
@@ -632,7 +619,7 @@ var clone_repo = function (type, cb) {
 var archive_repo = function(type, cb) {
 	console.log('ARCHIVE_REPO');
 	console.log('Path Type:', type);
-	if (type=='pro' || type=='redactorx' || type=='redactor') {
+	if (type=='pro' || type=='redactor') {
 		paths[type] = paths['app']
 	} else {
 		console.log('Deleting:', paths[type]);

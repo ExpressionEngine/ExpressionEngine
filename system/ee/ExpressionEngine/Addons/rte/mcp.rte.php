@@ -221,7 +221,7 @@ class Rte_mcp
      */
     public function edit_toolset()
     {
-        $toolsetType = ee('Security/XSS')->clean(ee('Request')->post('toolset_type', 'ckeditor'));
+        $toolsetType = RteHelper::normalizeToolsetType(ee('Security/XSS')->clean(ee('Request')->post('toolset_type', 'ckeditor')));
         if (ee('Request')->isPost()) {
             $settings = ee('Security/XSS')->clean(ee('Request')->post('settings'));
             if (isset($settings['rte_config_json'])) {
@@ -251,7 +251,7 @@ class Rte_mcp
             }
 
             $config->toolset_name = $configName;
-            $config->toolset_type = $toolsetType;
+            $config->toolset_type = RteHelper::normalizeToolsetType($toolsetType);
             $jsonError = false;
             if ($settings['rte_advanced_config'] == 'y' && !empty($settings['rte_config_json'])) {
                 //override with JSON
@@ -259,7 +259,7 @@ class Rte_mcp
                 if (empty($json)) {
                     $jsonError = true;
                     $settings['toolbar'] = $settings[$toolsetType . '_toolbar'];
-                } elseif ($toolsetType == 'redactor' || $toolsetType == 'redactorX' || $toolsetType == 'redactor') {
+                } elseif ($toolsetType == 'redactor') {
                     $settings['toolbar'] = (array) $json;
                 } else {
                     $settings = array_merge($settings, (array) $json);
@@ -276,8 +276,6 @@ class Rte_mcp
                 }
             }
             unset($settings['ckeditor_toolbar']);
-            unset($settings['redactorX_toolbar']);
-            unset($settings['redactorClassic_toolbar']);
             unset($settings['redactor_toolbar']);
             $config->settings = $settings;
 
@@ -317,7 +315,8 @@ class Rte_mcp
             ($toolset_id = (int) ee('Request')->get('toolset_id'))
             && ($config = ee('Model')->get('rte:Toolset')->filter('toolset_id', '==', $toolset_id)->first())
         ) {
-            $config->settings = array_merge(ee('rte:' . ucfirst($config->toolset_type) . 'Service')->defaultConfigSettings(), $config->settings);
+            $config->toolset_type = RteHelper::normalizeToolsetType($config->toolset_type);
+            $config->settings = array_merge(ee('rte:' . RteHelper::getServiceNameForToolsetType($config->toolset_type))->defaultConfigSettings(), $config->settings);
 
             // Clone a config?
             if (ee('Request')->get('clone') == 'y') {
@@ -332,7 +331,7 @@ class Rte_mcp
                 'toolset_id' => '',
                 'toolset_type' => $toolsetType,
                 'toolset_name' => '',
-                'settings' => ee('rte:' . ucfirst($toolsetType) . 'Service')->defaultConfigSettings(),
+                'settings' => ee('rte:' . RteHelper::getServiceNameForToolsetType($toolsetType))->defaultConfigSettings(),
             ));
         }
 
@@ -370,7 +369,7 @@ class Rte_mcp
 
         if (isset($config->settings['rte_advanced_config']) && !empty($config->settings['rte_advanced_config']) && $config->settings['rte_advanced_config'] == 'y') {
             $rte_config_json = $config->settings['rte_config_json'];
-        } elseif ($config->toolset_type == 'redactorClassic' || $config->toolset_type == 'redactorX' || $config->toolset_type == 'redactor') {
+        } elseif ($config->toolset_type == 'redactor') {
             $rte_config_json = json_encode($config->settings['toolbar'], JSON_PRETTY_PRINT);
         } else {
             $rte_config_json = json_encode(ee('rte:CkeditorService')->buildToolbarConfig($config->settings), JSON_PRETTY_PRINT);
@@ -403,14 +402,10 @@ class Rte_mcp
                             'choices' => [
                                 'ckeditor'  => 'CKEditor',
                                 'redactor'  => 'Redactor',
-                                'redactorX'  => 'RedactorX (deprecated)',
-                                'redactorClassic'  => 'Redactor Classic (deprecated)',
                             ],
                             'group_toggle' => [
                                 'ckeditor' => 'ckeditor_toolbar',
                                 'redactor' => 'redactor_toolbar',
-                                'redactorX' => 'redactorX_toolbar',
-                                'redactorClassic' => 'redactorClassic_toolbar',
                             ],
                             'value' => $config->toolset_type
                         )
@@ -451,192 +446,9 @@ class Rte_mcp
                     )
                 ),
                 array(
-                    'title' => lang('rte_toolbar'),
-                    'group' => 'redactorClassic_toolbar',
-                    'wide' => true,
-                    'fields' => array(
-                        'settings[redactorClassic_toolbar]' => array(
-                            'type' => 'html',
-                            'content' => ee('rte:RedactorClassicService')->toolbarInputHtml($config)
-                        )
-                    )
-                ),
-                array(
-                    'title' => lang('rte_plugins'),
-                    'group' => 'redactorClassic_toolbar',
-                    'wide' => true,
-                    'fields' => array(
-                        'settings[redactorClassic_toolbar]' => array(
-                            'type' => 'html',
-                            'content' => ee('rte:RedactorClassicService')->pluginsInputHtml($config)
-                        )
-                    )
-                ),
-                array(
                     'title' => 'rte_show_main_toolbar',
                     'desc' => 'rte_show_main_toolbar_desc',
-                    'group' => 'redactorX_toolbar',
-                    'fields' => array(
-                        'settings[redactorX_toolbar][toolbar_hide]' => array(
-                            'type' => 'yes_no',
-                            'group_toggle' => array(
-                                'y' => 'redactorX_toolbar_hide',
-                            ),
-                            'value' => is_array($config->settings['toolbar']) && isset($config->settings['toolbar']['toolbar_hide']) && !empty($config->settings['toolbar']['toolbar_hide']) ? $config->settings['toolbar']['toolbar_hide'] : 'y',
-                        )
-                    )
-                ),
-                array(
-                    'title' => 'rte_main_toolbar',
-                    'group' => 'redactorX_toolbar|redactorX_toolbar_hide',
-                    'wide' => true,
-                    'fields' => array(
-                        'settings[redactorX_toolbar][hide]' => array(
-                            'type' => 'html',
-                            'content' => ee('rte:RedactorXService')->toolbarInputHtml($config, 'hide')
-                        )
-                    )
-                ),
-                array(
-                    'title' => 'rte_toolbar_sticky',
-                    'desc' => 'rte_show_main_toolbar_desc',
-                    'group' => 'redactorX_toolbar|redactorX_toolbar_hide',
-                    'fields' => array(
-                        'settings[redactorX_toolbar][sticky]' => array(
-                            'type' => 'yes_no',
-                            'value' => is_array($config->settings['toolbar']) && isset($config->settings['toolbar']['sticky']) && !empty($config->settings['toolbar']['sticky']) ? $config->settings['toolbar']['sticky'] : 'y',
-                        )
-                    )
-                ),
-                array(
-                    'title' => 'rte_show_topbar',
-                    'desc' => 'rte_show_topbar_desc',
-                    'group' => 'redactorX_toolbar',
-                    'fields' => array(
-                        'settings[redactorX_toolbar][toolbar_topbar]' => array(
-                            'type' => 'yes_no',
-                            'group_toggle' => array(
-                                'y' => 'redactorX_toolbar_topbar',
-                            ),
-                            'value' => is_array($config->settings['toolbar']) && isset($config->settings['toolbar']['toolbar_topbar']) && !empty($config->settings['toolbar']['toolbar_topbar']) ? $config->settings['toolbar']['toolbar_topbar'] : 'y',
-                        )
-                    )
-                ),
-                array(
-                    'title' => 'rte_topbar',
-                    'group' => 'redactorX_toolbar|redactorX_toolbar_topbar',
-                    'wide' => true,
-                    'fields' => array(
-                        'settings[redactorX_toolbar][topbar]' => array(
-                            'type' => 'html',
-                            'content' => ee('rte:RedactorXService')->toolbarInputHtml($config, 'topbar')
-                        )
-                    )
-                ),
-                array(
-                    'title' => 'rte_show_addbar',
-                    'desc' => 'rte_show_addbar_desc',
-                    'group' => 'redactorX_toolbar',
-                    'fields' => array(
-                        'settings[redactorX_toolbar][toolbar_addbar]' => array(
-                            'type' => 'yes_no',
-                            'group_toggle' => array(
-                                'y' => 'redactorX_toolbar_addbar',
-                            ),
-                            'value' => is_array($config->settings['toolbar']) && isset($config->settings['toolbar']['toolbar_addbar']) && !empty($config->settings['toolbar']['toolbar_addbar']) ? $config->settings['toolbar']['toolbar_addbar'] : 'y',
-                        )
-                    )
-                ),
-                array(
-                    'title' => 'rte_addbar',
-                    'group' => 'redactorX_toolbar|redactorX_toolbar_addbar',
-                    'wide' => true,
-                    'fields' => array(
-                        'settings[redactorX_toolbar][addbar]' => array(
-                            'type' => 'html',
-                            'content' => ee('rte:RedactorXService')->toolbarInputHtml($config, 'addbar')
-                        )
-                    )
-                ),
-                array(
-                    'title' => 'rte_show_context',
-                    'desc' => 'rte_show_context_desc',
-                    'group' => 'redactorX_toolbar',
-                    'fields' => array(
-                        'settings[redactorX_toolbar][toolbar_context]' => array(
-                            'type' => 'yes_no',
-                            'group_toggle' => array(
-                                'y' => 'redactorX_toolbar_context',
-                            ),
-                            'value' => is_array($config->settings['toolbar']) && isset($config->settings['toolbar']['toolbar_context']) && !empty($config->settings['toolbar']['toolbar_context']) ? $config->settings['toolbar']['toolbar_context'] : 'y',
-                        )
-                    )
-                ),
-                array(
-                    'title' => 'rte_context',
-                    'group' => 'redactorX_toolbar|redactorX_toolbar_context',
-                    'wide' => true,
-                    'fields' => array(
-                        'settings[redactorX_toolbar][addbar]' => array(
-                            'type' => 'html',
-                            'content' => ee('rte:RedactorXService')->toolbarInputHtml($config, 'context')
-                        )
-                    )
-                ),
-                array(
-                    'title' => 'rte_format',
-                    'desc' => 'rte_format_desc',
-                    'group' => 'redactorX_toolbar',
-                    'wide' => true,
-                    'fields' => array(
-                        'settings[redactorX_toolbar][format]' => array(
-                            'type' => 'html',
-                            'content' => ee('rte:RedactorXService')->toolbarInputHtml($config, 'format')
-                        )
-                    )
-                ),
-                array(
-                    'title' => lang('rte_plugins'),
-                    'group' => 'redactorX_toolbar',
-                    'wide' => true,
-                    'fields' => array(
-                        'settings[redactorX_toolbar][plugins]' => array(
-                            'type' => 'html',
-                            'content' => ee('rte:RedactorXService')->toolbarInputHtml($config, 'plugins')
-                        )
-                    )
-                ),
-                array(
-                    'title' => 'rte_control_bar',
-                    'desc' => 'rte_control_bar_desc',
-                    'group' => 'redactorX_toolbar',
-                    'fields' => array(
-                        'settings[redactorX_toolbar][toolbar_control]' => array(
-                            'type' => 'yes_no',
-                            'value' => is_array($config->settings['toolbar']) && isset($config->settings['toolbar']['toolbar_control']) && !empty($config->settings['toolbar']['toolbar_control']) ? $config->settings['toolbar']['toolbar_control'] : 'y',
-                        )
-                    )
-                ),
-                array(
-                    'title' => 'rte_spellcheck',
-                    'desc' => 'rte_spellcheck_desc',
-                    'group' => 'redactorX_toolbar',
-                    'fields' => array(
-                        'settings[redactorX_toolbar][spellcheck]' => array(
-                            'type' => 'dropdown',
-                            'choices' => [
-                                'none' => lang('none'),
-                                'browser' => lang('browser'),
-                                'grammarly' => lang('grammarly')
-                            ],
-                            'value' => is_array($config->settings['toolbar']) && isset($config->settings['toolbar']['spellcheck']) && !empty($config->settings['toolbar']['spellcheck']) ? $config->settings['toolbar']['spellcheck'] : 'browser'
-                        )
-                    )
-                ),
-                array(
-                    'title' => 'rte_show_main_toolbar',
-                    'desc' => 'rte_show_main_toolbar_desc',
-                    'group' => 'redactorX_toolbar',
+                    'group' => 'redactor_toolbar',
                     'fields' => array(
                         'settings[redactor_toolbar][toolbar_hide]' => array(
                             'type' => 'yes_no',
@@ -781,7 +593,7 @@ class Rte_mcp
                 array(
                     'title' => 'rte_spellcheck',
                     'desc' => 'rte_spellcheck_desc',
-                    'group' => 'redactorX_toolbar',
+                    'group' => 'redactor_toolbar',
                     'fields' => array(
                         'settings[redactor_toolbar][spellcheck]' => array(
                             'type' => 'dropdown',
@@ -822,7 +634,7 @@ class Rte_mcp
                 array(
                     'title' => lang('rte_max_height'),
                     'desc' => lang('rte_max_height_desc'),
-                    'group' => 'redactorClassic_toolbar|redactorX_toolbar|redactor_toolbar',
+                    'group' => 'ckeditor_toolbar|redactor_toolbar',
                     'fields' => array(
                         'settings[max_height]' => array(
                             'type' => 'short-text',
@@ -834,7 +646,7 @@ class Rte_mcp
                 array(
                     'title' => lang('rte_limiter'),
                     'desc' => lang('rte_limiter_desc'),
-                    'group' => 'redactorClassic_toolbar',
+                    'group' => 'redactor_toolbar',
                     'fields' => array(
                         'settings[limiter]' => array(
                             'type' => 'short-text',
@@ -948,8 +760,6 @@ class Rte_mcp
                 $('textarea[name=\"settings[rte_config_json]\"]').toggleCodeMirror({name: 'javascript', json: true});
                 $('fieldset[data-group^=ckeditor_toolbar]').hide();
                 $('fieldset[data-group^=redactor_toolbar]').hide();
-                $('fieldset[data-group^=redactorX_toolbar]').hide();
-                $('fieldset[data-group^=redactorClassic_toolbar]').hide();
             ");
         }
 
@@ -959,8 +769,6 @@ class Rte_mcp
                     if (event.detail.state == 'y') {
                         $('fieldset[data-group^=ckeditor_toolbar]').hide();
                         $('fieldset[data-group^=redactor_toolbar]').hide();
-                        $('fieldset[data-group^=redactorX_toolbar]').hide();
-                        $('fieldset[data-group^=redactorClassic_toolbar]').hide();
                     } else {
                         $('fieldset[data-group^=' + $('select[name=toolset_type]').children('option:selected').val() + '_toolbar]').show();
                     }

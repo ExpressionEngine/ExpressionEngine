@@ -12,10 +12,53 @@ namespace ExpressionEngine\Addons\Rte\Service;
 
 use ExpressionEngine\Library\Rte\RteFilebrowserInterface;
 
-class RedactorService extends RedactorClassicService implements RteService {
+class RedactorService extends AbstractRteService implements RteService {
 
+    public $class = 'rte-textarea redactor-box';
+    public $handle;
+    protected $settings;
+    protected $toolset;
     protected static $type = 'redactor';
     protected static $_includedFieldResources = false;
+    protected static $_includedConfigs;
+
+    protected function includeFieldResources()
+    {
+        if (! static::$_includedFieldResources) {
+            ee()->load->library('file_field');
+            ee()->lang->loadfile('fieldtypes');
+            ee()->file_field->loadDragAndDropAssets();
+
+            ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.css" type="text/css" />');
+            ee()->cp->add_js_script(['file' => [
+                'fields/rte/' . strtolower(static::$type) . '/redactor.min',
+                'fields/rte/rte']
+            ]);
+
+            if (REQ == 'CP') {
+                ee()->cp->add_js_script(['file' => [
+                    'fields/file/file_field_drag_and_drop',
+                    'fields/file/concurrency_queue',
+                    'fields/file/file_upload_progress_table',
+                    'fields/file/drag_and_drop_upload',
+                    'fields/grid/file_grid']
+                ]);
+            }
+
+            $language = isset(ee()->session) ? ee()->session->get_language() : ee()->config->item('deft_lang');
+            $lang_code = ee()->lang->code($language);
+            if ($lang_code != 'en') {
+                ee()->cp->add_js_script(['file' => ['fields/rte/redactor/langs/' . $lang_code]]);
+            }
+
+            $filedir_urls = ee('Model')->get('UploadDestination')->all()->getDictionary('id', 'url');
+            ee()->javascript->set_global([
+                'Rte.filedirUrls' => (object) $filedir_urls
+            ]);
+
+            static::$_includedFieldResources = true;
+        }
+    }
 
     protected function insertConfigJsById()
     {
@@ -156,7 +199,7 @@ class RedactorService extends RedactorClassicService implements RteService {
             $config['toolbar']['handle'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id->row('action_id') . '&t=' . ee()->localize->now;
         }
 
-        $config['toolbar']['editor']->classname = 'content redactor-styles rte_' . $configHandle;
+        $config['toolbar']['editor']->classname = 'content redactor-styles rx-content rte_' . $configHandle;
 
         // -------------------------------------------
         //  File Browser Config
@@ -183,7 +226,7 @@ class RedactorService extends RedactorClassicService implements RteService {
         }
 
         // EE FilePicker is not available on frontend channel forms
-        if (stripos($fqcn, 'filepicker_rtefb') !== false && REQ != 'CP') {
+        if (isset($fqcn) && stripos($fqcn, 'filepicker_rtefb') !== false && REQ != 'CP') {
             $filemanager_key = array_search('filebrowser', $config['toolbar']['plugins']);
             if ($filemanager_key !== false) {
                 $items = $config['toolbar']['plugins'];
@@ -354,6 +397,7 @@ class RedactorService extends RedactorClassicService implements RteService {
                     'filebrowser',
                     'rte_definedlinks',
                     'pages',
+                    'blockclass',
                 ]
             ],
             'Redactor Full' => [
@@ -418,9 +462,11 @@ class RedactorService extends RedactorClassicService implements RteService {
                     'underline',
                     'alignment',
                     'blockid',
+                    'blockclass',
                     'blockcode',
                     'rte_definedlinks',
                     'pages',
+                    'readmore',
                     'filebrowser',
                     'imageposition',
                     'imageresize',

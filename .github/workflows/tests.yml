@@ -49,13 +49,6 @@ jobs:
                 coverage: none
                 ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
-          - name: Checkout RedactorX
-            uses: actions/checkout@v4
-            with:
-              repository: ExpressionEngine/RedactorX
-              token: ${{ secrets.ORG_ACCESS_TOKEN }}
-              path: __redactorx
-
           - name: Checkout Redactor
             uses: actions/checkout@v4
             with:
@@ -85,7 +78,6 @@ jobs:
               RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
               RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
               APP_REPO_PATH: ${{ github.workspace }}
-              REDACTORX_REPO_PATH: ${{ github.workspace }}/__redactorx
               REDACTOR_REPO_PATH: ${{ github.workspace }}/__redactor
             run: gulp build-app --local --nogit --head --skip-lint --skip-pro --version=${{ steps.build_json.outputs.BUILD_VERSION }}
 

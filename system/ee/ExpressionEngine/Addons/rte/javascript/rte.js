@@ -307,14 +307,6 @@
 
 	// initialize droppanes
 	initToolbarSelector('tb-selections', '#ckeditor-toolbar', '.cke_button', 'disabled');
-	initToolbarSelector('tb-selections-redactorClassic-buttons', '#redactorClassic-toolbar-buttons', '.re-button', 'redactor-button-active');
-	initToolbarSelector('tb-selections-redactorClassic-plugins', '#redactorClassic-toolbar-plugins', '.re-button', 'redactor-button-active');
-	initToolbarSelector('tb-selections-redactorX-hide', '#redactorX-toolbar-hide', '.rx-button', 'disable', true);
-	initToolbarSelector('tb-selections-redactorX-topbar', '#redactorX-toolbar-topbar', '.rx-button', 'disable');
-	initToolbarSelector('tb-selections-redactorX-addbar', '#redactorX-toolbar-addbar', '.rx-button', 'disable');
-	initToolbarSelector('tb-selections-redactorX-context', '#redactorX-toolbar-context', '.rx-button', 'disable');
-	initToolbarSelector('tb-selections-redactorX-format', '#redactorX-toolbar-format', '.rx-button', 'disable');
-	initToolbarSelector('tb-selections-redactorX-plugins', '#redactorX-toolbar-plugins', '.rx-button', 'disable');
 
 	initToolbarSelector('tb-selections-redactor-hide', '#redactor-toolbar-hide', '.rx-button', 'disable', true);
 	initToolbarSelector('tb-selections-redactor-extrabar', '#redactor-toolbar-extrabar', '.rx-button', 'disable');

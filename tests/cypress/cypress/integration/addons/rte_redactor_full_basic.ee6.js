@@ -28,6 +28,8 @@ context('RTE Toolset Edit Page - Redactor Full - Basic', () => {
             page.get('toolset_type').should('be.visible')
             page.get('toolset_type').should('contain', 'Redactor')
             page.get('toolset_type').find('option:selected').should('contain', 'Redactor')
+            page.get('toolset_type').should('not.contain', 'RedactorX')
+            page.get('toolset_type').should('not.contain', 'Redactor Classic')
         })
 
         it('Shows Upload Directory dropdown', function() {

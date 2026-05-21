@@ -43,6 +43,7 @@ class RteEditToolset extends RteSettings {
                     'filebrowser',
                     'rte_definedlinks',
                     'pages',
+                    'blockclass',
                 ]
             },
             'Redactor Full': {
@@ -103,9 +104,11 @@ class RteEditToolset extends RteSettings {
                     'underline',
                     'alignment',
                     'blockid',
+                    'blockclass',
                     'blockcode',
                     'rte_definedlinks',
                     'pages',
+                    'readmore',
                     'filebrowser',
                     'imageposition',
                     'imageresize',

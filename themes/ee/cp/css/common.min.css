@@ -47561,6 +47561,8 @@ a.ck.ck-button.ck-on {
 
 /* readmore */
 .redactor-in .readmore,
+.redactor-styles .readmore,
+.rx-content .readmore,
 .rx-editor-container .readmore {
   position: relative;
   clear: both;
@@ -47570,6 +47572,8 @@ a.ck.ck-button.ck-on {
   justify-content: center;
 }
 .redactor-in .readmore::after,
+.redactor-styles .readmore::after,
+.rx-content .readmore::after,
 .rx-editor-container .readmore::after {
   content: "";
   position: absolute;
@@ -47578,6 +47582,8 @@ a.ck.ck-button.ck-on {
 }
 
 .redactor-in .readmore__label,
+.redactor-styles .readmore__label,
+.rx-content .readmore__label,
 .rx-editor-container .readmore__label {
   position: relative;
   z-index: 1;
@@ -47631,10 +47637,14 @@ a.ck.ck-button.ck-on {
 /* Do not show the page break element inside the print preview window. */
 @media print {
   .redactor-in .readmore,
+.redactor-styles .readmore,
+.rx-content .readmore,
 .rx-editor-container .readmore {
     padding: 0;
   }
   .redactor-in .readmore::after,
+.redactor-styles .readmore::after,
+.rx-content .readmore::after,
 .rx-editor-container .readmore::after {
     display: none;
   }
@@ -47824,94 +47834,190 @@ a.ck.ck-button.ck-on {
 
 .rx-toolbar .rx-button-toolbar,
 .rx-toolbar .rx-button-topbar,
+.rx-toolbar .rx-button-extrabar,
 .rx-topbar .rx-button-toolbar,
-.rx-topbar .rx-button-topbar {
+.rx-topbar .rx-button-topbar,
+.rx-topbar .rx-button-extrabar,
+.rx-extrabar .rx-button-toolbar,
+.rx-extrabar .rx-button-topbar,
+.rx-extrabar .rx-button-extrabar {
   color: var(--ee-text-primary);
 }
 .rx-toolbar .rx-button-toolbar svg,
 .rx-toolbar .rx-button-topbar svg,
+.rx-toolbar .rx-button-extrabar svg,
 .rx-topbar .rx-button-toolbar svg,
-.rx-topbar .rx-button-topbar svg {
+.rx-topbar .rx-button-topbar svg,
+.rx-topbar .rx-button-extrabar svg,
+.rx-extrabar .rx-button-toolbar svg,
+.rx-extrabar .rx-button-topbar svg,
+.rx-extrabar .rx-button-extrabar svg {
   fill: var(--ee-text-primary) !important;
 }
-.rx-toolbar .rx-button-toolbar:hover,
+.rx-toolbar .rx-button-toolbar:hover, .rx-toolbar .rx-button-toolbar.pressed,
 .rx-toolbar .rx-button-topbar:hover,
+.rx-toolbar .rx-button-topbar.pressed,
+.rx-toolbar .rx-button-extrabar:hover,
+.rx-toolbar .rx-button-extrabar.pressed,
 .rx-topbar .rx-button-toolbar:hover,
-.rx-topbar .rx-button-topbar:hover {
+.rx-topbar .rx-button-toolbar.pressed,
+.rx-topbar .rx-button-topbar:hover,
+.rx-topbar .rx-button-topbar.pressed,
+.rx-topbar .rx-button-extrabar:hover,
+.rx-topbar .rx-button-extrabar.pressed,
+.rx-extrabar .rx-button-toolbar:hover,
+.rx-extrabar .rx-button-toolbar.pressed,
+.rx-extrabar .rx-button-topbar:hover,
+.rx-extrabar .rx-button-topbar.pressed,
+.rx-extrabar .rx-button-extrabar:hover,
+.rx-extrabar .rx-button-extrabar.pressed {
   background: var(--ee-bg-dropdown-hover);
   color: var(--ee-text-primary);
 }
-.rx-toolbar .rx-button-toolbar:hover svg,
+.rx-toolbar .rx-button-toolbar:hover svg, .rx-toolbar .rx-button-toolbar.pressed svg,
 .rx-toolbar .rx-button-topbar:hover svg,
+.rx-toolbar .rx-button-topbar.pressed svg,
+.rx-toolbar .rx-button-extrabar:hover svg,
+.rx-toolbar .rx-button-extrabar.pressed svg,
 .rx-topbar .rx-button-toolbar:hover svg,
-.rx-topbar .rx-button-topbar:hover svg {
+.rx-topbar .rx-button-toolbar.pressed svg,
+.rx-topbar .rx-button-topbar:hover svg,
+.rx-topbar .rx-button-topbar.pressed svg,
+.rx-topbar .rx-button-extrabar:hover svg,
+.rx-topbar .rx-button-extrabar.pressed svg,
+.rx-extrabar .rx-button-toolbar:hover svg,
+.rx-extrabar .rx-button-toolbar.pressed svg,
+.rx-extrabar .rx-button-topbar:hover svg,
+.rx-extrabar .rx-button-topbar.pressed svg,
+.rx-extrabar .rx-button-extrabar:hover svg,
+.rx-extrabar .rx-button-extrabar.pressed svg {
   fill: var(--ee-text-primary);
 }
 .rx-toolbar .rx-button-toolbar.disable,
 .rx-toolbar .rx-button-topbar.disable,
+.rx-toolbar .rx-button-extrabar.disable,
 .rx-topbar .rx-button-toolbar.disable,
-.rx-topbar .rx-button-topbar.disable {
+.rx-topbar .rx-button-topbar.disable,
+.rx-topbar .rx-button-extrabar.disable,
+.rx-extrabar .rx-button-toolbar.disable,
+.rx-extrabar .rx-button-topbar.disable,
+.rx-extrabar .rx-button-extrabar.disable {
   opacity: 0.4 !important;
   color: var(--ee-text-primary) !important;
 }
 .rx-toolbar .rx-button-toolbar.disable svg,
 .rx-toolbar .rx-button-topbar.disable svg,
+.rx-toolbar .rx-button-extrabar.disable svg,
 .rx-topbar .rx-button-toolbar.disable svg,
-.rx-topbar .rx-button-topbar.disable svg {
+.rx-topbar .rx-button-topbar.disable svg,
+.rx-topbar .rx-button-extrabar.disable svg,
+.rx-extrabar .rx-button-toolbar.disable svg,
+.rx-extrabar .rx-button-topbar.disable svg,
+.rx-extrabar .rx-button-extrabar.disable svg {
   fill: var(--ee-text-primary) !important;
 }
 .rx-toolbar .rx-button-toolbar.disable .rx-button-icon,
 .rx-toolbar .rx-button-topbar.disable .rx-button-icon,
+.rx-toolbar .rx-button-extrabar.disable .rx-button-icon,
 .rx-topbar .rx-button-toolbar.disable .rx-button-icon,
-.rx-topbar .rx-button-topbar.disable .rx-button-icon {
+.rx-topbar .rx-button-topbar.disable .rx-button-icon,
+.rx-topbar .rx-button-extrabar.disable .rx-button-icon,
+.rx-extrabar .rx-button-toolbar.disable .rx-button-icon,
+.rx-extrabar .rx-button-topbar.disable .rx-button-icon,
+.rx-extrabar .rx-button-extrabar.disable .rx-button-icon {
   color: var(--ee-text-primary) !important;
 }
 .rx-toolbar .rx-button-toolbar.disable:hover,
 .rx-toolbar .rx-button-topbar.disable:hover,
+.rx-toolbar .rx-button-extrabar.disable:hover,
 .rx-topbar .rx-button-toolbar.disable:hover,
-.rx-topbar .rx-button-topbar.disable:hover {
+.rx-topbar .rx-button-topbar.disable:hover,
+.rx-topbar .rx-button-extrabar.disable:hover,
+.rx-extrabar .rx-button-toolbar.disable:hover,
+.rx-extrabar .rx-button-topbar.disable:hover,
+.rx-extrabar .rx-button-extrabar.disable:hover {
   opacity: 0.4 !important;
   color: var(--ee-text-primary) !important;
 }
 .rx-toolbar .rx-button-toolbar.disable:hover svg,
 .rx-toolbar .rx-button-topbar.disable:hover svg,
+.rx-toolbar .rx-button-extrabar.disable:hover svg,
 .rx-topbar .rx-button-toolbar.disable:hover svg,
-.rx-topbar .rx-button-topbar.disable:hover svg {
+.rx-topbar .rx-button-topbar.disable:hover svg,
+.rx-topbar .rx-button-extrabar.disable:hover svg,
+.rx-extrabar .rx-button-toolbar.disable:hover svg,
+.rx-extrabar .rx-button-topbar.disable:hover svg,
+.rx-extrabar .rx-button-extrabar.disable:hover svg {
   fill: var(--ee-text-primary) !important;
 }
 .rx-toolbar .rx-button-toolbar.active, .rx-toolbar .rx-button-toolbar.toggled,
 .rx-toolbar .rx-button-topbar.active,
 .rx-toolbar .rx-button-topbar.toggled,
+.rx-toolbar .rx-button-extrabar.active,
+.rx-toolbar .rx-button-extrabar.toggled,
 .rx-topbar .rx-button-toolbar.active,
 .rx-topbar .rx-button-toolbar.toggled,
 .rx-topbar .rx-button-topbar.active,
-.rx-topbar .rx-button-topbar.toggled {
+.rx-topbar .rx-button-topbar.toggled,
+.rx-topbar .rx-button-extrabar.active,
+.rx-topbar .rx-button-extrabar.toggled,
+.rx-extrabar .rx-button-toolbar.active,
+.rx-extrabar .rx-button-toolbar.toggled,
+.rx-extrabar .rx-button-topbar.active,
+.rx-extrabar .rx-button-topbar.toggled,
+.rx-extrabar .rx-button-extrabar.active,
+.rx-extrabar .rx-button-extrabar.toggled {
   background-color: transparent;
   color: inherit;
 }
 .rx-toolbar .rx-button-toolbar.active .rx-button-icon, .rx-toolbar .rx-button-toolbar.toggled .rx-button-icon,
 .rx-toolbar .rx-button-topbar.active .rx-button-icon,
 .rx-toolbar .rx-button-topbar.toggled .rx-button-icon,
+.rx-toolbar .rx-button-extrabar.active .rx-button-icon,
+.rx-toolbar .rx-button-extrabar.toggled .rx-button-icon,
 .rx-topbar .rx-button-toolbar.active .rx-button-icon,
 .rx-topbar .rx-button-toolbar.toggled .rx-button-icon,
 .rx-topbar .rx-button-topbar.active .rx-button-icon,
-.rx-topbar .rx-button-topbar.toggled .rx-button-icon {
+.rx-topbar .rx-button-topbar.toggled .rx-button-icon,
+.rx-topbar .rx-button-extrabar.active .rx-button-icon,
+.rx-topbar .rx-button-extrabar.toggled .rx-button-icon,
+.rx-extrabar .rx-button-toolbar.active .rx-button-icon,
+.rx-extrabar .rx-button-toolbar.toggled .rx-button-icon,
+.rx-extrabar .rx-button-topbar.active .rx-button-icon,
+.rx-extrabar .rx-button-topbar.toggled .rx-button-icon,
+.rx-extrabar .rx-button-extrabar.active .rx-button-icon,
+.rx-extrabar .rx-button-extrabar.toggled .rx-button-icon {
   border-color: var(--ee-dropdown-border);
   background-color: var(--ee-bg-dropdown-hover);
 }
 .rx-toolbar .rx-button-toolbar.active .rx-button-icon svg, .rx-toolbar .rx-button-toolbar.toggled .rx-button-icon svg,
 .rx-toolbar .rx-button-topbar.active .rx-button-icon svg,
 .rx-toolbar .rx-button-topbar.toggled .rx-button-icon svg,
+.rx-toolbar .rx-button-extrabar.active .rx-button-icon svg,
+.rx-toolbar .rx-button-extrabar.toggled .rx-button-icon svg,
 .rx-topbar .rx-button-toolbar.active .rx-button-icon svg,
 .rx-topbar .rx-button-toolbar.toggled .rx-button-icon svg,
 .rx-topbar .rx-button-topbar.active .rx-button-icon svg,
-.rx-topbar .rx-button-topbar.toggled .rx-button-icon svg {
+.rx-topbar .rx-button-topbar.toggled .rx-button-icon svg,
+.rx-topbar .rx-button-extrabar.active .rx-button-icon svg,
+.rx-topbar .rx-button-extrabar.toggled .rx-button-icon svg,
+.rx-extrabar .rx-button-toolbar.active .rx-button-icon svg,
+.rx-extrabar .rx-button-toolbar.toggled .rx-button-icon svg,
+.rx-extrabar .rx-button-topbar.active .rx-button-icon svg,
+.rx-extrabar .rx-button-topbar.toggled .rx-button-icon svg,
+.rx-extrabar .rx-button-extrabar.active .rx-button-icon svg,
+.rx-extrabar .rx-button-extrabar.toggled .rx-button-icon svg {
   fill: var(--ee-text-primary);
 }
 .rx-toolbar .rx-button-toolbar .re-icon-readmore,
 .rx-toolbar .rx-button-topbar .re-icon-readmore,
+.rx-toolbar .rx-button-extrabar .re-icon-readmore,
 .rx-topbar .rx-button-toolbar .re-icon-readmore,
-.rx-topbar .rx-button-topbar .re-icon-readmore {
+.rx-topbar .rx-button-topbar .re-icon-readmore,
+.rx-topbar .rx-button-extrabar .re-icon-readmore,
+.rx-extrabar .rx-button-toolbar .re-icon-readmore,
+.rx-extrabar .rx-button-topbar .re-icon-readmore,
+.rx-extrabar .rx-button-extrabar .re-icon-readmore {
   background: none;
   opacity: 1;
   width: auto;
@@ -48131,6 +48237,210 @@ a.ck.ck-button.ck-on {
 .field-control .ck-content ul li {
   font-size: 16px;
   line-height: 1.5;
+  color: var(--ee-text-primary);
+}
+.field-control .redactor-styles blockquote,
+.field-control .rx-content blockquote,
+.field-control .ck-content blockquote {
+  font-style: italic;
+  color: var(--ee-text-primary);
+  opacity: 0.5;
+  border-left: 3px solid var(--ee-text-primary);
+}
+.field-control .redactor-styles table,
+.field-control .rx-content table,
+.field-control .ck-content table {
+  border-collapse: collapse;
+  max-width: 100%;
+  width: 100%;
+}
+.field-control .redactor-styles table caption,
+.field-control .rx-content table caption,
+.field-control .ck-content table caption {
+  text-transform: uppercase;
+  padding: 0;
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 11px;
+}
+.field-control .redactor-styles table td, .field-control .redactor-styles table th,
+.field-control .rx-content table td,
+.field-control .rx-content table th,
+.field-control .ck-content table td,
+.field-control .ck-content table th {
+  border: 1px solid var(--ee-dropdown-border);
+  padding: 16px;
+  padding-bottom: 15px;
+}
+.field-control .redactor-styles table tfoot td, .field-control .redactor-styles table tfoot th,
+.field-control .rx-content table tfoot td,
+.field-control .rx-content table tfoot th,
+.field-control .ck-content table tfoot td,
+.field-control .ck-content table tfoot th {
+  color: rgba(0, 0, 0, 0.5);
+}
+.field-control .redactor-styles audio, .field-control .redactor-styles embed, .field-control .redactor-styles img, .field-control .redactor-styles object, .field-control .redactor-styles video,
+.field-control .rx-content audio,
+.field-control .rx-content embed,
+.field-control .rx-content img,
+.field-control .rx-content object,
+.field-control .rx-content video,
+.field-control .ck-content audio,
+.field-control .ck-content embed,
+.field-control .ck-content img,
+.field-control .ck-content object,
+.field-control .ck-content video {
+  max-width: 100%;
+}
+.field-control .redactor-styles embed, .field-control .redactor-styles img, .field-control .redactor-styles object, .field-control .redactor-styles video,
+.field-control .rx-content embed,
+.field-control .rx-content img,
+.field-control .rx-content object,
+.field-control .rx-content video,
+.field-control .ck-content embed,
+.field-control .ck-content img,
+.field-control .ck-content object,
+.field-control .ck-content video {
+  height: auto !important;
+}
+.field-control .redactor-styles img,
+.field-control .rx-content img,
+.field-control .ck-content img {
+  vertical-align: middle;
+  -ms-interpolation-mode: bicubic;
+}
+.field-control .redactor-styles figcaption,
+.field-control .rx-content figcaption,
+.field-control .ck-content figcaption {
+  display: block;
+  opacity: 0.6;
+  font-size: 12px;
+  font-style: italic;
+  text-align: left;
+}
+.field-control .redactor-styles address,
+.field-control .rx-content address,
+.field-control .ck-content address {
+  font-style: normal;
+}
+.field-control .redactor-styles code, .field-control .redactor-styles kbd, .field-control .redactor-styles mark, .field-control .redactor-styles small, .field-control .redactor-styles time, .field-control .redactor-styles var,
+.field-control .rx-content code,
+.field-control .rx-content kbd,
+.field-control .rx-content mark,
+.field-control .rx-content small,
+.field-control .rx-content time,
+.field-control .rx-content var,
+.field-control .ck-content code,
+.field-control .ck-content kbd,
+.field-control .ck-content mark,
+.field-control .ck-content small,
+.field-control .ck-content time,
+.field-control .ck-content var {
+  display: inline-block;
+  font-family: Consolas, Menlo, Monaco, "Courier New", monospace;
+  font-size: 87.5%;
+  line-height: 1;
+  color: var(--ee-text-primary);
+}
+.field-control .redactor-styles cite, .field-control .redactor-styles var,
+.field-control .rx-content cite,
+.field-control .rx-content var,
+.field-control .ck-content cite,
+.field-control .ck-content var {
+  opacity: 0.6;
+}
+.field-control .redactor-styles var,
+.field-control .rx-content var,
+.field-control .ck-content var {
+  font-style: normal;
+}
+.field-control .redactor-styles abbr, .field-control .redactor-styles dfn,
+.field-control .rx-content abbr,
+.field-control .rx-content dfn,
+.field-control .ck-content abbr,
+.field-control .ck-content dfn {
+  text-transform: uppercase;
+}
+.field-control .redactor-styles abbr[title], .field-control .redactor-styles dfn[title],
+.field-control .rx-content abbr[title],
+.field-control .rx-content dfn[title],
+.field-control .ck-content abbr[title],
+.field-control .ck-content dfn[title] {
+  text-decoration: none;
+  border-bottom: 1px dotted rgba(0, 0, 0, 0.5);
+  cursor: help;
+}
+.field-control .redactor-styles code, .field-control .redactor-styles kbd,
+.field-control .rx-content code,
+.field-control .rx-content kbd,
+.field-control .ck-content code,
+.field-control .ck-content kbd {
+  position: relative;
+  top: -1px;
+  padding: 0.25em;
+  padding-bottom: 0.2em;
+  border-radius: 2px;
+}
+.field-control .redactor-styles code,
+.field-control .rx-content code,
+.field-control .ck-content code {
+  background-color: var(--ee-panel-bg);
+}
+.field-control .redactor-styles mark,
+.field-control .rx-content mark,
+.field-control .ck-content mark {
+  border-radius: 2px;
+  padding: 0.125em 0.25em;
+  background-color: #fdb833;
+}
+.field-control .redactor-styles kbd,
+.field-control .rx-content kbd,
+.field-control .ck-content kbd {
+  border: 1px solid var(--ee-dropdown-border);
+}
+.field-control .redactor-styles sub, .field-control .redactor-styles sup,
+.field-control .rx-content sub,
+.field-control .rx-content sup,
+.field-control .ck-content sub,
+.field-control .ck-content sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+.field-control .redactor-styles sub,
+.field-control .rx-content sub,
+.field-control .ck-content sub {
+  bottom: -0.25em;
+}
+.field-control .redactor-styles sup,
+.field-control .rx-content sup,
+.field-control .ck-content sup {
+  top: -0.5em;
+}
+.field-control .redactor-styles pre,
+.field-control .rx-content pre,
+.field-control .ck-content pre {
+  font-family: Consolas, Menlo, Monaco, "Courier New", monospace;
+  font-size: 0.9em;
+}
+.field-control .redactor-styles pre, .field-control .redactor-styles pre code,
+.field-control .rx-content pre,
+.field-control .rx-content pre code,
+.field-control .ck-content pre,
+.field-control .ck-content pre code {
+  background-color: var(--ee-bg-5);
+  padding: 0;
+  top: 0;
+  display: block;
+  line-height: 1.5;
+  color: var(--ee-text-primary);
+  overflow: none;
+  white-space: pre-wrap;
+}
+.field-control .redactor-styles pre,
+.field-control .rx-content pre,
+.field-control .ck-content pre {
+  padding: 1rem;
 }
 .field-control .redactor-styles code,
 .field-control .rx-content code,
@@ -48146,33 +48456,55 @@ a.ck.ck-button.ck-on {
   padding: 1rem;
 }
 
-.rx-dropdown {
+.rx-dropdown[data-name=link] {
   background-color: var(--ee-bg-dropdown) !important;
   color: var(--ee-text-primary);
   box-shadow: 0 1px 4px 0 var(--ee-shadow-dropdown) !important;
   z-index: 1000 !important;
 }
-.rx-dropdown .rx-form {
+.rx-dropdown[data-name=link] .rx-form {
   padding: 0 !important;
 }
-.rx-dropdown .rx-dropdown-items {
+.rx-dropdown[data-name=link] .rx-dropdown-items {
   padding: 0;
 }
-.rx-dropdown .rx-dropdown-items .rx-form-item {
+.rx-dropdown[data-name=link] .rx-dropdown-items .rx-form-item {
   padding: 16px 16px 0 16px;
 }
-.rx-dropdown .rx-dropdown-items .rx-form-input {
+.rx-dropdown[data-name=link] .rx-dropdown-items .rx-form-input {
   color: var(--ee-input-color);
   background-color: var(--ee-input-bg);
   border: 1px solid var(--ee-input-border);
 }
-.rx-dropdown .rx-dropdown-items .rx-form-flex {
+.rx-dropdown[data-name=link] .rx-dropdown-items .rx-form-flex {
   display: block;
+  padding-bottom: 16px;
 }
-.rx-dropdown .rx-dropdown-items .rx-form-button.rx-form-button-primary {
+.rx-dropdown[data-name=link] .rx-dropdown-items .rx-form-button.rx-form-button-primary {
   font-weight: 700;
   font-size: 14px;
   padding: 8px 24px;
+}
+
+.rx-container .rx-toolbar-container {
+  border-color: var(--ee-input-border);
+}
+
+.field-control .rx-content {
+  background: var(--ee-input-bg);
+}
+.field-control .rx-content h2[data-rx-type=heading] {
+  font-size: 1.728em;
+  color: var(--ee-text-primary);
+  margin: 0;
+  padding: 0;
+  margin-bottom: 0.5em;
+  border-bottom: 0;
+}
+
+.rx-editor [data-rx-type=todoitem] input {
+  border: none;
+  background: transparent;
 }
 
 .ck-content ul {

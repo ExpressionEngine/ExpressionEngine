@@ -25,6 +25,9 @@ window.Rte;
         }
 
         this.config = (EE.Rte.configs[config] || EE.Rte.configs['default']);
+        if (this.config.type == 'redactorClassic' || this.config.type == 'redactorX') {
+            this.config.type = 'redactor';
+        }
 
         if (typeof defer == "undefined") {
             this.defer = this.$element.data('defer') == "y";
@@ -34,10 +37,6 @@ window.Rte;
 
         if (this.defer) {
             this.showIframe(this.config.type);
-        } else if (this.config.type == 'redactorClassic') {
-            this.initRedactorClassic();
-        } else if (this.config.type == 'redactorX') {
-            this.initRedactorX();
         } else if (this.config.type == 'redactor') {
             this.initRedactor();
         } else {
@@ -75,34 +74,8 @@ window.Rte;
 
             if (type == 'ckeditor') {
                 $(iDoc).click($.proxy(this, 'initCKEditor'));
-            } else if (type == 'redactorClassic') {
-                $(iDoc).click(() => {this.initRedactorClassic();});
-            } else if (type == 'redactor') {
-                $(iDoc).click(() => {this.initRedactor();});
             } else {
-                $(iDoc).click(() => {this.initRedactorX();});
-            }
-        },
-
-        /**
-         * Init Redactor
-         */
-        initRedactorClassic: function() {
-            var config = typeof this.config === 'string'
-                            ? JSON.parse(this.config)
-                            : this.config;
-            config.callbacks = {
-                blur: function(e) {
-                    $('#' + this.id).trigger('change');
-                },
-                keyup: function(e) {
-                    $("[data-publish] > form").trigger("entry:startAutosave")
-                }
-            };
-            $R('#' + this.id, config);
-
-            if (this.$iframe) {
-                this.$iframe.remove();
+                $(iDoc).click(() => {this.initRedactor();});
             }
         },
 
@@ -123,37 +96,14 @@ window.Rte;
             };
 
             config.popups = config.popups || {};
-            config.popups.extrabar = config['buttons']['extrabar'];
-            config.popups.addbar = config['buttons']['addbar'];
-            config.popups.context = config['buttons']['context'];
-            config.popups.format = config['format'];
+            config.buttons = config.buttons || {};
+            config.toolbar = config.toolbar || {};
+            config.popups.extrabar = config.buttons.extrabar || [];
+            config.popups.addbar = config.buttons.addbar || [];
+            config.popups.context = config.buttons.context || [];
+            config.popups.format = config.format || [];
             config.toolbar.hide = ['image'];
-            console.log('initRedactor', config);
             Redactor('#' + this.id, config);
-
-            if (this.$iframe) {
-                this.$iframe.remove();
-            }
-        },
-
-        /**
-         * Init RedactorX
-         */
-        initRedactorX: function() {
-            var config = typeof this.config === 'string'
-                            ? JSON.parse(this.config)
-                            : this.config;
-            var id = this.id;
-            config.subscribe = {
-                'editor.blur': function(e) {
-                    $('#' + id).trigger('change');
-                },
-                'editor.keyup': function(e) {
-                    $("[data-publish] > form").trigger("entry:startAutosave")
-                }
-            };
-
-            RedactorX('#' + this.id, config);
 
             if (this.$iframe) {
                 this.$iframe.remove();
