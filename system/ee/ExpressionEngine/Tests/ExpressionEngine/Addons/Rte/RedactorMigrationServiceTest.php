@@ -117,6 +117,7 @@ class RedactorMigrationServiceTest extends TestCase
             ],
         ], 'Arbitrary Toolset');
 
+        $this->assertSame('basic', $result['variant']);
         $toolbar = $result['settings']['toolbar'];
         $this->assertSame($basicDefaults['toolbar_addbar'], $toolbar['toolbar_addbar']);
         $this->assertSame($basicDefaults['toolbar_context'], $toolbar['toolbar_context']);
@@ -136,6 +137,7 @@ class RedactorMigrationServiceTest extends TestCase
             ],
         ], 'Legacy Custom');
 
+        $this->assertSame('full', $result['variant']);
         $toolbar = $result['settings']['toolbar'];
         $this->assertSame($fullDefaults['toolbar_extrabar'], $toolbar['toolbar_extrabar']);
         $this->assertSame($fullDefaults['toolbar_addbar'], $toolbar['toolbar_addbar']);
@@ -163,6 +165,7 @@ class RedactorMigrationServiceTest extends TestCase
             ],
         ], 'Another Arbitrary Name');
 
+        $this->assertSame('full', $result['variant']);
         $toolbar = $result['settings']['toolbar'];
         $this->assertSame($fullDefaults['toolbar_addbar'], $toolbar['toolbar_addbar']);
         $this->assertSame($fullDefaults['toolbar_context'], $toolbar['toolbar_context']);

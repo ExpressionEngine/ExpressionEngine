@@ -134,23 +134,30 @@ class RedactorMigrationService
 
         $canonicalBasic = $this->findOrCreateCanonicalToolset('Redactor Basic', $defaults['Redactor Basic']);
         $canonicalFull = $this->findOrCreateCanonicalToolset('Redactor Full', $defaults['Redactor Full']);
+        $canonicalBasicSettings = array_merge(
+            RedactorService::defaultConfigSettings(),
+            ['toolbar' => $defaults['Redactor Basic']]
+        );
+        $canonicalFullSettings = array_merge(
+            RedactorService::defaultConfigSettings(),
+            ['toolbar' => $defaults['Redactor Full']]
+        );
 
         $remap = [];
         foreach ($toolsets as $toolset) {
             $toolsetId = (int) $toolset->toolset_id;
-            $name = trim((string) $toolset->toolset_name);
-            $nameLower = strtolower($name);
 
             if ($toolsetId === (int) $canonicalBasic->toolset_id || $toolsetId === (int) $canonicalFull->toolset_id) {
                 continue;
             }
 
-            if ($this->isLegacyBasicLabel($nameLower)) {
+            $settings = is_array($toolset->settings) ? $toolset->settings : (array) $toolset->settings;
+            if ($this->settingsMatchCanonical($settings, $canonicalBasicSettings)) {
                 $remap[$toolsetId] = (int) $canonicalBasic->toolset_id;
                 continue;
             }
 
-            if ($this->isLegacyFullLabel($nameLower)) {
+            if ($this->settingsMatchCanonical($settings, $canonicalFullSettings)) {
                 $remap[$toolsetId] = (int) $canonicalFull->toolset_id;
                 continue;
             }
@@ -197,6 +204,7 @@ class RedactorMigrationService
             $migration = $this->migrateLegacyToolbar($legacyType, (array) $toolset->settings, $toolset->toolset_name);
 
             $toolset->toolset_type = 'redactor';
+            $toolset->toolset_name = $migration['variant'] === 'basic' ? 'Redactor Basic' : 'Redactor Full';
             $toolset->settings = $migration['settings'];
             $toolset->save();
             $updated++;
@@ -293,7 +301,7 @@ class RedactorMigrationService
     }
 
     /**
-     * Assigns canonical Redactor Basic to standalone RTE fields and Redactor Full to Grid and Fluid RTE fields.
+     * Preserves valid assigned Redactor toolsets and only falls back to canonical defaults when a field has no usable assignment.
      *
      * @return array{basic: int, full: int}
      */
@@ -306,6 +314,14 @@ class RedactorMigrationService
         $basicId = (int) $canonicalBasic->toolset_id;
         $fullId = (int) $canonicalFull->toolset_id;
         $fluidSubFieldIds = $this->getFluidSubFieldIds();
+        $validToolsetIds = [];
+        $redactorToolsets = ee('Model')->get('rte:Toolset')
+            ->filter('toolset_type', 'redactor')
+            ->all();
+
+        foreach ($redactorToolsets as $toolset) {
+            $validToolsetIds[(int) $toolset->toolset_id] = true;
+        }
 
         $summary = [
             'basic' => 0,
@@ -319,9 +335,16 @@ class RedactorMigrationService
         foreach ($channelFields as $field) {
             $fieldId = (int) $field->field_id;
             $settings = is_array($field->field_settings) ? $field->field_settings : [];
-            $targetId = in_array($fieldId, $fluidSubFieldIds, true) ? $fullId : $basicId;
+            $currentId = isset($settings['toolset_id']) ? (int) $settings['toolset_id'] : 0;
+            $targetId = $this->resolveAssignedToolsetId(
+                $currentId,
+                in_array($fieldId, $fluidSubFieldIds, true),
+                $validToolsetIds,
+                $basicId,
+                $fullId
+            );
 
-            if (!isset($settings['toolset_id']) || (int) $settings['toolset_id'] !== $targetId) {
+            if (!isset($settings['toolset_id']) || $currentId !== $targetId) {
                 $settings['toolset_id'] = $targetId;
                 $field->field_settings = $settings;
                 $field->save();
@@ -336,11 +359,14 @@ class RedactorMigrationService
 
             foreach ($gridColumns as $column) {
                 $settings = is_array($column->col_settings) ? $column->col_settings : [];
-                if (!isset($settings['toolset_id']) || (int) $settings['toolset_id'] !== $fullId) {
-                    $settings['toolset_id'] = $fullId;
+                $currentId = isset($settings['toolset_id']) ? (int) $settings['toolset_id'] : 0;
+                $targetId = $this->resolveAssignedToolsetId($currentId, true, $validToolsetIds, $basicId, $fullId);
+
+                if (!isset($settings['toolset_id']) || $currentId !== $targetId) {
+                    $settings['toolset_id'] = $targetId;
                     $column->col_settings = $settings;
                     $column->save();
-                    $summary['full']++;
+                    $summary[$targetId === $fullId ? 'full' : 'basic']++;
                 }
             }
         }
@@ -352,11 +378,14 @@ class RedactorMigrationService
 
             foreach ($memberFields as $field) {
                 $settings = is_array($field->m_field_settings) ? $field->m_field_settings : [];
-                if (!isset($settings['toolset_id']) || (int) $settings['toolset_id'] !== $basicId) {
-                    $settings['toolset_id'] = $basicId;
+                $currentId = isset($settings['toolset_id']) ? (int) $settings['toolset_id'] : 0;
+                $targetId = $this->resolveAssignedToolsetId($currentId, false, $validToolsetIds, $basicId, $fullId);
+
+                if (!isset($settings['toolset_id']) || $currentId !== $targetId) {
+                    $settings['toolset_id'] = $targetId;
                     $field->m_field_settings = $settings;
                     $field->save();
-                    $summary['basic']++;
+                    $summary[$targetId === $fullId ? 'full' : 'basic']++;
                 }
             }
         }
@@ -504,18 +533,10 @@ class RedactorMigrationService
     public function migrateLegacyToolbar(string $legacyType, array $settings, string $toolsetName = ''): array
     {
         $defaults = RedactorService::defaultToolbars();
-        $isBasic = stripos($toolsetName, 'basic') !== false;
-        $target = $isBasic ? $defaults['Redactor Basic'] : $defaults['Redactor Full'];
+        $toolbar = $this->extractToolbarSettings($settings);
+        $variant = $this->detectLegacyToolbarVariant($legacyType, $toolbar);
+        $target = $variant === 'basic' ? $defaults['Redactor Basic'] : $defaults['Redactor Full'];
         $audit = [];
-
-        $toolbar = [];
-        if (isset($settings['toolbar']) && is_array($settings['toolbar'])) {
-            $toolbar = $settings['toolbar'];
-        } elseif (isset($settings['toolbar']) && is_object($settings['toolbar'])) {
-            $toolbar = (array) $settings['toolbar'];
-        } else {
-            $toolbar = $settings;
-        }
 
         if ($legacyType === 'redactorClassic') {
             $legacyButtons = isset($toolbar['buttons']) && is_array($toolbar['buttons']) ? $toolbar['buttons'] : [];
@@ -616,9 +637,23 @@ class RedactorMigrationService
         }
 
         return [
+            'variant' => $variant,
             'settings' => array_merge(RedactorService::defaultConfigSettings(), ['toolbar' => $target]),
             'audit' => $audit,
         ];
+    }
+
+    private function extractToolbarSettings(array $settings): array
+    {
+        if (isset($settings['toolbar']) && is_array($settings['toolbar'])) {
+            return $settings['toolbar'];
+        }
+
+        if (isset($settings['toolbar']) && is_object($settings['toolbar'])) {
+            return (array) $settings['toolbar'];
+        }
+
+        return $settings;
     }
 
     private function addAuditRow(array $row): void
@@ -685,16 +720,88 @@ class RedactorMigrationService
         return $toolset;
     }
 
-    private function isLegacyBasicLabel(string $name): bool
+    private function detectLegacyToolbarVariant(string $legacyType, array $toolbar): string
     {
-        return (bool) preg_match('/^(redactorx|redactor\s*classic|redactorclassic)\s*basic(?:\s*\(.*\))?$/i', $name)
-            || (bool) preg_match('/^redactor\s*basic\s*\(migrated.*\)$/i', $name);
+        $basic = RedactorService::defaultToolbars()['Redactor Basic'];
+
+        if ($legacyType === 'redactorClassic') {
+            $buttons = isset($toolbar['buttons']) && is_array($toolbar['buttons']) ? $toolbar['buttons'] : [];
+            $plugins = isset($toolbar['plugins']) && is_array($toolbar['plugins']) ? $toolbar['plugins'] : [];
+
+            $basicButtons = array_unique(array_merge(
+                $basic['editor'],
+                $basic['format'],
+                $basic['context'],
+                $basic['addbar'],
+                $basic['extrabar']
+            ));
+
+            foreach ($this->mapButtons($buttons) as $button) {
+                if (!in_array($button, $basicButtons, true)) {
+                    return 'full';
+                }
+            }
+
+            $normalizedPlugins = $this->normalizePluginsForDetection($plugins);
+            if (in_array('underline', $buttons, true)) {
+                $normalizedPlugins[] = 'underline';
+            }
+
+            foreach (array_values(array_unique($normalizedPlugins)) as $plugin) {
+                if (!in_array($plugin, $basic['plugins'], true)) {
+                    return 'full';
+                }
+            }
+
+            return 'basic';
+        }
+
+        foreach (['toolbar_extrabar', 'toolbar_addbar', 'toolbar_context', 'toolbar_control'] as $toggle) {
+            if (($toolbar[$toggle] ?? 'n') === 'y') {
+                return 'full';
+            }
+        }
+
+        $segments = [
+            'topbar' => 'extrabar',
+            'addbar' => 'addbar',
+            'context' => 'context',
+            'editor' => 'editor',
+            'format' => 'format',
+        ];
+
+        foreach ($segments as $legacyKey => $basicKey) {
+            $items = isset($toolbar[$legacyKey]) && is_array($toolbar[$legacyKey]) ? $toolbar[$legacyKey] : [];
+            foreach ($this->mapButtons($items) as $button) {
+                if (!in_array($button, $basic[$basicKey], true)) {
+                    return 'full';
+                }
+            }
+        }
+
+        $plugins = isset($toolbar['plugins']) && is_array($toolbar['plugins']) ? $toolbar['plugins'] : [];
+        foreach ($this->normalizePluginsForDetection($plugins) as $plugin) {
+            if (!in_array($plugin, $basic['plugins'], true)) {
+                return 'full';
+            }
+        }
+
+        return 'basic';
     }
 
-    private function isLegacyFullLabel(string $name): bool
+    private function normalizePluginsForDetection(array $plugins): array
     {
-        return (bool) preg_match('/^(redactorx|redactor\s*classic|redactorclassic)\s*full(?:\s*\(.*\))?$/i', $name)
-            || (bool) preg_match('/^redactor\s*full\s*\(migrated.*\)$/i', $name);
+        $normalized = [];
+
+        foreach ($plugins as $plugin) {
+            foreach (self::PLUGIN_MAP[$plugin] ?? [$plugin] as $mappedPlugin) {
+                if ($mappedPlugin !== '') {
+                    $normalized[] = $mappedPlugin;
+                }
+            }
+        }
+
+        return array_values(array_unique($normalized));
     }
 
     private function remapToolsetReferences(array $toolsetIdMap): void
@@ -810,5 +917,51 @@ class RedactorMigrationService
         }
 
         return array_values(array_unique($mapped));
+    }
+
+    private function settingsMatchCanonical(array $settings, array $canonicalSettings): bool
+    {
+        return $this->normalizeSettingsForComparison($settings) === $this->normalizeSettingsForComparison($canonicalSettings);
+    }
+
+    private function resolveAssignedToolsetId(
+        int $assignedToolsetId,
+        bool $preferFullFallback,
+        array $validToolsetIds,
+        int $basicToolsetId,
+        int $fullToolsetId
+    ): int {
+        if ($assignedToolsetId > 0 && isset($validToolsetIds[$assignedToolsetId])) {
+            return $assignedToolsetId;
+        }
+
+        return $preferFullFallback ? $fullToolsetId : $basicToolsetId;
+    }
+
+    private function normalizeSettingsForComparison($value)
+    {
+        if (is_object($value)) {
+            $value = (array) $value;
+        }
+
+        if (!is_array($value)) {
+            return $value;
+        }
+
+        $normalized = [];
+        foreach ($value as $key => $item) {
+            $normalized[$key] = $this->normalizeSettingsForComparison($item);
+        }
+
+        if (!$this->isListArray($normalized)) {
+            ksort($normalized);
+        }
+
+        return $normalized;
+    }
+
+    private function isListArray(array $value): bool
+    {
+        return $value === [] || array_keys($value) === range(0, count($value) - 1);
     }
 }

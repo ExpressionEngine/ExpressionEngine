@@ -119,6 +119,12 @@ class Rte_upd extends Installer
                     $cleanName = 'Redactor Migrated ' . $toolset->toolset_id;
                 }
 
+                if (in_array($cleanName, ['Redactor Basic', 'Redactor Full'], true)) {
+                    $toolset->toolset_name = $cleanName;
+                    $toolset->save();
+                    continue;
+                }
+
                 $candidate = $cleanName;
                 $i = 1;
                 while (ee('Model')->get('rte:Toolset')
