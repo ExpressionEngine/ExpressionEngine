@@ -408,7 +408,6 @@ class RedactorService extends AbstractRteService implements RteService {
                 'toolbar_control' => 'y',
                 'hide' => [],
                 'editor' => [
-                    'ai-tools',
                     'html',
                     'format',
                     'bold',
@@ -424,8 +423,6 @@ class RedactorService extends AbstractRteService implements RteService {
                     'hotkeys'
                 ],
                 'addbar' => [
-                    'ai-tools',
-                    'ai-image',
                     'text',
                     'heading',
                     'todo',
@@ -439,7 +436,6 @@ class RedactorService extends AbstractRteService implements RteService {
                     'wrapper'
                 ],
                 'context' => [
-                    'ai-tools',
                     'format',
                     'bold',
                     'italic',
