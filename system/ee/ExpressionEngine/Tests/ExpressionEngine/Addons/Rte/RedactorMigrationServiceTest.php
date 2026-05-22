@@ -10,6 +10,13 @@
 
 namespace ExpressionEngine\Tests\Addons\Rte;
 
+// because of lower case addon directory, these classes do not get autoloaded into PHPUnit
+require_once SYSPATH . 'ee/ExpressionEngine/Addons/rte/RteHelper.php';
+require_once SYSPATH . 'ee/ExpressionEngine/Addons/rte/Service/RteService.php';
+require_once SYSPATH . 'ee/ExpressionEngine/Addons/rte/Service/AbstractRteService.php';
+require_once SYSPATH . 'ee/ExpressionEngine/Addons/rte/Service/RedactorService.php';
+require_once SYSPATH . 'ee/ExpressionEngine/Addons/rte/Service/RedactorMigrationService.php';
+
 use ExpressionEngine\Addons\Rte\RteHelper;
 use ExpressionEngine\Addons\Rte\Service\RedactorMigrationService;
 use ExpressionEngine\Addons\Rte\Service\RedactorService;
@@ -175,9 +182,9 @@ class RedactorMigrationServiceTest extends TestCase
         $this->assertNotContains('image', $toolbar['addbar']);
     }
 
-    public function testSettingsMatchCanonicalIdentifiesDefaultToolbarsFromSavedData()
+    public function testDetectRedactorToolsetVariantIdentifiesDefaultToolbarsFromSavedData()
     {
-        $method = new ReflectionMethod(RedactorMigrationService::class, 'settingsMatchCanonical');
+        $method = new ReflectionMethod(RedactorMigrationService::class, 'detectRedactorToolsetVariant');
         $method->setAccessible(true);
         $service = new RedactorMigrationService();
         $basicSettings = array_merge(
@@ -188,10 +195,25 @@ class RedactorMigrationServiceTest extends TestCase
             RedactorService::defaultConfigSettings(),
             ['toolbar' => RedactorService::defaultToolbars()['Redactor Full']]
         );
+        $basicToolset = (object) [
+            'toolset_name' => 'Migrated Basic',
+            'toolset_type' => 'redactor',
+            'settings' => $basicSettings,
+        ];
+        $fullToolset = (object) [
+            'toolset_name' => 'Migrated Full',
+            'toolset_type' => 'redactor',
+            'settings' => $fullSettings,
+        ];
+        $customFullToolset = (object) [
+            'toolset_name' => 'Custom',
+            'toolset_type' => 'redactor',
+            'settings' => $fullSettings,
+        ];
 
-        $this->assertTrue($method->invoke($service, $basicSettings, $basicSettings));
-        $this->assertTrue($method->invoke($service, $fullSettings, $fullSettings));
-        $this->assertFalse($method->invoke($service, $basicSettings, $fullSettings));
+        $this->assertSame('basic', $method->invoke($service, $basicToolset));
+        $this->assertSame('full', $method->invoke($service, $fullToolset));
+        $this->assertSame('full', $method->invoke($service, $customFullToolset));
     }
 
     public function testResolveAssignedToolsetIdPreservesValidSelectionsAndFallsBackByContext()
