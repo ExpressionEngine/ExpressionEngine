@@ -9,7 +9,6 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-use ExpressionEngine\Addons\Rte\RteHelper;
 use ExpressionEngine\Service\Addon\Installer;
 
 class Rte_upd extends Installer
@@ -101,47 +100,6 @@ class Rte_upd extends Installer
     {
         if (version_compare($current, '2.3.0', '<')) {
             ee('rte:RedactorMigrationService')->migrate();
-
-            $toolsets = ee('Model')->get('rte:Toolset')
-                ->filter('toolset_type', 'IN', ['redactor', 'redactorClassic', 'redactorX'])
-                ->all();
-
-            foreach ($toolsets as $toolset) {
-                $toolset->toolset_type = 'redactor';
-
-                $cleanName = preg_replace('/\s+\(legacy\)$/i', '', $toolset->toolset_name);
-                $cleanName = preg_replace('/^RedactorX\b/i', 'Redactor', $cleanName);
-                $cleanName = preg_replace('/^Redactor\s*Classic\b/i', 'Redactor', $cleanName);
-                $cleanName = preg_replace('/^RedactorClassic\b/i', 'Redactor', $cleanName);
-                $cleanName = trim((string) $cleanName);
-
-                if ($cleanName === '') {
-                    $cleanName = 'Redactor Migrated ' . $toolset->toolset_id;
-                }
-
-                if (in_array($cleanName, ['Redactor Basic', 'Redactor Full'], true)) {
-                    $toolset->toolset_name = $cleanName;
-                    $toolset->save();
-                    continue;
-                }
-
-                $candidate = $cleanName;
-                $i = 1;
-                while (ee('Model')->get('rte:Toolset')
-                    ->filter('toolset_name', $candidate)
-                    ->filter('toolset_id', '!=', $toolset->toolset_id)
-                    ->count() > 0) {
-                    $i++;
-                    $candidate = $cleanName . ' (Migrated ' . $toolset->toolset_id . '-' . $i . ')';
-                }
-
-                $toolset->toolset_name = $candidate;
-                $toolset->save();
-            }
-
-            ee('rte:RedactorMigrationService')->consolidateDefaultRedactorToolsets();
-            ee('rte:RedactorMigrationService')->migrateContent();
-            ee('rte:RedactorMigrationService')->assignFieldToolsets();
         }
 
         if (version_compare($current, '2.2.0', '<')) {

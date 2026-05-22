@@ -24,7 +24,7 @@ class Rte_ft extends EE_Fieldtype
 
     public $info = [
         'name' => 'Rich Text Editor',
-        'version' => '2.1.0'
+        'version' => '2.3.0'
     ];
 
     public $defaultEvaluationRule = 'isNotEmpty';

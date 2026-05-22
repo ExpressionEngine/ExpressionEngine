@@ -113,14 +113,13 @@ class RedactorMigrationService
         $this->ensureAuditTable();
 
         $summary = [
-            'toolsets_migrated' => 0,
             'content_rows_migrated' => 0,
             'audit_rows' => 0,
         ];
 
-        $summary['toolsets_migrated'] = $this->migrateToolsets();
         $summary['toolsets_consolidated'] = $this->consolidateDefaultRedactorToolsets();
         $summary['content_rows_migrated'] = $this->migrateContent();
+        $summary['field_toolsets_assigned'] = $this->assignFieldToolsets();
 
         return $summary;
     }
@@ -128,20 +127,12 @@ class RedactorMigrationService
     public function consolidateDefaultRedactorToolsets(): int
     {
         $defaults = RedactorService::defaultToolbars();
-        $toolsets = ee('Model')->get('rte:Toolset')
-            ->filter('toolset_type', 'redactor')
-            ->all();
-
         $canonicalBasic = $this->findOrCreateCanonicalToolset('Redactor Basic', $defaults['Redactor Basic']);
         $canonicalFull = $this->findOrCreateCanonicalToolset('Redactor Full', $defaults['Redactor Full']);
-        $canonicalBasicSettings = array_merge(
-            RedactorService::defaultConfigSettings(),
-            ['toolbar' => $defaults['Redactor Basic']]
-        );
-        $canonicalFullSettings = array_merge(
-            RedactorService::defaultConfigSettings(),
-            ['toolbar' => $defaults['Redactor Full']]
-        );
+
+        $toolsets = ee('Model')->get('rte:Toolset')
+            ->filter('toolset_type', 'IN', array_merge(['redactor'], self::LEGACY_TYPES))
+            ->all();
 
         $remap = [];
         foreach ($toolsets as $toolset) {
@@ -151,16 +142,8 @@ class RedactorMigrationService
                 continue;
             }
 
-            $settings = is_array($toolset->settings) ? $toolset->settings : (array) $toolset->settings;
-            if ($this->settingsMatchCanonical($settings, $canonicalBasicSettings)) {
-                $remap[$toolsetId] = (int) $canonicalBasic->toolset_id;
-                continue;
-            }
-
-            if ($this->settingsMatchCanonical($settings, $canonicalFullSettings)) {
-                $remap[$toolsetId] = (int) $canonicalFull->toolset_id;
-                continue;
-            }
+            $target = $this->detectRedactorToolsetVariant($toolset) === 'basic' ? $canonicalBasic : $canonicalFull;
+            $remap[$toolsetId] = (int) $target->toolset_id;
         }
 
         if (empty($remap)) {
@@ -177,10 +160,11 @@ class RedactorMigrationService
             }
 
             $this->addAuditRow([
+                'legacy_type' => $toolset->toolset_type,
                 'toolset_id' => $fromId,
                 'toolset_name' => $toolset->toolset_name,
-                'detected_feature' => 'duplicate_toolset',
-                'action_taken' => 'Consolidated to toolset_id ' . $toId,
+                'detected_feature' => 'redactor_toolset',
+                'action_taken' => 'Mapped field settings to toolset_id ' . $toId . ' and removed the old Redactor toolset.',
                 'manual_review' => 'n',
             ]);
 
@@ -656,6 +640,22 @@ class RedactorMigrationService
         return $settings;
     }
 
+    private function detectRedactorToolsetVariant($toolset): string
+    {
+        $toolsetName = strtolower((string) $toolset->toolset_name);
+        if (strpos($toolsetName, 'basic') !== false) {
+            return 'basic';
+        }
+        if (strpos($toolsetName, 'full') !== false) {
+            return 'full';
+        }
+
+        $settings = is_array($toolset->settings) ? $toolset->settings : (array) $toolset->settings;
+        $toolbar = $this->extractToolbarSettings($settings);
+
+        return $this->detectLegacyToolbarVariant((string) $toolset->toolset_type, $toolbar);
+    }
+
     private function addAuditRow(array $row): void
     {
         $payload = array_merge([
@@ -764,6 +764,7 @@ class RedactorMigrationService
 
         $segments = [
             'topbar' => 'extrabar',
+            'extrabar' => 'extrabar',
             'addbar' => 'addbar',
             'context' => 'context',
             'editor' => 'editor',
@@ -919,11 +920,6 @@ class RedactorMigrationService
         return array_values(array_unique($mapped));
     }
 
-    private function settingsMatchCanonical(array $settings, array $canonicalSettings): bool
-    {
-        return $this->normalizeSettingsForComparison($settings) === $this->normalizeSettingsForComparison($canonicalSettings);
-    }
-
     private function resolveAssignedToolsetId(
         int $assignedToolsetId,
         bool $preferFullFallback,
@@ -936,32 +932,5 @@ class RedactorMigrationService
         }
 
         return $preferFullFallback ? $fullToolsetId : $basicToolsetId;
-    }
-
-    private function normalizeSettingsForComparison($value)
-    {
-        if (is_object($value)) {
-            $value = (array) $value;
-        }
-
-        if (!is_array($value)) {
-            return $value;
-        }
-
-        $normalized = [];
-        foreach ($value as $key => $item) {
-            $normalized[$key] = $this->normalizeSettingsForComparison($item);
-        }
-
-        if (!$this->isListArray($normalized)) {
-            ksort($normalized);
-        }
-
-        return $normalized;
-    }
-
-    private function isListArray(array $value): bool
-    {
-        return $value === [] || array_keys($value) === range(0, count($value) - 1);
     }
 }
