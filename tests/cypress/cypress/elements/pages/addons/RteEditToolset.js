@@ -54,7 +54,6 @@ class RteEditToolset extends RteSettings {
                 'toolbar_control': 'y',
                 'hide': [],
                 'editor': [
-                    'html',
                     'format',
                     'bold',
                     'italic',
@@ -69,7 +68,6 @@ class RteEditToolset extends RteSettings {
                     'hotkeys'
                 ],
                 'addbar': [
-                    'ai-image',
                     'heading',
                     'todo',
                     'list',
@@ -90,7 +88,6 @@ class RteEditToolset extends RteSettings {
                     'link'
                 ],
                 'format': [
-                    'text',
                     'h1',
                     'h2',
                     'h3',
