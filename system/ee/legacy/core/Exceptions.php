@@ -304,7 +304,15 @@ class EE_Exceptions
                 $message = 'There was a database connection error or a problem with a query. Log in as a super admin or enable debugging for more information.';
             }
 
-            if (! isset(ee()->session) || ee()->session->userdata('member_id') == 0) {
+            if ((! defined('INSTALLER') || ! INSTALLER) && (! isset(ee()->session) || ee()->session->userdata('member_id') == 0)) {
+                log_message('error', "{$error_type}: {$exception->getMessage()} in {$exception->getFile()}:{$exception->getLine()}");
+
+                if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') {
+                    echo json_encode(['messageType' => 'error', 'message' => 'An unexpected error occurred.']);
+                } else {
+                    echo 'An unexpected error occurred. Please contact the site administrator if the problem persists.';
+                }
+
                 exit;
             }
         }
