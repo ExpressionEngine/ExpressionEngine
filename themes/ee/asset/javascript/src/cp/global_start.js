@@ -564,6 +564,15 @@ EE.insert_placeholders = function () {
 	});
 };
 
+EE.cp.thumbnailCreateUrl = function(fileId)
+{
+    if (EE.fileManager && EE.fileManager.thumbnailCreateUrl) {
+        return EE.fileManager.thumbnailCreateUrl.replace('{file_id}', encodeURIComponent(fileId));
+    }
+
+    return EE.BASE + "/files/file/createMissingThumbnail/" + encodeURIComponent(fileId);
+};
+
 // Replace images with fallback-src if available
 EE.cp.fallbackImage = function(element)
 {
@@ -578,16 +587,30 @@ EE.cp.fallbackImage = function(element)
             $el.parent('.imgpreview').attr('data-url', $el.attr('fallback-src'));
         };
 
+        let addCacheBuster = function(url) {
+            let separator = url.indexOf('?') === -1 ? '?' : '&';
+
+            return url + separator + 'thumbnail_retry=' + Date.now();
+        };
+
         // If this is a thumbnail try to regenerate missing thumbnail
         if($el.hasClass('thumbnail_img')) {
-            let fileId = $el.closest('tr[title="'+$el.attr('title')+'"]').attr('file_id');
+            let $fileElement = $el.closest('[file_id], [data-file-id]');
+            let fileId = $el.data('file-id') || $el.attr('data-file-id') || $fileElement.attr('file_id') || $fileElement.data('file-id');
+
+            if($el.data('thumbnail-retry-attempted') || ! fileId) {
+                replaceSrc($el);
+                return;
+            }
+
             $.ajax({
-                url: EE.BASE + "/files/file/createMissingThumbnail/" + fileId,
+                url: EE.cp.thumbnailCreateUrl(fileId),
                 success: function(data) {
-                    if(data.url !== $el.attr('src')) {
-                        $el.attr('src', data.url);
+                    if(data.url) {
+                        $el.data('thumbnail-retry-attempted', true);
+                        $el.attr('src', addCacheBuster(data.url));
                         $el.parent('.imgpreview').attr('data-url', data.url);
-                    }else{
+                    }else {
                         replaceSrc($el);
                     }
                 },

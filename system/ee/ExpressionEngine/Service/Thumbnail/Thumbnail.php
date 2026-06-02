@@ -65,7 +65,7 @@ class Thumbnail
             } elseif ($file->isEditableImage() || $file->isSVG()) {
                 $this->url = $file->getAbsoluteThumbnailURL() . "?v={$file->modified_date}";
                 $this->path = $file->getAbsoluteThumbnailPath();
-                $this->tag = '<img src="' . $this->url . '" fallback-src="'. $file->getAbsoluteUrl().'" alt="' . $file->title . '" title="' . $file->title .'" class="thumbnail_img" onerror="var that=this;window.addEventListener(\'load\', function(event) {window.EE.cp.fallbackImage(that);})" />';
+                $this->tag = '<img src="' . $this->url . '" fallback-src="'. $file->getAbsoluteURL().'" data-file-id="' . $file->file_id . '" alt="' . $file->title . '" title="' . $file->title .'" class="thumbnail_img" onerror="window.EE.cp.fallbackImage(this)" />';
             } else {
                 switch ($file->file_type) {
                     case 'doc':

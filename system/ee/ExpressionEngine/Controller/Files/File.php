@@ -594,7 +594,7 @@ class File extends AbstractFilesController
             ->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
             ->first();
 
-        if(empty($file) || !$file->exists()) {
+        if(empty($file) || !$file->memberHasAccess(ee()->session->getMember()) || !$file->exists()) {
             return ee('Response')->setStatus(404);
         }
 
@@ -608,7 +608,7 @@ class File extends AbstractFilesController
             ->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
             ->first();
 
-        if(empty($file) || !$file->exists()) {
+        if(empty($file) || !$file->memberHasAccess(ee()->session->getMember()) || !$file->exists()) {
             return ee('Response')->setStatus(404);
         }
 
