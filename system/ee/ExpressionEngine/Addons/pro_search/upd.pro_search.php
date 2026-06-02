@@ -54,7 +54,8 @@ class Pro_search_upd
         'channel_entries_query_result',
         'after_category_save', // was 'category_save'
         'after_category_delete', // 'category_delete'
-        'after_channel_field_delete'
+        'after_channel_field_delete',
+        'category_reorder_end'
     );
 
     // --------------------------------------------------------------------
@@ -342,6 +343,8 @@ class Pro_search_upd
             $this->_v802();
         }
 
+        $this->_ensure_hook('category_reorder_end');
+
         $this->logMessageAboutLowVersion();
 
         // --------------------------------------
@@ -465,6 +468,19 @@ class Pro_search_upd
             'enabled'   => 'y',
             'settings'  => serialize(ee()->pro_search_settings->get())
         ));
+    }
+
+    private function _ensure_hook($hook)
+    {
+        $count = ee()->db
+            ->from('extensions')
+            ->where('class', $this->class_name . '_ext')
+            ->where('hook', $hook)
+            ->count_all_results();
+
+        if (! $count) {
+            $this->_add_hook($hook);
+        }
     }
 
     // --------------------------------------------------------------------

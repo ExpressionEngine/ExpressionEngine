@@ -232,6 +232,12 @@ class Hooks
         'library' => 'Admin Content Controller',
     ];
 
+    public const CATEGORY_REORDER_END = [
+        'name' => 'category_reorder_end',
+        'params' => '$changed_rows, $group_id',
+        'library' => 'Categories Controller',
+    ];
+
     public const CP_CSS_END = [
         'name' => 'cp_css_end',
         'params' => '',

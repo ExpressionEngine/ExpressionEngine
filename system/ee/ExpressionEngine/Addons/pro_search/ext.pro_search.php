@@ -262,6 +262,25 @@ class Pro_search_ext
     /**
      * Category hooks
      */
+    public function category_reorder_end($changed_rows, $group_id)
+    {
+        if (empty($changed_rows) || ! is_array($changed_rows)) {
+            return;
+        }
+
+        $cat_ids = array();
+        foreach ($changed_rows as $row) {
+            if (is_array($row) && isset($row['cat_id'])) {
+                $cat_ids[] = (int) $row['cat_id'];
+            }
+        }
+
+        return $this->_update_index_by_category(array_unique($cat_ids));
+    }
+
+    /**
+     * Category hooks
+     */
     public function after_category_delete($cat, $data)
     {
         return $this->_update_index_by_category(array($cat->cat_id));
