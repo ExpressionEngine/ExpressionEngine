@@ -316,4 +316,21 @@ function surrounding_character($string)
     return ($first_char == substr($string, -1, 1)) ? $first_char : false;
 }
 
+if (!function_exists('str_starts_with'))
+{
+    function str_starts_with($haystack, $needle)
+    {
+        return strncmp($haystack, $needle, strlen($needle)) === 0;
+    }
+}
+
+if (!function_exists('str_ends_with'))
+{
+    function str_ends_with($haystack, $needle)
+    {
+        $length = strlen($needle);
+        return $length === 0 || (substr($haystack, -$length) === $needle);
+    }
+}
+
 // EOF

@@ -10,12 +10,155 @@
 
 namespace ExpressionEngine\Controller\Utilities;
 
+use ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Library\CP\Form;
+
 /**
  * Database Backup Utility Controller
  */
 class DbBackup extends Utilities
 {
+    protected $base_url = 'utilities/db-backup';
+
+    public function __construct()
+    {
+        parent::__construct();
+        if (! ee('Permission')->can('access_sql_manager')) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
+    }
+
     public function index()
+    {
+        $sort_col = ee('Request')->get('sort_col') ?: 'bm.id';
+        $sort_dir = ee('Request')->get('sort_dir') ?: 'desc';
+
+        $base_url = ee('CP/URL')->make($this->base_url . '/index');
+        $table = ee('CP/Table', [
+            'lang_cols' => true,
+            'sort_col' => $sort_col,
+            'sort_dir' => $sort_dir,
+            'class' => 'backup_manager'
+        ]);
+
+        $vars['cp_page_title'] = lang('backups');
+        $table->setColumns([
+            'file_name' => ['sort' => false],
+            'date' => ['sort' => false],
+            'size' => ['sort' => false, 'encode' => false],
+            'manage' => [
+                'type' => Table::COL_TOOLBAR,
+            ],
+        ]);
+
+        $table->setNoResultsText(sprintf(lang('no_found'), lang('backups')));
+
+        $backups = ee('Database/Backup', PATH_CACHE)->getBackups();
+
+        $totalBackups = 0;
+        $data = [];
+        foreach ($backups as $backup) {
+            $data[] = [
+                $backup['filename'],
+                $backup['date'],
+                $backup['size'],
+                ['toolbar_items' => [
+                    'download' => [
+                        'href' => ee('CP/URL')->make( 'utilities/db-backup/download', ['id' => $backup['hash']]),
+                        'title' => lang('download'),
+                    ],
+                    'remove' => [
+                        'href' => ee('CP/URL')->make('utilities/db-backup/remove', ['id' => $backup['hash']])->compile(),
+                        'title' => lang('remove'),
+                    ],
+                ]],
+            ];
+        }
+
+        ee()->view->cp_breadcrumbs = array(
+            '' => lang('backups')
+        );
+
+        $table->setData($data);
+        $vars['table'] = $table->viewData($base_url);
+        $vars['base_url'] = $base_url;
+
+        ee()->cp->render('utilities/backups/index', $vars);
+        //return $this;
+    }
+
+    public function download()
+    {
+        $path = ee('Database/Backup', PATH_CACHE)->getBackup(ee()->input->get('id'));
+        if($path) {
+            ee('CP/Alert')->makeInline('shared-form')
+                ->asSuccess()
+                ->withTitle(lang('backup_not_found'))
+                ->defer();
+
+            ee()->functions->redirect(ee('CP/URL')->make($this->base_url));
+        }
+
+        header('Content-Type: application/octet-stream');
+        header("Content-Transfer-Encoding: Binary");
+        header("Content-disposition: attachment; filename=\"" . basename($path) . "\"");
+        ob_clean(); flush();
+        readfile($path);
+        exit;
+    }
+
+    public function remove($id = false)
+    {
+        $id = ee()->input->get('id');
+        $path = ee('Database/Backup', PATH_CACHE)->getBackup($id);
+        if (is_null($path)) {
+            ee()->functions->redirect(ee('CP/URL')->make($this->base_url));
+        }
+
+        $form = new Form;
+        $field_group = $form->getGroup('verify_remove_backup');
+        $field_set = $field_group->getFieldSet('confirm_remove_backup');
+        $field_set->setDesc('confirm_delete_desc');
+        $field_set->getField('confirm', 'yes_no');
+
+        $form = $form->toArray();
+
+        if (!empty($_POST)) {
+            if(ee()->input->post('confirm') == 'y') {
+                ee('Database/Backup', PATH_CACHE)->deleteBackup($path);
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asSuccess()
+                    ->withTitle(lang('backup_deleted'))
+                    ->defer();
+                ee()->functions->redirect(ee('CP/URL')->make($this->base_url));
+            } else {
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asWarning()
+                    ->withTitle(lang('must_confirm_removal'))
+                    ->now();
+            }
+
+        }
+
+        $vars = [
+            'cp_page_title' => lang('remove_backup'),
+            'base_url' => ee('CP/URL')->make('utilities/db-backup/remove', ['id' => $id])->compile(),
+            'save_btn_text' => lang('remove'),
+            'save_btn_text_working' => lang('removing'),
+        ];
+
+        $vars += $form;
+
+        ee()->view->cp_breadcrumbs = array(
+            ee('CP/URL')->make('utilities/db-backup')->compile() => lang('backups'),
+            '' => lang('remove_backup')
+        );
+
+        ee()->cp->render('settings/form', $vars);
+    }
+
+    public function backup()
     {
         $tables = ee('Database/Backup/Query')->getTables();
 
@@ -71,6 +214,7 @@ class DbBackup extends Utilities
         ]);
 
         ee()->view->cp_breadcrumbs = array(
+            ee('CP/URL')->make('utilities/db-backup')->compile() => lang('backups'),
             '' => lang('backup_database')
         );
 

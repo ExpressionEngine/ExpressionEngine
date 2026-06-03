@@ -6,7 +6,21 @@ $lang = array(
 
     /* Menu */
 
-    'backup_database' => 'Back Up Database',
+    'backups' => 'Backups',
+
+    'remove_backup' => 'Remove Backup',
+
+    'verify_remove_backup' => 'Verify Remove Backup',
+
+    'confirm_remove_backup' => 'Confirm Removal',
+
+    'backup_not_found' => 'Backup not found',
+
+    'must_confirm_removal' => 'You must confirm removal to proceed',
+
+    'confirm_delete_desc' => 'Are you sure you want to remove this backup?',
+
+    'backup_deleted' => 'Backup Deleted',
 
     'cache_manager' => 'Cache Manager',
 
@@ -505,7 +519,7 @@ $lang = array(
     'update_file_usage_explained_desc' => 'Run this utility to convert all files stored in the database from sites previous to ExpressionEngine 7 to the new ExpressionEngine 7 file format. This must be completed before newer File Manager features may be used. <a href="%s">Read more on Compatibility Mode in the docs</a> <br /><br />
 
     It is recommended that you make sure all installed add-ons are compatible with ExpressionEngine 7 and newer, and that you have made a <a href="%s">backup of your database</a> first.<br /><br />
-    
+
     After the update operation is completed, visit <a href="%s">Content & Design Settings</a> to disable Compatibility Mode for File Manager.<br /><br />',
 
     'update_file_usage_desc' => 'Will update content in %d database tables',
