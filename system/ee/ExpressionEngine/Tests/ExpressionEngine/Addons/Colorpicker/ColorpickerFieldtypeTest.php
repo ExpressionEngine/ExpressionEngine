@@ -34,6 +34,26 @@ class ColorpickerFieldtypeTest extends TestCase
         );
     }
 
+    public function testZeroPercentDarkenAndLightenReturnOriginalColor()
+    {
+        $this->assertSame('#336699', $this->fieldtype->replace_darken('#336699', ['percent' => '0']));
+        $this->assertSame('#336699', $this->fieldtype->replace_lighten('#336699', ['percent' => '0']));
+    }
+
+    public function testMixPercentRepresentsAmountOfSecondColor()
+    {
+        $this->assertSame('#99b2cc', $this->fieldtype->replace_mix('#336699', ['color' => '#ffffff']));
+        $this->assertSame('#336699', $this->fieldtype->replace_mix('#336699', ['color' => '#ffffff', 'percent' => '0']));
+        $this->assertSame('#99b2cc', $this->fieldtype->replace_mix('#336699', ['color' => '#ffffff', 'percent' => '50']));
+        $this->assertSame('#ffffff', $this->fieldtype->replace_mix('#336699', ['color' => '#ffffff', 'percent' => '100']));
+    }
+
+    public function testHslReturnsRoundedCssComponents()
+    {
+        $this->assertSame('210, 50%, 40%', $this->fieldtype->replace_hsl('#336699'));
+        $this->assertSame('0, 0%, 100%', $this->fieldtype->replace_hsl('#ffffff'));
+    }
+
     public function testDecimalPercentModifiersDoNotTriggerPrecisionDeprecations()
     {
         $messages = [];
@@ -49,7 +69,7 @@ class ColorpickerFieldtypeTest extends TestCase
             $this->assertSame('#4080bf', $this->fieldtype->replace_lighten('#336699', ['percent' => '10.5']));
             $this->assertSame('#2866a4', $this->fieldtype->replace_saturate('#336699', ['percent' => '10.5']));
             $this->assertSame('#3e668e', $this->fieldtype->replace_desaturate('#336699', ['percent' => '10.5']));
-            $this->assertSame('#8eaac6', $this->fieldtype->replace_mix('#336699', ['color' => '#ffffff', 'percent' => '10.5']));
+            $this->assertSame('#4876a3', $this->fieldtype->replace_mix('#336699', ['color' => '#ffffff', 'percent' => '10.5']));
         } finally {
             restore_error_handler();
         }

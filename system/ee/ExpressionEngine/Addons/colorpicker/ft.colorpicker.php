@@ -221,7 +221,13 @@ class Colorpicker_ft extends EE_Fieldtype
     {
         try {
             $percent = $this->normalizePercent($params['percent'] ?? null, 10);
-            return "#" . (new Color($data))->darken((int) $percent);
+            $color = new Color($data);
+
+            if ((int) $percent === 0) {
+                return "#" . $color->getHex();
+            }
+
+            return "#" . $color->darken((int) $percent);
         } catch (\Exception $e) {}
 
         return $data;
@@ -236,7 +242,13 @@ class Colorpicker_ft extends EE_Fieldtype
     {
         try {
             $percent = $this->normalizePercent($params['percent'] ?? null, 10);
-            return "#" . (new Color($data))->lighten((int) $percent);
+            $color = new Color($data);
+
+            if ((int) $percent === 0) {
+                return "#" . $color->getHex();
+            }
+
+            return "#" . $color->lighten((int) $percent);
         } catch (\Exception $e) {}
 
         return $data;
@@ -316,7 +328,9 @@ class Colorpicker_ft extends EE_Fieldtype
             $first = new Color($data);
             $second = $params['color'] ?? (($first->isLight() ? '#000000' : '#ffffff'));
             $percent = $this->normalizePercent($params['percent'] ?? null, 50);
-            return "#" . $first->mix($second, (int) $percent);
+            $mixAmount = 100 - (2 * $percent);
+
+            return "#" . $first->mix($second, (int) $mixAmount);
         } catch (\Exception $e) {}
 
         return $data;
@@ -345,10 +359,10 @@ class Colorpicker_ft extends EE_Fieldtype
     {
         try {
             $hsl = (new Color($data))->getHsl();
-            return implode(' ', [
-                (int) $hsl['H'],
-                (int) ($hsl['S'] * 100),
-                (int) ($hsl['L'] * 100),
+            return implode(', ', [
+                (int) round($hsl['H']),
+                (int) round($hsl['S'] * 100) . '%',
+                (int) round($hsl['L'] * 100) . '%',
             ]);
         } catch (\Exception $e) {}
 
