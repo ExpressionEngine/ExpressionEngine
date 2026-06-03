@@ -49,24 +49,26 @@ class Filemanager
     }
 
     /**
-     * A compatibility version of the `clean_subdir_and_filename` function
-     * Does not include server path (but may include subdirectories)
-     * Safe to use in EE7 for compatibility with subdirs and cloud storages
+     * Clean a filename and optional upload subdirectory without adding the server path.
      *
-     * Cleans the filename to prep it for the system, mostly removing spaces
-     * sanitizing the file name and checking for duplicates.
-     *
-     * @param string $filename The filename to clean the name of
-     * @param integer $dir_id The ID of the directory in which we'll check for duplicates
-     * @param array $parameters Associative array containing optional parameters
-     *   'convert_spaces' (Default: TRUE) Setting this to FALSE will not remove spaces
-     *   'ignore_dupes' (Default: TRUE) Setting this to FALSE will check for duplicates
-     *
-     * @return string Subdirectory path and filename of the file
+     * @param string $filename Filename or subdirectory path to clean.
+     * @param int $dir_id Upload directory ID used for duplicate checks.
+     * @param array $parameters Optional cleanup settings.
+     * @return string Clean subdirectory path and filename, or an empty string when rejected.
      */
     public function clean_subdir_and_filename($filename, $dir_id, $parameters = array())
     {
-        $basename_source = str_replace('\\', '/', $filename);
+        $normalized_filename = str_replace('\\', '/', $filename);
+        $normalized_filename = preg_replace('#\\p{C}+#u', '', $normalized_filename);
+        if ($normalized_filename === null) {
+            return '';
+        }
+
+        foreach (explode('/', trim($normalized_filename, '/')) as $segment) {
+            if ($segment === '.' || $segment === '..') {
+                return '';
+            }
+        }
 
         // at one time the third parameter was (bool) $dupe_check
         if (! is_array($parameters)) {
@@ -85,18 +87,10 @@ class Filemanager
         $prefs = $this->fetch_upload_dir_prefs($dir_id, true);
         $filesystem = $prefs['directory']->getFilesystem();
 
-        $basename = $filesystem->basename($basename_source);
-        $dirname = $filesystem->dirname($filename);
+        $basename = $filesystem->basename($normalized_filename);
+        $dirname = $filesystem->dirname($normalized_filename);
 
         if ($dirname !== '.') {
-            foreach (explode('/', trim(str_replace('\\', '/', $dirname), '/')) as $segment) {
-                $segment = preg_replace('#\\p{C}+#u', '', $segment);
-
-                if ($segment === null || $segment === '.' || $segment === '..') {
-                    return '';
-                }
-            }
-
             $dirname .= '/';
         } else {
             $dirname = '';

@@ -31,14 +31,48 @@ class UploadTestFilesystemMock
         return $path . '_1';
     }
 
+    /**
+     * Get the filename portion after enforcing upload-directory traversal rules.
+     *
+     * @param string $path Path to inspect.
+     * @return string Filename portion of the path.
+     * @throws \ExpressionEngine\Library\Filesystem\FilesystemException
+     */
     public function basename($path)
     {
+        $this->guardDirectoryTraversal($path);
+
         return basename($path);
     }
 
+    /**
+     * Get the directory portion after enforcing upload-directory traversal rules.
+     *
+     * @param string $path Path to inspect.
+     * @return string Directory portion of the path.
+     * @throws \ExpressionEngine\Library\Filesystem\FilesystemException
+     */
     public function dirname($path)
     {
+        $this->guardDirectoryTraversal($path);
+
         return pathinfo($path, PATHINFO_DIRNAME);
+    }
+
+    /**
+     * Reject traversal paths the same way upload destination filesystems do.
+     *
+     * @param string $path Path to inspect.
+     * @return void
+     * @throws \ExpressionEngine\Library\Filesystem\FilesystemException
+     */
+    private function guardDirectoryTraversal($path)
+    {
+        if ($path == '..' || strpos($path, '../') !== false) {
+            throw new \ExpressionEngine\Library\Filesystem\FilesystemException(
+                'Attempting to access file outside of directory.'
+            );
+        }
     }
 }
 
@@ -189,14 +223,25 @@ class UploadTest extends TestCase
         $this->assertSame('upload_invalid_file', $upload->display_errors('', ''));
     }
 
+    /**
+     * Assert traversal subdirectories are rejected before filesystem helpers run.
+     *
+     * @return void
+     */
     public function testFilemanagerCleanSubdirRejectsTraversalSegments()
     {
         $filemanager = new FilemanagerCleanHarness(new UploadTestFilesystemMock());
 
         $this->assertSame('', $filemanager->clean_subdir_and_filename('../secret.txt', 1));
         $this->assertSame('', $filemanager->clean_subdir_and_filename('sub/../secret.txt', 1));
+        $this->assertSame('', $filemanager->clean_subdir_and_filename('sub\\..\\secret.txt', 1));
     }
 
+    /**
+     * Assert rejected traversal paths do not become server-prefixed filenames.
+     *
+     * @return void
+     */
     public function testFilemanagerCleanFilenameDoesNotPrefixRejectedTraversal()
     {
         $filemanager = new FilemanagerCleanHarness(new UploadTestFilesystemMock());
@@ -204,10 +249,16 @@ class UploadTest extends TestCase
         $this->assertSame('', $filemanager->clean_filename('../secret.txt', 1));
     }
 
+    /**
+     * Assert safe subdirectories are preserved after separator normalization.
+     *
+     * @return void
+     */
     public function testFilemanagerCleanSubdirPreservesSafeSubdirectories()
     {
         $filemanager = new FilemanagerCleanHarness(new UploadTestFilesystemMock());
 
         $this->assertSame('sub/file.txt', $filemanager->clean_subdir_and_filename('sub/file.txt', 1));
+        $this->assertSame('sub/file.txt', $filemanager->clean_subdir_and_filename('sub\\file.txt', 1));
     }
 }
