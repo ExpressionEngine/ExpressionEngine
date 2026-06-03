@@ -133,8 +133,12 @@ class StatsStatusFilterStatsMock
         $this->data[$key] = $value;
     }
 
-    public function statdata($key)
+    public function statdata($key = null)
     {
+        if (! $key) {
+            return $this->data;
+        }
+
         return $this->data[$key] ?? false;
     }
 }
