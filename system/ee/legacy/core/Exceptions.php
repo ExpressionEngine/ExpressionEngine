@@ -295,6 +295,17 @@ class EE_Exceptions
         // We'll only want to show certain information, like file paths, if we're allowed
         $debug = (bool) (DEBUG or (isset(ee()->config) && ee()->config->item('debug') > 1) or (isset(ee()->session) && ee('Permission')->isSuperAdmin()));
 
+        // If the request came from the cli, show an appropriate message
+        if (defined('REQ') && REQ === 'CLI') {
+            echo "$error_type caught:\n";
+            echo html_entity_decode($message) . "\n";
+            echo html_entity_decode($location) . "\n";
+            foreach ($trace as $stackItem) {
+                echo html_entity_decode($stackItem) . "\n";
+            }
+            exit;
+        }
+
         // Hide sensitive information such as file paths and database information
         if (! $debug) {
             $location_parts = explode('/', $location);
@@ -325,17 +336,6 @@ class EE_Exceptions
                 'trace' => $trace
             ];
             echo json_encode($return);
-            exit;
-        }
-
-        // If the request came from the cli, show an appropriate message
-        if (defined('REQ') && REQ === 'CLI') {
-            echo "$error_type caught:\n";
-            echo html_entity_decode($message) . "\n";
-            echo html_entity_decode($location) . "\n";
-            foreach ($trace as $stackItem) {
-                echo html_entity_decode($stackItem) . "\n";
-            }
             exit;
         }
 
