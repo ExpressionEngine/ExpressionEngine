@@ -207,6 +207,8 @@ class DragAndDropUpload extends React.Component {
       let xhr = new XMLHttpRequest()
       xhr.open('POST', EE.dragAndDrop.endpoint, true)
       xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+      xhr.setRequestHeader('X-CSRF-TOKEN', EE.CSRF_TOKEN);
+      xhr.setRequestHeader('X-EEXID', EE.CSRF_TOKEN);
 
       xhr.upload.addEventListener('progress', (e) => {
         if ( $('.file-upload-widget').hasClass('open-dd') ) {
@@ -277,7 +279,9 @@ class DragAndDropUpload extends React.Component {
               reject(file)
               break
             default:
-              if (typeof(response.message) !== 'undefined') {
+              if (typeof(response.error) !== 'undefined') {
+                file.error = this.stripTags(response.error);
+              } else if (typeof(response.message) !== 'undefined') {
                 file.error = response.message;
               } else {
                 file.error = EE.lang.file_dnd_unexpected_error;

@@ -683,7 +683,7 @@ class Fluid_field_ft extends EE_Fieldtype
 
                         $group_key = $key;
 
-                        if (array_key_exists($fluid_field_data_id, $field_group_map)) {
+                        if ($fluid_field_data_id !== null && array_key_exists($fluid_field_data_id, $field_group_map)) {
                             $group = $field_group_map[$fluid_field_data_id]->ChannelFieldGroup;
                             $group_key = $field_group_map[$fluid_field_data_id]->group;
                         } else {

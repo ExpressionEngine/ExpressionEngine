@@ -13,17 +13,13 @@ class ApiChannelEntriesPrivateMethodsTest extends ChannelApiTestBase
     {
         parent::setUp();
 
-        // Ensure helper functions are available for testing
+        // Load real helper/common functions used by Api_channel_entries.
         if (!function_exists('remove_invisible_characters')) {
-            function remove_invisible_characters($str) {
-                return preg_replace('/[\x00-\x1F\x7F]/', '', $str);
-            }
+            require_once SYSPATH . 'ee/ExpressionEngine/Boot/boot.common.php';
         }
 
         if (!function_exists('ascii_to_entities')) {
-            function ascii_to_entities($str) {
-                return str_replace(['&', '<', '>', '"', "'"], ['&amp;', '&lt;', '&gt;', '&quot;', '&#39;'], $str);
-            }
+            require_once APPPATH . 'helpers/text_helper.php';
         }
     }
 
@@ -272,16 +268,9 @@ class ApiChannelEntriesPrivateMethodsTest extends ChannelApiTestBase
     public function testRecursiveAsciiToEntitiesSimpleArray()
     {
         $testArray = [
-            'field1' => 'test & value',
-            'field2' => 'another < value'
+            'field1' => 'test © value',
+            'field2' => 'another é value',
         ];
-
-        // Mock ascii_to_entities function
-        if (!function_exists('ascii_to_entities')) {
-            function ascii_to_entities($str) {
-                return str_replace(['&', '<'], ['&amp;', '&lt;'], $str);
-            }
-        }
 
         // Call _recursive_ascii_to_entities using reflection
         $reflection = new ReflectionClass($this->api);
@@ -289,9 +278,8 @@ class ApiChannelEntriesPrivateMethodsTest extends ChannelApiTestBase
         TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invokeArgs($this->api, [&$testArray]);
 
-        // Verify HTML entities are converted
-        $this->assertEquals('test &amp; value', $result['field1']);
-        $this->assertEquals('another &lt; value', $result['field2']);
+        $this->assertSame(ascii_to_entities($testArray['field1']), $result['field1']);
+        $this->assertSame(ascii_to_entities($testArray['field2']), $result['field2']);
     }
 
     /**
@@ -301,19 +289,12 @@ class ApiChannelEntriesPrivateMethodsTest extends ChannelApiTestBase
     {
         $testArray = [
             'level1' => [
-                'field1' => 'test & value',
+                'field1' => 'test © value',
                 'level2' => [
-                    'field2' => 'nested < value'
-                ]
-            ]
+                    'field2' => 'nested é value',
+                ],
+            ],
         ];
-
-        // Mock ascii_to_entities function
-        if (!function_exists('ascii_to_entities')) {
-            function ascii_to_entities($str) {
-                return str_replace(['&', '<'], ['&amp;', '&lt;'], $str);
-            }
-        }
 
         // Call _recursive_ascii_to_entities using reflection
         $reflection = new ReflectionClass($this->api);
@@ -321,9 +302,8 @@ class ApiChannelEntriesPrivateMethodsTest extends ChannelApiTestBase
         TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invokeArgs($this->api, [&$testArray]);
 
-        // Verify nested HTML entities are converted
-        $this->assertEquals('test &amp; value', $result['level1']['field1']);
-        $this->assertEquals('nested &lt; value', $result['level1']['level2']['field2']);
+        $this->assertSame(ascii_to_entities($testArray['level1']['field1']), $result['level1']['field1']);
+        $this->assertSame(ascii_to_entities($testArray['level1']['level2']['field2']), $result['level1']['level2']['field2']);
     }
 
     /**
@@ -332,21 +312,11 @@ class ApiChannelEntriesPrivateMethodsTest extends ChannelApiTestBase
     public function testRecursiveAsciiToEntitiesMixedDataTypes()
     {
         $testArray = [
-            'string_field' => 'test & value',
-            'int_field' => 123,
-            'array_field' => ['nested' => 'value < here'],
-            'object_field' => (object)['prop' => 'object & value']
+            'string_field' => 'test © value',
+            'numeric_string_field' => '123',
+            'array_field' => ['nested' => 'value é here'],
+            'plain_ascii_field' => 'plain ascii value',
         ];
-
-        // Skip object processing test as ascii_to_entities doesn't handle objects
-        unset($testArray['object_field']);
-
-        // Mock ascii_to_entities function
-        if (!function_exists('ascii_to_entities')) {
-            function ascii_to_entities($str) {
-                return str_replace(['&', '<'], ['&amp;', '&lt;'], $str);
-            }
-        }
 
         // Call _recursive_ascii_to_entities using reflection
         $reflection = new ReflectionClass($this->api);
@@ -354,12 +324,10 @@ class ApiChannelEntriesPrivateMethodsTest extends ChannelApiTestBase
         TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invokeArgs($this->api, [&$testArray]);
 
-        // Verify string fields are processed
-        $this->assertEquals('test &amp; value', $result['string_field']);
-        $this->assertEquals('value &lt; here', $result['array_field']['nested']);
-
-        // Verify non-string fields are unchanged
-        $this->assertEquals(123, $result['int_field']);
+        $this->assertSame(ascii_to_entities($testArray['string_field']), $result['string_field']);
+        $this->assertSame(ascii_to_entities($testArray['numeric_string_field']), $result['numeric_string_field']);
+        $this->assertSame(ascii_to_entities($testArray['array_field']['nested']), $result['array_field']['nested']);
+        $this->assertSame(ascii_to_entities($testArray['plain_ascii_field']), $result['plain_ascii_field']);
     }
 
     /**

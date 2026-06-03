@@ -83,6 +83,18 @@ class ProSearchWordsTest extends ProSearchTestBase
         $this->assertEquals('quick brown fox', $clean);
     }
 
+    public function testCleanWithNullInput()
+    {
+        $settings = $this->getMockBuilder('stdClass')
+            ->addMethods(['ignore_words'])
+            ->getMock();
+        $settings->method('ignore_words')->willReturn([]);
+        ee()->setMock('pro_search_settings', $settings);
+
+        $clean = $this->words->clean(null, true);
+        $this->assertSame('', $clean);
+    }
+
     public function testRemoveDiacritics()
     {
         // remove_diacritics uses ee()->config->loadFile('foreign_chars')

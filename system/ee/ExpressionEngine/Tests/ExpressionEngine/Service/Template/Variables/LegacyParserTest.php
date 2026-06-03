@@ -55,6 +55,23 @@ class LegacyParserTest extends TestCase
         );
     }
 
+    public function testParseVariablePropertiesMarksSingleNumericModifierInvalidAndSkipsParams()
+    {
+        $props = $this->parser->parseVariableProperties('hello:123 param="ignored"');
+
+        $this->assertSame('hello', $props['field_name']);
+        $this->assertSame('123', $props['modifier']);
+        $this->assertSame('123', $props['full_modifier']);
+        $this->assertTrue($props['invalid_modifier']);
+        $this->assertSame([], $props['params']);
+        $this->assertSame(
+            [
+                '123' => [],
+            ],
+            $props['all_modifiers']
+        );
+    }
+
     public function testParseVariablePropertiesParsesParameterAfterNewline()
     {
         $props = $this->parser->parseVariableProperties("hello\nparam='hey'");

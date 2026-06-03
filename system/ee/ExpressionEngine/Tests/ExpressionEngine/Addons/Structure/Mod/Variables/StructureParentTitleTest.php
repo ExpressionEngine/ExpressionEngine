@@ -13,7 +13,7 @@ class StructureParentTitleTest extends StructureTestBase
         $this->assertFalse($this->structure->parent_title());
     }
 
-    public function testParentTitleReturnsSiteNameWhenNoNodeAndNoEntryId()
+    public function testParentTitleReturnsUnescapedSiteNameWhenNoNodeAndNoEntryId()
     {
         // parent_title() will call $this->nset->getNode($entry_id) where entry_id resolves from URI
         // Provide no site_pages uri match so $entry_id is falsy
@@ -21,11 +21,10 @@ class StructureParentTitleTest extends StructureTestBase
             public function get_site_pages() { return ['uris' => []]; }
             public function get_uri() { return '/unmapped/'; }
         };
-        // Configure site_name using FakeConfig items
-        ee()->config->items['site_name'] = 'My Site';
+        ee()->config->items['site_name'] = "My Site\\'s Name";
 
         $title = $this->structure->parent_title();
-        $this->assertSame('My Site', $title);
+        $this->assertSame("My Site's Name", $title);
     }
 
     public function testParentTitleReturnsImmediateParentTitle()
@@ -57,40 +56,48 @@ class StructureParentTitleTest extends StructureTestBase
 
     public function testParentTitleForListingEntryUsesParentNode()
     {
-        $this->markTestSkipped('Skipping listing-entry branch due to DB mocking complexities.');
-        // site pages map child listing entry id 9
         $sitePages = ['uris' => [5 => '/parent/', 9 => '/parent/listing-entry/']];
-        // Node lookup returns false for listing entry (no structure node)
         $this->setNsetStub([
             9 => false,
             5 => ['right' => 20],
         ]);
-        // SQL returning site pages and uri for current listing entry
+
         $this->structure->sql = new class($sitePages) {
             private $sitePages;
             public function __construct($sitePages) { $this->sitePages = $sitePages; }
             public function get_site_pages() { return $this->sitePages; }
             public function get_uri() { return '/parent/listing-entry/'; }
         };
-        // Mock DB to return appropriate rows based on SQL
-        ee()->setMock('db', new class extends FakeDb {
+
+        $db = new class extends FakeDb {
+            public $queries = [];
+
             public function query($sql) {
+                $this->queries[] = $sql;
+
+                if (strpos($sql, 'INNER JOIN exp_channel_titles AS expt') !== false) {
+                    return new eeDbResultMock([['entry_id' => 5, 'title' => 'Parent Title']]);
+                }
+
                 if (strpos($sql, 'FROM exp_channel_titles') !== false) {
-                    return new eeDbResultMock([[ 'channel_id' => 77 ]]);
+                    return new eeDbResultMock([['channel_id' => 77]]);
                 }
-                if (strpos($sql, 'FROM exp_structure') !== false && strpos($sql, 'listing_cid') !== false) {
-                    return new eeDbResultMock([[ 'entry_id' => 5 ]]);
+
+                if (strpos($sql, 'WHERE listing_cid = 77') !== false) {
+                    return new eeDbResultMock([['entry_id' => 5]]);
                 }
-                if (strpos($sql, 'INNER JOIN exp_channel_titles') !== false) {
-                    return new eeDbResultMock([[ 'entry_id' => 5, 'title' => 'Parent Title' ]]);
-                }
+
                 return new eeDbResultMock([]);
             }
-        });
+        };
+        ee()->setMock('db', $db);
 
         $title = $this->structure->parent_title(9);
+
         $this->assertSame('Parent Title', $title);
+        $this->assertStringContainsString('WHERE entry_id = 9', $db->queries[0]);
+        $this->assertStringContainsString('WHERE listing_cid = 77', $db->queries[1]);
+        $this->assertStringContainsString('AND node.rgt >= 20', $db->queries[2]);
     }
 }
-
 

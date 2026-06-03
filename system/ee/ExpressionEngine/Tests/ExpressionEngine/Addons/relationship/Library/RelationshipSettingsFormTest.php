@@ -183,13 +183,6 @@ class RelationshipSettingsFormTest extends RelationshipTestBase
             'channels' => ['1']
         ]);
 
-        // Mock the form_dropdown function
-        if (!function_exists('form_dropdown')) {
-            function form_dropdown($name, $options, $selected, $extras = '') {
-                return '<select name="' . $name . '"><option value="1">Channel 1</option></select>';
-            }
-        }
-
         $result = $this->form->dropdown('channels', 'class="test"');
 
         // Should return HTML containing the expected elements
@@ -214,19 +207,12 @@ class RelationshipSettingsFormTest extends RelationshipTestBase
             'channels' => []
         ]);
 
-        // Mock form_multiselect function
-        if (!function_exists('form_multiselect')) {
-            function form_multiselect($name, $options, $selected, $extras = '') {
-                return '<select multiple name="' . $name . '"><option value="1">Channel 1</option></select>';
-            }
-        }
-
         $result = $this->form->multiselect('channels', 'class="test"');
 
         // Should return HTML with array naming
         $this->assertStringContainsString('name="test_prefix_channels[]"', $result);
-        $this->assertStringContainsString('multiple', $result);
         $this->assertStringContainsString('Channel 1', $result);
+        $this->assertStringContainsString('Channel 2', $result);
     }
 
     /**
@@ -238,13 +224,6 @@ class RelationshipSettingsFormTest extends RelationshipTestBase
         $this->setProtectedProperty($this->form, '_selected', [
             'allow_multiple' => 'y'
         ]);
-
-        // Mock form_checkbox function
-        if (!function_exists('form_checkbox')) {
-            function form_checkbox($name, $value, $checked, $extras = '') {
-                return '<input type="checkbox" name="' . $name . '" value="' . $value . '"' . ($checked ? ' checked' : '') . '>';
-            }
-        }
 
         $result = $this->form->checkbox('allow_multiple', 'class="test"');
 
@@ -265,13 +244,6 @@ class RelationshipSettingsFormTest extends RelationshipTestBase
             'order_dir' => 'desc'
         ]);
 
-        // Mock form_radio function
-        if (!function_exists('form_radio')) {
-            function form_radio($name, $value, $checked, $extras = '') {
-                return '<input type="radio" name="' . $name . '" value="' . $value . '"' . ($checked ? ' checked' : '') . '>';
-            }
-        }
-
         $result = $this->form->radio('order_dir', 'class="test"');
 
         // Should return radio HTML
@@ -291,13 +263,6 @@ class RelationshipSettingsFormTest extends RelationshipTestBase
             'limit' => '50'
         ]);
 
-        // Mock form_input function
-        if (!function_exists('form_input')) {
-            function form_input($name, $value, $extras = '') {
-                return '<input type="text" name="' . $name . '" value="' . $value . '">';
-            }
-        }
-
         $result = $this->form->input('limit', 'class="test"');
 
         // Should return input HTML
@@ -313,7 +278,7 @@ class RelationshipSettingsFormTest extends RelationshipTestBase
     {
         $reflection = new ReflectionClass($object);
         $prop = $reflection->getProperty($property);
-        $prop->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($prop);
         return $prop->getValue($object);
     }
 
@@ -324,7 +289,7 @@ class RelationshipSettingsFormTest extends RelationshipTestBase
     {
         $reflection = new ReflectionClass($object);
         $prop = $reflection->getProperty($property);
-        $prop->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($prop);
         $prop->setValue($object, $value);
     }
 }

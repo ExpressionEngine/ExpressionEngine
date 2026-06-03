@@ -6,6 +6,9 @@ require_once __DIR__ . '/../../../../eeObjectMock.php';
 
 /**
  * Base class for Cache library tests
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
  */
 abstract class CacheTestBase extends \PHPUnit\Framework\TestCase
 {
@@ -116,7 +119,7 @@ abstract class CacheTestBase extends \PHPUnit\Framework\TestCase
     {
         $reflection = new \ReflectionClass($object);
         $prop = $reflection->getProperty($property);
-        $prop->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($prop);
         $prop->setValue($object, $value);
     }
 
@@ -131,7 +134,7 @@ abstract class CacheTestBase extends \PHPUnit\Framework\TestCase
     {
         $reflection = new \ReflectionClass($object);
         $prop = $reflection->getProperty($property);
-        $prop->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($prop);
         return $prop->getValue($object);
     }
 

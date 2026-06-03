@@ -118,6 +118,72 @@ class StructureChildIdsTest extends StructureTestBase
         $result = $this->structure->child_ids();
         $this->assertSame('51;52', $result);
     }
-}
 
+    public function testChildIdsReturnsNullAndSkipsQueryWhenStartFromCannotBeResolved()
+    {
+        $sitePages = ['uris' => [10 => '/parent/']];
+        $this->structure->sql = new class($sitePages) {
+            private $sitePages;
+            public function __construct($sitePages) { $this->sitePages = $sitePages; }
+            public function get_site_pages() { return $this->sitePages; }
+        };
+
+        $captured = (object) ['queries' => []];
+        ee()->setMock('db', new class($captured) {
+            private $captured;
+            public function __construct($captured) { $this->captured = $captured; }
+            public function query($sql)
+            {
+                $this->captured->queries[] = $sql;
+
+                return new eeDbResultMock([]);
+            }
+        });
+
+        $this->setTemplateParams([
+            'start_from' => 'missing',
+        ]);
+
+        $this->assertNull($this->structure->child_ids());
+        $this->assertSame([], $captured->queries);
+    }
+
+    public function testChildIdsTrimsStartFromAndUsesConfiguredSiteIdInQuery()
+    {
+        $sitePages = ['uris' => [10 => '/parent/']];
+        $this->structure->sql = new class($sitePages) {
+            private $sitePages;
+            public function __construct($sitePages) { $this->sitePages = $sitePages; }
+            public function get_site_pages() { return $this->sitePages; }
+        };
+
+        $captured = (object) ['queries' => []];
+        ee()->setMock('db', new class($captured) {
+            private $captured;
+            public function __construct($captured) { $this->captured = $captured; }
+            public function query($sql)
+            {
+                $this->captured->queries[] = $sql;
+
+                return new eeDbResultMock([
+                    ['entry_id' => 61, 'parent_id' => 10],
+                ]);
+            }
+        });
+
+        ee()->config->setItem('site_id', 7);
+
+        $this->setTemplateParams([
+            'start_from' => '/parent/',
+        ]);
+
+        $result = $this->structure->child_ids();
+
+        $this->assertSame('61', $result);
+        $this->assertCount(1, $captured->queries);
+        $this->assertStringContainsString("parent_id = '10'", $captured->queries[0]);
+        $this->assertStringContainsString("entry_id != '0'", $captured->queries[0]);
+        $this->assertStringContainsString("site_id = 7", $captured->queries[0]);
+    }
+}
 

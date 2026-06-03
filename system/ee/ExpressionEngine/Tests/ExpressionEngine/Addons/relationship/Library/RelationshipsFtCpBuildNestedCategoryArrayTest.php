@@ -171,7 +171,7 @@ class RelationshipsFtCpBuildNestedCategoryArrayTest extends RelationshipTestBase
     {
         $reflection = new ReflectionClass($this->relationships_ft_cp);
         $method = $reflection->getMethod('buildCategoryList');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($method);
 
         return $method->invoke($this->relationships_ft_cp, $parentId, $hierarchy, $categories);
     }

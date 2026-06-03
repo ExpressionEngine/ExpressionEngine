@@ -1,0 +1,5838 @@
+<?php
+
+use PHPUnit\Framework\TestCase;
+
+if (!class_exists('CI_Model')) {
+    class CI_Model
+    {
+    }
+}
+
+require_once SYSPATH . 'ee/legacy/models/grid_model.php';
+if (! function_exists('element')) {
+    require_once SYSPATH . 'ee/legacy/helpers/array_helper.php';
+}
+
+class GridModelInstallTest extends TestCase
+{
+    protected function setUp(): void
+    {
+        ee()->resetMocks();
+    }
+
+    protected function tearDown(): void
+    {
+        ee()->resetMocks();
+    }
+
+    public function testInstallBuildsSchemaAddsKeysCreatesTableAndSeedsContentType(): void
+    {
+        $state = (object) [
+            'calls' => [],
+            'capturedColumns' => null,
+            'capturedKeys' => [],
+            'capturedTables' => [],
+            'capturedInserts' => [],
+        ];
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function add_field($columns)
+            {
+                $this->state->calls[] = ['dbforge.add_field'];
+                $this->state->capturedColumns = $columns;
+            }
+
+            public function add_key($key, $primary = false)
+            {
+                $this->state->calls[] = ['dbforge.add_key', $key, $primary];
+                $this->state->capturedKeys[] = [$key, $primary];
+            }
+
+            public function create_table($table)
+            {
+                $this->state->calls[] = ['dbforge.create_table', $table];
+                $this->state->capturedTables[] = $table;
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function insert($table, $payload)
+            {
+                $this->state->calls[] = ['db.insert', $table, $payload];
+                $this->state->capturedInserts[] = [$table, $payload];
+
+                return true;
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $model->install();
+
+        $expectedColumns = [
+            'col_id' => ['type' => 'int', 'constraint' => 10, 'unsigned' => true, 'auto_increment' => true],
+            'field_id' => ['type' => 'int', 'constraint' => 10, 'unsigned' => true],
+            'content_type' => ['type' => 'varchar', 'constraint' => 50],
+            'col_order' => ['type' => 'int', 'constraint' => 3, 'unsigned' => true],
+            'col_type' => ['type' => 'varchar', 'constraint' => 50],
+            'col_label' => ['type' => 'varchar', 'constraint' => 50],
+            'col_name' => ['type' => 'varchar', 'constraint' => 32],
+            'col_instructions' => ['type' => 'text'],
+            'col_required' => ['type' => 'char', 'constraint' => 1],
+            'col_search' => ['type' => 'char', 'constraint' => 1],
+            'col_width' => ['type' => 'int', 'constraint' => 3, 'unsigned' => true],
+            'col_settings' => ['type' => 'text'],
+        ];
+
+        $this->assertSame($expectedColumns, $state->capturedColumns);
+        $this->assertSame([['col_id', true], ['field_id', false], ['content_type', false]], $state->capturedKeys);
+        $this->assertSame(['grid_columns'], $state->capturedTables);
+        $this->assertSame([['content_types', ['name' => 'grid']]], $state->capturedInserts);
+        $this->assertSame(
+            [
+                ['load.dbforge'],
+                ['dbforge.add_field'],
+                ['dbforge.add_key', 'col_id', true],
+                ['dbforge.add_key', 'field_id', false],
+                ['dbforge.add_key', 'content_type', false],
+                ['dbforge.create_table', 'grid_columns'],
+                ['db.insert', 'content_types', ['name' => 'grid']],
+            ],
+            $state->calls
+        );
+    }
+
+    public function testInstallBubblesCreateTableExceptionAndSkipsContentTypeInsert(): void
+    {
+        $state = (object) ['insertCallCount' => 0];
+
+        ee()->setMock('load', new class {
+            public function dbforge()
+            {
+            }
+        });
+
+        ee()->setMock('dbforge', new class {
+            public function add_field($columns)
+            {
+            }
+
+            public function add_key($key, $primary = false)
+            {
+            }
+
+            public function create_table($table)
+            {
+                throw new \RuntimeException('create_table failed');
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function insert($table, $payload)
+            {
+                $this->state->insertCallCount++;
+
+                return true;
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+
+        try {
+            $model->install();
+            $this->fail('Expected RuntimeException was not thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('create_table failed', $exception->getMessage());
+        }
+
+        $this->assertSame(0, $state->insertCallCount);
+    }
+
+    public function testUninstallDropsColumnsTableAndDeletesContentTypeWhenNoGridFieldsFound(): void
+    {
+        $state = (object) ['calls' => []];
+        $queryResult = new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function result_array()
+            {
+                $this->state->calls[] = ['db.result_array'];
+
+                return [];
+            }
+        };
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function drop_table($table)
+            {
+                $this->state->calls[] = ['dbforge.drop_table', $table];
+            }
+        });
+
+        ee()->setMock('db', new class($state, $queryResult) {
+            private $state;
+            private $queryResult;
+
+            public function __construct($state, $queryResult)
+            {
+                $this->state = $state;
+                $this->queryResult = $queryResult;
+            }
+
+            public function select($column)
+            {
+                $this->state->calls[] = ['db.select', $column];
+
+                return $this;
+            }
+
+            public function distinct()
+            {
+                $this->state->calls[] = ['db.distinct'];
+
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->calls[] = ['db.get', $table];
+
+                return $this->queryResult;
+            }
+
+            public function delete($table, $where)
+            {
+                $this->state->calls[] = ['db.delete', $table, $where];
+            }
+        });
+
+        $model = new class extends \Grid_model {
+            public $deleteFieldCalls = [];
+
+            public function delete_field($field_id, $content_type)
+            {
+                $this->deleteFieldCalls[] = [$field_id, $content_type];
+            }
+        };
+
+        $model->uninstall();
+
+        $this->assertSame([], $model->deleteFieldCalls);
+        $this->assertSame(
+            [
+                ['db.select', 'field_id'],
+                ['db.distinct'],
+                ['db.get', 'grid_columns'],
+                ['db.result_array'],
+                ['load.dbforge'],
+                ['dbforge.drop_table', 'grid_columns'],
+                ['db.delete', 'content_types', ['name' => 'grid']],
+            ],
+            $state->calls
+        );
+    }
+
+    public function testUninstallDeletesEachGridFieldThenDropsColumnsTableAndDeletesContentType(): void
+    {
+        $state = (object) ['calls' => []];
+        $queryResult = new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function result_array()
+            {
+                $this->state->calls[] = ['db.result_array'];
+
+                return [
+                    ['field_id' => 3, 'content_type' => 'channel'],
+                    ['field_id' => 7, 'content_type' => 'fluid_field'],
+                ];
+            }
+        };
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function drop_table($table)
+            {
+                $this->state->calls[] = ['dbforge.drop_table', $table];
+            }
+        });
+
+        ee()->setMock('db', new class($state, $queryResult) {
+            private $state;
+            private $queryResult;
+
+            public function __construct($state, $queryResult)
+            {
+                $this->state = $state;
+                $this->queryResult = $queryResult;
+            }
+
+            public function select($column)
+            {
+                $this->state->calls[] = ['db.select', $column];
+
+                return $this;
+            }
+
+            public function distinct()
+            {
+                $this->state->calls[] = ['db.distinct'];
+
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->calls[] = ['db.get', $table];
+
+                return $this->queryResult;
+            }
+
+            public function delete($table, $where)
+            {
+                $this->state->calls[] = ['db.delete', $table, $where];
+            }
+        });
+
+        $model = new class($state) extends \Grid_model {
+            private $state;
+            public $deleteFieldCalls = [];
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function delete_field($field_id, $content_type)
+            {
+                $this->state->calls[] = ['model.delete_field', $field_id, $content_type];
+                $this->deleteFieldCalls[] = [$field_id, $content_type];
+            }
+        };
+
+        $model->uninstall();
+
+        $this->assertSame([[3, 'channel'], [7, 'fluid_field']], $model->deleteFieldCalls);
+        $this->assertSame(
+            [
+                ['db.select', 'field_id'],
+                ['db.distinct'],
+                ['db.get', 'grid_columns'],
+                ['db.result_array'],
+                ['model.delete_field', 3, 'channel'],
+                ['model.delete_field', 7, 'fluid_field'],
+                ['load.dbforge'],
+                ['dbforge.drop_table', 'grid_columns'],
+                ['db.delete', 'content_types', ['name' => 'grid']],
+            ],
+            $state->calls
+        );
+    }
+
+    public function testUninstallErrorsWhenResultRowOmitsContentTypeKey(): void
+    {
+        $state = (object) ['calls' => []];
+        $queryResult = new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function result_array()
+            {
+                $this->state->calls[] = ['db.result_array'];
+
+                return [
+                    ['field_id' => 42],
+                ];
+            }
+        };
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function drop_table($table)
+            {
+                $this->state->calls[] = ['dbforge.drop_table', $table];
+            }
+        });
+
+        ee()->setMock('db', new class($state, $queryResult) {
+            private $state;
+            private $queryResult;
+
+            public function __construct($state, $queryResult)
+            {
+                $this->state = $state;
+                $this->queryResult = $queryResult;
+            }
+
+            public function select($column)
+            {
+                $this->state->calls[] = ['db.select', $column];
+
+                return $this;
+            }
+
+            public function distinct()
+            {
+                $this->state->calls[] = ['db.distinct'];
+
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->calls[] = ['db.get', $table];
+
+                return $this->queryResult;
+            }
+
+            public function delete($table, $where)
+            {
+                $this->state->calls[] = ['db.delete', $table, $where];
+            }
+        });
+
+        $model = new class($state) extends \Grid_model {
+            private $state;
+            public $deleteFieldCalls = [];
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function delete_field($field_id, $content_type)
+            {
+                $this->state->calls[] = ['model.delete_field', $field_id, $content_type];
+                $this->deleteFieldCalls[] = [$field_id, $content_type];
+            }
+        };
+
+        set_error_handler(static function ($severity, $message, $file, $line) {
+            if (strpos($message, 'content_type') !== false) {
+                throw new \ErrorException($message, 0, $severity, $file, $line);
+            }
+
+            return false;
+        });
+
+        try {
+            try {
+                $model->uninstall();
+                $this->fail('Expected ErrorException was not thrown.');
+            } catch (\ErrorException $exception) {
+                $this->assertStringContainsString('content_type', $exception->getMessage());
+            }
+        } finally {
+            restore_error_handler();
+            $this->assertSame([], $model->deleteFieldCalls);
+            $this->assertSame(
+                [
+                    ['db.select', 'field_id'],
+                    ['db.distinct'],
+                    ['db.get', 'grid_columns'],
+                    ['db.result_array'],
+                ],
+                $state->calls
+            );
+        }
+    }
+
+    public function testUninstallBubblesGridFieldQueryExceptionAndSkipsDropAndDelete(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function drop_table($table)
+            {
+                $this->state->calls[] = ['dbforge.drop_table', $table];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function select($column)
+            {
+                $this->state->calls[] = ['db.select', $column];
+
+                return $this;
+            }
+
+            public function distinct()
+            {
+                $this->state->calls[] = ['db.distinct'];
+
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->calls[] = ['db.get', $table];
+                throw new \RuntimeException('grid lookup failed');
+            }
+
+            public function delete($table, $where)
+            {
+                $this->state->calls[] = ['db.delete', $table, $where];
+            }
+        });
+
+        $model = new class($state) extends \Grid_model {
+            private $state;
+            public $deleteFieldCalls = [];
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function delete_field($field_id, $content_type)
+            {
+                $this->state->calls[] = ['model.delete_field', $field_id, $content_type];
+                $this->deleteFieldCalls[] = [$field_id, $content_type];
+            }
+        };
+
+        try {
+            $model->uninstall();
+            $this->fail('Expected RuntimeException was not thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('grid lookup failed', $exception->getMessage());
+        }
+
+        $this->assertSame([], $model->deleteFieldCalls);
+        $this->assertSame(
+            [
+                ['db.select', 'field_id'],
+                ['db.distinct'],
+                ['db.get', 'grid_columns'],
+            ],
+            $state->calls
+        );
+    }
+
+    public function testCreateFieldCreatesTableSchemaAndReturnsTrueWhenTableDoesNotExist(): void
+    {
+        $state = (object) [
+            'calls' => [],
+            'capturedColumns' => null,
+            'capturedKeys' => [],
+            'capturedTables' => [],
+        ];
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function add_field($columns)
+            {
+                $this->state->calls[] = ['dbforge.add_field'];
+                $this->state->capturedColumns = $columns;
+            }
+
+            public function add_key($key, $primary = false)
+            {
+                $this->state->calls[] = ['dbforge.add_key', $key, $primary];
+                $this->state->capturedKeys[] = [$key, $primary];
+            }
+
+            public function create_table($table)
+            {
+                $this->state->calls[] = ['dbforge.create_table', $table];
+                $this->state->capturedTables[] = $table;
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function table_exists($table)
+            {
+                $this->state->calls[] = ['db.table_exists', $table];
+
+                return false;
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+
+        $result = $model->create_field(12, 'channel');
+
+        $expectedColumns = [
+            'row_id' => ['type' => 'int', 'constraint' => 10, 'unsigned' => true, 'auto_increment' => true],
+            'entry_id' => ['type' => 'int', 'constraint' => 10, 'unsigned' => true],
+            'row_order' => ['type' => 'int', 'constraint' => 10, 'unsigned' => true],
+            'fluid_field_data_id' => ['type' => 'int', 'constraint' => 10, 'unsigned' => true, 'default' => 0],
+        ];
+
+        $this->assertTrue($result);
+        $this->assertSame($expectedColumns, $state->capturedColumns);
+        $this->assertSame([['row_id', true], ['entry_id', false]], $state->capturedKeys);
+        $this->assertSame(['channel_grid_field_12'], $state->capturedTables);
+        $this->assertSame(
+            [
+                ['db.table_exists', 'channel_grid_field_12'],
+                ['load.dbforge'],
+                ['dbforge.add_field'],
+                ['dbforge.add_key', 'row_id', true],
+                ['dbforge.add_key', 'entry_id', false],
+                ['dbforge.create_table', 'channel_grid_field_12'],
+            ],
+            $state->calls
+        );
+    }
+
+    public function testCreateFieldReturnsFalseAndSkipsSchemaChangesWhenTableAlreadyExists(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function add_field($columns)
+            {
+                $this->state->calls[] = ['dbforge.add_field'];
+            }
+
+            public function add_key($key, $primary = false)
+            {
+                $this->state->calls[] = ['dbforge.add_key', $key, $primary];
+            }
+
+            public function create_table($table)
+            {
+                $this->state->calls[] = ['dbforge.create_table', $table];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function table_exists($table)
+            {
+                $this->state->calls[] = ['db.table_exists', $table];
+
+                return true;
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+
+        $result = $model->create_field(9, 'fluid_field');
+
+        $this->assertFalse($result);
+        $this->assertSame(
+            [
+                ['db.table_exists', 'fluid_field_grid_field_9'],
+            ],
+            $state->calls
+        );
+    }
+
+    public function testCreateFieldBubblesCreateTableExceptionAfterPreparingSchema(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function add_field($columns)
+            {
+                $this->state->calls[] = ['dbforge.add_field'];
+            }
+
+            public function add_key($key, $primary = false)
+            {
+                $this->state->calls[] = ['dbforge.add_key', $key, $primary];
+            }
+
+            public function create_table($table)
+            {
+                $this->state->calls[] = ['dbforge.create_table', $table];
+                throw new \RuntimeException('create_field table creation failed');
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function table_exists($table)
+            {
+                $this->state->calls[] = ['db.table_exists', $table];
+
+                return false;
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+
+        try {
+            $model->create_field(77, 'channel');
+            $this->fail('Expected RuntimeException was not thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('create_field table creation failed', $exception->getMessage());
+        }
+
+        $this->assertSame(
+            [
+                ['db.table_exists', 'channel_grid_field_77'],
+                ['load.dbforge'],
+                ['dbforge.add_field'],
+                ['dbforge.add_key', 'row_id', true],
+                ['dbforge.add_key', 'entry_id', false],
+                ['dbforge.create_table', 'channel_grid_field_77'],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * It drops every matching Grid data table, then deletes Grid column metadata rows.
+     *
+     * @return void
+     */
+    public function testDeleteContentOfTypeDropsEachMatchingTableThenDeletesGridColumnRows(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function drop_table($table)
+            {
+                $this->state->calls[] = ['dbforge.drop_table', $table];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function list_tables($prefix)
+            {
+                $this->state->calls[] = ['db.list_tables', $prefix];
+
+                return ['channel_grid_field_12', 'channel_grid_field_99'];
+            }
+
+            public function delete($table, $where)
+            {
+                $this->state->calls[] = ['db.delete', $table, $where];
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $model->delete_content_of_type('channel');
+
+        $this->assertSame(
+            [
+                ['db.list_tables', 'channelgrid_field_'],
+                ['load.dbforge'],
+                ['dbforge.drop_table', 'channel_grid_field_12'],
+                ['dbforge.drop_table', 'channel_grid_field_99'],
+                ['db.delete', 'grid_columns', ['content_type' => 'channel']],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * It deletes Grid column metadata rows even when no matching data tables exist.
+     *
+     * @return void
+     */
+    public function testDeleteContentOfTypeDeletesGridColumnRowsWhenNoMatchingTablesExist(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function drop_table($table)
+            {
+                $this->state->calls[] = ['dbforge.drop_table', $table];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function list_tables($prefix)
+            {
+                $this->state->calls[] = ['db.list_tables', $prefix];
+
+                return [];
+            }
+
+            public function delete($table, $where)
+            {
+                $this->state->calls[] = ['db.delete', $table, $where];
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $model->delete_content_of_type('fluid_field');
+
+        $this->assertSame(
+            [
+                ['db.list_tables', 'fluid_fieldgrid_field_'],
+                ['load.dbforge'],
+                ['db.delete', 'grid_columns', ['content_type' => 'fluid_field']],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * It tolerates a non-iterable table list by surfacing the foreach warning and still deleting metadata.
+     *
+     * @return void
+     */
+    public function testDeleteContentOfTypeHandlesNullTableListByStillDeletingMetadata(): void
+    {
+        $state = (object) ['calls' => [], 'warnings' => []];
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function drop_table($table)
+            {
+                $this->state->calls[] = ['dbforge.drop_table', $table];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function list_tables($prefix)
+            {
+                $this->state->calls[] = ['db.list_tables', $prefix];
+
+                return null;
+            }
+
+            public function delete($table, $where)
+            {
+                $this->state->calls[] = ['db.delete', $table, $where];
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+
+        set_error_handler(function ($severity, $message) use ($state) {
+            $state->warnings[] = [$severity, $message];
+
+            return true;
+        });
+
+        try {
+            $model->delete_content_of_type('channel');
+        } finally {
+            restore_error_handler();
+        }
+
+        $this->assertNotEmpty($state->warnings);
+        $this->assertStringContainsString('foreach', $state->warnings[0][1]);
+        $this->assertSame(
+            [
+                ['db.list_tables', 'channelgrid_field_'],
+                ['load.dbforge'],
+                ['db.delete', 'grid_columns', ['content_type' => 'channel']],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * It bubbles list_tables failures and performs no cleanup side effects.
+     *
+     * @return void
+     */
+    public function testDeleteContentOfTypeBubblesListTablesExceptionAndSkipsDbforgeAndDelete(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function drop_table($table)
+            {
+                $this->state->calls[] = ['dbforge.drop_table', $table];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function list_tables($prefix)
+            {
+                $this->state->calls[] = ['db.list_tables', $prefix];
+                throw new \RuntimeException('list_tables failed');
+            }
+
+            public function delete($table, $where)
+            {
+                $this->state->calls[] = ['db.delete', $table, $where];
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+
+        try {
+            $model->delete_content_of_type('channel');
+            $this->fail('Expected RuntimeException was not thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('list_tables failed', $exception->getMessage());
+        }
+
+        $this->assertSame(
+            [
+                ['db.list_tables', 'channelgrid_field_'],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * It bubbles dbforge-loader failures and skips table drops and metadata deletion.
+     *
+     * @return void
+     */
+    public function testDeleteContentOfTypeBubblesDbforgeLoaderExceptionAndSkipsCleanup(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+                throw new \RuntimeException('dbforge loader failed');
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function drop_table($table)
+            {
+                $this->state->calls[] = ['dbforge.drop_table', $table];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function list_tables($prefix)
+            {
+                $this->state->calls[] = ['db.list_tables', $prefix];
+
+                return ['channel_grid_field_6'];
+            }
+
+            public function delete($table, $where)
+            {
+                $this->state->calls[] = ['db.delete', $table, $where];
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+
+        try {
+            $model->delete_content_of_type('channel');
+            $this->fail('Expected RuntimeException was not thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('dbforge loader failed', $exception->getMessage());
+        }
+
+        $this->assertSame(
+            [
+                ['db.list_tables', 'channelgrid_field_'],
+                ['load.dbforge'],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * It bubbles drop_table failures and skips metadata deletion afterward.
+     *
+     * @return void
+     */
+    public function testDeleteContentOfTypeBubblesDropTableExceptionAndSkipsDelete(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function drop_table($table)
+            {
+                $this->state->calls[] = ['dbforge.drop_table', $table];
+                throw new \RuntimeException('drop_table failed');
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function list_tables($prefix)
+            {
+                $this->state->calls[] = ['db.list_tables', $prefix];
+
+                return ['channel_grid_field_8', 'channel_grid_field_9'];
+            }
+
+            public function delete($table, $where)
+            {
+                $this->state->calls[] = ['db.delete', $table, $where];
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+
+        try {
+            $model->delete_content_of_type('channel');
+            $this->fail('Expected RuntimeException was not thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('drop_table failed', $exception->getMessage());
+        }
+
+        $this->assertSame(
+            [
+                ['db.list_tables', 'channelgrid_field_'],
+                ['load.dbforge'],
+                ['dbforge.drop_table', 'channel_grid_field_8'],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * It bubbles metadata delete failures after all matching tables are dropped.
+     *
+     * @return void
+     */
+    public function testDeleteContentOfTypeBubblesDeleteExceptionAfterDroppingTables(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function drop_table($table)
+            {
+                $this->state->calls[] = ['dbforge.drop_table', $table];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function list_tables($prefix)
+            {
+                $this->state->calls[] = ['db.list_tables', $prefix];
+
+                return ['fluid_field_grid_field_41', 'fluid_field_grid_field_42'];
+            }
+
+            public function delete($table, $where)
+            {
+                $this->state->calls[] = ['db.delete', $table, $where];
+                throw new \RuntimeException('delete failed');
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+
+        try {
+            $model->delete_content_of_type('fluid_field');
+            $this->fail('Expected RuntimeException was not thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('delete failed', $exception->getMessage());
+        }
+
+        $this->assertSame(
+            [
+                ['db.list_tables', 'fluid_fieldgrid_field_'],
+                ['load.dbforge'],
+                ['dbforge.drop_table', 'fluid_field_grid_field_41'],
+                ['dbforge.drop_table', 'fluid_field_grid_field_42'],
+                ['db.delete', 'grid_columns', ['content_type' => 'fluid_field']],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * It updates an existing Grid column and passes array settings through unchanged.
+     *
+     * @return void
+     */
+    public function testSaveColSettingsUpdatesExistingColumnWithArraySettings(): void
+    {
+        $state = (object) ['calls' => []];
+        $ftApiSettings = [
+            'id_field' => 'col_id',
+            'type_field' => 'col_type',
+            'field_id' => 9,
+            'content_type' => 'fluid_field',
+        ];
+        $column = [
+            'field_id' => 9,
+            'col_type' => 'text',
+            'col_settings' => ['maxl' => 120],
+            'col_label' => 'Summary',
+        ];
+
+        ee()->setMock('api_channel_fields', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function edit_datatype($colId, $colType, $colSettings, $ftApiSettings)
+            {
+                $this->state->calls[] = ['api.edit_datatype', $colId, $colType, $colSettings, $ftApiSettings];
+            }
+
+            public function setup_handler($colType)
+            {
+                $this->state->calls[] = ['api.setup_handler', $colType];
+            }
+
+            public function set_datatype($colId, $colSettings, $dbInfo, $native, $hasRelationData, $ftApiSettings)
+            {
+                $this->state->calls[] = ['api.set_datatype', $colId, $colSettings, $dbInfo, $native, $hasRelationData, $ftApiSettings];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function update($table, $payload)
+            {
+                $this->state->calls[] = ['db.update', $table, $payload];
+            }
+
+            public function insert($table, $payload)
+            {
+                $this->state->calls[] = ['db.insert', $table, $payload];
+            }
+
+            public function insert_id()
+            {
+                $this->state->calls[] = ['db.insert_id'];
+
+                return 0;
+            }
+        });
+
+        $model = $this->makeGridModelForSaveColSettingsTest($state, $ftApiSettings);
+        $returnValue = $model->save_col_settings($column, 44, 'fluid_field');
+
+        $this->assertSame(44, $returnValue);
+        $this->assertSame(
+            [
+                ['model._get_ft_api_settings', 9, 'fluid_field'],
+                ['api.edit_datatype', 44, 'text', ['maxl' => 120], $ftApiSettings],
+                ['db.where', 'col_id', 44],
+                ['db.update', 'grid_columns', $column],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * It decodes JSON settings before updating an existing Grid column.
+     *
+     * @return void
+     */
+    public function testSaveColSettingsDecodesJsonForExistingColumnUpdate(): void
+    {
+        $state = (object) ['calls' => []];
+        $decodedSettings = ['format' => 'horizontal', 'rows' => 3];
+        $ftApiSettings = [
+            'id_field' => 'col_id',
+            'type_field' => 'col_type',
+            'field_id' => 12,
+            'content_type' => 'channel',
+        ];
+        $column = [
+            'field_id' => 12,
+            'col_type' => 'relationship',
+            'col_settings' => json_encode($decodedSettings),
+            'col_label' => 'Related Entry',
+        ];
+
+        ee()->setMock('api_channel_fields', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function edit_datatype($colId, $colType, $colSettings, $ftApiSettings)
+            {
+                $this->state->calls[] = ['api.edit_datatype', $colId, $colType, $colSettings, $ftApiSettings];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function update($table, $payload)
+            {
+                $this->state->calls[] = ['db.update', $table, $payload];
+            }
+        });
+
+        $model = $this->makeGridModelForSaveColSettingsTest($state, $ftApiSettings);
+        $returnValue = $model->save_col_settings($column, 91);
+
+        $this->assertSame(91, $returnValue);
+        $this->assertSame(
+            [
+                ['model._get_ft_api_settings', 12, 'channel'],
+                ['api.edit_datatype', 91, 'relationship', $decodedSettings, $ftApiSettings],
+                ['db.where', 'col_id', 91],
+                ['db.update', 'grid_columns', $column],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * It bubbles edit_datatype failures before persisting existing Grid column updates.
+     *
+     * @return void
+     */
+    public function testSaveColSettingsBubblesExistingColumnEditDatatypeFailureBeforeUpdate(): void
+    {
+        $state = (object) ['calls' => []];
+        $ftApiSettings = [
+            'id_field' => 'col_id',
+            'type_field' => 'col_type',
+            'field_id' => 2,
+            'content_type' => 'channel',
+        ];
+        $column = [
+            'field_id' => 2,
+            'col_type' => 'textarea',
+            'col_settings' => ['rows' => 5],
+            'col_label' => 'Body',
+        ];
+
+        ee()->setMock('api_channel_fields', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function edit_datatype($colId, $colType, $colSettings, $ftApiSettings)
+            {
+                $this->state->calls[] = ['api.edit_datatype', $colId, $colType, $colSettings, $ftApiSettings];
+                throw new \RuntimeException('edit failed');
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function update($table, $payload)
+            {
+                $this->state->calls[] = ['db.update', $table, $payload];
+            }
+        });
+
+        $model = $this->makeGridModelForSaveColSettingsTest($state, $ftApiSettings);
+
+        try {
+            $model->save_col_settings($column, 13);
+            $this->fail('Expected RuntimeException was not thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('edit failed', $exception->getMessage());
+        }
+
+        $this->assertSame(
+            [
+                ['model._get_ft_api_settings', 2, 'channel'],
+                ['api.edit_datatype', 13, 'textarea', ['rows' => 5], $ftApiSettings],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * It inserts a new Grid column and configures its fieldtype columns with decoded JSON settings.
+     *
+     * @return void
+     */
+    public function testSaveColSettingsInsertsNewColumnAndConfiguresDatatypeWithJsonSettings(): void
+    {
+        $state = (object) ['calls' => []];
+        $decodedSettings = ['allowed_directories' => [4, 5], 'show_existing' => 'y'];
+        $ftApiSettings = [
+            'id_field' => 'col_id',
+            'type_field' => 'col_type',
+            'field_id' => 17,
+            'content_type' => 'fluid_field',
+        ];
+        $column = [
+            'field_id' => 17,
+            'col_type' => 'file',
+            'col_settings' => json_encode($decodedSettings),
+            'col_label' => 'Attachment',
+        ];
+
+        ee()->setMock('api_channel_fields', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function setup_handler($colType)
+            {
+                $this->state->calls[] = ['api.setup_handler', $colType];
+            }
+
+            public function set_datatype($colId, $colSettings, $dbInfo, $native, $hasRelationData, $ftApiSettings)
+            {
+                $this->state->calls[] = ['api.set_datatype', $colId, $colSettings, $dbInfo, $native, $hasRelationData, $ftApiSettings];
+            }
+
+            public function edit_datatype($colId, $colType, $colSettings, $ftApiSettings)
+            {
+                $this->state->calls[] = ['api.edit_datatype', $colId, $colType, $colSettings, $ftApiSettings];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function insert($table, $payload)
+            {
+                $this->state->calls[] = ['db.insert', $table, $payload];
+            }
+
+            public function insert_id()
+            {
+                $this->state->calls[] = ['db.insert_id'];
+
+                return 376;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function update($table, $payload)
+            {
+                $this->state->calls[] = ['db.update', $table, $payload];
+            }
+        });
+
+        $model = $this->makeGridModelForSaveColSettingsTest($state, $ftApiSettings);
+        $returnValue = $model->save_col_settings($column, false, 'fluid_field');
+
+        $this->assertSame(376, $returnValue);
+        $this->assertSame(
+            [
+                ['db.insert', 'grid_columns', $column],
+                ['db.insert_id'],
+                ['api.setup_handler', 'file'],
+                ['model._get_ft_api_settings', 17, 'fluid_field'],
+                ['api.set_datatype', 376, $decodedSettings, [], true, false, $ftApiSettings],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * It bubbles insert failures for new Grid columns and skips fieldtype setup.
+     *
+     * @return void
+     */
+    public function testSaveColSettingsBubblesNewColumnInsertFailureBeforeFieldtypeSetup(): void
+    {
+        $state = (object) ['calls' => []];
+        $column = [
+            'field_id' => 21,
+            'col_type' => 'text',
+            'col_settings' => ['maxl' => 255],
+            'col_label' => 'Headline',
+        ];
+
+        ee()->setMock('api_channel_fields', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function setup_handler($colType)
+            {
+                $this->state->calls[] = ['api.setup_handler', $colType];
+            }
+
+            public function set_datatype($colId, $colSettings, $dbInfo, $native, $hasRelationData, $ftApiSettings)
+            {
+                $this->state->calls[] = ['api.set_datatype', $colId, $colSettings, $dbInfo, $native, $hasRelationData, $ftApiSettings];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function insert($table, $payload)
+            {
+                $this->state->calls[] = ['db.insert', $table, $payload];
+                throw new \RuntimeException('insert failed');
+            }
+
+            public function insert_id()
+            {
+                $this->state->calls[] = ['db.insert_id'];
+
+                return 0;
+            }
+        });
+
+        $model = $this->makeGridModelForSaveColSettingsTest($state, [
+            'id_field' => 'col_id',
+            'type_field' => 'col_type',
+            'field_id' => 21,
+            'content_type' => 'channel',
+        ]);
+
+        try {
+            $model->save_col_settings($column);
+            $this->fail('Expected RuntimeException was not thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('insert failed', $exception->getMessage());
+        }
+
+        $this->assertSame(
+            [
+                ['db.insert', 'grid_columns', $column],
+            ],
+            $state->calls
+        );
+    }
+
+    public function testDeleteColumnsNormalizesScalarColumnIdAndDeletesDatatype(): void
+    {
+        $state = (object) ['calls' => []];
+        $ftApiSettings = [
+            'id_field' => 'col_id',
+            'type_field' => 'col_type',
+            'field_id' => 9,
+            'content_type' => 'fluid_field',
+        ];
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function where_in($column, $values)
+            {
+                $this->state->calls[] = ['db.where_in', $column, $values];
+
+                return $this;
+            }
+
+            public function delete($table)
+            {
+                $this->state->calls[] = ['db.delete', $table];
+            }
+        });
+
+        ee()->setMock('api_channel_fields', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function setup_handler($fieldType)
+            {
+                $this->state->calls[] = ['api.setup_handler', $fieldType];
+            }
+
+            public function delete_datatype($columnId, $dbInfo, $ftApiSettings)
+            {
+                $this->state->calls[] = ['api.delete_datatype', $columnId, $dbInfo, $ftApiSettings];
+            }
+        });
+
+        $model = $this->makeGridModelForDeleteColumnsTest($state, $ftApiSettings);
+        $model->delete_columns(31, [31 => 'text'], 9, 'fluid_field');
+
+        $this->assertSame(
+            [
+                ['db.where_in', 'col_id', [31]],
+                ['db.delete', 'grid_columns'],
+                ['api.setup_handler', 'text'],
+                ['model._get_ft_api_settings', 9, 'fluid_field'],
+                ['api.delete_datatype', 31, [], $ftApiSettings],
+            ],
+            $state->calls
+        );
+    }
+
+    public function testDeleteColumnsProcessesEachColumnIdInArrayOrder(): void
+    {
+        $state = (object) ['calls' => []];
+        $ftApiSettings = [
+            'id_field' => 'col_id',
+            'type_field' => 'col_type',
+            'field_id' => 18,
+            'content_type' => 'channel',
+        ];
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function where_in($column, $values)
+            {
+                $this->state->calls[] = ['db.where_in', $column, $values];
+
+                return $this;
+            }
+
+            public function delete($table)
+            {
+                $this->state->calls[] = ['db.delete', $table];
+            }
+        });
+
+        ee()->setMock('api_channel_fields', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function setup_handler($fieldType)
+            {
+                $this->state->calls[] = ['api.setup_handler', $fieldType];
+            }
+
+            public function delete_datatype($columnId, $dbInfo, $ftApiSettings)
+            {
+                $this->state->calls[] = ['api.delete_datatype', $columnId, $dbInfo, $ftApiSettings];
+            }
+        });
+
+        $model = $this->makeGridModelForDeleteColumnsTest($state, $ftApiSettings);
+        $model->delete_columns([12, 14], [12 => 'text', 14 => 'relationship'], 18, 'channel');
+
+        $this->assertSame(
+            [
+                ['db.where_in', 'col_id', [12, 14]],
+                ['db.delete', 'grid_columns'],
+                ['api.setup_handler', 'text'],
+                ['model._get_ft_api_settings', 18, 'channel'],
+                ['api.delete_datatype', 12, [], $ftApiSettings],
+                ['api.setup_handler', 'relationship'],
+                ['model._get_ft_api_settings', 18, 'channel'],
+                ['api.delete_datatype', 14, [], $ftApiSettings],
+            ],
+            $state->calls
+        );
+    }
+
+    public function testDeleteColumnsSkipsFieldtypeCallsWhenColumnIdListIsEmpty(): void
+    {
+        $state = (object) ['calls' => []];
+        $ftApiSettings = [
+            'id_field' => 'col_id',
+            'type_field' => 'col_type',
+            'field_id' => 5,
+            'content_type' => 'channel',
+        ];
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function where_in($column, $values)
+            {
+                $this->state->calls[] = ['db.where_in', $column, $values];
+
+                return $this;
+            }
+
+            public function delete($table)
+            {
+                $this->state->calls[] = ['db.delete', $table];
+            }
+        });
+
+        ee()->setMock('api_channel_fields', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function setup_handler($fieldType)
+            {
+                $this->state->calls[] = ['api.setup_handler', $fieldType];
+            }
+
+            public function delete_datatype($columnId, $dbInfo, $ftApiSettings)
+            {
+                $this->state->calls[] = ['api.delete_datatype', $columnId, $dbInfo, $ftApiSettings];
+            }
+        });
+
+        $model = $this->makeGridModelForDeleteColumnsTest($state, $ftApiSettings);
+        $model->delete_columns([], [], 5, 'channel');
+
+        $this->assertSame(
+            [
+                ['db.where_in', 'col_id', []],
+                ['db.delete', 'grid_columns'],
+            ],
+            $state->calls
+        );
+    }
+
+    public function testDeleteColumnsBubblesDeleteDatatypeFailureAndStopsRemainingColumns(): void
+    {
+        $state = (object) ['calls' => []];
+        $ftApiSettings = [
+            'id_field' => 'col_id',
+            'type_field' => 'col_type',
+            'field_id' => 6,
+            'content_type' => 'fluid_field',
+        ];
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function where_in($column, $values)
+            {
+                $this->state->calls[] = ['db.where_in', $column, $values];
+
+                return $this;
+            }
+
+            public function delete($table)
+            {
+                $this->state->calls[] = ['db.delete', $table];
+            }
+        });
+
+        ee()->setMock('api_channel_fields', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function setup_handler($fieldType)
+            {
+                $this->state->calls[] = ['api.setup_handler', $fieldType];
+            }
+
+            public function delete_datatype($columnId, $dbInfo, $ftApiSettings)
+            {
+                $this->state->calls[] = ['api.delete_datatype', $columnId, $dbInfo, $ftApiSettings];
+
+                if ($columnId === 4) {
+                    throw new \RuntimeException('delete_datatype failed');
+                }
+            }
+        });
+
+        $model = $this->makeGridModelForDeleteColumnsTest($state, $ftApiSettings);
+
+        try {
+            $model->delete_columns([4, 5], [4 => 'text', 5 => 'file'], 6, 'fluid_field');
+            $this->fail('Expected RuntimeException was not thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('delete_datatype failed', $exception->getMessage());
+        }
+
+        $this->assertSame(
+            [
+                ['db.where_in', 'col_id', [4, 5]],
+                ['db.delete', 'grid_columns'],
+                ['api.setup_handler', 'text'],
+                ['model._get_ft_api_settings', 6, 'fluid_field'],
+                ['api.delete_datatype', 4, [], $ftApiSettings],
+            ],
+            $state->calls
+        );
+    }
+
+    public function testDeleteColumnsBubblesDeleteFailureBeforeFieldtypeHandlersRun(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function where_in($column, $values)
+            {
+                $this->state->calls[] = ['db.where_in', $column, $values];
+
+                return $this;
+            }
+
+            public function delete($table)
+            {
+                $this->state->calls[] = ['db.delete', $table];
+                throw new \RuntimeException('delete failed');
+            }
+        });
+
+        ee()->setMock('api_channel_fields', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function setup_handler($fieldType)
+            {
+                $this->state->calls[] = ['api.setup_handler', $fieldType];
+            }
+
+            public function delete_datatype($columnId, $dbInfo, $ftApiSettings)
+            {
+                $this->state->calls[] = ['api.delete_datatype', $columnId, $dbInfo, $ftApiSettings];
+            }
+        });
+
+        $model = $this->makeGridModelForDeleteColumnsTest($state, [
+            'id_field' => 'col_id',
+            'type_field' => 'col_type',
+            'field_id' => 14,
+            'content_type' => 'channel',
+        ]);
+
+        try {
+            $model->delete_columns([9], [9 => 'text'], 14, 'channel');
+            $this->fail('Expected RuntimeException was not thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('delete failed', $exception->getMessage());
+        }
+
+        $this->assertSame(
+            [
+                ['db.where_in', 'col_id', [9]],
+                ['db.delete', 'grid_columns'],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * Verify delete_columns_of_type() groups columns by field and delegates deletes per field.
+     *
+     * @return void
+     */
+    public function testDeleteColumnsOfTypeGroupsColumnsByFieldAndDelegatesDeletePerField(): void
+    {
+        $state = (object) ['calls' => []];
+        $gridColumns = [
+            ['col_id' => 7, 'col_type' => 'file', 'field_id' => 10, 'content_type' => 'channel'],
+            ['col_id' => 8, 'col_type' => 'file', 'field_id' => 10, 'content_type' => 'channel'],
+            ['col_id' => 12, 'col_type' => 'file', 'field_id' => 22, 'content_type' => 'fluid_field'],
+        ];
+
+        $queryResult = new class($state, $gridColumns) {
+            private $state;
+            private $gridColumns;
+
+            public function __construct($state, array $gridColumns)
+            {
+                $this->state = $state;
+                $this->gridColumns = $gridColumns;
+            }
+
+            public function result_array()
+            {
+                $this->state->calls[] = ['db.result_array'];
+
+                return $this->gridColumns;
+            }
+        };
+
+        ee()->setMock('db', new class($state, $queryResult) {
+            private $state;
+            private $queryResult;
+
+            public function __construct($state, $queryResult)
+            {
+                $this->state = $state;
+                $this->queryResult = $queryResult;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->calls[] = ['db.get', $table];
+
+                return $this->queryResult;
+            }
+        });
+
+        $model = $this->makeGridModelForDeleteColumnsOfTypeTest($state);
+        $model->delete_columns_of_type('file');
+
+        $this->assertSame(
+            [
+                ['db.where', 'col_type', 'file'],
+                ['db.get', 'grid_columns'],
+                ['db.result_array'],
+                ['model.delete_columns', [7, 8], [7 => 'file', 8 => 'file', 12 => 'file'], 10, 'channel'],
+                ['model.delete_columns', [12], [7 => 'file', 8 => 'file', 12 => 'file'], 22, 'fluid_field'],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * Verify delete_columns_of_type() is a no-op when no matching columns exist.
+     *
+     * @return void
+     */
+    public function testDeleteColumnsOfTypeSkipsDeleteWhenNoMatchingColumnsFound(): void
+    {
+        $state = (object) ['calls' => []];
+
+        $queryResult = new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function result_array()
+            {
+                $this->state->calls[] = ['db.result_array'];
+
+                return [];
+            }
+        };
+
+        ee()->setMock('db', new class($state, $queryResult) {
+            private $state;
+            private $queryResult;
+
+            public function __construct($state, $queryResult)
+            {
+                $this->state = $state;
+                $this->queryResult = $queryResult;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->calls[] = ['db.get', $table];
+
+                return $this->queryResult;
+            }
+        });
+
+        $model = $this->makeGridModelForDeleteColumnsOfTypeTest($state);
+        $model->delete_columns_of_type('relationship');
+
+        $this->assertSame(
+            [
+                ['db.where', 'col_type', 'relationship'],
+                ['db.get', 'grid_columns'],
+                ['db.result_array'],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * Verify delete_columns_of_type() bubbles delete failures and stops remaining fields.
+     *
+     * @return void
+     */
+    public function testDeleteColumnsOfTypeBubblesDeleteColumnsFailureAndStopsRemainingFields(): void
+    {
+        $state = (object) ['calls' => []];
+        $gridColumns = [
+            ['col_id' => 30, 'col_type' => 'textarea', 'field_id' => 3, 'content_type' => 'channel'],
+            ['col_id' => 31, 'col_type' => 'textarea', 'field_id' => 4, 'content_type' => 'channel'],
+        ];
+
+        $queryResult = new class($state, $gridColumns) {
+            private $state;
+            private $gridColumns;
+
+            public function __construct($state, array $gridColumns)
+            {
+                $this->state = $state;
+                $this->gridColumns = $gridColumns;
+            }
+
+            public function result_array()
+            {
+                $this->state->calls[] = ['db.result_array'];
+
+                return $this->gridColumns;
+            }
+        };
+
+        ee()->setMock('db', new class($state, $queryResult) {
+            private $state;
+            private $queryResult;
+
+            public function __construct($state, $queryResult)
+            {
+                $this->state = $state;
+                $this->queryResult = $queryResult;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->calls[] = ['db.get', $table];
+
+                return $this->queryResult;
+            }
+        });
+
+        $model = $this->makeGridModelForDeleteColumnsOfTypeTest($state, 3);
+
+        try {
+            $model->delete_columns_of_type('textarea');
+            $this->fail('Expected RuntimeException was not thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('delete_columns failed', $exception->getMessage());
+        }
+
+        $this->assertSame(
+            [
+                ['db.where', 'col_type', 'textarea'],
+                ['db.get', 'grid_columns'],
+                ['db.result_array'],
+                ['model.delete_columns', [30], [30 => 'textarea', 31 => 'textarea'], 3, 'channel'],
+            ],
+            $state->calls
+        );
+    }
+
+    public function testDeleteFieldDropsExistingDataTableThenDeletesColumnSettings(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function drop_table($table)
+            {
+                $this->state->calls[] = ['dbforge.drop_table', $table];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function table_exists($table)
+            {
+                $this->state->calls[] = ['db.table_exists', $table];
+
+                return true;
+            }
+
+            public function delete($table, $where)
+            {
+                $this->state->calls[] = ['db.delete', $table, $where];
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+
+        $model->delete_field(12, 'fluid_field');
+
+        $this->assertSame(
+            [
+                ['db.table_exists', 'fluid_field_grid_field_12'],
+                ['load.dbforge'],
+                ['dbforge.drop_table', 'fluid_field_grid_field_12'],
+                ['db.delete', 'grid_columns', ['field_id' => 12]],
+            ],
+            $state->calls
+        );
+    }
+
+    public function testDeleteFieldSkipsDropWhenDataTableDoesNotExistAndStillDeletesColumnSettings(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function drop_table($table)
+            {
+                $this->state->calls[] = ['dbforge.drop_table', $table];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function table_exists($table)
+            {
+                $this->state->calls[] = ['db.table_exists', $table];
+
+                return false;
+            }
+
+            public function delete($table, $where)
+            {
+                $this->state->calls[] = ['db.delete', $table, $where];
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+
+        $model->delete_field(9, 'channel');
+
+        $this->assertSame(
+            [
+                ['db.table_exists', 'channel_grid_field_9'],
+                ['db.delete', 'grid_columns', ['field_id' => 9]],
+            ],
+            $state->calls
+        );
+    }
+
+    public function testDeleteFieldBubblesDropTableExceptionAndSkipsColumnSettingsDelete(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function drop_table($table)
+            {
+                $this->state->calls[] = ['dbforge.drop_table', $table];
+                throw new \RuntimeException('drop_table failed');
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function table_exists($table)
+            {
+                $this->state->calls[] = ['db.table_exists', $table];
+
+                return true;
+            }
+
+            public function delete($table, $where)
+            {
+                $this->state->calls[] = ['db.delete', $table, $where];
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+
+        try {
+            $model->delete_field(5, 'channel');
+            $this->fail('Expected RuntimeException was not thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('drop_table failed', $exception->getMessage());
+        }
+
+        $this->assertSame(
+            [
+                ['db.table_exists', 'channel_grid_field_5'],
+                ['load.dbforge'],
+                ['dbforge.drop_table', 'channel_grid_field_5'],
+            ],
+            $state->calls
+        );
+    }
+
+    public function testDeleteFieldBubblesTableExistsExceptionAndSkipsDropAndDelete(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function drop_table($table)
+            {
+                $this->state->calls[] = ['dbforge.drop_table', $table];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function table_exists($table)
+            {
+                $this->state->calls[] = ['db.table_exists', $table];
+                throw new \RuntimeException('table_exists failed');
+            }
+
+            public function delete($table, $where)
+            {
+                $this->state->calls[] = ['db.delete', $table, $where];
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+
+        try {
+            $model->delete_field(17, 'channel');
+            $this->fail('Expected RuntimeException was not thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('table_exists failed', $exception->getMessage());
+        }
+
+        $this->assertSame(
+            [
+                ['db.table_exists', 'channel_grid_field_17'],
+            ],
+            $state->calls
+        );
+    }
+
+    public function testDeleteFieldBubblesDeleteExceptionAfterDropWhenTableExists(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function drop_table($table)
+            {
+                $this->state->calls[] = ['dbforge.drop_table', $table];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function table_exists($table)
+            {
+                $this->state->calls[] = ['db.table_exists', $table];
+
+                return true;
+            }
+
+            public function delete($table, $where)
+            {
+                $this->state->calls[] = ['db.delete', $table, $where];
+                throw new \RuntimeException('delete failed');
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+
+        try {
+            $model->delete_field(88, 'fluid_field');
+            $this->fail('Expected RuntimeException was not thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('delete failed', $exception->getMessage());
+        }
+
+        $this->assertSame(
+            [
+                ['db.table_exists', 'fluid_field_grid_field_88'],
+                ['load.dbforge'],
+                ['dbforge.drop_table', 'fluid_field_grid_field_88'],
+                ['db.delete', 'grid_columns', ['field_id' => 88]],
+            ],
+            $state->calls
+        );
+    }
+
+    public function testGetEntryBuildsExpectedQueryWithExplicitFluidFieldDataIdAndReturnsRows(): void
+    {
+        $state = (object) ['calls' => []];
+        $expectedRows = [
+            ['row_id' => 10, 'entry_id' => 123, 'fluid_field_data_id' => 45],
+            ['row_id' => 11, 'entry_id' => 123, 'fluid_field_data_id' => 45],
+        ];
+
+        $queryResult = new class($state, $expectedRows) {
+            private $state;
+            private $expectedRows;
+
+            public function __construct($state, array $expectedRows)
+            {
+                $this->state = $state;
+                $this->expectedRows = $expectedRows;
+            }
+
+            public function result_array()
+            {
+                $this->state->calls[] = ['db.result_array'];
+
+                return $this->expectedRows;
+            }
+        };
+
+        ee()->setMock('db', new class($state, $queryResult) {
+            private $state;
+            private $queryResult;
+
+            public function __construct($state, $queryResult)
+            {
+                $this->state = $state;
+                $this->queryResult = $queryResult;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->calls[] = ['db.get', $table];
+
+                return $this->queryResult;
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $returnValue = $model->get_entry(123, 12, 'channel', 45);
+
+        $this->assertSame($expectedRows, $returnValue);
+        $this->assertSame(
+            [
+                ['db.where', 'entry_id', 123],
+                ['db.where', 'fluid_field_data_id', 45],
+                ['db.get', 'channel_grid_field_12'],
+                ['db.result_array'],
+            ],
+            $state->calls
+        );
+    }
+
+    public function testGetEntryUsesDefaultFluidFieldDataIdWhenArgumentIsOmitted(): void
+    {
+        $state = (object) ['calls' => []];
+        $expectedRows = [['row_id' => 1]];
+
+        $queryResult = new class($state, $expectedRows) {
+            private $state;
+            private $expectedRows;
+
+            public function __construct($state, array $expectedRows)
+            {
+                $this->state = $state;
+                $this->expectedRows = $expectedRows;
+            }
+
+            public function result_array()
+            {
+                $this->state->calls[] = ['db.result_array'];
+
+                return $this->expectedRows;
+            }
+        };
+
+        ee()->setMock('db', new class($state, $queryResult) {
+            private $state;
+            private $queryResult;
+
+            public function __construct($state, $queryResult)
+            {
+                $this->state = $state;
+                $this->queryResult = $queryResult;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->calls[] = ['db.get', $table];
+
+                return $this->queryResult;
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $returnValue = $model->get_entry(10, 5, 'fluid_field');
+
+        $this->assertSame($expectedRows, $returnValue);
+        $this->assertSame(
+            [
+                ['db.where', 'entry_id', 10],
+                ['db.where', 'fluid_field_data_id', 0],
+                ['db.get', 'fluid_field_grid_field_5'],
+                ['db.result_array'],
+            ],
+            $state->calls
+        );
+    }
+
+    public function testGetEntryBubblesResultArrayException(): void
+    {
+        $state = (object) ['calls' => []];
+
+        $queryResult = new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function result_array()
+            {
+                $this->state->calls[] = ['db.result_array'];
+                throw new \RuntimeException('result_array failed');
+            }
+        };
+
+        ee()->setMock('db', new class($state, $queryResult) {
+            private $state;
+            private $queryResult;
+
+            public function __construct($state, $queryResult)
+            {
+                $this->state = $state;
+                $this->queryResult = $queryResult;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->calls[] = ['db.get', $table];
+
+                return $this->queryResult;
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+
+        try {
+            $model->get_entry(88, 9, 'channel');
+            $this->fail('Expected RuntimeException was not thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('result_array failed', $exception->getMessage());
+        }
+
+        $this->assertSame(
+            [
+                ['db.where', 'entry_id', 88],
+                ['db.where', 'fluid_field_data_id', 0],
+                ['db.get', 'channel_grid_field_9'],
+                ['db.result_array'],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * It caches fetched rows and reuses the warm cache on the next call.
+     *
+     * @return void
+     */
+    public function testGetEntryRowsCachesRowsAndSkipsSecondQueryWhenCacheIsWarm(): void
+    {
+        $state = (object) [
+            'calls' => [],
+            'getCallCount' => 0,
+            'fieldSearchCalls' => [],
+        ];
+        $rows = [
+            ['row_id' => 4, 'entry_id' => 101, 'row_order' => 0, 'fluid_field_data_id' => 0, 'col_id_9' => 'first'],
+            ['row_id' => 7, 'entry_id' => 101, 'row_order' => 1, 'fluid_field_data_id' => 0, 'col_id_9' => 'second'],
+        ];
+
+        ee()->setMock('db', new class($state, $rows) {
+            private $state;
+            private $rows;
+
+            public function __construct($state, array $rows)
+            {
+                $this->state = $state;
+                $this->rows = $rows;
+            }
+
+            public function where_in($column, $values)
+            {
+                $this->state->calls[] = ['db.where_in', $column, array_values($values)];
+
+                return $this;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function order_by($field, $direction = '', $escape = null)
+            {
+                $this->state->calls[] = ['db.order_by', $field, $direction, $escape];
+
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->calls[] = ['db.get', $table];
+                $this->state->getCallCount++;
+
+                return new class($this->state, $this->rows) {
+                    private $state;
+                    private $rows;
+
+                    public function __construct($state, array $rows)
+                    {
+                        $this->state = $state;
+                        $this->rows = $rows;
+                    }
+
+                    public function result_array()
+                    {
+                        $this->state->calls[] = ['db.result_array'];
+
+                        return $this->rows;
+                    }
+                };
+            }
+
+            public function _compile_select($reset = false, $test = false)
+            {
+                $this->state->calls[] = ['db._compile_select', $reset, $test];
+
+                return 'SELECT * FROM channel_grid_field_12';
+            }
+        });
+
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+        });
+
+        ee()->setMock('LivePreview', new class {
+            public function hasEntryData()
+            {
+                return false;
+            }
+
+            public function getEntryData()
+            {
+                return [];
+            }
+        });
+
+        $model = $this->makeGridModelForGetEntryRowsTest(
+            $state,
+            ['fixed_order' => '', 'search' => [], 'orderby' => '', 'sort' => 'asc']
+        );
+
+        $first = $model->get_entry_rows(101, 12, 'channel', ['ignored' => 'value'], false, 0);
+        $second = $model->get_entry_rows(101, 12, 'channel', ['ignored' => 'value'], false, 0);
+
+        $this->assertSame(1, $state->getCallCount);
+        $this->assertSame($first, $second);
+        $this->assertSame('first', $second[101][4]['col_id_9']);
+        $this->assertSame('second', $second[101][7]['col_id_9']);
+    }
+
+    /**
+     * It refreshes cached rows when fluid_field_data_id changes for the same marker.
+     *
+     * @return void
+     */
+    public function testGetEntryRowsRefreshesCacheWhenFluidFieldDataIdChanges(): void
+    {
+        $state = (object) [
+            'calls' => [],
+            'getCallCount' => 0,
+            'fieldSearchCalls' => [],
+        ];
+        $rowsByCall = [
+            [
+                ['row_id' => 1, 'entry_id' => 22, 'row_order' => 0, 'fluid_field_data_id' => 5, 'col_id_2' => 'first'],
+            ],
+            [
+                ['row_id' => 2, 'entry_id' => 22, 'row_order' => 0, 'fluid_field_data_id' => 9, 'col_id_2' => 'second'],
+            ],
+        ];
+
+        ee()->setMock('db', new class($state, $rowsByCall) {
+            private $state;
+            private $rowsByCall;
+
+            public function __construct($state, array $rowsByCall)
+            {
+                $this->state = $state;
+                $this->rowsByCall = $rowsByCall;
+            }
+
+            public function where_in($column, $values)
+            {
+                $this->state->calls[] = ['db.where_in', $column, array_values($values)];
+
+                return $this;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function order_by($field, $direction = '', $escape = null)
+            {
+                $this->state->calls[] = ['db.order_by', $field, $direction, $escape];
+
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->calls[] = ['db.get', $table];
+                $rows = $this->rowsByCall[$this->state->getCallCount] ?? [];
+                $this->state->getCallCount++;
+
+                return new class($rows) {
+                    private $rows;
+
+                    public function __construct(array $rows)
+                    {
+                        $this->rows = $rows;
+                    }
+
+                    public function result_array()
+                    {
+                        return $this->rows;
+                    }
+                };
+            }
+
+            public function _compile_select($reset = false, $test = false)
+            {
+                return 'SELECT * FROM channel_grid_field_3';
+            }
+        });
+
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+        });
+
+        ee()->setMock('LivePreview', new class {
+            public function hasEntryData()
+            {
+                return false;
+            }
+
+            public function getEntryData()
+            {
+                return [];
+            }
+        });
+
+        $model = $this->makeGridModelForGetEntryRowsTest(
+            $state,
+            ['fixed_order' => '', 'search' => [], 'orderby' => '', 'sort' => 'asc']
+        );
+
+        $model->get_entry_rows([22], 3, 'channel', [], false, 5);
+        $second = $model->get_entry_rows([22], 3, 'channel', [], false, 9);
+
+        $this->assertSame(2, $state->getCallCount);
+        $this->assertSame('second', $second[22][2]['col_id_2']);
+    }
+
+    /**
+     * It reuses the same cache marker when only non-database options change.
+     *
+     * @return void
+     */
+    public function testGetEntryRowsCacheMarkerIgnoresNonDatabaseOptions(): void
+    {
+        $state = (object) [
+            'getCallCount' => 0,
+        ];
+        $rows = [
+            ['row_id' => 11, 'entry_id' => 42, 'row_order' => 0, 'fluid_field_data_id' => 0, 'col_id_3' => 'alpha'],
+        ];
+
+        ee()->setMock('db', new class($state, $rows) {
+            private $state;
+            private $rows;
+
+            public function __construct($state, array $rows)
+            {
+                $this->state = $state;
+                $this->rows = $rows;
+            }
+
+            public function where_in($column, $values)
+            {
+                return $this;
+            }
+
+            public function where($column, $value)
+            {
+                return $this;
+            }
+
+            public function order_by($field, $direction = '', $escape = null)
+            {
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->getCallCount++;
+
+                return new class($this->rows) {
+                    private $rows;
+
+                    public function __construct(array $rows)
+                    {
+                        $this->rows = $rows;
+                    }
+
+                    public function result_array()
+                    {
+                        return $this->rows;
+                    }
+                };
+            }
+        });
+
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+        });
+
+        ee()->setMock('LivePreview', new class {
+            public function hasEntryData()
+            {
+                return false;
+            }
+
+            public function getEntryData()
+            {
+                return [];
+            }
+        });
+
+        $model = $this->makeGridModelForGetEntryRowsMarkerTest();
+
+        $first = $model->get_entry_rows([42], 12, 'channel', [
+            'fixed_order' => '',
+            'search' => ['title' => 'news'],
+            'orderby' => 'row_order',
+            'sort' => 'asc',
+            'limit' => 1,
+            'offset' => 0,
+            'backspace' => 0,
+        ], false, 0);
+        $second = $model->get_entry_rows([42], 12, 'channel', [
+            'fixed_order' => '',
+            'search' => ['title' => 'news'],
+            'orderby' => 'row_order',
+            'sort' => 'asc',
+            'limit' => 999,
+            'offset' => 45,
+            'backspace' => 200,
+        ], false, 0);
+
+        $this->assertSame(1, $state->getCallCount);
+        $this->assertSame('alpha', $first[42][11]['col_id_3']);
+        $this->assertSame('alpha', $second[42][11]['col_id_3']);
+
+        $gridData = $model->get_grid_data();
+        $this->assertCount(1, $gridData['channel'][12]);
+    }
+
+    /**
+     * It creates distinct cache markers when database-impacting options differ.
+     *
+     * @return void
+     */
+    public function testGetEntryRowsCacheMarkerChangesWhenDatabaseOptionsChange(): void
+    {
+        $state = (object) [
+            'getCallCount' => 0,
+            'rowsByCall' => [
+                [
+                    ['row_id' => 1, 'entry_id' => 88, 'row_order' => 0, 'fluid_field_data_id' => 0, 'col_id_4' => 'first'],
+                ],
+                [
+                    ['row_id' => 2, 'entry_id' => 88, 'row_order' => 1, 'fluid_field_data_id' => 0, 'col_id_4' => 'second'],
+                ],
+            ],
+        ];
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function where_in($column, $values)
+            {
+                return $this;
+            }
+
+            public function where($column, $value)
+            {
+                return $this;
+            }
+
+            public function order_by($field, $direction = '', $escape = null)
+            {
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $rows = $this->state->rowsByCall[$this->state->getCallCount] ?? [];
+                $this->state->getCallCount++;
+
+                return new class($rows) {
+                    private $rows;
+
+                    public function __construct(array $rows)
+                    {
+                        $this->rows = $rows;
+                    }
+
+                    public function result_array()
+                    {
+                        return $this->rows;
+                    }
+                };
+            }
+        });
+
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+        });
+
+        ee()->setMock('LivePreview', new class {
+            public function hasEntryData()
+            {
+                return false;
+            }
+
+            public function getEntryData()
+            {
+                return [];
+            }
+        });
+
+        $model = $this->makeGridModelForGetEntryRowsMarkerTest();
+
+        $first = $model->get_entry_rows([88], 12, 'channel', [
+            'fixed_order' => '',
+            'search' => ['title' => 'alpha'],
+            'orderby' => 'row_order',
+            'sort' => 'asc',
+        ], false, 0);
+        $second = $model->get_entry_rows([88], 12, 'channel', [
+            'fixed_order' => '',
+            'search' => ['title' => 'beta'],
+            'orderby' => 'row_order',
+            'sort' => 'asc',
+            'limit' => 50,
+        ], false, 0);
+
+        $this->assertSame(2, $state->getCallCount);
+        $this->assertSame('first', $first[88][1]['col_id_4']);
+        $this->assertSame('second', $second[88][2]['col_id_4']);
+
+        $gridData = $model->get_grid_data();
+        $this->assertCount(2, $gridData['channel'][12]);
+    }
+
+    /**
+     * It returns an empty grid-data cache before any row-loading public API is called.
+     *
+     * @return void
+     */
+    public function testGetGridDataReturnsEmptyArrayBeforeRowsAreLoaded(): void
+    {
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+
+        $this->assertSame([], $model->get_grid_data());
+    }
+
+    /**
+     * It exposes the rows cached by get_entry_rows() with stable nested keys.
+     *
+     * @return void
+     */
+    public function testGetGridDataReturnsRowsCachedByGetEntryRows(): void
+    {
+        ee()->setMock('db', new class {
+            public function where_in($column, $values)
+            {
+                return $this;
+            }
+
+            public function where($column, $value)
+            {
+                return $this;
+            }
+
+            public function order_by($field, $direction = '', $escape = null)
+            {
+                return $this;
+            }
+
+            public function get($table)
+            {
+                return new class {
+                    public function result_array()
+                    {
+                        return [
+                            ['row_id' => 15, 'entry_id' => 9, 'row_order' => 0, 'fluid_field_data_id' => 0, 'col_id_4' => 'alpha'],
+                            ['row_id' => 16, 'entry_id' => 9, 'row_order' => 1, 'fluid_field_data_id' => 0, 'col_id_4' => 'beta'],
+                        ];
+                    }
+                };
+            }
+        });
+
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+        });
+
+        ee()->setMock('LivePreview', new class {
+            public function hasEntryData()
+            {
+                return false;
+            }
+
+            public function getEntryData()
+            {
+                return [];
+            }
+        });
+
+        $model = $this->makeGridModelForGetEntryRowsMarkerTest();
+        $model->get_entry_rows([9], 12, 'channel', [
+            'fixed_order' => '',
+            'search' => ['title' => 'alpha'],
+            'orderby' => 'row_order',
+            'sort' => 'asc',
+        ], false, 0);
+
+        $grid_data = $model->get_grid_data();
+        $this->assertArrayHasKey('channel', $grid_data);
+        $this->assertArrayHasKey(12, $grid_data['channel']);
+        $this->assertCount(1, $grid_data['channel'][12]);
+
+        $marker = array_key_first($grid_data['channel'][12]);
+
+        $this->assertSame(
+            [
+                'params' => [
+                    'fixed_order' => '',
+                    'search' => ['title' => 'alpha'],
+                    'orderby' => 'row_order',
+                    'sort' => 'asc',
+                    'orderbys' => ['row_order'],
+                    'sorts' => ['asc'],
+                ],
+                'fluid_field_data_id' => 0,
+                9 => [
+                    15 => [
+                        'row_id' => 15,
+                        'entry_id' => 9,
+                        'row_order' => 0,
+                        'fluid_field_data_id' => 0,
+                        'col_id_4' => 'alpha',
+                    ],
+                    16 => [
+                        'row_id' => 16,
+                        'entry_id' => 9,
+                        'row_order' => 1,
+                        'fluid_field_data_id' => 0,
+                        'col_id_4' => 'beta',
+                    ],
+                ],
+            ],
+            $grid_data['channel'][12][$marker]
+        );
+    }
+
+    /**
+     * It returns a warm single-field column cache without executing a database query.
+     *
+     * @return void
+     */
+    public function testGetColumnsForFieldReturnsWarmSingleFieldCacheWithoutDatabaseQuery(): void
+    {
+        $state = (object) ['calls' => []];
+        ee()->setMock('db', $this->makeDbMockForGetColumnsForFieldTest($state, []));
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $cachedColumns = [
+            5 => [
+                11 => [
+                    'field_id' => 5,
+                    'col_id' => 11,
+                    'col_name' => 'col_one',
+                    'col_settings' => ['format' => 'text'],
+                ],
+            ],
+        ];
+        $this->setGridModelColumnsCache($model, 'channel', $cachedColumns);
+
+        $result = $model->get_columns_for_field(5, 'channel');
+
+        $this->assertSame($cachedColumns[5], $result);
+        $this->assertSame([], $state->calls);
+    }
+
+    /**
+     * It returns only requested warm cache rows for multi-field lookups when every field is cached.
+     *
+     * @return void
+     */
+    public function testGetColumnsForFieldReturnsRequestedWarmCacheSubsetForMultiFieldLookup(): void
+    {
+        $state = (object) ['calls' => []];
+        ee()->setMock('db', $this->makeDbMockForGetColumnsForFieldTest($state, []));
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $cachedColumns = [
+            5 => [
+                11 => ['field_id' => 5, 'col_id' => 11, 'col_name' => 'col_one', 'col_settings' => ['format' => 'text']],
+            ],
+            8 => [
+                22 => ['field_id' => 8, 'col_id' => 22, 'col_name' => 'col_two', 'col_settings' => ['format' => 'text']],
+            ],
+            99 => [
+                300 => ['field_id' => 99, 'col_id' => 300, 'col_name' => 'col_three', 'col_settings' => ['format' => 'text']],
+            ],
+        ];
+        $this->setGridModelColumnsCache($model, 'channel', $cachedColumns);
+
+        $result = $model->get_columns_for_field([5, 8], 'channel');
+
+        $this->assertSame(
+            [
+                5 => $cachedColumns[5],
+                8 => $cachedColumns[8],
+            ],
+            $result
+        );
+        $this->assertSame([], $state->calls);
+    }
+
+    /**
+     * It fetches uncached multi-field columns, decodes JSON settings, and initializes empty arrays for fields without rows.
+     *
+     * @return void
+     */
+    public function testGetColumnsForFieldFetchesMissingMultiFieldColumnsAndInitializesEmptyFieldEntries(): void
+    {
+        $state = (object) ['calls' => []];
+        $rows = [
+            [
+                'field_id' => 8,
+                'col_id' => 41,
+                'col_name' => 'text_col',
+                'col_settings' => '{"maxl":120}',
+            ],
+            [
+                'field_id' => 8,
+                'col_id' => 42,
+                'col_name' => 'select_col',
+                'col_settings' => ['choices' => ['one', 'two']],
+            ],
+        ];
+        ee()->setMock('db', $this->makeDbMockForGetColumnsForFieldTest($state, $rows));
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $cachedColumns = [
+            5 => [
+                11 => [
+                    'field_id' => 5,
+                    'col_id' => 11,
+                    'col_name' => 'cached_col',
+                    'col_settings' => ['format' => 'text'],
+                ],
+            ],
+        ];
+        $this->setGridModelColumnsCache($model, 'channel', $cachedColumns);
+
+        $result = $model->get_columns_for_field([5, 8, 13], 'channel');
+
+        $this->assertSame(
+            [
+                ['db.where_in', 'field_id', [8, 13]],
+                ['db.where', 'content_type', 'channel'],
+                ['db.order_by', 'col_order'],
+                ['db.get', 'grid_columns'],
+                ['db.result_array'],
+            ],
+            $state->calls
+        );
+        $this->assertSame(['maxl' => 120], $result[8][41]['col_settings']);
+        $this->assertSame(['choices' => ['one', 'two']], $result[8][42]['col_settings']);
+        $this->assertSame([], $result[13]);
+        $this->assertSame($cachedColumns[5], $result[5]);
+    }
+
+    /**
+     * It bypasses warm single-field cache values when cache usage is disabled.
+     *
+     * @return void
+     */
+    public function testGetColumnsForFieldBypassesWarmSingleFieldCacheWhenCacheDisabled(): void
+    {
+        $state = (object) ['calls' => []];
+        $rows = [
+            [
+                'field_id' => 5,
+                'col_id' => 11,
+                'col_name' => 'col_one',
+                'col_settings' => '{"format":"select"}',
+            ],
+        ];
+        ee()->setMock('db', $this->makeDbMockForGetColumnsForFieldTest($state, $rows));
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $this->setGridModelColumnsCache($model, 'channel', [
+            5 => [
+                11 => [
+                    'field_id' => 5,
+                    'col_id' => 11,
+                    'col_name' => 'col_one',
+                    'col_settings' => ['format' => 'text'],
+                ],
+            ],
+        ]);
+
+        $result = $model->get_columns_for_field(5, 'channel', false);
+
+        $this->assertSame(
+            [
+                ['db.where_in', 'field_id', [5]],
+                ['db.where', 'content_type', 'channel'],
+                ['db.order_by', 'col_order'],
+                ['db.get', 'grid_columns'],
+                ['db.result_array'],
+            ],
+            $state->calls
+        );
+        $this->assertSame(['format' => 'select'], $result[11]['col_settings']);
+    }
+
+    /**
+     * It keeps multiple field IDs flat when bypassing cache and returns empty buckets for each requested field.
+     *
+     * @return void
+     */
+    public function testGetColumnsForFieldReturnsEmptyBucketsWhenCacheDisabledForMultipleFieldIds(): void
+    {
+        $state = (object) ['calls' => []];
+        ee()->setMock('db', $this->makeDbMockForGetColumnsForFieldTest($state, []));
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+
+        $result = $model->get_columns_for_field([5, 8], 'channel', false);
+
+        $this->assertSame(
+            [
+                ['db.where_in', 'field_id', [5, 8]],
+                ['db.where', 'content_type', 'channel'],
+                ['db.order_by', 'col_order'],
+                ['db.get', 'grid_columns'],
+                ['db.result_array'],
+            ],
+            $state->calls
+        );
+        $this->assertSame([5 => [], 8 => []], $result);
+    }
+
+    /**
+     * It uses fixed-order and search options and delegates row loading to the grid_query hook.
+     *
+     * @return void
+     */
+    public function testGetEntryRowsUsesFixedOrderSearchAndGridQueryHookWhenActive(): void
+    {
+        $state = (object) [
+            'calls' => [],
+            'getCallCount' => 0,
+            'fieldSearchCalls' => [],
+            'gridQueryCalls' => [],
+        ];
+        $hookRows = [
+            ['row_id' => 30, 'entry_id' => 5, 'row_order' => 0, 'fluid_field_data_id' => 0, 'col_id_4' => 'hooked'],
+        ];
+
+        ee()->setMock('functions', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function ar_andor_string($value, $column)
+            {
+                $this->state->calls[] = ['functions.ar_andor_string', $value, $column];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function where_in($column, $values)
+            {
+                $this->state->calls[] = ['db.where_in', $column, array_values($values)];
+
+                return $this;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function order_by($field, $direction = '', $escape = null)
+            {
+                $this->state->calls[] = ['db.order_by', $field, $direction, $escape];
+
+                return $this;
+            }
+
+            public function _compile_select($reset = false, $test = false)
+            {
+                $this->state->calls[] = ['db._compile_select', $reset, $test];
+
+                return 'SELECT row_id FROM channel_grid_field_12';
+            }
+
+            public function get($table)
+            {
+                $this->state->calls[] = ['db.get', $table];
+                $this->state->getCallCount++;
+                throw new \RuntimeException('db.get should not be called when grid_query hook is active.');
+            }
+        });
+
+        ee()->setMock('extensions', new class($state, $hookRows) {
+            private $state;
+            private $hookRows;
+
+            public function __construct($state, array $hookRows)
+            {
+                $this->state = $state;
+                $this->hookRows = $hookRows;
+            }
+
+            public function active_hook($name)
+            {
+                return $name === 'grid_query';
+            }
+
+            public function call($name, $entryIds, $fieldId, $contentType, $table, $sql)
+            {
+                $this->state->gridQueryCalls[] = [$name, $entryIds, $fieldId, $contentType, $table, $sql];
+
+                return $this->hookRows;
+            }
+        });
+
+        ee()->setMock('LivePreview', new class {
+            public function hasEntryData()
+            {
+                return false;
+            }
+
+            public function getEntryData()
+            {
+                return [];
+            }
+        });
+
+        $model = $this->makeGridModelForGetEntryRowsTest(
+            $state,
+            [
+                'fixed_order' => '30|10',
+                'search' => ['title' => 'alpha'],
+                'orderby' => 'random',
+                'sort' => 'desc',
+            ]
+        );
+
+        $result = $model->get_entry_rows([5], 12, 'channel', [], false, 0);
+
+        $this->assertSame('hooked', $result[5][30]['col_id_4']);
+        $this->assertSame(0, $state->getCallCount);
+        $this->assertContains(['functions.ar_andor_string', '30|10', 'row_id'], $state->calls);
+        $this->assertSame(
+            ['grid_query', [5], 12, 'channel', 'channel_grid_field_12', 'SELECT row_id FROM channel_grid_field_12'],
+            $state->gridQueryCalls[0]
+        );
+        $this->assertCount(1, $state->fieldSearchCalls);
+        $this->assertTrue($state->fieldSearchCalls[0][3]);
+    }
+
+    /**
+     * It bubbles database query exceptions when the grid_query hook is inactive.
+     *
+     * @return void
+     */
+    public function testGetEntryRowsBubblesDatabaseQueryExceptionWhenHookIsInactive(): void
+    {
+        $state = (object) [
+            'calls' => [],
+            'getCallCount' => 0,
+            'fieldSearchCalls' => [],
+        ];
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function where_in($column, $values)
+            {
+                return $this;
+            }
+
+            public function where($column, $value)
+            {
+                return $this;
+            }
+
+            public function order_by($field, $direction = '', $escape = null)
+            {
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->getCallCount++;
+                throw new \RuntimeException('grid row query failed');
+            }
+
+            public function _compile_select($reset = false, $test = false)
+            {
+                return 'SELECT * FROM channel_grid_field_12';
+            }
+        });
+
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+        });
+
+        ee()->setMock('LivePreview', new class {
+            public function hasEntryData()
+            {
+                return false;
+            }
+
+            public function getEntryData()
+            {
+                return [];
+            }
+        });
+
+        $model = $this->makeGridModelForGetEntryRowsTest(
+            $state,
+            ['fixed_order' => '', 'search' => [], 'orderby' => '', 'sort' => 'asc']
+        );
+
+        try {
+            $model->get_entry_rows([5], 12, 'channel', [], false, 0);
+            $this->fail('Expected RuntimeException was not thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('grid row query failed', $exception->getMessage());
+        }
+
+        $this->assertSame(1, $state->getCallCount);
+    }
+
+    /**
+     * It overrides cached row data with Live Preview rows and sorts by original row_id descending.
+     *
+     * @return void
+     */
+    public function testGetEntryRowsLivePreviewOverrideSortsByOriginalRowIdDescending(): void
+    {
+        $state = (object) [
+            'calls' => [],
+            'getCallCount' => 0,
+            'fieldSearchCalls' => [],
+        ];
+        $rows = [
+            ['row_id' => 6, 'entry_id' => 50, 'row_order' => 0, 'fluid_field_data_id' => 0, 'col_id_9' => 'db'],
+        ];
+
+        ee()->setMock('db', new class($state, $rows) {
+            private $state;
+            private $rows;
+
+            public function __construct($state, array $rows)
+            {
+                $this->state = $state;
+                $this->rows = $rows;
+            }
+
+            public function where_in($column, $values)
+            {
+                return $this;
+            }
+
+            public function where($column, $value)
+            {
+                return $this;
+            }
+
+            public function order_by($field, $direction = '', $escape = null)
+            {
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->getCallCount++;
+
+                return new class($this->rows) {
+                    private $rows;
+
+                    public function __construct(array $rows)
+                    {
+                        $this->rows = $rows;
+                    }
+
+                    public function result_array()
+                    {
+                        return $this->rows;
+                    }
+                };
+            }
+
+            public function _compile_select($reset = false, $test = false)
+            {
+                return 'SELECT * FROM channel_grid_field_12';
+            }
+        });
+
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+        });
+
+        ee()->setMock('LivePreview', new class {
+            public function hasEntryData()
+            {
+                return true;
+            }
+
+            public function getEntryData()
+            {
+                return [
+                    'entry_id' => 50,
+                    'field_id_12' => [
+                        'rows' => [
+                            2 => ['col_id_9' => 'beta'],
+                            10 => ['col_id_9' => 'alpha'],
+                        ],
+                    ],
+                ];
+            }
+        });
+
+        $model = $this->makeGridModelForGetEntryRowsTest(
+            $state,
+            ['fixed_order' => '', 'search' => [], 'orderby' => 'row_id', 'sort' => 'desc']
+        );
+
+        $result = $model->get_entry_rows([50], 12, 'channel', [], false, 0);
+        $rows = array_values($result[50]);
+
+        $this->assertSame(10, $rows[0]['orig_row_id']);
+        $this->assertSame(2, $rows[1]['orig_row_id']);
+        $this->assertSame(crc32(10), $rows[0]['row_id']);
+        $this->assertSame(crc32(2), $rows[1]['row_id']);
+    }
+
+    /**
+     * It applies preview-data search conditions and removes preview rows that fail all conditions.
+     *
+     * @return void
+     */
+    public function testGetEntryRowsLivePreviewSearchRemovesRowsThatFailAllConditions(): void
+    {
+        $state = (object) [
+            'calls' => [],
+            'getCallCount' => 0,
+            'fieldSearchCalls' => [],
+        ];
+        $rows = [
+            ['row_id' => 1, 'entry_id' => 42, 'row_order' => 0, 'fluid_field_data_id' => '15,33'],
+        ];
+
+        ee()->setMock('db', new class($rows) {
+            private $rows;
+
+            public function __construct(array $rows)
+            {
+                $this->rows = $rows;
+            }
+
+            public function where_in($column, $values)
+            {
+                return $this;
+            }
+
+            public function where($column, $value)
+            {
+                return $this;
+            }
+
+            public function order_by($field, $direction = '', $escape = null)
+            {
+                return $this;
+            }
+
+            public function get($table)
+            {
+                return new class($this->rows) {
+                    private $rows;
+
+                    public function __construct(array $rows)
+                    {
+                        $this->rows = $rows;
+                    }
+
+                    public function result_array()
+                    {
+                        return $this->rows;
+                    }
+                };
+            }
+
+            public function _compile_select($reset = false, $test = false)
+            {
+                return 'SELECT * FROM channel_grid_field_9';
+            }
+        });
+
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+        });
+
+        ee()->setMock('LivePreview', new class {
+            public function hasEntryData()
+            {
+                return true;
+            }
+
+            public function getEntryData()
+            {
+                return [
+                    'entry_id' => 42,
+                    15 => [
+                        'fields' => [
+                            33 => [[
+                                'field_id_9' => [
+                                    'rows' => [
+                                        'first' => ['col_id_2' => 'drop'],
+                                        'second' => ['col_id_2' => 'keep'],
+                                    ],
+                                ],
+                            ]],
+                        ],
+                    ],
+                ];
+            }
+        });
+
+        $model = $this->makeGridModelForGetEntryRowsTest(
+            $state,
+            ['fixed_order' => '', 'search' => ['status' => 'open'], 'orderby' => '', 'sort' => 'asc'],
+            ["col_id_2 = 'keep'"]
+        );
+
+        $result = $model->get_entry_rows([42], 9, 'channel', [], false, '15,33');
+        $rows = array_values($result[42]);
+
+        $this->assertCount(1, $rows);
+        $this->assertSame('second', $rows[0]['orig_row_id']);
+        $this->assertSame('keep', $rows[0]['col_id_2']);
+        $this->assertCount(3, $state->fieldSearchCalls);
+        $this->assertTrue($state->fieldSearchCalls[0][3]);
+        $this->assertFalse($state->fieldSearchCalls[1][3]);
+        $this->assertFalse($state->fieldSearchCalls[2][3]);
+    }
+
+    /**
+     * It sorts Live Preview rows by row_order ascending when orderby is random.
+     *
+     * @return void
+     */
+    public function testGetEntryRowsLivePreviewRandomOrderSortsByRowOrderAscending(): void
+    {
+        $state = (object) [
+            'calls' => [],
+            'getCallCount' => 0,
+            'fieldSearchCalls' => [],
+        ];
+        $rows = [
+            ['row_id' => 2, 'entry_id' => 71, 'row_order' => 0, 'fluid_field_data_id' => 0],
+        ];
+
+        ee()->setMock('db', new class($rows) {
+            private $rows;
+
+            public function __construct(array $rows)
+            {
+                $this->rows = $rows;
+            }
+
+            public function where_in($column, $values)
+            {
+                return $this;
+            }
+
+            public function where($column, $value)
+            {
+                return $this;
+            }
+
+            public function order_by($field, $direction = '', $escape = null)
+            {
+                return $this;
+            }
+
+            public function get($table)
+            {
+                return new class($this->rows) {
+                    private $rows;
+
+                    public function __construct(array $rows)
+                    {
+                        $this->rows = $rows;
+                    }
+
+                    public function result_array()
+                    {
+                        return $this->rows;
+                    }
+                };
+            }
+
+            public function _compile_select($reset = false, $test = false)
+            {
+                return 'SELECT * FROM channel_grid_field_4';
+            }
+        });
+
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+        });
+
+        ee()->setMock('LivePreview', new class {
+            public function hasEntryData()
+            {
+                return true;
+            }
+
+            public function getEntryData()
+            {
+                return [
+                    'entry_id' => 71,
+                    'field_id_4' => [
+                        'rows' => [
+                            'bbb' => ['col_id_1' => 'second'],
+                            'aaa' => ['col_id_1' => 'first'],
+                        ],
+                    ],
+                ];
+            }
+        });
+
+        $model = $this->makeGridModelForGetEntryRowsTest(
+            $state,
+            ['fixed_order' => '', 'search' => [], 'orderby' => 'random', 'sort' => 'asc']
+        );
+
+        $result = $model->get_entry_rows([71], 4, 'channel', [], false, 0);
+        $rows = array_values($result[71]);
+
+        $this->assertSame('bbb', $rows[0]['orig_row_id']);
+        $this->assertSame('aaa', $rows[1]['orig_row_id']);
+    }
+
+    /**
+     * It evaluates preview-data condition comparators through get_entry_rows() search filtering.
+     *
+     * @dataProvider previewDataConditionComparatorProvider
+     * @param string $condition SQL-like condition generated by _field_search().
+     * @param mixed $previewValue Live Preview row value used in the preview condition.
+     * @param bool $expectedPass Whether previewDataPassesCondition() should keep the row.
+     * @return void
+     */
+    public function testGetEntryRowsLivePreviewSearchEvaluatesPreviewDataConditionComparators(
+        string $condition,
+        $previewValue,
+        bool $expectedPass
+    ): void {
+        $rows = $this->runPreviewConditionScenarioThroughGetEntryRows($condition, $previewValue);
+        if ($expectedPass) {
+            $this->assertCount(1, $rows);
+            $this->assertSame('candidate', $rows[0]['orig_row_id']);
+
+            return;
+        }
+
+        $this->assertCount(0, $rows);
+    }
+
+    /**
+     * It saves mixed new and existing rows, preserving row order and returning deleted row IDs.
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     * @return void
+     */
+    public function testSaveFieldDataPersistsNewAndExistingRowsWhenHookIsInactive(): void
+    {
+        $state = (object) ['calls' => [], 'hookCalls' => []];
+        ee()->setMock('db', $this->makeDbMockForSaveFieldDataTest($state, [['row_id' => 17]]));
+        ee()->setMock('extensions', $this->makeExtensionsMockForSaveFieldDataTest($state, false));
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $deletedRows = $model->save_field_data(
+            [
+                'new_row_7' => ['col_id_1' => 'new-value'],
+                'row_id_42' => ['col_id_1' => 'updated-value'],
+            ],
+            9,
+            'channel',
+            55
+        );
+
+        $this->assertSame([['row_id' => 17]], $deletedRows);
+        $this->assertSame(
+            ['db.where_not_in', 'row_id', [0, '42']],
+            $state->calls[2]
+        );
+        $this->assertSame(
+            [
+                'db.update_batch',
+                'channel_grid_field_9',
+                [
+                    ['col_id_1' => 'updated-value', 'row_order' => 1, 'row_id' => '42'],
+                ],
+                'row_id',
+            ],
+            $state->calls[5]
+        );
+        $this->assertSame(
+            [
+                'db.insert_batch',
+                'channel_grid_field_9',
+                [
+                    ['col_id_1' => 'new-value', 'row_order' => 0, 'entry_id' => 55],
+                ],
+            ],
+            $state->calls[6]
+        );
+        $this->assertSame([], $state->hookCalls);
+    }
+
+    /**
+     * It skips batch writes when save_field_data() receives no rows while still returning deletions.
+     *
+     * @return void
+     */
+    public function testSaveFieldDataSkipsBatchWritesWhenInputRowsAreEmpty(): void
+    {
+        $state = (object) ['calls' => [], 'hookCalls' => []];
+        ee()->setMock('db', $this->makeDbMockForSaveFieldDataTest($state, [['row_id' => 91]]));
+        ee()->setMock('extensions', $this->makeExtensionsMockForSaveFieldDataTest($state, false));
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $deletedRows = $model->save_field_data([], 9, 'channel', 55);
+
+        $this->assertSame([['row_id' => 91]], $deletedRows);
+        $this->assertSame(['db.where_not_in', 'row_id', [0]], $state->calls[2]);
+        foreach ($state->calls as $call) {
+            $this->assertNotSame('db.update_batch', $call[0]);
+            $this->assertNotSame('db.insert_batch', $call[0]);
+        }
+    }
+
+    /**
+     * It currently accepts null row data, emits a foreach warning, and still returns deletion rows.
+     *
+     * @return void
+     */
+    public function testSaveFieldDataWithNullRowsEmitsForeachWarningAndSkipsBatchWrites(): void
+    {
+        $state = (object) ['calls' => [], 'hookCalls' => []];
+        $warnings = [];
+        ee()->setMock('db', $this->makeDbMockForSaveFieldDataTest($state, [['row_id' => 77]]));
+        ee()->setMock('extensions', $this->makeExtensionsMockForSaveFieldDataTest($state, false));
+
+        set_error_handler(static function ($severity, $message) use (&$warnings) {
+            $warnings[] = [$severity, $message];
+
+            return true;
+        });
+
+        try {
+            $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+            $deletedRows = $model->save_field_data(null, 9, 'channel', 55);
+        } finally {
+            restore_error_handler();
+        }
+
+        $this->assertSame([['row_id' => 77]], $deletedRows);
+        $this->assertSame(['db.where_not_in', 'row_id', [0]], $state->calls[2]);
+        $this->assertNotEmpty($warnings);
+        $this->assertStringContainsString('foreach', $warnings[0][1]);
+        foreach ($state->calls as $call) {
+            $this->assertNotSame('db.update_batch', $call[0]);
+            $this->assertNotSame('db.insert_batch', $call[0]);
+        }
+    }
+
+    /**
+     * It applies fluid row scoping and persists hook-mutated save payloads when grid_save is active.
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     * @return void
+     */
+    public function testSaveFieldDataUsesFluidScopeAndHookReturnedRowsWhenHookIsActive(): void
+    {
+        $state = (object) ['calls' => [], 'hookCalls' => []];
+        $hookResponse = [
+            'new_rows' => [
+                ['entry_id' => 55, 'row_order' => 40, 'fluid_field_data_id' => 99, 'col_id_1' => 'hook-new'],
+            ],
+            'updated_rows' => [
+                ['row_id' => '8', 'row_order' => 41, 'fluid_field_data_id' => 99, 'col_id_1' => 'hook-updated'],
+            ],
+            'deleted_rows' => [['row_id' => 999]],
+        ];
+        ee()->setMock('db', $this->makeDbMockForSaveFieldDataTest($state, [['row_id' => 17]]));
+        ee()->setMock('extensions', $this->makeExtensionsMockForSaveFieldDataTest($state, true, $hookResponse));
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $deletedRows = $model->save_field_data(
+            [
+                'new_row_3' => ['col_id_1' => 'from-data-new'],
+                'row_id_8' => ['col_id_1' => 'from-data-updated'],
+            ],
+            9,
+            'channel',
+            55,
+            99
+        );
+
+        $this->assertSame([['row_id' => 999]], $deletedRows);
+        $this->assertSame(
+            ['db.where', 'fluid_field_data_id', 99],
+            $state->calls[3]
+        );
+        $this->assertSame(
+            [
+                'db.update_batch',
+                'channel_grid_field_9',
+                $hookResponse['updated_rows'],
+                'row_id',
+            ],
+            $state->calls[6]
+        );
+        $this->assertSame(
+            [
+                'db.insert_batch',
+                'channel_grid_field_9',
+                $hookResponse['new_rows'],
+            ],
+            $state->calls[7]
+        );
+        $this->assertCount(1, $state->hookCalls);
+        $this->assertSame('grid_save', $state->hookCalls[0][0]);
+        $this->assertSame(55, $state->hookCalls[0][1]);
+        $this->assertSame(9, $state->hookCalls[0][2]);
+        $this->assertSame('channel', $state->hookCalls[0][3]);
+        $this->assertSame('channel_grid_field_9', $state->hookCalls[0][4]);
+        $this->assertSame(
+            [
+                'new_rows' => [
+                    ['col_id_1' => 'from-data-new', 'row_order' => 0, 'fluid_field_data_id' => 99, 'entry_id' => 55],
+                ],
+                'updated_rows' => [
+                    ['col_id_1' => 'from-data-updated', 'row_order' => 1, 'fluid_field_data_id' => 99, 'row_id' => '8'],
+                ],
+                'deleted_rows' => [['row_id' => 17]],
+            ],
+            $state->hookCalls[0][5]
+        );
+    }
+
+    /**
+     * It treats existing row IDs as new rows when CLONING_MODE is enabled.
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     * @return void
+     */
+    public function testSaveFieldDataTreatsExistingRowsAsInsertsDuringCloningMode(): void
+    {
+        define('CLONING_MODE', true);
+
+        $state = (object) ['calls' => [], 'hookCalls' => []];
+        ee()->setMock('db', $this->makeDbMockForSaveFieldDataTest($state, [['row_id' => 21]]));
+        ee()->setMock('extensions', $this->makeExtensionsMockForSaveFieldDataTest($state, false));
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $deletedRows = $model->save_field_data(
+            [
+                'row_id_12' => ['col_id_1' => 'cloned-row'],
+            ],
+            9,
+            'channel',
+            55
+        );
+
+        $this->assertSame([['row_id' => 21]], $deletedRows);
+        $this->assertSame(
+            ['db.where_not_in', 'row_id', [0]],
+            $state->calls[2]
+        );
+        $this->assertSame(
+            [
+                'db.insert_batch',
+                'channel_grid_field_9',
+                [
+                    ['col_id_1' => 'cloned-row', 'row_order' => 0, 'entry_id' => 55],
+                ],
+            ],
+            $state->calls[5]
+        );
+        foreach ($state->calls as $call) {
+            $this->assertNotSame('db.update_batch', $call[0]);
+        }
+    }
+
+    /**
+     * It deletes only the provided row IDs from the resolved Grid data table.
+     *
+     * @return void
+     */
+    public function testDeleteRowsDeletesProvidedRowIdsFromResolvedTable(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function where_in($column, $values)
+            {
+                $this->state->calls[] = ['db.where_in', $column, array_values($values)];
+
+                return $this;
+            }
+
+            public function delete($table)
+            {
+                $this->state->calls[] = ['db.delete', $table];
+
+                return true;
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $model->delete_rows([3, 7, 11], 14, 'fluid_field');
+
+        $this->assertSame(
+            [
+                ['db.where_in', 'row_id', [3, 7, 11]],
+                ['db.delete', 'fluid_field_grid_field_14'],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * It skips delete queries when delete_rows() receives no row IDs.
+     *
+     * @return void
+     */
+    public function testDeleteRowsSkipsDeleteWhenRowIdsAreEmpty(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function where_in($column, $values)
+            {
+                $this->state->calls[] = ['db.where_in', $column, array_values($values)];
+
+                return $this;
+            }
+
+            public function delete($table)
+            {
+                $this->state->calls[] = ['db.delete', $table];
+
+                return true;
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $model->delete_rows([], 14, 'fluid_field');
+
+        $this->assertSame([], $state->calls);
+    }
+
+    /**
+     * It keeps existing row_id keys and remaps only missing keys to new_row slots.
+     *
+     * @return void
+     */
+    public function testRemapRevisionRowsKeepsExistingRowKeysAndRemapsMissingOnes(): void
+    {
+        $state = (object) ['calls' => []];
+        ee()->setMock('db', $this->makeDbServiceMockForRemapRevisionRowsTest($state, [['row_id' => 5], ['row_id' => 12]]));
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $result = $model->remap_revision_rows(
+            [
+                'row_id_5' => ['col_id_1' => 'keep-existing-a'],
+                'row_id_7' => ['col_id_1' => 'becomes-new'],
+                'row_id_12' => ['col_id_1' => 'keep-existing-b'],
+            ],
+            9,
+            33,
+            44,
+            'fluid'
+        );
+
+        $this->assertSame(
+            [
+                'row_id_5' => ['col_id_1' => 'keep-existing-a'],
+                'new_row_10' => ['col_id_1' => 'becomes-new'],
+                'row_id_12' => ['col_id_1' => 'keep-existing-b'],
+            ],
+            $result
+        );
+        $this->assertSame(
+            [
+                ['db.select', 'row_id'],
+                ['db.from', 'fluid_grid_field_9'],
+                ['db.where', 'entry_id', 33],
+                ['db.where', 'fluid_field_data_id', 44],
+                ['db.get'],
+                ['db.num_rows'],
+                ['db.result_array'],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * It remaps every row to new_row keys when no stored rows exist for the entry.
+     *
+     * @return void
+     */
+    public function testRemapRevisionRowsRemapsAllKeysWhenNoRowsExist(): void
+    {
+        $state = (object) ['calls' => []];
+        ee()->setMock('db', $this->makeDbServiceMockForRemapRevisionRowsTest($state, []));
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $result = $model->remap_revision_rows(
+            [
+                'row_id_3' => ['col_id_1' => 'first'],
+                'row_id_4' => ['col_id_1' => 'second'],
+            ],
+            14,
+            77
+        );
+
+        $this->assertSame(
+            [
+                'new_row_5' => ['col_id_1' => 'first'],
+                'new_row_6' => ['col_id_1' => 'second'],
+            ],
+            $result
+        );
+        $this->assertSame(
+            [
+                ['db.select', 'row_id'],
+                ['db.from', 'channel_grid_field_14'],
+                ['db.where', 'entry_id', 77],
+                ['db.where', 'fluid_field_data_id', 0],
+                ['db.get'],
+                ['db.num_rows'],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * It preserves row values by index even when remapping produces non-sequential new_row keys.
+     *
+     * @return void
+     */
+    public function testRemapRevisionRowsPreservesValueOrderWhenRemappingKeys(): void
+    {
+        $state = (object) ['calls' => []];
+        ee()->setMock('db', $this->makeDbServiceMockForRemapRevisionRowsTest($state, [['row_id' => 1]]));
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $result = $model->remap_revision_rows(
+            [
+                'row_id_2' => ['col_id_1' => 'alpha'],
+                'row_id_1' => ['col_id_1' => 'beta'],
+            ],
+            8,
+            19
+        );
+
+        $this->assertSame(['alpha', 'beta'], array_column(array_values($result), 'col_id_1'));
+        $this->assertSame(['new_row_4', 'row_id_1'], array_keys($result));
+    }
+
+    /**
+     * It returns an empty array for empty input rows while still resolving existing row IDs.
+     *
+     * @return void
+     */
+    public function testRemapRevisionRowsReturnsEmptyArrayWhenRowsInputIsEmpty(): void
+    {
+        $state = (object) ['calls' => []];
+        ee()->setMock('db', $this->makeDbServiceMockForRemapRevisionRowsTest($state, []));
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $result = $model->remap_revision_rows([], 6, 99);
+
+        $this->assertSame([], $result);
+        $this->assertSame(
+            [
+                ['db.select', 'row_id'],
+                ['db.from', 'channel_grid_field_6'],
+                ['db.where', 'entry_id', 99],
+                ['db.where', 'fluid_field_data_id', 0],
+                ['db.get'],
+                ['db.num_rows'],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * It returns early when the requested field IDs do not resolve to Grid fields.
+     *
+     * @return void
+     */
+    public function testUpdateGridSearchReturnsEarlyWhenNoGridFieldsMatch(): void
+    {
+        $state = (object) ['calls' => []];
+        $fields = [];
+        $model = $this->makeGridModelForUpdateGridSearchTest($state, []);
+
+        ee()->setMock('Model', $this->makeModelServiceMockForUpdateGridSearchTest($state, $fields));
+        ee()->setMock('db', $this->makeDbMockForUpdateGridSearchTest($state, []));
+        ee()->setMock('load', $this->makeLoadMockForUpdateGridSearchTest($state));
+
+        $model->update_grid_search([5, 9]);
+
+        $this->assertSame(
+            [
+                ['model.get', 'ChannelField', [5, 9]],
+                ['model.fields', ['field_id', 'field_search', 'legacy_field_data']],
+                ['model.filter', 'field_type', 'grid'],
+                ['model.all'],
+            ],
+            $state->modelCalls
+        );
+        $this->assertSame([], $state->dbCalls);
+        $this->assertSame([], $state->loadCalls);
+        $this->assertSame([], $state->getColumnsCalls);
+    }
+
+    /**
+     * It clears unsearchable Grid columns and skips repopulation when searchable fields produce no rows.
+     *
+     * @return void
+     */
+    public function testUpdateGridSearchClearsUnsearchableFieldsAndSkipsRepopulationWhenNoRowsFound(): void
+    {
+        $state = (object) ['calls' => []];
+        $fields = [
+            $this->makeGridChannelFieldStub(5, false, 'channel_data'),
+            $this->makeGridChannelFieldStub(8, true, 'channel_data'),
+        ];
+        $model = $this->makeGridModelForUpdateGridSearchTest(
+            $state,
+            [
+                8 => [
+                    ['col_id' => 11, 'col_search' => 'y'],
+                    ['col_id' => 12, 'col_search' => 'n'],
+                ],
+            ]
+        );
+
+        ee()->setMock('Model', $this->makeModelServiceMockForUpdateGridSearchTest($state, $fields));
+        ee()->setMock('db', $this->makeDbMockForUpdateGridSearchTest($state, ['channel_grid_field_8' => []]));
+        ee()->setMock('load', $this->makeLoadMockForUpdateGridSearchTest($state));
+
+        $model->update_grid_search([5, 8]);
+
+        $this->assertSame([[8, 'channel']], $state->getColumnsCalls);
+        $this->assertSame([['db.update', 'channel_data', ['field_id_5' => null]]], $state->dbUpdates);
+        $this->assertSame([], $state->dbBatchUpdates);
+        $this->assertSame([], $state->loadCalls);
+    }
+
+    /**
+     * It aggregates searchable column values per entry, encodes field payloads, and batch-updates each storage table.
+     *
+     * @return void
+     */
+    public function testUpdateGridSearchAggregatesAndBatchUpdatesSearchDataByTableAndEntry(): void
+    {
+        $state = (object) ['calls' => []];
+        $fields = [
+            $this->makeGridChannelFieldStub(7, true, 'channel_data'),
+            $this->makeGridChannelFieldStub(9, true, 'channel_titles'),
+        ];
+        $model = $this->makeGridModelForUpdateGridSearchTest(
+            $state,
+            [
+                7 => [
+                    ['col_id' => 20, 'col_search' => 'y'],
+                    ['col_id' => 21, 'col_search' => 'y'],
+                    ['col_id' => 22, 'col_search' => 'n'],
+                ],
+                9 => [
+                    ['col_id' => 30, 'col_search' => 'y'],
+                ],
+            ]
+        );
+
+        $rowsByTable = [
+            'channel_grid_field_7' => [
+                ['row_id' => 1, 'entry_id' => 100, 'col_id_20' => 'alpha', 'col_id_21' => 'bravo'],
+                ['row_id' => 2, 'entry_id' => 100, 'col_id_20' => 'charlie', 'col_id_21' => 'delta'],
+                ['row_id' => 3, 'entry_id' => 200, 'col_id_20' => 'echo', 'col_id_21' => 'foxtrot'],
+            ],
+            'channel_grid_field_9' => [
+                ['row_id' => 11, 'entry_id' => 300, 'col_id_30' => 'golf'],
+            ],
+        ];
+
+        ee()->setMock('Model', $this->makeModelServiceMockForUpdateGridSearchTest($state, $fields));
+        ee()->setMock('db', $this->makeDbMockForUpdateGridSearchTest($state, $rowsByTable));
+        ee()->setMock('load', $this->makeLoadMockForUpdateGridSearchTest($state));
+
+        $model->update_grid_search([7, 9]);
+
+        $this->assertSame([[7, 'channel'], [9, 'channel']], $state->getColumnsCalls);
+        $this->assertSame([['load.helper', 'custom_field_helper']], $state->loadCalls);
+        $this->assertSame([], $state->dbUpdates);
+        $this->assertSame(
+            [
+                [
+                    'channel_data',
+                    [
+                        [
+                            'field_id_7' => encode_multi_field(['alpha', 'bravo', 'charlie', 'delta']),
+                            'entry_id' => 100,
+                        ],
+                        [
+                            'field_id_7' => encode_multi_field(['echo', 'foxtrot']),
+                            'entry_id' => 200,
+                        ],
+                    ],
+                    'entry_id',
+                ],
+                [
+                    'channel_titles',
+                    [
+                        [
+                            'field_id_9' => encode_multi_field(['golf']),
+                            'entry_id' => 300,
+                        ],
+                    ],
+                    'entry_id',
+                ],
+            ],
+            $state->dbBatchUpdates
+        );
+    }
+
+    /**
+     * It exposes the existing same-entry multi-field merge failure when Grid fields share one storage table.
+     *
+     * @return void
+     */
+    public function testUpdateGridSearchErrorsWhenSameEntryHasMultipleGridFieldsInOneTable(): void
+    {
+        $state = (object) ['calls' => []];
+        $fields = [
+            $this->makeGridChannelFieldStub(7, true, 'channel_data'),
+            $this->makeGridChannelFieldStub(9, true, 'channel_data'),
+        ];
+        $model = $this->makeGridModelForUpdateGridSearchTest(
+            $state,
+            [
+                7 => [
+                    ['col_id' => 20, 'col_search' => 'y'],
+                ],
+                9 => [
+                    ['col_id' => 30, 'col_search' => 'y'],
+                ],
+            ]
+        );
+        $rowsByTable = [
+            'channel_grid_field_7' => [
+                ['row_id' => 1, 'entry_id' => 100, 'col_id_20' => 'alpha'],
+            ],
+            'channel_grid_field_9' => [
+                ['row_id' => 2, 'entry_id' => 100, 'col_id_30' => 'bravo'],
+            ],
+        ];
+
+        ee()->setMock('Model', $this->makeModelServiceMockForUpdateGridSearchTest($state, $fields));
+        ee()->setMock('db', $this->makeDbMockForUpdateGridSearchTest($state, $rowsByTable));
+        ee()->setMock('load', $this->makeLoadMockForUpdateGridSearchTest($state));
+
+        $thrown = null;
+        set_error_handler(static function ($severity, $message, $file, $line) {
+            if (strpos($message, 'field_id_9') !== false) {
+                throw new \ErrorException($message, 0, $severity, $file, $line);
+            }
+
+            return false;
+        });
+
+        try {
+            try {
+                $model->update_grid_search([7, 9]);
+            } catch (\Throwable $exception) {
+                $thrown = $exception;
+            }
+        } finally {
+            restore_error_handler();
+        }
+
+        $this->assertNotNull($thrown);
+        $this->assertSame(\ErrorException::class, get_class($thrown));
+        $this->assertStringContainsString('field_id_9', $thrown->getMessage());
+        $this->assertSame([], $state->loadCalls);
+        $this->assertSame([], $state->dbBatchUpdates);
+    }
+
+    /**
+     * It returns zero and does not query the database when the target Grid field has no columns.
+     *
+     * @return void
+     */
+    public function testSearchAndReplaceReturnsZeroWhenFieldHasNoColumns(): void
+    {
+        $state = (object) ['calls' => []];
+        $model = $this->makeGridModelForSearchAndReplaceTest($state, 'channel_grid_field_77', []);
+        ee()->setMock('db', $this->makeDbMockForSearchAndReplaceTest($state, 4));
+
+        $result = $model->search_and_replace('fluid_field', 77, 'alpha', 'omega');
+
+        $this->assertSame(0, $result);
+        $this->assertSame([['fluid_field', 77]], $state->dataTableCalls);
+        $this->assertSame([[77, 'channel', true]], $state->getColumnsCalls);
+        $this->assertSame([], $state->dbQueryCalls);
+        $this->assertSame(0, $state->dbAffectedRowsCallCount);
+    }
+
+    /**
+     * It builds a replace statement for every Grid column and returns the database affected row count.
+     *
+     * @return void
+     */
+    public function testSearchAndReplaceBuildsReplaceSqlAndReturnsAffectedRows(): void
+    {
+        $state = (object) ['calls' => []];
+        $model = $this->makeGridModelForSearchAndReplaceTest(
+            $state,
+            'channel_grid_field_42',
+            [
+                ['col_id' => 10],
+                ['col_id' => 12],
+            ]
+        );
+        ee()->setMock('db', $this->makeDbMockForSearchAndReplaceTest($state, 6));
+
+        $result = $model->search_and_replace('channel', 42, 'alpha', 'omega');
+
+        $this->assertSame(6, $result);
+        $this->assertSame([['channel', 42]], $state->dataTableCalls);
+        $this->assertSame([[42, 'channel', true]], $state->getColumnsCalls);
+        $this->assertSame(
+            [
+                "UPDATE `exp_channel_grid_field_42` SET `col_id_10` = REPLACE(`col_id_10`, 'alpha', 'omega'),`col_id_12` = REPLACE(`col_id_12`, 'alpha', 'omega')",
+            ],
+            $state->dbQueryCalls
+        );
+        $this->assertSame(1, $state->dbAffectedRowsCallCount);
+    }
+
+    /**
+     * Provide preview-condition vectors that map to comparator and normalization branches.
+     *
+     * @return array
+     */
+    public static function previewDataConditionComparatorProvider(): array
+    {
+        return [
+            'like_scalar_match' => ["col_id_2 LIKE '%bet%'", 'alphabet', true],
+            'like_scalar_miss' => ["col_id_2 LIKE '%zzz%'", 'alphabet', false],
+            'like_array_match' => ["col_id_2 LIKE '%bet%'", ['gamma', 'beta'], true],
+            'like_array_miss' => ["col_id_2 LIKE '%zzz%'", ['gamma', 'beta'], false],
+            'equals_array_match' => ["col_id_2 = 'keep'", ['drop', 'keep'], true],
+            'equals_scalar_miss' => ["col_id_2 = 'keep'", 'drop', false],
+            'not_equals_array_true' => ["col_id_2 != 'drop'", ['keep', 'other'], true],
+            'not_equals_scalar_false' => ["col_id_2 != 'drop'", 'drop', false],
+            'greater_than_true' => ["col_id_2 > '10'", '20', true],
+            'less_than_true' => ["col_id_2 < '10'", '2', true],
+            'greater_or_equal_false' => ["col_id_2 >= '10'", '9', false],
+            'less_or_equal_true' => ["col_id_2 <= '10'", '10', true],
+            'is_null_true_for_empty_string' => ["col_id_2 IS NULL", '', true],
+            'is_not_null_true_for_value' => ["col_id_2 IS NOT NULL", 'present', true],
+            'in_scalar_true' => ["col_id_2 IN ('keep','drop')", 'keep', true],
+            'in_scalar_false' => ["col_id_2 IN ('keep','drop')", 'other', false],
+            'in_array_true' => ["col_id_2 IN ('keep','drop')", ['other', 'drop'], true],
+            'dotted_column_key' => ["t.col_id_2 = 'keep'", 'keep', true],
+            'normalized_is_null_or_clause' => ["( col_id_2 = '' OR col_id_2 IS NULL )", '', true],
+            'normalized_is_not_null_and_clause' => ["( col_id_2 != '' AND col_id_2 IS NOT NULL )", 'present', true],
+            'unsupported_comparison_defaults_false' => ["col_id_2 <> 'keep'", 'keep', false],
+        ];
+    }
+
+    /**
+     * Build a Grid field stub with test-controlled searchability and data-storage table metadata.
+     *
+     * @param int $fieldId Channel field ID.
+     * @param bool $fieldSearch Whether the field is searchable.
+     * @param string $table Target storage table for the field's search payload.
+     * @return object
+     */
+    private function makeGridChannelFieldStub(int $fieldId, bool $fieldSearch, string $table)
+    {
+        return new class($fieldId, $fieldSearch, $table) {
+            public $field_id;
+            public $field_search;
+            private $table;
+
+            public function __construct(int $fieldId, bool $fieldSearch, string $table)
+            {
+                $this->field_id = $fieldId;
+                $this->field_search = $fieldSearch;
+                $this->table = $table;
+            }
+
+            public function getDataStorageTable()
+            {
+                return $this->table;
+            }
+        };
+    }
+
+    /**
+     * Build a model service mock that records ChannelField query-chain calls for update_grid_search().
+     *
+     * @param object $state Shared mutable test state.
+     * @param array $fields Fields returned by the query chain.
+     * @return object
+     */
+    private function makeModelServiceMockForUpdateGridSearchTest($state, array $fields)
+    {
+        return new class($state, $fields) {
+            private $state;
+            private $fields;
+
+            public function __construct($state, array $fields)
+            {
+                $this->state = $state;
+                $this->fields = $fields;
+                $this->state->modelCalls = [];
+            }
+
+            public function get($model, $ids)
+            {
+                $this->state->modelCalls[] = ['model.get', $model, array_values($ids)];
+
+                return new class($this->state, $this->fields) {
+                    private $state;
+                    private $fields;
+
+                    public function __construct($state, array $fields)
+                    {
+                        $this->state = $state;
+                        $this->fields = $fields;
+                    }
+
+                    public function fields(...$fields)
+                    {
+                        $this->state->modelCalls[] = ['model.fields', $fields];
+
+                        return $this;
+                    }
+
+                    public function filter($column, $value)
+                    {
+                        $this->state->modelCalls[] = ['model.filter', $column, $value];
+
+                        return $this;
+                    }
+
+                    public function all()
+                    {
+                        $this->state->modelCalls[] = ['model.all'];
+
+                        return $this->fields;
+                    }
+                };
+            }
+        };
+    }
+
+    /**
+     * Build a db mock that records row scans, unsearchable updates, and search batch writes.
+     *
+     * @param object $state Shared mutable test state.
+     * @param array $rowsByTable Result rows keyed by Grid data table.
+     * @return object
+     */
+    private function makeDbMockForUpdateGridSearchTest($state, array $rowsByTable)
+    {
+        return new class($state, $rowsByTable) {
+            private $state;
+            private $rowsByTable;
+
+            public function __construct($state, array $rowsByTable)
+            {
+                $this->state = $state;
+                $this->rowsByTable = $rowsByTable;
+                $this->state->dbCalls = [];
+                $this->state->dbUpdates = [];
+                $this->state->dbBatchUpdates = [];
+            }
+
+            public function select($columns)
+            {
+                $this->state->dbCalls[] = ['db.select', $columns];
+
+                return $this;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->dbCalls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->dbCalls[] = ['db.get', $table];
+                $rows = [];
+                if (isset($this->rowsByTable[$table])) {
+                    $rows = $this->rowsByTable[$table];
+                }
+
+                return new class($rows) {
+                    private $rows;
+
+                    public function __construct(array $rows)
+                    {
+                        $this->rows = $rows;
+                    }
+
+                    public function result_array()
+                    {
+                        return $this->rows;
+                    }
+                };
+            }
+
+            public function update($table, $columns)
+            {
+                $this->state->dbUpdates[] = ['db.update', $table, $columns];
+
+                return true;
+            }
+
+            public function update_batch($table, $rows, $index)
+            {
+                $this->state->dbBatchUpdates[] = [$table, $rows, $index];
+
+                return true;
+            }
+        };
+    }
+
+    /**
+     * Build a loader mock that records helper loads and provides encode_multi_field().
+     *
+     * @param object $state Shared mutable test state.
+     * @return object
+     */
+    private function makeLoadMockForUpdateGridSearchTest($state)
+    {
+        return new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+                $this->state->loadCalls = [];
+            }
+
+            public function helper($helperName)
+            {
+                $this->state->loadCalls[] = ['load.helper', $helperName];
+
+                if ($helperName === 'custom_field_helper' && ! function_exists('encode_multi_field')) {
+                    require_once SYSPATH . 'ee/legacy/helpers/custom_field_helper.php';
+                }
+            }
+        };
+    }
+
+    /**
+     * Build a Grid_model instance that returns test-controlled column metadata per field.
+     *
+     * @param object $state Shared mutable test state.
+     * @param array $columnsByFieldId Column metadata keyed by field ID.
+     * @return Grid_model
+     */
+    private function makeGridModelForUpdateGridSearchTest($state, array $columnsByFieldId): \Grid_model
+    {
+        return new class($state, $columnsByFieldId) extends \Grid_model {
+            private $state;
+            private $columnsByFieldId;
+
+            public function __construct($state, array $columnsByFieldId)
+            {
+                $this->state = $state;
+                $this->columnsByFieldId = $columnsByFieldId;
+                $this->state->getColumnsCalls = [];
+            }
+
+            public function get_columns_for_field($field_ids, $content_type, $cache = true)
+            {
+                $this->state->getColumnsCalls[] = [$field_ids, $content_type];
+
+                if (isset($this->columnsByFieldId[$field_ids])) {
+                    return $this->columnsByFieldId[$field_ids];
+                }
+
+                return [];
+            }
+        };
+    }
+
+    /**
+     * Build a Grid_model instance that captures table and column resolution for search_and_replace().
+     *
+     * @param object $state Shared mutable test state.
+     * @param string $tableName Table name returned from _data_table().
+     * @param array $columns Columns returned from get_columns_for_field().
+     * @return Grid_model
+     */
+    private function makeGridModelForSearchAndReplaceTest($state, string $tableName, array $columns): \Grid_model
+    {
+        return new class($state, $tableName, $columns) extends \Grid_model {
+            private $state;
+            private $tableName;
+            private $columns;
+
+            public function __construct($state, string $tableName, array $columns)
+            {
+                $this->state = $state;
+                $this->tableName = $tableName;
+                $this->columns = $columns;
+                $this->state->dataTableCalls = [];
+                $this->state->getColumnsCalls = [];
+            }
+
+            protected function _data_table($content_type, $field_id)
+            {
+                $this->state->dataTableCalls[] = [$content_type, $field_id];
+
+                return $this->tableName;
+            }
+
+            public function get_columns_for_field($field_ids, $content_type, $cache = true)
+            {
+                $this->state->getColumnsCalls[] = [$field_ids, $content_type, $cache];
+
+                return $this->columns;
+            }
+        };
+    }
+
+    /**
+     * Build a db mock that records query SQL and affected row requests for search_and_replace().
+     *
+     * @param object $state Shared mutable test state.
+     * @param int $affectedRows Value returned by affected_rows().
+     * @return object
+     */
+    private function makeDbMockForSearchAndReplaceTest($state, int $affectedRows)
+    {
+        return new class($state, $affectedRows) {
+            private $state;
+            private $affectedRows;
+
+            public function __construct($state, int $affectedRows)
+            {
+                $this->state = $state;
+                $this->affectedRows = $affectedRows;
+                $this->state->dbQueryCalls = [];
+                $this->state->dbAffectedRowsCallCount = 0;
+            }
+
+            public function query($sql)
+            {
+                $this->state->dbQueryCalls[] = $sql;
+
+                return true;
+            }
+
+            public function affected_rows()
+            {
+                $this->state->dbAffectedRowsCallCount++;
+
+                return $this->affectedRows;
+            }
+        };
+    }
+
+    /**
+     * Build a Grid_model instance that records get_entry_rows() parameter handling.
+     *
+     * @param object $state Shared mutable test state.
+     * @param array $validatedOptions Options returned from _validate_params().
+     * @param array $fieldSearchConditions Conditions returned from _field_search().
+     * @return Grid_model
+     */
+    private function makeGridModelForGetEntryRowsTest($state, array $validatedOptions, array $fieldSearchConditions = []): \Grid_model
+    {
+        $validatedOptions = $this->normalizeGridOrderingOptions($validatedOptions);
+
+        return new class($state, $validatedOptions, $fieldSearchConditions) extends \Grid_model {
+            private $state;
+            private $validatedOptions;
+            private $fieldSearchConditions;
+
+            public function __construct($state, array $validatedOptions, array $fieldSearchConditions)
+            {
+                $this->state = $state;
+                $this->validatedOptions = $validatedOptions;
+                $this->fieldSearchConditions = $fieldSearchConditions;
+            }
+
+            protected function _validate_params($params, $field_id, $content_type)
+            {
+                $this->state->calls[] = ['model._validate_params', $params, $field_id, $content_type];
+
+                return $this->validatedOptions;
+            }
+
+            protected function _field_search($search_terms, $field_id, $content_type = 'channel', $set_sql_query = true)
+            {
+                $this->state->fieldSearchCalls[] = [$search_terms, $field_id, $content_type, $set_sql_query];
+
+                return $this->fieldSearchConditions;
+            }
+        };
+    }
+
+    /**
+     * Build a Grid_model instance that preserves marker-relevant options.
+     *
+     * @return Grid_model
+     */
+    private function makeGridModelForGetEntryRowsMarkerTest(): \Grid_model
+    {
+        return new class extends \Grid_model {
+            protected function _validate_params($params, $field_id, $content_type)
+            {
+                return array_merge(
+                    [
+                        'fixed_order' => '',
+                        'search' => [],
+                        'orderby' => 'row_order',
+                        'sort' => 'asc',
+                        'orderbys' => ['row_order'],
+                        'sorts' => ['asc'],
+                    ],
+                    $params
+                );
+            }
+
+            protected function _field_search($search_terms, $field_id, $content_type = 'channel', $set_sql_query = true)
+            {
+                return [];
+            }
+        };
+    }
+
+    /**
+     * Add normalized Grid ordering arrays expected from _validate_params().
+     *
+     * @param array $options Validated Grid parameter options.
+     * @return array
+     */
+    private function normalizeGridOrderingOptions(array $options): array
+    {
+        if (isset($options['orderbys']) && isset($options['sorts'])) {
+            return $options;
+        }
+
+        $orderby = $options['orderby'] ?? 'row_order';
+        $sort = $options['sort'] ?? 'asc';
+
+        if ($orderby === '' || $orderby === 'random') {
+            $orderby = 'row_order';
+        }
+
+        $options['orderbys'] = [$orderby];
+        $options['sorts'] = [$sort];
+
+        return $options;
+    }
+
+    /**
+     * Run one preview-condition vector via get_entry_rows() and return resulting preview rows.
+     *
+     * @param string $condition SQL-like condition generated by _field_search().
+     * @param mixed $previewValue Live Preview row value used in the preview condition.
+     * @return array
+     */
+    private function runPreviewConditionScenarioThroughGetEntryRows(string $condition, $previewValue): array
+    {
+        $rows = [
+            ['row_id' => 1, 'entry_id' => 42, 'row_order' => 0, 'fluid_field_data_id' => 0],
+        ];
+
+        ee()->setMock('db', new class($rows) {
+            private $rows;
+
+            public function __construct(array $rows)
+            {
+                $this->rows = $rows;
+            }
+
+            public function where_in($column, $values)
+            {
+                return $this;
+            }
+
+            public function where($column, $value)
+            {
+                return $this;
+            }
+
+            public function order_by($field, $direction = '', $escape = null)
+            {
+                return $this;
+            }
+
+            public function get($table)
+            {
+                return new class($this->rows) {
+                    private $rows;
+
+                    public function __construct(array $rows)
+                    {
+                        $this->rows = $rows;
+                    }
+
+                    public function result_array()
+                    {
+                        return $this->rows;
+                    }
+                };
+            }
+
+            public function _compile_select($reset = false, $test = false)
+            {
+                return 'SELECT * FROM channel_grid_field_9';
+            }
+        });
+
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+        });
+
+        ee()->setMock('LivePreview', new class($previewValue) {
+            private $previewValue;
+
+            public function __construct($previewValue)
+            {
+                $this->previewValue = $previewValue;
+            }
+
+            public function hasEntryData()
+            {
+                return true;
+            }
+
+            public function getEntryData()
+            {
+                return [
+                    'entry_id' => 42,
+                    'field_id_9' => [
+                        'rows' => [
+                            'candidate' => ['col_id_2' => $this->previewValue],
+                        ],
+                    ],
+                ];
+            }
+        });
+
+        $state = (object) [
+            'calls' => [],
+            'getCallCount' => 0,
+            'fieldSearchCalls' => [],
+        ];
+        $model = $this->makeGridModelForGetEntryRowsTest(
+            $state,
+            ['fixed_order' => '', 'search' => ['status' => 'open'], 'orderby' => '', 'sort' => 'asc'],
+            [$condition]
+        );
+
+        $result = $model->get_entry_rows([42], 9, 'channel', [], false, 0);
+
+        return array_values($result[42]);
+    }
+
+    /**
+     * Build a Grid_model instance that records ft-api settings requests.
+     *
+     * @param object $state Shared mutable test state.
+     * @param array $ftApiSettings Settings returned by _get_ft_api_settings().
+     * @return Grid_model
+     */
+    private function makeGridModelForSaveColSettingsTest($state, array $ftApiSettings): \Grid_model
+    {
+        return new class($state, $ftApiSettings) extends \Grid_model {
+            private $state;
+            private $ftApiSettings;
+
+            public function __construct($state, $ftApiSettings)
+            {
+                $this->state = $state;
+                $this->ftApiSettings = $ftApiSettings;
+            }
+
+            protected function _get_ft_api_settings($field_id, $content_type = 'channel')
+            {
+                $this->state->calls[] = ['model._get_ft_api_settings', $field_id, $content_type];
+
+                return $this->ftApiSettings;
+            }
+        };
+    }
+
+    /**
+     * Build a Grid_model instance that records ft-api settings requests for delete_columns().
+     *
+     * @param object $state Shared mutable test state.
+     * @param array $ftApiSettings Settings returned by _get_ft_api_settings().
+     * @return Grid_model
+     */
+    private function makeGridModelForDeleteColumnsTest($state, array $ftApiSettings): \Grid_model
+    {
+        return new class($state, $ftApiSettings) extends \Grid_model {
+            private $state;
+            private $ftApiSettings;
+
+            public function __construct($state, $ftApiSettings)
+            {
+                $this->state = $state;
+                $this->ftApiSettings = $ftApiSettings;
+            }
+
+            protected function _get_ft_api_settings($field_id, $content_type = 'channel')
+            {
+                $this->state->calls[] = ['model._get_ft_api_settings', $field_id, $content_type];
+
+                return $this->ftApiSettings;
+            }
+        };
+    }
+
+    /**
+     * Build a Grid_model instance that records delete_columns() calls from delete_columns_of_type().
+     *
+     * @param object $state Shared mutable test state.
+     * @param int|null $throwOnFieldId Field ID that should trigger a RuntimeException.
+     * @return Grid_model
+     */
+    private function makeGridModelForDeleteColumnsOfTypeTest($state, ?int $throwOnFieldId = null): \Grid_model
+    {
+        return new class($state, $throwOnFieldId) extends \Grid_model {
+            private $state;
+            private $throwOnFieldId;
+
+            public function __construct($state, ?int $throwOnFieldId)
+            {
+                $this->state = $state;
+                $this->throwOnFieldId = $throwOnFieldId;
+            }
+
+            public function delete_columns($column_ids, $column_types, $field_id, $content_type)
+            {
+                $this->state->calls[] = ['model.delete_columns', $column_ids, $column_types, $field_id, $content_type];
+
+                if ($this->throwOnFieldId !== null && $field_id === $this->throwOnFieldId) {
+                    throw new \RuntimeException('delete_columns failed');
+                }
+            }
+        };
+    }
+
+    /**
+     * Build a db mock that records save_field_data() query and write operations.
+     *
+     * @param object $state Shared mutable state that collects calls.
+     * @param array $deletedRows Rows returned by the delete-discovery query.
+     * @return object
+     */
+    private function makeDbMockForSaveFieldDataTest($state, array $deletedRows)
+    {
+        return new class($state, $deletedRows) {
+            private $state;
+            private $deletedRows;
+
+            public function __construct($state, array $deletedRows)
+            {
+                $this->state = $state;
+                $this->deletedRows = $deletedRows;
+            }
+
+            public function select($column)
+            {
+                $this->state->calls[] = ['db.select', $column];
+
+                return $this;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function where_not_in($column, $values)
+            {
+                $this->state->calls[] = ['db.where_not_in', $column, array_values($values)];
+
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->calls[] = ['db.get', $table];
+
+                return new class($this->state, $this->deletedRows) {
+                    private $state;
+                    private $deletedRows;
+
+                    public function __construct($state, array $deletedRows)
+                    {
+                        $this->state = $state;
+                        $this->deletedRows = $deletedRows;
+                    }
+
+                    public function result_array()
+                    {
+                        $this->state->calls[] = ['db.result_array'];
+
+                        return $this->deletedRows;
+                    }
+                };
+            }
+
+            public function update_batch($table, $rows, $index)
+            {
+                $this->state->calls[] = ['db.update_batch', $table, $rows, $index];
+
+                return true;
+            }
+
+            public function insert_batch($table, $rows)
+            {
+                $this->state->calls[] = ['db.insert_batch', $table, $rows];
+
+                return true;
+            }
+        };
+    }
+
+    /**
+     * Build an extensions mock for save_field_data() hook state and payload interception.
+     *
+     * @param object $state Shared mutable state that collects hook calls.
+     * @param bool $isActive Whether the grid_save hook is active.
+     * @param array|null $hookResponse Replacement payload returned by the hook.
+     * @return object
+     */
+    private function makeExtensionsMockForSaveFieldDataTest($state, bool $isActive, ?array $hookResponse = null)
+    {
+        return new class($state, $isActive, $hookResponse) {
+            private $state;
+            private $isActive;
+            private $hookResponse;
+
+            public function __construct($state, bool $isActive, ?array $hookResponse)
+            {
+                $this->state = $state;
+                $this->isActive = $isActive;
+                $this->hookResponse = $hookResponse;
+            }
+
+            public function active_hook($name)
+            {
+                return $this->isActive && $name === 'grid_save';
+            }
+
+            public function call($name, $entryId, $fieldId, $contentType, $tableName, $data)
+            {
+                $this->state->hookCalls[] = [$name, $entryId, $fieldId, $contentType, $tableName, $data];
+
+                if ($this->hookResponse !== null) {
+                    return $this->hookResponse;
+                }
+
+                return $data;
+            }
+        };
+    }
+
+    /**
+     * Build a db service mock that records remap_revision_rows() query-builder calls.
+     *
+     * @param object $state Shared mutable state that collects calls.
+     * @param array $existingRows Existing rows returned from the row lookup query.
+     * @return object
+     */
+    private function makeDbServiceMockForRemapRevisionRowsTest($state, array $existingRows)
+    {
+        return new class($state, $existingRows) {
+            private $state;
+            private $existingRows;
+
+            public function __construct($state, array $existingRows)
+            {
+                $this->state = $state;
+                $this->existingRows = $existingRows;
+            }
+
+            public function select($column)
+            {
+                $this->state->calls[] = ['db.select', $column];
+
+                return $this;
+            }
+
+            public function from($table)
+            {
+                $this->state->calls[] = ['db.from', $table];
+
+                return $this;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function get()
+            {
+                $this->state->calls[] = ['db.get'];
+
+                return new class($this->state, $this->existingRows) {
+                    private $state;
+                    private $existingRows;
+
+                    public function __construct($state, array $existingRows)
+                    {
+                        $this->state = $state;
+                        $this->existingRows = $existingRows;
+                    }
+
+                    public function num_rows()
+                    {
+                        $this->state->calls[] = ['db.num_rows'];
+
+                        return count($this->existingRows);
+                    }
+
+                    public function result_array()
+                    {
+                        $this->state->calls[] = ['db.result_array'];
+
+                        return $this->existingRows;
+                    }
+                };
+            }
+        };
+    }
+
+    /**
+     * Seed the model's protected column cache for one content type.
+     *
+     * @param Grid_model $model Grid model under test.
+     * @param string $contentType Content type cache bucket name.
+     * @param array $columnsByFieldId Cached columns keyed by field ID.
+     * @return void
+     */
+    private function setGridModelColumnsCache(\Grid_model $model, string $contentType, array $columnsByFieldId): void
+    {
+        $property = new \ReflectionProperty(\Grid_model::class, '_columns');
+        \TestReflectionHelper::makeAccessible($property);
+        $property->setValue($model, [$contentType => $columnsByFieldId]);
+    }
+
+    /**
+     * Build a db mock that records get_columns_for_field() query-builder calls.
+     *
+     * @param object $state Shared mutable state that collects calls.
+     * @param array $rows Rows returned by result_array().
+     * @return object
+     */
+    private function makeDbMockForGetColumnsForFieldTest($state, array $rows)
+    {
+        return new class($state, $rows) {
+            private $state;
+            private $rows;
+
+            public function __construct($state, array $rows)
+            {
+                $this->state = $state;
+                $this->rows = $rows;
+            }
+
+            public function where_in($column, $values)
+            {
+                $this->state->calls[] = ['db.where_in', $column, array_values($values)];
+
+                return $this;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function order_by($field, $direction = '', $escape = null)
+            {
+                $this->state->calls[] = ['db.order_by', $field];
+
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->calls[] = ['db.get', $table];
+
+                return new class($this->state, $this->rows) {
+                    private $state;
+                    private $rows;
+
+                    public function __construct($state, array $rows)
+                    {
+                        $this->state = $state;
+                        $this->rows = $rows;
+                    }
+
+                    public function result_array()
+                    {
+                        $this->state->calls[] = ['db.result_array'];
+
+                        return $this->rows;
+                    }
+                };
+            }
+        };
+    }
+
+}

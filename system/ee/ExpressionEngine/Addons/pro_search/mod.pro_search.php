@@ -758,6 +758,12 @@ class Pro_search
         ee()->load->library('Pro_search_fields');
         ee()->load->library('Pro_search_filters');
 
+        //disable entry sql caching if using filters
+        $enable_sql_caching = ee()->config->item('enable_sql_caching');
+        if(count(ee()->pro_search_filters->names()) >= 1 && ee()->config->item('enable_sql_caching') == 'y') {
+            ee()->config->config['enable_sql_caching'] = 'n';
+        }
+
         ee()->pro_search_filters->filter();
 
         // --------------------------------------
@@ -899,6 +905,11 @@ class Pro_search
 
         if (ee()->extensions->active_hook('pro_search_channel_entries') === true) {
             $tagdata = ee()->extensions->call('pro_search_channel_entries');
+        }
+
+        //enable anew if needed
+        if($enable_sql_caching != ee()->config->item('enable_sql_caching')) {
+            ee()->config->config['enable_sql_caching'] = $enable_sql_caching;
         }
 
         // --------------------------------------
