@@ -22,22 +22,47 @@ class Stats
     {
         ee()->stats->load_stats();
 
-        // Limit stats by channel
+        // Limit stats by channel or status
         // You can limit the stats by any combination of channels
 
         if (! isset(ee()->TMPL)) {
             return;
         }
 
-        if ($channel_name = ee()->TMPL->fetch_param('channel')) {
-            $sql = "SELECT	total_entries,
-							total_comments,
-							last_entry_date,
-							last_comment_date
-					FROM exp_channels
-					WHERE site_id IN ('" . implode("','", ee()->TMPL->site_ids) . "') ";
+        $channel_name = ee()->TMPL->fetch_param('channel');
+        $status = ee()->TMPL->fetch_param('status');
+        $filter_by_status = ($status !== false && $status != '');
 
-            $sql .= ee()->functions->sql_andor_string($channel_name, 'exp_channels.channel_name');
+        if ($channel_name || $filter_by_status) {
+            if ($filter_by_status) {
+                $now = ee()->localize->now;
+
+                $sql = "SELECT	COUNT(exp_channel_titles.entry_id) AS total_entries,
+								COALESCE(SUM(exp_channel_titles.comment_total), 0) AS total_comments,
+								MAX(exp_channel_titles.entry_date) AS last_entry_date,
+								MAX(exp_channel_titles.recent_comment_date) AS last_comment_date
+						FROM exp_channel_titles
+						INNER JOIN exp_channels
+							ON exp_channel_titles.channel_id = exp_channels.channel_id
+						WHERE exp_channel_titles.site_id IN ('" . implode("','", ee()->TMPL->site_ids) . "') ";
+
+                if ($channel_name) {
+                    $sql .= ee()->functions->sql_andor_string($channel_name, 'exp_channels.channel_name');
+                }
+
+                $sql .= $this->statusSql($status);
+                $sql .= " AND exp_channel_titles.entry_date < " . $now . " ";
+                $sql .= " AND (exp_channel_titles.expiration_date = 0 OR exp_channel_titles.expiration_date > " . $now . ") ";
+            } else {
+                $sql = "SELECT	total_entries,
+								total_comments,
+								last_entry_date,
+								last_comment_date
+						FROM exp_channels
+						WHERE site_id IN ('" . implode("','", ee()->TMPL->site_ids) . "') ";
+
+                $sql .= ee()->functions->sql_andor_string($channel_name, 'exp_channels.channel_name');
+            }
 
             $cache_sql = md5($sql);
 
@@ -196,6 +221,24 @@ class Stats
         }
 
         $this->return_data = ee()->TMPL->tagdata;
+    }
+
+    /**
+     * Build the SQL clause for status-filtered stats.
+     *
+     * @param string $status Entry status parameter.
+     * @return string
+     */
+    private function statusSql($status)
+    {
+        $status = str_replace(array('Open', 'Closed'), array('open', 'closed'), $status);
+        $sstr = ee()->functions->sql_andor_string($status, 'exp_channel_titles.status');
+
+        if (stristr($sstr, "'closed'") === false) {
+            $sstr .= " AND exp_channel_titles.status != 'closed' ";
+        }
+
+        return $sstr;
     }
 
     /**
