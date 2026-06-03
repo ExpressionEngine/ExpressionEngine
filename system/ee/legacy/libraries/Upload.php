@@ -48,7 +48,16 @@ class EE_Upload
     protected $use_temp_dir = false;
     protected $raw_upload = false;
     protected $_file_name_override = '';
-    protected $blocked_extensions = array();
+    protected $blocked_extensions = array(
+        'php',
+        'php3',
+        'php4',
+        'php5',
+        'php7',
+        'phps',
+        'phtml',
+        'phar'
+    );
 
     /**
      * Constructor
@@ -69,17 +78,6 @@ class EE_Upload
 
         ee()->load->library('mime_type');
         log_message('debug', "Upload Class Initialized");
-
-        $this->blocked_extensions = array(
-            'php',
-            'php3',
-            'php4',
-            'php5',
-            'php7',
-            'phps',
-            'phtml',
-            'phar'
-        );
     }
 
     /**
@@ -179,42 +177,19 @@ class EE_Upload
         $this->file_temp = $_FILES[$field]['tmp_name'];
         $this->file_size = $_FILES[$field]['size'];
         $this->file_type = ee('MimeType')->ofFile($this->file_temp);
-        $this->file_name = $this->_prep_filename($_FILES[$field]['name']);
-        $this->file_ext = $this->get_extension($this->file_name);
+
+        $this->file_name = $this->prepare_upload_filename($_FILES[$field]['name']);
+        if ($this->file_name === false) {
+            return false;
+        }
+
         $this->client_name = $this->file_name;
+        $this->file_name = $this->finalize_upload_filename($this->file_name);
+        $this->file_ext = $this->get_extension($this->file_name);
 
-        // Is this a hidden file? Not allowed
-        if (strncmp($this->file_name, '.', 1) == 0) {
-            $this->set_error('upload_invalid_file');
-
+        if (! $this->validate_upload_filename($this->file_name)) {
             return false;
         }
-
-        // Disallowed File Names
-        $disallowed_names = ee()->config->item('upload_blocked_file_names') ?: ee()->config->item('upload_file_name_blacklist');
-
-        if ($disallowed_names !== false) {
-            if (! is_array($disallowed_names)) {
-                $disallowed_names = array($disallowed_names);
-            }
-            $disallowed_names = array_map("strtolower", $disallowed_names);
-        } else {
-            $disallowed_names = array();
-        }
-
-        // Yes ".htaccess" is covered by the above hidden file check
-        // but this is here as an extra sanity-saving precation.
-        $disallowed_names[] = '.htaccess';
-        $disallowed_names[] = 'web.config';
-
-        if (in_array(strtolower($this->file_name), $disallowed_names)) {
-            $this->set_error('upload_invalid_file');
-
-            return false;
-        }
-
-        // Sanitize the file name for security
-        $this->file_name = $this->clean_file_name($this->file_name);
 
         // Is the file type allowed to be uploaded?
         if (! $this->is_allowed_filetype()) {
@@ -225,8 +200,17 @@ class EE_Upload
 
         // if we're overriding, let's now make sure the new name and type is allowed
         if ($this->_file_name_override != '') {
-            $this->file_name = $this->_prep_filename($this->_file_name_override);
+            $this->file_name = $this->prepare_upload_filename($this->_file_name_override);
+            if ($this->file_name === false) {
+                return false;
+            }
+
+            $this->file_name = $this->finalize_upload_filename($this->file_name);
             $this->file_ext = $this->get_extension($this->file_name);
+
+            if (! $this->validate_upload_filename($this->file_name)) {
+                return false;
+            }
 
             if (! $this->is_allowed_filetype(true)) {
                 $this->set_error('upload_invalid_file');
@@ -291,19 +275,6 @@ class EE_Upload
             $this->set_error(sprintf(lang('upload_invalid_filesize'), $this->max_size));
 
             return false;
-        }
-
-        // Remove invisible control characters
-        $this->file_name = preg_replace('#\\p{C}+#u', '', $this->file_name);
-
-        // Truncate the file name if it's too long
-        if ($this->max_filename > 0) {
-            $this->file_name = $this->limit_filename_length($this->file_name, $this->max_filename);
-        }
-
-        // Remove white spaces in the name
-        if ($this->remove_spaces == true) {
-            $this->file_name = preg_replace("/\s+/", "_", $this->file_name);
         }
 
         /*
@@ -445,6 +416,10 @@ class EE_Upload
      */
     public function set_filename($path, $filename, $upload_destination = null)
     {
+        if (! $this->validate_upload_filename($filename)) {
+            return false;
+        }
+
         if ($this->encrypt_name == true) {
             mt_srand();
             $filename = md5(uniqid(mt_rand())) . $this->file_ext;
@@ -670,6 +645,12 @@ class EE_Upload
      */
     public function clean_file_name($filename)
     {
+        $filename = preg_replace('#\\p{C}+#u', '', (string) $filename);
+
+        if ($filename === null) {
+            return '';
+        }
+
         $bad = array(
             "<!--",
             "-->",
@@ -702,6 +683,103 @@ class EE_Upload
         $filename = str_replace($bad, '_', $filename);
 
         return stripslashes($filename);
+    }
+
+    /**
+     * Validate and sanitize a client supplied upload filename.
+     */
+    protected function prepare_upload_filename($filename)
+    {
+        if (! $this->validate_upload_filename($filename)) {
+            return false;
+        }
+
+        $filename = $this->_prep_filename($filename);
+        $filename = $this->clean_file_name($filename);
+
+        if (! $this->validate_upload_filename($filename)) {
+            return false;
+        }
+
+        return $filename;
+    }
+
+    /**
+     * Apply final configured filename transforms before type checks and writing.
+     */
+    protected function finalize_upload_filename($filename)
+    {
+        if ($this->max_filename > 0) {
+            $filename = $this->limit_filename_length($filename, $this->max_filename);
+        }
+
+        if ($this->remove_spaces == true) {
+            $filename = preg_replace("/\s+/", "_", $filename);
+        }
+
+        return ($filename === null) ? '' : $filename;
+    }
+
+    /**
+     * Validate that the supplied filename resolves to a safe basename.
+     */
+    protected function validate_upload_filename($filename)
+    {
+        if (! $this->has_valid_filename($filename) || $this->is_disallowed_filename($filename)) {
+            $this->set_error('upload_invalid_file');
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Make sure the client supplied enough filename to resolve to a file.
+     */
+    protected function has_valid_filename($filename)
+    {
+        $filename = rtrim(str_replace('\\', '/', (string) $filename), " \t\n\r\0\x0B");
+
+        if ($filename === '' || substr($filename, -1) === '/') {
+            return false;
+        }
+
+        $basename = trim(basename($filename), " \t\n\r\0\x0B");
+
+        return $basename !== '' && $basename !== '.' && $basename !== '..' && strncmp($basename, '.', 1) !== 0;
+    }
+
+    /**
+     * Check names that web servers may interpret as configuration files.
+     */
+    protected function is_disallowed_filename($filename)
+    {
+        $disallowed_names = ee()->config->item('upload_blocked_file_names') ?: ee()->config->item('upload_file_name_blacklist');
+
+        if ($disallowed_names !== false) {
+            if (! is_array($disallowed_names)) {
+                $disallowed_names = array($disallowed_names);
+            }
+            $disallowed_names = array_map("strtolower", $disallowed_names);
+        } else {
+            $disallowed_names = array();
+        }
+
+        // Yes ".htaccess" is covered by the hidden file check, but this is here
+        // as an extra sanity-saving precaution.
+        $disallowed_names[] = '.htaccess';
+        $disallowed_names[] = 'web.config';
+
+        return in_array(rtrim(strtolower($this->normalized_basename($filename)), '. '), $disallowed_names);
+    }
+
+    /**
+     * Extract a basename using both Unix and Windows path separators.
+     */
+    protected function normalized_basename($filename)
+    {
+        return basename(str_replace('\\', '/', (string) $filename));
     }
 
     /**
