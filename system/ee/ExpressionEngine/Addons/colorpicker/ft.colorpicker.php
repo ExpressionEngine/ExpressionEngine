@@ -220,9 +220,8 @@ class Colorpicker_ft extends EE_Fieldtype
     public function replace_darken($data, $params = [], $tagdata = false)
     {
         try {
-            $percent = $params['percent'] ?? 10;
-            $percent = max(0, min(100, $percent)); // value between 0-100
-            return "#" . (new Color($data))->darken($percent);
+            $percent = $this->normalizePercent($params['percent'] ?? null, 10);
+            return "#" . (new Color($data))->darken((int) $percent);
         } catch (\Exception $e) {}
 
         return $data;
@@ -236,9 +235,8 @@ class Colorpicker_ft extends EE_Fieldtype
     public function replace_lighten($data, $params = [], $tagdata = false)
     {
         try {
-            $percent = $params['percent'] ?? 10;
-            $percent = max(0, min(100, $percent)); // value between 0-100
-            return "#" . (new Color($data))->lighten($percent);
+            $percent = $this->normalizePercent($params['percent'] ?? null, 10);
+            return "#" . (new Color($data))->lighten((int) $percent);
         } catch (\Exception $e) {}
 
         return $data;
@@ -252,9 +250,13 @@ class Colorpicker_ft extends EE_Fieldtype
     public function replace_rotate($data, $params = [], $tagdata = false)
     {
         try {
-            $degrees = $params['degrees'] ?? 0;
+            $degrees = (float) ($params['degrees'] ?? 0);
             $hsl = Color::hexToHsl($data);
-            $hsl['H'] = ($hsl['H'] + $degrees) % 360;
+            $hsl['H'] = fmod($hsl['H'] + $degrees, 360.0);
+
+            if ($hsl['H'] < 0) {
+                $hsl['H'] += 360.0;
+            }
 
             return "#" . Color::hslToHex($hsl);
         } catch (\Exception $e) {}
@@ -270,8 +272,7 @@ class Colorpicker_ft extends EE_Fieldtype
     public function replace_saturate($data, $params = [], $tagdata = false)
     {
         try {
-            $percent = $params['percent'] ?? 10;
-            $percent = max(0, min(100, $percent)); // value between 0-100
+            $percent = $this->normalizePercent($params['percent'] ?? null, 10);
 
             $hsl = Color::hexToHsl($data);
             $hsl['S'] = ($hsl['S'] * 100) + $percent;
@@ -291,8 +292,7 @@ class Colorpicker_ft extends EE_Fieldtype
     public function replace_desaturate($data, $params = [], $tagdata = false)
     {
         try {
-            $percent = $params['percent'] ?? 10;
-            $percent = max(0, min(100, $percent)); // value between 0-100
+            $percent = $this->normalizePercent($params['percent'] ?? null, 10);
 
             $hsl = Color::hexToHsl($data);
             $hsl['S'] = ($hsl['S'] * 100) - $percent;
@@ -315,9 +315,8 @@ class Colorpicker_ft extends EE_Fieldtype
         try {
             $first = new Color($data);
             $second = $params['color'] ?? (($first->isLight() ? '#000000' : '#ffffff'));
-            $percent = $params['percent'] ?? 50;
-            $percent = max(0, min(100, $percent)); // value between 0-100
-            return "#" . $first->mix($second, $percent);
+            $percent = $this->normalizePercent($params['percent'] ?? null, 50);
+            return "#" . $first->mix($second, (int) $percent);
         } catch (\Exception $e) {}
 
         return $data;
@@ -354,6 +353,15 @@ class Colorpicker_ft extends EE_Fieldtype
         } catch (\Exception $e) {}
 
         return $data;
+    }
+
+    private function normalizePercent($value, $default): float
+    {
+        if ($value === null || $value === '' || ! is_numeric($value)) {
+            $value = $default;
+        }
+
+        return max(0, min(100, (float) $value));
     }
 
     // -----------------------------------------------------------------------
