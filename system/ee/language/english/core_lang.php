@@ -127,6 +127,8 @@ If you made these changes, please accept the modifications on the Control Panel 
 
     'generic_fatal_error' => 'Something has gone wrong and this URL cannot be processed at this time.',
 
+    'generic_public_error' => 'An unexpected error occurred. Please contact the site administrator if the problem persists.',
+
     'invalid_action' => 'The action you have requested is invalid.',
 
     'invalid_url' => 'The URL you submitted is not valid.',

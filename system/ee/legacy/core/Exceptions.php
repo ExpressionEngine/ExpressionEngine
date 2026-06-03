@@ -80,6 +80,10 @@ class EE_Exceptions
     {
         $this->php_errors_output = true;
 
+        if (! $this->shouldShowDetailedWebErrors()) {
+            return;
+        }
+
         list($error_constant, $error_category) = $this->lookupSeverity($severity);
 
         if (defined('REQ') && REQ === 'CLI') {
@@ -127,6 +131,102 @@ class EE_Exceptions
     public function hasOutputPhpErrors()
     {
         return $this->php_errors_output;
+    }
+
+    /**
+     * Determine whether this web request should receive detailed browser errors.
+     *
+     * @return bool
+     */
+    public function shouldShowDetailedWebErrors()
+    {
+        if (defined('REQ') && REQ === 'CLI') {
+            return true;
+        }
+
+        if (defined('DEBUG') && DEBUG == 1) {
+            return true;
+        }
+
+        $debug = $this->getConfiguredDebugLevel();
+
+        if ($debug > 1) {
+            return true;
+        }
+
+        if ($debug == 1) {
+            return $this->isCurrentUserSuperAdmin() || $this->currentSessionCanDebug();
+        }
+
+        return false;
+    }
+
+    /**
+     * Public-facing fallback error message for non-superadmins.
+     *
+     * @return string
+     */
+    public function getGenericPublicErrorMessage()
+    {
+        return $this->getPublicLanguageLine(
+            'core',
+            'generic_public_error',
+            'An unexpected error occurred. Please contact the site administrator if the problem persists.'
+        );
+    }
+
+    /**
+     * Public-facing database error message for non-superadmins.
+     *
+     * @return string
+     */
+    public function getDatabasePublicErrorMessage()
+    {
+        return $this->getPublicLanguageLine(
+            'db',
+            'db_public_error',
+            'There was a database connection error or a problem with a query. Log in as a super admin or enable debugging for more information.'
+        );
+    }
+
+    /**
+     * Write an internal error that is hidden from the browser.
+     *
+     * @param string $message
+     * @return void
+     */
+    public function logHiddenError($message)
+    {
+        try {
+            if (function_exists('load_class')) {
+                $_log = load_class('Log');
+
+                if ($_log->write_log('error', $message)) {
+                    return;
+                }
+            }
+        } catch (\Throwable $e) {
+        }
+
+        @error_log($message);
+    }
+
+    /**
+     * Render a generic public error response.
+     *
+     * @param int $status_code
+     * @return void
+     */
+    public function showPublicError($status_code = 500, $message = null)
+    {
+        set_status_header($status_code);
+
+        if (defined('AJAX_REQUEST') && AJAX_REQUEST) {
+            $this->sendGenericAjaxError($status_code, $message);
+        }
+
+        echo $this->renderGenericPublicError($status_code, $message);
+        exit;
     }
 
     /**
@@ -228,6 +328,11 @@ class EE_Exceptions
     {
         set_status_header($status_code);
 
+        if (! $this->shouldShowDetailedWebErrors()) {
+            $this->logExceptionObject($exception);
+            $this->showPublicError($status_code, $this->getPublicExceptionMessage($exception));
+        }
+
         $error_type = get_class($exception);
 
         $message = $exception->getMessage();
@@ -292,18 +397,7 @@ class EE_Exceptions
             $line = htmlentities($line, ENT_QUOTES, 'UTF-8');
         }
 
-        // We'll only want to show certain information, like file paths, if we're allowed
-        $debug = (bool) (DEBUG or (isset(ee()->config) && ee()->config->item('debug') > 1) or (isset(ee()->session) && ee('Permission')->isSuperAdmin()));
-
-        // Hide sensitive information such as file paths and database information
-        if (! $debug) {
-            $location_parts = explode('/', $location);
-            $location = array_pop($location_parts);
-
-            if (strpos($message, 'SQLSTATE') !== false) {
-                $message = 'There was a database connection error or a problem with a query. Log in as a super admin or enable debugging for more information.';
-            }
-        }
+        $debug = true;
 
         if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
             $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') {
@@ -346,6 +440,26 @@ class EE_Exceptions
     }
 
     /**
+     * Log a fatal shutdown error for web requests.
+     *
+     * Browser output for PHP engine fatals is controlled by PHP/server
+     * display_errors configuration; this handler intentionally only logs.
+     *
+     * @param array $error
+     * @return bool
+     */
+    public function logWebShutdownError($error)
+    {
+        if (! is_array($error) || ! $this->isFatalShutdownError($error['type'] ?? null)) {
+            return false;
+        }
+
+        $this->logFatalShutdownError($error);
+
+        return true;
+    }
+
+    /**
      * @return Array of [PHP Severity constant, Human severity name]
      */
     private function lookupSeverity($severity)
@@ -385,6 +499,182 @@ class EE_Exceptions
             default:
                 return array('UNKNOWN', 'Error');
         }
+    }
+
+    /**
+     * @param int $status_code
+     * @return string
+     */
+    private function renderGenericPublicError($status_code, $message = null)
+    {
+        $heading = 'Error';
+        $message = $message ?: $this->getGenericPublicErrorMessage();
+
+        if (ob_get_level() > $this->ob_level + 1) {
+            ob_end_flush();
+        }
+
+        ob_start();
+
+        if (file_exists(APPPATH)) {
+            include(APPPATH . 'errors/error_general.php');
+        } else {
+            include(BASEPATH . 'errors/error_general.php');
+        }
+
+        $buffer = ob_get_contents();
+        ob_end_clean();
+
+        return $buffer;
+    }
+
+    /**
+     * @param int $status_code
+     * @return void
+     */
+    private function sendGenericAjaxError($status_code, $message = null)
+    {
+        set_status_header($status_code);
+        echo json_encode([
+            'messageType' => 'error',
+            'message' => $message ?: $this->getGenericPublicErrorMessage(),
+        ]);
+        exit;
+    }
+
+    /**
+     * @param \Throwable|\Exception $exception
+     * @return string
+     */
+    private function getPublicExceptionMessage($exception)
+    {
+        if (strpos($exception->getMessage(), 'SQLSTATE') !== false) {
+            return $this->getDatabasePublicErrorMessage();
+        }
+
+        return $this->getGenericPublicErrorMessage();
+    }
+
+    /**
+     * @param string $file
+     * @param string $key
+     * @param string $fallback
+     * @return string
+     */
+    private function getPublicLanguageLine($file, $key, $fallback)
+    {
+        try {
+            if (! function_exists('load_class') || ! function_exists('ee') || ! ee() || ! isset(ee()->config)) {
+                return $fallback;
+            }
+
+            $LANG = load_class('Lang', 'core');
+            $LANG->load($file, '', false, true, '', false);
+
+            $line = $LANG->line($key);
+
+            if ($line !== $key && $line !== '') {
+                return $line;
+            }
+        } catch (\Throwable $e) {
+        }
+
+        return $fallback;
+    }
+
+    /**
+     * @param int|null $type
+     * @return bool
+     */
+    private function isFatalShutdownError($type)
+    {
+        return in_array($type, [
+            E_ERROR,
+            E_PARSE,
+            E_CORE_ERROR,
+            E_COMPILE_ERROR,
+            E_USER_ERROR,
+        ], true);
+    }
+
+    /**
+     * @return int
+     */
+    private function getConfiguredDebugLevel()
+    {
+        if (! function_exists('ee') || ! ee() || ! isset(ee()->config)) {
+            return 0;
+        }
+
+        return (int) ee()->config->item('debug');
+    }
+
+    /**
+     * @return bool
+     */
+    private function isCurrentUserSuperAdmin()
+    {
+        if (! function_exists('ee') || ! ee() || ! isset(ee()->session) || ! isset(ee()->di)) {
+            return false;
+        }
+
+        try {
+            return ee('Permission')->isSuperAdmin();
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    private function currentSessionCanDebug()
+    {
+        if (! function_exists('ee') || ! ee() || ! isset(ee()->session)) {
+            return false;
+        }
+
+        return ee()->session->userdata('can_debug') == 'y';
+    }
+
+    /**
+     * @param \Throwable|\Exception $exception
+     * @return void
+     */
+    private function logExceptionObject($exception)
+    {
+        $message = sprintf(
+            '%s: %s in %s on line %s',
+            get_class($exception),
+            $exception->getMessage(),
+            $exception->getFile(),
+            $exception->getLine()
+        );
+
+        $trace = $exception->getTraceAsString();
+
+        if ($trace !== '') {
+            $message .= "\nStack trace:\n" . $trace;
+        }
+
+        $this->logHiddenError($message);
+    }
+
+    /**
+     * @param array $error
+     * @return void
+     */
+    private function logFatalShutdownError(array $error)
+    {
+        list($error_constant) = $this->lookupSeverity($error['type'] ?? 0);
+
+        $this->logHiddenError(sprintf(
+            'Fatal shutdown error (%s): %s in %s on line %s',
+            $error_constant,
+            $error['message'] ?? 'Fatal error',
+            $error['file'] ?? 'unknown',
+            $error['line'] ?? 'unknown'
+        ));
     }
 }
 // END Exceptions Class

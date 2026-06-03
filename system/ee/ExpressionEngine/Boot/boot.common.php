@@ -544,6 +544,22 @@ function _exception_handler($severity, $message, $filepath, $line)
 }
 
 /**
+ * Shutdown handler for web requests.
+ *
+ * @return bool
+ */
+function webShutdownHandler()
+{
+    if (@is_array($error = @error_get_last())) {
+        $_error = load_class('Exceptions', 'core');
+
+        return $_error->logWebShutdownError($error);
+    }
+
+    return true;
+}
+
+/**
  * Remove Invisible Characters
  *
  * This prevents sandwiching null characters
