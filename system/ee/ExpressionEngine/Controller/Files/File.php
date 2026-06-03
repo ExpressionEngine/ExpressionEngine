@@ -587,18 +587,37 @@ class File extends AbstractFilesController
         force_download($file->file_name, $file->UploadDestination->getFilesystem()->read($file->getAbsolutePath()));
     }
 
-    // Check if a given file exists in the filesystem
-    public function exists($id)
+    // Check if the given files exist in the filesystem
+    public function exists($id = null)
     {
-        $file = ee('Model')->get('File', $id)
-            ->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
-            ->first();
+        $ids = ($id === null) ? ee('Request')->post('file_ids', []) : [$id];
 
-        if(empty($file) || !$file->memberHasAccess(ee()->session->getMember()) || !$file->exists()) {
-            return ee('Response')->setStatus(404);
+        $ids = array_values(array_unique(array_filter(array_map('intval', is_array($ids) ? $ids : [$ids]))));
+        $results = array_fill_keys($ids, ['exists' => false]);
+
+        if (empty($ids)) {
+            return ee()->output->send_ajax_response(['files' => $results]);
         }
 
-        return ee('Response')->setStatus(200);
+        $files = ee('Model')->get('File', $ids)
+            ->with('UploadDestination')
+            ->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
+            ->all()
+            ->indexBy('file_id');
+
+        foreach ($ids as $file_id) {
+            if (empty($files[$file_id]) || ! $files[$file_id]->memberHasAccess(ee()->session->getMember())) {
+                continue;
+            }
+
+            try {
+                $results[$file_id]['exists'] = (bool) $files[$file_id]->exists();
+            } catch (\Throwable $e) {
+                $results[$file_id]['exists'] = false;
+            }
+        }
+
+        return ee()->output->send_ajax_response(['files' => $results]);
     }
 
     // Ajax endpoint for creating and retrieving a File's thumbnail if applicable

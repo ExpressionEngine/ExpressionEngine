@@ -197,28 +197,10 @@
 			}
 		}, '.f_manager-wrapper .imgpreview');
 
-        let checkForMissingFiles = function() {
-            $('.f_manager-wrapper tr[file_id], .f_manager-wrapper .file-grid__file[file_id]').each(function(index, el) {
-                let fileId = $(el).attr('file_id');
-                $.ajax({
-                    url: EE.BASE + "/files/file/exists/" + fileId,
-                    type: 'HEAD',
-                    success: function() {},
-                    error: function() {
-                        $(el).addClass('missing');
-                        $(el).find('.file-not-found.hidden').removeClass('hidden');
+        EE.cp.fileManager.checkForMissingFiles();
 
-                        // Display the missing-files alert banner if it is present
-                        $('.app-notice-missing-files.hidden').removeClass('hidden');
-                    }
-                })
-            });
-        };
-
-        checkForMissingFiles();
-
-        $('body').on('ee.filemanager.changed', function(event) {
-            checkForMissingFiles();
+        $('body').on('ee.filemanager.changed', function(event, container) {
+            EE.cp.fileManager.checkForMissingFiles(container);
         });
 	});
 })(jQuery);
