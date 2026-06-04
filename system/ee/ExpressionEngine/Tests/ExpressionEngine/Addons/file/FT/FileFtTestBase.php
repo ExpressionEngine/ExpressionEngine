@@ -1545,10 +1545,34 @@ namespace {
             $fieldtype->settings = array_merge([
                 'field_required' => 'n',
             ], $settings);
-            $fieldtype->content_id = $contentId;
-            $fieldtype->field_name = $fieldName;
+            $fieldtype->_init([
+                'content_id' => $contentId,
+                'field_name' => $fieldName,
+            ]);
 
             return $fieldtype;
+        }
+
+        /**
+         * Return the fieldtype's current content id through the fieldtype API.
+         *
+         * @param File_ft $fieldtype
+         * @return int|null
+         */
+        protected function fieldtypeContentId($fieldtype)
+        {
+            return $fieldtype->content_id();
+        }
+
+        /**
+         * Return the fieldtype's current short name through the fieldtype API.
+         *
+         * @param File_ft $fieldtype
+         * @return string
+         */
+        protected function fieldtypeName($fieldtype)
+        {
+            return $fieldtype->name();
         }
 
         /**

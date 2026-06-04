@@ -2,10 +2,6 @@
 
 namespace ExpressionEngine\Tests\Addons\Colorpicker;
 
-require_once SYSPATH . 'ee/legacy/fieldtypes/EE_Fieldtype.php';
-require_once SYSPATH . 'ee/Mexitek/PHPColors/Color.php';
-require_once SYSPATH . 'ee/ExpressionEngine/Addons/colorpicker/ft.colorpicker.php';
-
 use ExpressionEngine\Service\Accessibility\Color\Gpc;
 use ExpressionEngine\Service\Accessibility\Color\Wcag;
 use Mexitek\PHPColors\Color;
@@ -17,8 +13,20 @@ class ColorpickerFieldtypeTest extends TestCase
 
     public function setUp(): void
     {
+        $this->loadFieldtype();
+
         $reflection = new \ReflectionClass(\Colorpicker_ft::class);
         $this->fieldtype = $reflection->newInstanceWithoutConstructor();
+    }
+
+    private function loadFieldtype(): void
+    {
+        if (! class_exists('EE_Fieldtype', false)) {
+            require_once SYSPATH . 'ee/legacy/fieldtypes/EE_Fieldtype.php';
+        }
+
+        require_once SYSPATH . 'ee/Mexitek/PHPColors/Color.php';
+        require_once SYSPATH . 'ee/ExpressionEngine/Addons/colorpicker/ft.colorpicker.php';
     }
 
     public function testRotatePreservesFractionalHue()
