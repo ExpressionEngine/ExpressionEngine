@@ -8,6 +8,9 @@
  */
 
 use Mexitek\PHPColors\Color;
+use ExpressionEngine\Service\Accessibility\Color\ContrastAlgorithm;
+use ExpressionEngine\Service\Accessibility\Color\Gpc;
+use ExpressionEngine\Service\Accessibility\Color\Wcag;
 
 class Colorpicker_ft extends EE_Fieldtype
 {
@@ -206,7 +209,11 @@ class Colorpicker_ft extends EE_Fieldtype
     public function replace_complementary($data, $params = [], $tagdata = false)
     {
         try {
-            return "#" . (new Color($data))->complementary();
+            return $this->applyContrast(
+                $data,
+                "#" . (new Color($data))->complementary(),
+                $params
+            );
         } catch (\Exception $e) {}
 
         return $data;
@@ -224,10 +231,10 @@ class Colorpicker_ft extends EE_Fieldtype
             $color = new Color($data);
 
             if ((int) $percent === 0) {
-                return "#" . $color->getHex();
+                return $this->applyContrast($data, "#" . $color->getHex(), $params);
             }
 
-            return "#" . $color->darken((int) $percent);
+            return $this->applyContrast($data, "#" . $color->darken((int) $percent), $params);
         } catch (\Exception $e) {}
 
         return $data;
@@ -245,10 +252,10 @@ class Colorpicker_ft extends EE_Fieldtype
             $color = new Color($data);
 
             if ((int) $percent === 0) {
-                return "#" . $color->getHex();
+                return $this->applyContrast($data, "#" . $color->getHex(), $params);
             }
 
-            return "#" . $color->lighten((int) $percent);
+            return $this->applyContrast($data, "#" . $color->lighten((int) $percent), $params);
         } catch (\Exception $e) {}
 
         return $data;
@@ -270,7 +277,7 @@ class Colorpicker_ft extends EE_Fieldtype
                 $hsl['H'] += 360.0;
             }
 
-            return "#" . Color::hslToHex($hsl);
+            return $this->applyContrast($data, "#" . Color::hslToHex($hsl), $params);
         } catch (\Exception $e) {}
 
         return $data;
@@ -290,7 +297,7 @@ class Colorpicker_ft extends EE_Fieldtype
             $hsl['S'] = ($hsl['S'] * 100) + $percent;
             $hsl['S'] = ($hsl['S'] > 100) ? 1 : $hsl['S'] / 100;
 
-            return "#" . Color::hslToHex($hsl);
+            return $this->applyContrast($data, "#" . Color::hslToHex($hsl), $params);
         } catch (\Exception $e) {}
 
         return $data;
@@ -310,7 +317,7 @@ class Colorpicker_ft extends EE_Fieldtype
             $hsl['S'] = ($hsl['S'] * 100) - $percent;
             $hsl['S'] = ($hsl['S'] < 0) ? 0 : $hsl['S'] / 100;
 
-            return "#" . Color::hslToHex($hsl);
+            return $this->applyContrast($data, "#" . Color::hslToHex($hsl), $params);
         } catch (\Exception $e) {}
 
         return $data;
@@ -330,7 +337,7 @@ class Colorpicker_ft extends EE_Fieldtype
             $percent = $this->normalizePercent($params['percent'] ?? null, 50);
             $mixAmount = 100 - (2 * $percent);
 
-            return "#" . $first->mix($second, (int) $mixAmount);
+            return $this->applyContrast($data, "#" . $first->mix($second, (int) $mixAmount), $params);
         } catch (\Exception $e) {}
 
         return $data;
@@ -376,6 +383,49 @@ class Colorpicker_ft extends EE_Fieldtype
         }
 
         return max(0, min(100, (float) $value));
+    }
+
+    private function applyContrast($reference, string $color, array $params): string
+    {
+        $algorithm = $this->contrastAlgorithm($params);
+
+        if ($algorithm === null) {
+            return $color;
+        }
+
+        $target = $this->contrastTarget($params, $algorithm);
+
+        return $algorithm->adjustForegroundForBackground(
+            Color::hexToRgb($color),
+            Color::hexToRgb($reference),
+            $target
+        );
+    }
+
+    private function contrastAlgorithm(array $params)
+    {
+        if (array_key_exists('contrast_ratio', $params)) {
+            return new Wcag();
+        }
+
+        if (array_key_exists('perceptual_contrast', $params)) {
+            return new Gpc();
+        }
+
+        return null;
+    }
+
+    private function contrastTarget(array $params, ContrastAlgorithm $algorithm): float
+    {
+        $value = ($algorithm instanceof Gpc)
+            ? $params['perceptual_contrast']
+            : $params['contrast_ratio'];
+
+        if ($value === '' || ! is_numeric($value)) {
+            $value = $algorithm->defaultTarget();
+        }
+
+        return $algorithm->normalizeTarget((float) $value);
     }
 
     // -----------------------------------------------------------------------
