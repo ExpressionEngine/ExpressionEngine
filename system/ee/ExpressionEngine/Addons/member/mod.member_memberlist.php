@@ -907,11 +907,18 @@ class Member_memberlist extends Member
         return $return;
     }
 
-    /** ------------------------------------------
-    /**  Perform a Search
-    /** ------------------------------------------*/
+    /**
+     * Perform a member search submission.
+     *
+     * @return mixed
+     */
     public function do_member_search()
     {
+        // ACTION searches must come from secure forms before return URLs are honored.
+        if (REQ === 'ACTION' && strtoupper($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
+            return ee()->output->show_form_error(['general' => lang('not_authorized')]);
+        }
+
         // Handle our protected data if any. This contains our extra params.
         $protected = ee()->functions->handle_protected();
 
