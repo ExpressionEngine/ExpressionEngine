@@ -16,7 +16,7 @@ class Stats
     public $return_data = '';
 
     /**
-     *  Constructor
+     * Create the stats module and parse the current template tag.
      */
     public function __construct()
     {
@@ -52,7 +52,7 @@ class Stats
                 }
 
                 $sql .= $this->statusSql($status);
-                $sql .= " AND exp_channel_titles.entry_date < " . $now . " ";
+                $sql .= " AND exp_channel_titles.entry_date <= " . $now . " ";
                 $sql .= " AND (exp_channel_titles.expiration_date = 0 OR exp_channel_titles.expiration_date > " . $now . ") ";
             } else {
                 $sql = "SELECT	total_entries,

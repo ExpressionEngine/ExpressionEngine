@@ -54,6 +54,27 @@ class StatsStatusFilterTest extends TestCase
         $this->assertStringContainsString("exp_channel_titles.status != 'closed'", $this->db->queries[0]);
     }
 
+    /**
+     * Verify status-filtered stats include entries published at the current timestamp.
+     *
+     * @return void
+     */
+    public function testStatusFiltersIncludeEntriesPublishedAtCurrentTimestamp()
+    {
+        $this->makeStats([
+            'status' => 'open',
+        ], [
+            [
+                'total_entries' => 1,
+                'total_comments' => 0,
+                'last_entry_date' => 1000,
+                'last_comment_date' => 0,
+            ],
+        ]);
+
+        $this->assertStringContainsString('exp_channel_titles.entry_date <= 1000', $this->db->queries[0]);
+    }
+
     public function testExplicitClosedStatusCanBeCounted()
     {
         $this->makeStats([
