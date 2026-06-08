@@ -343,8 +343,13 @@ trait FileManagerTrait
             }
         }
 
-        $files = $files->order($sort_field, $table->sort_dir)
-            ->limit($perpage)
+        $files = $files->order($sort_field, $table->sort_dir);
+
+        if ($sort_col == 'date_added') {
+            $files = $files->order('file_id', $table->sort_dir);
+        }
+
+        $files = $files->limit($perpage)
             ->offset($offset)
             ->all();
 
