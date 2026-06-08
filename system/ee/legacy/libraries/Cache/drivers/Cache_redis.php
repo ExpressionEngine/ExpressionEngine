@@ -184,23 +184,48 @@ class EE_Cache_redis extends CI_Driver
         $config = array(
             'host' => '127.0.0.1',
             'password' => null,
+            'username' => null,
             'port' => 6379,
             'timeout' => 0,
-            'database' => 0
+            'database' => 0,
+            'scheme' => null,
+            'verify_peer' => true,
+            'verify_peer_name' => true,
+            'context' => []
         );
 
         if (($user_config = ee()->config->item('redis')) !== false) {
             $config = array_merge($config, $user_config);
         }
 
-        $this->_redis = new Redis();
+        $this->_redis = $this->_new_redis();
 
         // Our return value which we will update as we setup Redis; if it's
         // TRUE at the end, allow Redis to be used
         $result = false;
 
         try {
-            $result = $this->_redis->connect($config['host'], $config['port'], $config['timeout']);
+            $context = is_array($config['context']) ? $config['context'] : [];
+
+            if (! empty($config['scheme']) && $config['scheme'] === 'tls') {
+                $peer_name = (strpos($config['host'], 'tls://') === 0) ? substr($config['host'], 6) : $config['host'];
+
+                $context = array_replace_recursive([
+                    'stream' => [
+                        'verify_peer'      => $config['verify_peer'],
+                        'verify_peer_name' => $config['verify_peer_name'],
+                        'peer_name'        => $peer_name,
+                    ]
+                ], $context);
+
+                if (strpos($config['host'], 'tls://') !== 0) {
+                    $config['host'] = 'tls://' . $config['host'];
+                }
+            }
+
+            $result = (! empty($context) && $this->_redis_supports_connection_context())
+                ? $this->_redis->connect($config['host'], $config['port'], $config['timeout'], null, 0, 0, $context)
+                : $this->_redis->connect($config['host'], $config['port'], $config['timeout']);
         } catch (RedisException $e) {
             log_message('debug', 'Redis connection refused: ' . $e->getMessage());
             $this->_redis = false;
@@ -218,7 +243,10 @@ class EE_Cache_redis extends CI_Driver
 
         // If a password is set, attempt to authenticate
         if (! empty($config['password']) && $result) {
-            $result = $this->_redis->auth($config['password']);
+            $auth = ! empty($config['username'])
+                ? [$config['username'], $config['password']]
+                : $config['password'];
+            $result = $this->_redis->auth($auth);
         }
 
         // If a database is specified, attempt to use it
@@ -229,6 +257,32 @@ class EE_Cache_redis extends CI_Driver
         }
 
         return $result;
+    }
+
+    /**
+     * Create a Redis connection instance.
+     *
+     * @return Redis
+     */
+    protected function _new_redis()
+    {
+        return new Redis();
+    }
+
+    /**
+     * Check whether the installed Redis extension supports connect context.
+     *
+     * @return bool
+     */
+    protected function _redis_supports_connection_context()
+    {
+        try {
+            $method = new ReflectionMethod($this->_redis, 'connect');
+
+            return $method->isVariadic() || $method->getNumberOfParameters() >= 7;
+        } catch (ReflectionException $e) {
+            return false;
+        }
     }
 
     /**

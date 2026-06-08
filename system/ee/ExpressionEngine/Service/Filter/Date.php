@@ -119,9 +119,10 @@ class Date extends Filter
 
         $value = $this->display_value;
         if (is_null($value)) {
-            $value = (array_key_exists($this->value(), $this->options)) ?
-                $this->options[$this->value()] :
-                $this->value();
+            $current_value = $this->value();
+            $value = ($current_value !== null && array_key_exists($current_value, $this->options)) ?
+                $this->options[$current_value] :
+                $current_value;
         }
 
         // Create a filter URL without this filter (per-filter clear).

@@ -434,6 +434,16 @@ class Upload
                 return $result;
             }
 
+            if (! $this->hasValidRenameFilename($new_name)) {
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asIssue()
+                    ->withTitle(lang('file_conflict'))
+                    ->addToBody(lang('invalid_filename'))
+                    ->now();
+
+                return $result;
+            }
+
             $original_extension = substr($original_name, strrpos($original_name, '.'));
             $new_extension = substr($new_name, strrpos($new_name, '.'));
 
@@ -794,6 +804,30 @@ class Upload
                 'message_type' => 'success'
             ));
         }
+    }
+
+    /**
+     * Ensure conflict-resolution rename input resolves to a real filename.
+     */
+    private function hasValidRenameFilename($filename)
+    {
+        $filename = preg_replace('#\\p{C}+#u', '', (string) $filename);
+        if ($filename === null) {
+            return false;
+        }
+
+        if (strpbrk($filename, '/\\') !== false) {
+            return false;
+        }
+
+        $filename = rtrim($filename, " \t\n\r\0\x0B");
+        if ($filename === '') {
+            return false;
+        }
+
+        $basename = trim(basename($filename), " \t\n\r\0\x0B");
+
+        return $basename !== '' && $basename !== '.' && $basename !== '..' && strncmp($basename, '.', 1) !== 0;
     }
 }
 

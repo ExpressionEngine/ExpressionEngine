@@ -99,24 +99,36 @@ class Member_subscriptions extends Member
     }
 
     /**
-     * Update Subscriptions
+     * Update the member's subscription selections.
+     *
+     * @return string Rendered success message after subscriptions are removed.
      */
     public function update_subscriptions()
     {
-        if (! ee()->input->post('toggle')) {
+        $toggles = ee()->input->post('toggle');
+
+        if (! is_array($toggles) || empty($toggles)) {
             ee()->functions->redirect($this->_member_path('edit_subscriptions'));
             exit;
         }
 
         ee()->load->library('subscription');
 
-        foreach ($_POST['toggle'] as $key => $val) {
+        foreach ($toggles as $val) {
             switch (substr($val, 0, 1)) {
-                case "b": ee()->subscription->init('comment', array('entry_id' => substr($val, 1)), true);
-                              ee()->subscription->unsubscribe(ee()->session->userdata('member_id'));
+                case "b":
+                    ee()->subscription->init('comment', array('entry_id' => substr($val, 1)), true);
+                    ee()->subscription->unsubscribe(ee()->session->userdata('member_id'));
 
                     break;
-                case "f": ee()->db->query("DELETE FROM exp_forum_subscriptions WHERE topic_id = '" . substr($val, 1) . "' AND member_id = '" . ee()->session->userdata['member_id'] . "'");
+                case "f":
+                    $topic_id = (int) substr($val, 1);
+                    $member_id = (int) ee()->session->userdata('member_id');
+
+                    ee()->db->query(
+                        "DELETE FROM exp_forum_subscriptions WHERE topic_id = ? AND member_id = ?",
+                        array($topic_id, $member_id)
+                    );
 
                     break;
             }
