@@ -26,6 +26,7 @@ class FileManager extends FileManagerSection {
 					'checkbox_header': '.ee-main__content form .table-responsive table tr th:nth-child(1) input[type=checkbox]',
 
 					'title_names': '.ee-main__content form .table-responsive table tr td:nth-child(3)',
+					'file_names': '.ee-main__content form .table-responsive table tr td:nth-child(4)',
 					'file_types': '.ee-main__content form .table-responsive table tr td:nth-child(5)',
 					'dates_added': '.ee-main__content form .table-responsive table tr td:nth-child(6)',
 					'manage_actions': '.ee-main__content form .table-responsive table tr td:nth-child(8)',
