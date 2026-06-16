@@ -305,14 +305,7 @@ class Channel_form_lib
                     );
                 }
 
-                foreach ($custom_field_variables_row as $key => $value) {
-                    if (is_array($value)) {
-                        $temp = $this->swap_var_pair($key, $value, $temp);
-                    } elseif (! is_int($value)) {
-                        // don't use our conditionals as vars
-                        $temp = ee()->TMPL->swap_var_single($key, $value, $temp);
-                    }
-                }
+                $temp = $this->_swap_custom_field_variables($custom_field_variables_row, $temp);
 
                 if ($custom_field_variables_row['field_type'] === 'catchall') {
                     $temp = $this->replace_tag($field_name, $this->entry($field_name), array(), $temp);
@@ -1109,6 +1102,29 @@ GRID_FALLBACK;
         }
 
         return $custom_field_variables;
+    }
+
+    /**
+     * Swap variables inside a single {custom_fields} row.
+     *
+     * @param   array   $custom_field_variables_row
+     * @param   string  $tagdata
+     * @return  string
+     */
+    private function _swap_custom_field_variables($custom_field_variables_row, $tagdata)
+    {
+        foreach ($custom_field_variables_row as $key => $value) {
+            if (is_array($value)) {
+                $tagdata = $this->swap_var_pair($key, $value, $tagdata);
+            } elseif ($key === 'field_id') {
+                $tagdata = ee()->TMPL->swap_var_single($key, (string) $value, $tagdata);
+            } elseif (! is_int($value)) {
+                // don't use our conditionals as vars
+                $tagdata = ee()->TMPL->swap_var_single($key, $value, $tagdata);
+            }
+        }
+
+        return $tagdata;
     }
 
     /**
