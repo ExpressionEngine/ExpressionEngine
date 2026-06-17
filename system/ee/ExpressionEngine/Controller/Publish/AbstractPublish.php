@@ -12,6 +12,8 @@ namespace ExpressionEngine\Controller\Publish;
 
 use CP_Controller;
 use ExpressionEngine\Model\Channel\ChannelEntry;
+use ExpressionEngine\Service\Validation\Result as ValidationResult;
+use ExpressionEngine\Service\Validation\Rule;
 
 /**
  * Abstract Publish Controller
@@ -413,6 +415,7 @@ abstract class AbstractPublish extends CP_Controller
         $hidden_fields = $entry->evaluateConditionalFields();
 
         $result = $entry->validate();
+        $this->validateEntryStatusAccess($entry, $layout, $result);
 
         if ($response = $this->ajaxValidation($result)) {
             if (isset($response[0]) && $response[0] == 'success') {
@@ -441,6 +444,41 @@ abstract class AbstractPublish extends CP_Controller
         }
 
         return $result;
+    }
+
+    protected function validateEntryStatusAccess(ChannelEntry $entry, $layout, ValidationResult $result)
+    {
+        if ($result->hasErrors('status')) {
+            return;
+        }
+
+        foreach ($layout->getTabs() as $tab) {
+            foreach ($tab->getFields() as $field) {
+                if ($field->getId() != 'status') {
+                    continue;
+                }
+
+                // This is a list of assigned statuses for the current member
+                $statuses = $field->get('field_list_items');
+                if (! is_array($statuses)) {
+                    return;
+                }
+
+                $status = $entry->status;
+                if ($status === null || $status === '' || array_key_exists($status, $statuses)) {
+                    return;
+                }
+
+                $rule = new Rule\Callback(function () {
+                    return 'status_not_available_desc';
+                });
+                $rule->setParameters([$status]);
+                $rule->validate('status', $status);
+                $result->addFailed('status', $rule);
+
+                return;
+            }
+        }
     }
 
     protected function saveEntryAndRedirect($entry)
