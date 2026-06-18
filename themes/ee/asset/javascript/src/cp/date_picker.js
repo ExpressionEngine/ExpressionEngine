@@ -122,6 +122,57 @@ EE.cp.datePicker = {
 		});
 	},
 
+	get_date_from_value: function(value, mask) {
+		var date_mask = mask ? mask.split(' ')[0] : '',
+			date_parts,
+			year,
+			month,
+			day;
+
+		switch (date_mask) {
+			case '%n/%j/%Y':
+				date_parts = value.split('/');
+				month = parseInt(date_parts[0], 10);
+				day = parseInt(date_parts[1], 10);
+				year = parseInt(date_parts[2], 10);
+				break;
+
+			case '%j/%n/%Y':
+				date_parts = value.split('/');
+				day = parseInt(date_parts[0], 10);
+				month = parseInt(date_parts[1], 10);
+				year = parseInt(date_parts[2], 10);
+				break;
+
+			case '%j-%n-%Y':
+				date_parts = value.split('-');
+				day = parseInt(date_parts[0], 10);
+				month = parseInt(date_parts[1], 10);
+				year = parseInt(date_parts[2], 10);
+				break;
+
+			case '%d.%m.%Y':
+				date_parts = value.split('.');
+				day = parseInt(date_parts[0], 10);
+				month = parseInt(date_parts[1], 10);
+				year = parseInt(date_parts[2], 10);
+				break;
+
+			case '%Y-%m-%d':
+				date_parts = value.split('-');
+				year = parseInt(date_parts[0], 10);
+				month = parseInt(date_parts[1], 10);
+				day = parseInt(date_parts[2], 10);
+				break;
+		}
+
+		if ( ! isNaN(year) && ! isNaN(month) && ! isNaN(day)) {
+			return new Date(year, month - 1, day);
+		}
+
+		return new Date(Date.parse(value));
+	},
+
 	Calendar: {
 		calendars: [],
 		element: null,
@@ -353,67 +404,13 @@ EE.cp.datePicker = {
 				var timevalue;
 				var include_seconds = EE.date.include_seconds;
 
-				if ( ! timestamp) {
-					// this part we need to parse date formats like dd/mm/yyyy and dd-mm-yyyy
-					// and don't get NAN as a result, when user put date manualy, not form date_pickare
-					var date_format = $(this.element).data('dateFormat')
-					// Split date to check date format without time
-					var split_date = date_format.split(' ');
-					var only_date = split_date[0];
-					var other_date_info = split_date.splice(1);
-					other_date_info.join(' ')
+				var include_time = $(this.element).data('include_time'),
+					has_include_time = (include_time !== undefined);
 
-					var newDay, newDay_index, newMonth, newMonth_index, newYear;
-					var val = $(this.element).val();
-
-					if (only_date == '%j/%n/%Y') {
-						// value without day
-						val = val.substring(val.indexOf('/') + 1);
-
-						// check if DAY has 1 or 2 numbers (1 or 01)
-						newDay_index = $(this.element).val().indexOf('/');
-						// get DAY
-						newDay = $(this.element).val().substring(0, newDay_index);
-
-						// check if MONTH has 1 or 2 numbers (9 or 09)
-						newMonth_index = val.indexOf('/');
-						// get MONTH
-						newMonth = val.substring(0, newMonth_index);
-
-						// get YEAR
-						newYear = val.substring(newMonth_index+1);
-
-						var date = [newMonth + '/' + newDay + '/' + newYear];
-
-						date = date.toString();
-
-						d = new Date(Date.parse(date));
-
-					} else if (only_date == '%j-%n-%Y') {
-						// value without day
-						val = val.substring(val.indexOf('-') + 1);
-
-						// check if DAY has 1 or 2 numbers (1 or 01)
-						newDay_index = $(this.element).val().indexOf('-');
-						// get DAY
-						newDay = $(this.element).val().substring(0, newDay_index);
-
-						// check if MONTH has 1 or 2 numbers (9 or 09)
-						newMonth_index = val.indexOf('-');
-						// get MONTH
-						newMonth = val.substring(0, newMonth_index);
-
-						// get YEAR
-						newYear = val.substring(newMonth_index+1);
-
-						var date = [newMonth + '-' + newDay + '-' + newYear];
-
-						date = date.toString();
-
-						d = new Date(Date.parse(date));
-					} else {
-						d = new Date(Date.parse($(this.element).val()));
-					}
+				if ( ! timestamp || (has_include_time && ! include_time)) {
+					// Date-only fields are calendar dates; parse the visible value so
+					// timestamp timezone conversion cannot move the active day.
+					d = EE.cp.datePicker.get_date_from_value($(this.element).val(), $(this.element).data('dateFormat'));
 				} else {
 					d = new Date(timestamp * 1000);
 				}
