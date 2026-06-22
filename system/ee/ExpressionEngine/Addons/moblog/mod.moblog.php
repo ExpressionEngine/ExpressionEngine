@@ -1597,7 +1597,9 @@ class Moblog
             return true;
         }
 
-        // Clean the file
+        // Clean decoded attachment content before raw_upload().
+        // EE_Upload is loaded below with explicit config, so its constructor
+        // does not enable the default xss_check() behavior for this path.
         ee()->load->helper('xss');
 
         if (xss_check()) {
@@ -1654,7 +1656,8 @@ class Moblog
             $file_path = ee()->upload->upload_path . $filename;
         }
 
-        // Disable xss cleaning in the filemanager
+        // The decoded attachment contents were cleaned above. Avoid a second
+        // File Manager XSS pass while registering the already-uploaded file.
         ee()->filemanager->xss_clean_off();
 
         // Send the file
