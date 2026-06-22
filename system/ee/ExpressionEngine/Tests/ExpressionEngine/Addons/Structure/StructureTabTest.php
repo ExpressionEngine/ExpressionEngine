@@ -970,6 +970,34 @@ class StructureTabTest extends TestCase
         $this->assertSame('current', $settings['uri']['field_data']);
     }
 
+    /**
+     * Confirm numeric parent IDs are queued for new entry forms.
+     *
+     * @return void
+     */
+    public function testPublishTabsQueuesNumericParentIdForNewEntry()
+    {
+        $scripts = $this->capturePublishTabsScriptsForParentId('7');
+        $queuedScript = implode("\n", $scripts);
+
+        $this->assertStringContainsString('name="structure__parent_id" value="7"', $queuedScript);
+    }
+
+    /**
+     * Confirm nonnumeric parent IDs are skipped for new entry forms.
+     *
+     * @return void
+     */
+    public function testPublishTabsSkipsNonnumericParentIdForNewEntry()
+    {
+        $parentId = 'not-a-parent-id';
+        $scripts = $this->capturePublishTabsScriptsForParentId($parentId);
+        $queuedScript = implode("\n", $scripts);
+
+        $this->assertStringNotContainsString($parentId, $queuedScript);
+        $this->assertStringNotContainsString('structure__parent_id', $queuedScript);
+    }
+
     public function testPublishTabsReturnsEmptyWhenChannelIsUnmanaged()
     {
         if (!defined('REQ')) {
@@ -1755,5 +1783,153 @@ class StructureTabTest extends TestCase
     private function makeTab()
     {
         return (new ReflectionClass('Structure_tab'))->newInstanceWithoutConstructor();
+    }
+
+    /**
+     * Capture scripts queued while building a new entry Structure tab.
+     *
+     * @param mixed $parentId
+     * @return array
+     */
+    private function capturePublishTabsScriptsForParentId($parentId)
+    {
+        if (!defined('REQ')) {
+            define('REQ', 'CP');
+        }
+
+        StaticCache::set('publish_tabs__get_structure_channels', [5 => ['type' => 'page', 'template_id' => 2]]);
+        StaticCache::set('publish_tabs__get_structure_channels_page', [5 => ['type' => 'page', 'template_id' => 2]]);
+        StaticCache::set('publish_tabs__get_structure_channels_channel_id_5', [5 => ['type' => 'page', 'template_id' => 2]]);
+
+        $captured = (object) ['scripts' => []];
+
+        ee()->setMock('lang', new class {
+            public function loadfile($name)
+            {
+            }
+            public function line($key)
+            {
+                return $key;
+            }
+        });
+        ee()->setMock('load', new class {
+            public function helper($name)
+            {
+            }
+        });
+        ee()->setMock('cp', new class {
+            public function add_js_script($type, $name)
+            {
+            }
+        });
+        ee()->setMock('javascript', new class($captured) {
+            private $captured;
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+            public function output($script)
+            {
+                $this->captured->scripts[] = $script;
+            }
+        });
+        ee()->setMock('input', new class($parentId) {
+            private $parentId;
+            public function __construct($parentId)
+            {
+                $this->parentId = $parentId;
+            }
+            public function get_post($key)
+            {
+                return false;
+            }
+            public function get($key)
+            {
+                if ($key === 'parent_id') {
+                    return $this->parentId;
+                }
+
+                return false;
+            }
+        });
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'site_id') {
+                    return 1;
+                }
+
+                return null;
+            }
+        });
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+            public function call($name, ...$args)
+            {
+                return null;
+            }
+        });
+        ee()->setMock('db', new class extends FakeDb {
+            public function query($sql)
+            {
+                return new eeDbResultMock([]);
+            }
+        });
+
+        $tab = $this->makeTab();
+        $tab->sql = new class {
+            public function get_channel_by_entry_id($entryId)
+            {
+                return 5;
+            }
+            public function get_settings()
+            {
+                return ['add_trailing_slash' => 'n'];
+            }
+            public function get_site_pages($cacheBust = false)
+            {
+                return [
+                    'uris' => [],
+                    'templates' => []
+                ];
+            }
+            public function get_data()
+            {
+                return [
+                    7 => ['parent_id' => 0, 'depth' => 0, 'title' => 'Parent', 'listing_cid' => 0],
+                ];
+            }
+            public function get_listing_parent($channelId)
+            {
+                return false;
+            }
+            public function get_hidden_state($entryId)
+            {
+                return 'n';
+            }
+            public function get_templates()
+            {
+                return [
+                    ['template_id' => 2, 'group_name' => 'pages', 'template_name' => 'index']
+                ];
+            }
+        };
+        $tab->structure = new class {
+            public function get_structure_channels($type = '', $channelId = null)
+            {
+                if ($type === 'listing') {
+                    return [];
+                }
+
+                return [5 => ['type' => 'page', 'template_id' => 2]];
+            }
+        };
+
+        $tab->publish_tabs(5, '');
+
+        return $captured->scripts;
     }
 }
