@@ -205,11 +205,17 @@ class FileFtValidateTest extends FileFtTestBase
             'grid_row_id' => 7,
             'grid_field_id' => 33,
             'grid_content_type' => 'channel',
+            'col_id' => 5,
         ], 19);
         $file = new FileFtFileModelStub(false);
         $gridModel = $this->setGridRows([
             19 => [
-                7 => '{filedir_1}banner.png',
+                7 => [
+                    'row_id' => 7,
+                    'entry_id' => 19,
+                    'col_id_5' => '{filedir_1}banner.png',
+                    'col_id_6' => 'unchanged unrelated column',
+                ],
             ],
         ]);
 
@@ -221,6 +227,43 @@ class FileFtValidateTest extends FileFtTestBase
         $this->assertSame([], $file->memberChecks);
         $this->assertSame(['grid_model'], $this->loadRecorder->models);
         $this->assertSame(0, $gridModel->calls[0]['fluid_field_data_id']);
+    }
+
+    /**
+     * Assert changed existing grid row cells re-check permissions.
+     *
+     * @return void
+     */
+    public function testValidateChecksPermissionsWhenExistingGridRowCellValueChanges()
+    {
+        $fieldtype = $this->makeFieldtype([
+            'field_required' => 'y',
+            'grid_row_id' => 7,
+            'grid_field_id' => 33,
+            'grid_content_type' => 'channel',
+            'col_id' => 5,
+        ], 19);
+        $member = (object) ['member_id' => 77];
+        $file = new FileFtFileModelStub(false);
+
+        $this->setSessionMember($member);
+        $this->setFileModel($file);
+        $this->setGridRows([
+            19 => [
+                7 => [
+                    'row_id' => 7,
+                    'entry_id' => 19,
+                    'col_id_5' => '{filedir_2}previous.png',
+                    'col_id_6' => 'unchanged unrelated column',
+                ],
+            ],
+        ]);
+
+        $this->assertSame([
+            'value' => '',
+            'error' => 'directory_no_access',
+        ], $fieldtype->validate('{filedir_1}banner.png'));
+        $this->assertSame([$member], $file->memberChecks);
     }
 
     /**
