@@ -90,9 +90,21 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
                         $fluid_field_data_id
                     );
 
-                    // If this filed was we need to check permissions.
-                    if (! isset($this->settings['grid_row_id']) || $rows[$this->content_id][$this->settings['grid_row_id']] != $data) {
+                    // If this field changed we need to check permissions.
+                    if (! isset($this->settings['grid_row_id'])) {
                         $check_permissions = true;
+                    } else {
+                        $row = isset($rows[$this->content_id][$this->settings['grid_row_id']])
+                            ? $rows[$this->content_id][$this->settings['grid_row_id']]
+                            : array();
+                        $col_id = isset($this->settings['col_id']) ? 'col_id_' . $this->settings['col_id'] : null;
+                        $existing = (is_array($row) && $col_id && array_key_exists($col_id, $row))
+                            ? $row[$col_id]
+                            : null;
+
+                        if ($existing != $data) {
+                            $check_permissions = true;
+                        }
                     }
                 } else {
                     $entry = ee('Model')->get('ChannelEntry', $this->content_id)->first();

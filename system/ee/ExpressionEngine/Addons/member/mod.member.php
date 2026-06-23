@@ -2099,8 +2099,13 @@ class Member
             return $this->_build_crumbs($pm_page, $crumbs, $pm_page);
         }
 
-        if (is_numeric(ee()->uri->segment(2))) {
-            $query = ee()->db->query("SELECT screen_name FROM exp_members WHERE member_id = '" . ee()->uri->segment(2) . "'");
+        $member_id = ee()->uri->segment(2);
+
+        if (ctype_digit((string) $member_id)) {
+            $query = ee()->db
+                ->select('screen_name')
+                ->where('member_id', (int) $member_id)
+                ->get('members');
 
             $crumbs .= $this->_crumb_trail(
                 array(
@@ -2894,7 +2899,14 @@ class Member
         $prelen = strlen($pre);
 
         if ($member_id = ee()->TMPL->fetch_param('member_id')) {
-            $query = ee()->db->query("SELECT ignore_list FROM exp_members WHERE member_id = '{$member_id}'");
+            if (! ctype_digit((string) $member_id)) {
+                return ee()->TMPL->no_results();
+            }
+
+            $query = ee()->db
+                ->select('ignore_list')
+                ->where('member_id', (int) $member_id)
+                ->get('members');
 
             if ($query->num_rows() == 0) {
                 return ee()->TMPL->no_results();
@@ -2905,10 +2917,39 @@ class Member
             $ignored = ee()->session->userdata('ignore_list');
         }
 
-        $query = ee()->db->query("SELECT m.member_id, m.role_id, m.role_id AS group_id, m.username, m.screen_name, m.email, m.ip_address, m.total_entries, m.total_comments, m.private_messages, m.total_forum_topics, m.total_forum_posts AS total_forum_replies, m.total_forum_topics + m.total_forum_posts AS total_forum_posts,
-                            r.name AS group_description FROM exp_members AS m, exp_roles AS r
-                            WHERE r.role_id = m.role_id
-                            AND m.member_id IN ('" . implode("', '", $ignored) . "')");
+        if (! is_array($ignored)) {
+            $ignored = ($ignored == '') ? array() : explode('|', (string) $ignored);
+        }
+
+        $ignored = array_values(array_unique(array_map('intval', array_filter($ignored, function ($member_id) {
+            return ctype_digit((string) $member_id) && (int) $member_id > 0;
+        }))));
+
+        if (empty($ignored)) {
+            return ee()->TMPL->no_results();
+        }
+
+        $query = ee()->db
+            ->select(array(
+                'm.member_id',
+                'm.role_id',
+                'm.role_id AS group_id',
+                'm.username',
+                'm.screen_name',
+                'm.email',
+                'm.ip_address',
+                'm.total_entries',
+                'm.total_comments',
+                'm.private_messages',
+                'm.total_forum_topics',
+                'm.total_forum_posts AS total_forum_replies',
+                'm.total_forum_topics + m.total_forum_posts AS total_forum_posts',
+                'r.name AS group_description',
+            ), false)
+            ->from('members AS m')
+            ->join('roles AS r', 'r.role_id = m.role_id')
+            ->where_in('m.member_id', $ignored)
+            ->get();
 
         if ($query->num_rows() == 0) {
             return ee()->TMPL->no_results();
