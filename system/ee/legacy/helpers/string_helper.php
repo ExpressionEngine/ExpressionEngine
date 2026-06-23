@@ -198,13 +198,13 @@ if (! function_exists('random_string')) {
             case 'unique':
             case 'md5':
 
-                        return md5(uniqid(random_int(-PHP_INT_MAX, PHP_INT_MAX)));
+                        return bin2hex(random_bytes(16));
 
                 break;
             case 'encrypt':
             case 'sha1':
 
-                        return sha1(uniqid(random_int(-PHP_INT_MAX, PHP_INT_MAX), true));
+                        return bin2hex(random_bytes(20));
 
                 break;
         }
