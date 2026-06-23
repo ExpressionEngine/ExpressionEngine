@@ -61,6 +61,22 @@ class EditTest extends TestCase
         $this->assertFalse($result->hasErrors('status'));
     }
 
+    /**
+     * Verify array status input becomes a validation failure.
+     *
+     * @return void
+     */
+    public function testArrayStatusAddsValidationFailureWithoutFatal()
+    {
+        $result = (new PublishStatusAccessHarness())->validateStatusAccessFor(['open'], [
+            'open' => 'Open',
+            'closed' => 'Closed'
+        ]);
+
+        $this->assertTrue($result->hasErrors('status'));
+        $this->assertSame(['status_not_available_desc', ['invalid']], $result->getFailed('status')[0]->getLanguageData());
+    }
+
     public function testUnavailableStatusEscapesValidationFailureParameter()
     {
         $result = (new PublishStatusAccessHarness())->validateStatusAccessFor('<script>alert("x")</script>', [

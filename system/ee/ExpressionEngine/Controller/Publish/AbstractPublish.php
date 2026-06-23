@@ -446,6 +446,14 @@ abstract class AbstractPublish extends CP_Controller
         return $result;
     }
 
+    /**
+     * Validate the entry status is available to the current member.
+     *
+     * @param ChannelEntry $entry Entry being validated.
+     * @param mixed $layout Entry publish form layout.
+     * @param ValidationResult $result Validation result to update.
+     * @return void
+     */
     protected function validateEntryStatusAccess(ChannelEntry $entry, $layout, ValidationResult $result)
     {
         if ($result->hasErrors('status')) {
@@ -465,15 +473,25 @@ abstract class AbstractPublish extends CP_Controller
                 }
 
                 $status = $entry->status;
-                if ($status === null || $status === '' || array_key_exists($status, $statuses)) {
+                if ($status === null || $status === '') {
                     return;
+                }
+
+                $status_message = 'invalid';
+                if (is_scalar($status)) {
+                    $status = (string) $status;
+                    if ($status !== '' && array_key_exists($status, $statuses)) {
+                        return;
+                    }
+
+                    $status_message = $status !== '' ? $status : 'invalid';
                 }
 
                 $rule = new Rule\Callback(function () {
                     return 'status_not_available_desc';
                 });
-                $rule->setParameters([htmlentities((string) $status, ENT_QUOTES, 'UTF-8')]);
-                $rule->validate('status', $status);
+                $rule->setParameters([htmlentities($status_message, ENT_QUOTES, 'UTF-8')]);
+                $rule->validate('status', $status_message);
                 $result->addFailed('status', $rule);
 
                 return;
