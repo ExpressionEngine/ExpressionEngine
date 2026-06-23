@@ -4,6 +4,28 @@ require_once __DIR__ . '/ChannelFormLibTestBase.php';
 
 class ChannelFormLibFieldVariablesTest extends ChannelFormLibTestBase
 {
+    public function testCustomFieldsLoopSwapsIntegerFieldIdButNotIntegerConditionals()
+    {
+        $customFieldVariables = [
+            'field_id' => 9,
+            'field_name' => 'title_ar',
+            'field_type' => 'text',
+            'textinput' => 1,
+        ];
+
+        $reflection = new ReflectionClass($this->channelFormLib);
+        $method = $reflection->getMethod('_swap_custom_field_variables');
+        TestReflectionHelper::makeMethodAccessible($method);
+
+        $result = $method->invoke(
+            $this->channelFormLib,
+            $customFieldVariables,
+            '[{field_id} : {field_name} : {textinput}]'
+        );
+
+        $this->assertSame('[9 : title_ar : {textinput}]', $result);
+    }
+
     public function testBuildCustomFieldVariablesReturnsEmptyArrayForNoFields()
     {
         // Test with no custom fields
