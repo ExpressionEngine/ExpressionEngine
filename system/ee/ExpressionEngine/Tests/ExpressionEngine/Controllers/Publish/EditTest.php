@@ -60,6 +60,19 @@ class EditTest extends TestCase
 
         $this->assertFalse($result->hasErrors('status'));
     }
+
+    public function testUnavailableStatusEscapesValidationFailureParameter()
+    {
+        $result = (new PublishStatusAccessHarness())->validateStatusAccessFor('<script>alert("x")</script>', [
+            'closed' => 'Closed',
+            'pending' => 'Pending'
+        ]);
+
+        $this->assertSame(
+            ['status_not_available_desc', ['&lt;script&gt;alert(&quot;x&quot;)&lt;/script&gt;']],
+            $result->getFailed('status')[0]->getLanguageData()
+        );
+    }
 }
 
 class PublishStatusAccessHarness extends AbstractPublish

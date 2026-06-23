@@ -472,7 +472,7 @@ abstract class AbstractPublish extends CP_Controller
                 $rule = new Rule\Callback(function () {
                     return 'status_not_available_desc';
                 });
-                $rule->setParameters([$status]);
+                $rule->setParameters([htmlentities((string) $status, ENT_QUOTES, 'UTF-8')]);
                 $rule->validate('status', $status);
                 $result->addFailed('status', $rule);
 
