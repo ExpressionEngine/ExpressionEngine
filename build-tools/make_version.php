@@ -605,6 +605,13 @@ class VersionBumper
         }
     }
 
+    /**
+     * Read a sanitized line of user input from STDIN.
+     *
+     * @param string $message
+     * @return string
+     * @throws Exception
+     */
     private function prompt($message)
     {
         echo $message;
@@ -612,8 +619,8 @@ class VersionBumper
         $input = trim(fgets($handle));
         fclose($handle);
 
-        // Basic input validation - remove any control characters
-        $input = filter_var($input, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+        $input = strip_tags($input);
+        $input = preg_replace('/[\x00-\x1F\x7F]/', '', $input);
 
         // Limit input length to prevent issues
         if (strlen($input) > 100) {
