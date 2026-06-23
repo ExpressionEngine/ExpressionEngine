@@ -415,7 +415,7 @@ abstract class AbstractPublish extends CP_Controller
         $hidden_fields = $entry->evaluateConditionalFields();
 
         $result = $entry->validate();
-        $this->validateEntryStatusAccess($entry, $layout, $result);
+        $this->validateEntryStatusAccess($entry, $result);
 
         if ($response = $this->ajaxValidation($result)) {
             if (isset($response[0]) && $response[0] == 'success') {
@@ -447,56 +447,115 @@ abstract class AbstractPublish extends CP_Controller
     }
 
     /**
-     * Validate the entry status is available to the current member.
+     * Validate the entry status belongs to the channel and is assigned to the current member.
      *
      * @param ChannelEntry $entry Entry being validated.
-     * @param mixed $layout Entry publish form layout.
      * @param ValidationResult $result Validation result to update.
      * @return void
      */
-    protected function validateEntryStatusAccess(ChannelEntry $entry, $layout, ValidationResult $result)
+    protected function validateEntryStatusAccess(ChannelEntry $entry, ValidationResult $result)
     {
         if ($result->hasErrors('status')) {
             return;
         }
 
-        foreach ($layout->getTabs() as $tab) {
-            foreach ($tab->getFields() as $field) {
-                if ($field->getId() != 'status') {
-                    continue;
-                }
+        $status = $entry->status;
+        if ($status === null || $status === '') {
+            return;
+        }
 
-                // This is a list of assigned statuses for the current member
-                $statuses = $field->get('field_list_items');
-                if (! is_array($statuses)) {
-                    return;
-                }
+        if (! is_scalar($status)) {
+            $this->addStatusAccessValidationFailure($result, 'invalid');
 
-                $status = $entry->status;
-                if ($status === null || $status === '') {
-                    return;
-                }
+            return;
+        }
 
-                $status_message = 'invalid';
-                if (is_scalar($status)) {
-                    $status = (string) $status;
-                    if ($status !== '' && array_key_exists($status, $statuses)) {
-                        return;
-                    }
+        $status = (string) $status;
+        if ($status === '') {
+            $this->addStatusAccessValidationFailure($result, 'invalid');
 
-                    $status_message = $status !== '' ? $status : 'invalid';
-                }
+            return;
+        }
 
-                $rule = new Rule\Callback(function () {
-                    return 'status_not_available_desc';
-                });
-                $rule->setParameters([htmlentities($status_message, ENT_QUOTES, 'UTF-8')]);
-                $rule->validate('status', $status_message);
-                $result->addFailed('status', $rule);
+        if ($this->memberCanAccessEntryStatus($entry, $status)) {
+            return;
+        }
 
-                return;
+        $this->addStatusAccessValidationFailure($result, $status);
+    }
+
+    protected function memberCanAccessEntryStatus(ChannelEntry $entry, $status)
+    {
+        $channel_statuses = $this->getEntryChannelStatusNames($entry);
+
+        if (! array_key_exists($status, $channel_statuses)) {
+            return false;
+        }
+
+        if (ee('Permission')->isSuperAdmin()) {
+            return true;
+        }
+
+        $member = ee()->session->getMember();
+        if (empty($member) || ! method_exists($member, 'getAssignedStatuses')) {
+            return false;
+        }
+
+        $assigned_statuses = $member->getAssignedStatuses();
+        if (! is_iterable($assigned_statuses)) {
+            return false;
+        }
+
+        foreach ($assigned_statuses as $assigned_status) {
+            if ($this->getStatusName($assigned_status) === $status) {
+                return true;
             }
         }
+
+        return false;
+    }
+
+    protected function getEntryChannelStatusNames(ChannelEntry $entry)
+    {
+        $status_names = [];
+        $channel = $entry->Channel;
+        $statuses = (! empty($channel)) ? $channel->Statuses : null;
+
+        if (is_iterable($statuses)) {
+            foreach ($statuses as $status) {
+                $status_name = $this->getStatusName($status);
+                if ($status_name !== null && $status_name !== '') {
+                    $status_names[$status_name] = true;
+                }
+            }
+        }
+
+        return ! empty($status_names) ? $status_names : ['open' => true, 'closed' => true];
+    }
+
+    protected function getStatusName($status)
+    {
+        if (is_object($status) && method_exists($status, 'getProperty')) {
+            $status = $status->getProperty('status');
+        } elseif (is_object($status) && isset($status->status)) {
+            $status = $status->status;
+        } elseif (is_array($status) && array_key_exists('status', $status)) {
+            $status = $status['status'];
+        }
+
+        return is_scalar($status) ? (string) $status : null;
+    }
+
+    protected function addStatusAccessValidationFailure(ValidationResult $result, $status)
+    {
+        $status_message = (is_scalar($status) && (string) $status !== '') ? (string) $status : 'invalid';
+
+        $rule = new Rule\Callback(function () {
+            return 'status_not_available_desc';
+        });
+        $rule->setParameters([htmlentities($status_message, ENT_QUOTES, 'UTF-8')]);
+        $rule->validate('status', $status_message);
+        $result->addFailed('status', $rule);
     }
 
     protected function saveEntryAndRedirect($entry)

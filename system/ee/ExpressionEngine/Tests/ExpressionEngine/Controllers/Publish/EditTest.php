@@ -24,6 +24,18 @@ class EditTest extends TestCase
         require_once(APPPATH . 'core/Controller.php');
     }
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        ee()->resetMocks();
+    }
+
+    protected function tearDown(): void
+    {
+        ee()->resetMocks();
+        parent::tearDown();
+    }
+
     public function testRoutableMethods()
     {
         $controller_methods = array();
@@ -42,10 +54,11 @@ class EditTest extends TestCase
 
     public function testUnavailableStatusAddsValidationFailure()
     {
-        $result = (new PublishStatusAccessHarness())->validateStatusAccessFor('open', [
-            'closed' => 'Closed',
-            'pending' => 'Pending'
-        ]);
+        $result = (new PublishStatusAccessHarness())->validateStatusAccessFor(
+            'open',
+            ['open', 'closed', 'pending'],
+            ['closed', 'pending']
+        );
 
         $this->assertTrue($result->hasErrors('status'));
         $this->assertSame(['status_not_available_desc', ['open']], $result->getFailed('status')[0]->getLanguageData());
@@ -53,10 +66,11 @@ class EditTest extends TestCase
 
     public function testAvailableStatusDoesNotAddValidationFailure()
     {
-        $result = (new PublishStatusAccessHarness())->validateStatusAccessFor('pending', [
-            'closed' => 'Closed',
-            'pending' => 'Pending'
-        ]);
+        $result = (new PublishStatusAccessHarness())->validateStatusAccessFor(
+            'pending',
+            ['open', 'closed', 'pending'],
+            ['closed', 'pending']
+        );
 
         $this->assertFalse($result->hasErrors('status'));
     }
@@ -68,10 +82,11 @@ class EditTest extends TestCase
      */
     public function testArrayStatusAddsValidationFailureWithoutFatal()
     {
-        $result = (new PublishStatusAccessHarness())->validateStatusAccessFor(['open'], [
-            'open' => 'Open',
-            'closed' => 'Closed'
-        ]);
+        $result = (new PublishStatusAccessHarness())->validateStatusAccessFor(
+            ['open'],
+            ['open', 'closed'],
+            ['open', 'closed']
+        );
 
         $this->assertTrue($result->hasErrors('status'));
         $this->assertSame(['status_not_available_desc', ['invalid']], $result->getFailed('status')[0]->getLanguageData());
@@ -79,15 +94,52 @@ class EditTest extends TestCase
 
     public function testUnavailableStatusEscapesValidationFailureParameter()
     {
-        $result = (new PublishStatusAccessHarness())->validateStatusAccessFor('<script>alert("x")</script>', [
-            'closed' => 'Closed',
-            'pending' => 'Pending'
-        ]);
+        $result = (new PublishStatusAccessHarness())->validateStatusAccessFor(
+            '<script>alert("x")</script>',
+            ['closed', '<script>alert("x")</script>'],
+            ['closed']
+        );
 
         $this->assertSame(
             ['status_not_available_desc', ['&lt;script&gt;alert(&quot;x&quot;)&lt;/script&gt;']],
             $result->getFailed('status')[0]->getLanguageData()
         );
+    }
+
+    public function testChannelStatusListDoesNotGrantUnassignedStatusAccess()
+    {
+        $result = (new PublishStatusAccessHarness())->validateStatusAccessFor(
+            'open',
+            ['open', 'closed'],
+            ['closed']
+        );
+
+        $this->assertTrue($result->hasErrors('status'));
+        $this->assertSame(['status_not_available_desc', ['open']], $result->getFailed('status')[0]->getLanguageData());
+    }
+
+    public function testSuperAdminCanUseAnyChannelStatus()
+    {
+        $result = (new PublishStatusAccessHarness())->validateStatusAccessFor(
+            'open',
+            ['open', 'closed'],
+            [],
+            true
+        );
+
+        $this->assertFalse($result->hasErrors('status'));
+    }
+
+    public function testAssignedStatusOutsideChannelDoesNotPass()
+    {
+        $result = (new PublishStatusAccessHarness())->validateStatusAccessFor(
+            'open',
+            ['closed'],
+            ['open']
+        );
+
+        $this->assertTrue($result->hasErrors('status'));
+        $this->assertSame(['status_not_available_desc', ['open']], $result->getFailed('status')[0]->getLanguageData());
     }
 }
 
@@ -97,68 +149,110 @@ class PublishStatusAccessHarness extends AbstractPublish
     {
     }
 
-    public function validateStatusAccessFor($status, array $availableStatuses)
+    public function validateStatusAccessFor($status, array $channelStatuses, array $assignedStatuses, $isSuperAdmin = false)
     {
-        $entry = new ChannelEntry();
-        $entry->setRawProperty('status', $status);
+        ee()->setMock('session', new PublishStatusAccessSessionStub(new PublishStatusAccessMemberStub($assignedStatuses)));
+        ee()->setMock('Permission', new PublishStatusAccessPermissionStub($isSuperAdmin));
+
+        $entry = new PublishStatusAccessEntryStub($status, $channelStatuses);
 
         $result = new ValidationResult();
-        $this->validateEntryStatusAccess($entry, new PublishStatusAccessLayoutStub($availableStatuses), $result);
+        $this->validateEntryStatusAccess($entry, $result);
 
         return $result;
     }
 }
 
-class PublishStatusAccessLayoutStub
+class PublishStatusAccessEntryStub extends ChannelEntry
 {
-    private $availableStatuses;
+    protected $status;
+    private $channel;
 
-    public function __construct(array $availableStatuses)
+    public function __construct($status, array $channelStatuses)
     {
-        $this->availableStatuses = $availableStatuses;
+        $this->status = $status;
+        $this->channel = new PublishStatusAccessChannelStub($channelStatuses);
     }
 
-    public function getTabs()
+    public function __get($key)
     {
-        return [
-            new PublishStatusAccessTabStub($this->availableStatuses)
-        ];
+        if ($key === 'status') {
+            return $this->status;
+        }
+
+        if ($key === 'Channel') {
+            return $this->channel;
+        }
+
+        return parent::__get($key);
     }
 }
 
-class PublishStatusAccessTabStub
+class PublishStatusAccessChannelStub
 {
-    private $availableStatuses;
+    public $Statuses;
 
-    public function __construct(array $availableStatuses)
+    public function __construct(array $statuses)
     {
-        $this->availableStatuses = $availableStatuses;
-    }
-
-    public function getFields()
-    {
-        return [
-            new PublishStatusAccessFieldStub($this->availableStatuses)
-        ];
+        $this->Statuses = array_map(function ($status) {
+            return new PublishStatusAccessStatusStub($status);
+        }, $statuses);
     }
 }
 
-class PublishStatusAccessFieldStub
+class PublishStatusAccessStatusStub
 {
-    private $availableStatuses;
+    public $status;
 
-    public function __construct(array $availableStatuses)
+    public function __construct($status)
     {
-        $this->availableStatuses = $availableStatuses;
+        $this->status = $status;
+    }
+}
+
+class PublishStatusAccessMemberStub
+{
+    private $assignedStatuses;
+
+    public function __construct(array $assignedStatuses)
+    {
+        $this->assignedStatuses = array_map(function ($status) {
+            return new PublishStatusAccessStatusStub($status);
+        }, $assignedStatuses);
     }
 
-    public function getId()
+    public function getAssignedStatuses()
     {
-        return 'status';
+        return $this->assignedStatuses;
+    }
+}
+
+class PublishStatusAccessSessionStub
+{
+    private $member;
+
+    public function __construct($member)
+    {
+        $this->member = $member;
     }
 
-    public function get($key)
+    public function getMember()
     {
-        return $key == 'field_list_items' ? $this->availableStatuses : null;
+        return $this->member;
+    }
+}
+
+class PublishStatusAccessPermissionStub
+{
+    private $isSuperAdmin;
+
+    public function __construct($isSuperAdmin = false)
+    {
+        $this->isSuperAdmin = $isSuperAdmin;
+    }
+
+    public function isSuperAdmin()
+    {
+        return $this->isSuperAdmin;
     }
 }
