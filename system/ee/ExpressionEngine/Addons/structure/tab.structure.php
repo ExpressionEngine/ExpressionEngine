@@ -75,6 +75,13 @@ class Structure_tab
         return $this->publish_tabs($channel_id, $entry_id);
     }
 
+    /**
+     * Build the Structure publish tab settings for the current channel.
+     *
+     * @param int|string $channel_id
+     * @param int|string $entry_id
+     * @return array
+     */
     public function publish_tabs($channel_id, $entry_id = '')
     {
         $settings = array();
@@ -106,8 +113,9 @@ class Structure_tab
             if (empty($entry_id)) {
                 ee()->cp->add_js_script('plugin', 'ee_url_title');
 
-                if (ee()->input->get('parent_id')) {
-                    ee()->javascript->output('$("section.wrap div.tab-wrap > form").prepend(\'<input type="hidden" name="structure__parent_id" value="' . ee()->input->get('parent_id') . '" />\');');
+                $parent_id = (int) ee()->input->get('parent_id');
+                if ($parent_id > 0) {
+                    ee()->javascript->output('$("section.wrap div.tab-wrap > form").prepend(\'<input type="hidden" name="structure__parent_id" value="' . $parent_id . '" />\');');
                 }
 
                 ee()->javascript->output('
