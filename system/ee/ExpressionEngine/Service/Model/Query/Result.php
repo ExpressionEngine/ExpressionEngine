@@ -92,7 +92,7 @@ class Result
             // joins that pull in a duplicate data (e.g. Templates with TemplateGroup).
             if (isset($this->primary_keys[$alias])) {
                 $pkey = $this->primary_keys[$alias];
-                $value = $row[$pkey];
+                $value = $row[$pkey] ?? '';
 
                 if (isset($this->objects[$alias][$value])) {
                     $object = $this->objects[$alias][$value];
@@ -123,14 +123,15 @@ class Result
             $object->fill($model_data);
 
             // store for results and reuse
-            $this->objects[$alias][$object->getId()] = $object;
+            $id = $object->getId() ?? '';
+            $this->objects[$alias][$id] = $object;
 
             // on the first pass, memoize primary key names
             if (! isset($this->primary_keys[$alias])) {
                 $this->primary_keys[$alias] = $alias . '__' . $object->getPrimaryKey();
             }
 
-            $row_object_ids[$alias] = $object->getId();
+            $row_object_ids[$alias] = $id;
         }
 
         // connect ids
