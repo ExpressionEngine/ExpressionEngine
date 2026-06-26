@@ -96,7 +96,7 @@ class Result
 
                 if (isset($this->objects[$alias][$value])) {
                     $object = $this->objects[$alias][$value];
-                    $row_object_ids[$alias] = $object->getId();
+                    $row_object_ids[$alias] = $object->getId() ?? '';
 
                     continue;
                 }
@@ -136,6 +136,7 @@ class Result
 
         // connect ids
         foreach ($row_object_ids as $alias => $id) {
+            $id = $id ?? '';
             $related = $row_object_ids;
             unset($related[$alias]);
 
