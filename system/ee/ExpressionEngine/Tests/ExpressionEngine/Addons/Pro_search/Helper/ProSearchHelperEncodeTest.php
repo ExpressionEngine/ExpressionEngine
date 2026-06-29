@@ -253,6 +253,128 @@ class ProSearchHelperEncodeTest extends TestCase
     }
 
     /**
+     * pro_array_is_numeric returns true for its default empty input.
+     *
+     * @return void
+     */
+    public function testArrayIsNumericReturnsTrueForDefaultInput(): void
+    {
+        $actual = pro_array_is_numeric();
+
+        $this->assertTrue($actual);
+        $this->assertIsBool($actual);
+    }
+
+    /**
+     * pro_array_is_numeric preserves legacy scalar input boundaries.
+     *
+     * @dataProvider arrayIsNumericLegacyScalarProvider
+     * @param mixed $value
+     * @return void
+     */
+    public function testArrayIsNumericPreservesLegacyScalarInputBoundaries($value): void
+    {
+        $actual = @pro_array_is_numeric($value);
+
+        $this->assertTrue($actual);
+        $this->assertIsBool($actual);
+    }
+
+    /**
+     * Legacy scalar values for pro_array_is_numeric.
+     *
+     * @return array
+     */
+    public function arrayIsNumericLegacyScalarProvider(): array
+    {
+        return [
+            'null input' => [null],
+            'false input' => [false],
+            'empty string input' => [''],
+            'numeric string input' => ['123'],
+        ];
+    }
+
+    /**
+     * pro_array_is_numeric preserves legacy numeric array semantics.
+     *
+     * @dataProvider arrayIsNumericValueProvider
+     * @param array $value
+     * @param bool $expected
+     * @return void
+     */
+    public function testArrayIsNumericPreservesLegacyNumericArraySemantics(array $value, bool $expected): void
+    {
+        $actual = pro_array_is_numeric($value);
+
+        $this->assertSame($expected, $actual);
+        $this->assertIsBool($actual);
+    }
+
+    /**
+     * Numeric and non-numeric array values for pro_array_is_numeric.
+     *
+     * @return array
+     */
+    public function arrayIsNumericValueProvider(): array
+    {
+        return [
+            'empty array is numeric' => [[], true],
+            'integer zero is numeric' => [[0], true],
+            'integers and floats are numeric' => [[1, -2, 3.5], true],
+            'numeric strings are numeric' => [['1', '0', '-2.5', '1e3'], true],
+            'associative keys do not affect numeric values' => [['first' => '10', 'second' => 20], true],
+            'non-numeric string is not numeric' => [[1, 'alpha', 2], false],
+            'null value is not numeric' => [[1, null], false],
+            'boolean value is not numeric' => [[true], false],
+            'nested array value is not numeric' => [[[1]], false],
+        ];
+    }
+
+    /**
+     * pro_array_is_numeric subprocess coverage exercises all reachable branches.
+     *
+     * @return void
+     */
+    public function testArrayIsNumericCoverageSubprocessCoversBranches(): void
+    {
+        $outputFile = sys_get_temp_dir() . '/pro-search-helper-array-is-numeric-' . uniqid('', true) . '.json';
+        $script = dirname(__DIR__, 4) . '/support/pro_search_helper_array_is_numeric_coverage.php';
+        $command = escapeshellarg(PHP_BINARY) . ' -d xdebug.mode=coverage ' . escapeshellarg($script) . ' ' . escapeshellarg($outputFile) . ' 2>&1';
+
+        exec($command, $output, $exitCode);
+
+        $this->assertSame(0, $exitCode, implode("\n", $output));
+        $this->assertFileExists($outputFile);
+
+        $result = json_decode(file_get_contents($outputFile), true);
+        @unlink($outputFile);
+
+        $this->assertIsArray($result);
+        $this->assertSame(
+            realpath(__DIR__ . '/../../../../../Addons/pro_search/helpers/pro_search_helper.php'),
+            $result['real_module_path']
+        );
+        $this->assertTrue($result['results']['default_empty']);
+        $this->assertTrue($result['results']['empty_array']);
+        $this->assertTrue($result['results']['integer_and_float']);
+        $this->assertTrue($result['results']['numeric_strings']);
+        $this->assertTrue($result['results']['associative_numeric_values']);
+        $this->assertTrue($result['results']['legacy_null_input']);
+        $this->assertFalse($result['results']['non_numeric_string']);
+        $this->assertFalse($result['results']['null_value']);
+        $this->assertFalse($result['results']['boolean_value']);
+        $this->assertFalse($result['results']['nested_array_value']);
+
+        if ($result['xdebug_available'] ?? false) {
+            $this->assertEquals(100.0, $result['line_percentage']);
+            $this->assertEquals(100.0, $result['branch_percentage']);
+            $this->assertSame([], $result['uncovered_lines']);
+            $this->assertSame([], $result['uncovered_branches']);
+        }
+    }
+
+    /**
      * pro_search_decode returns an empty array for invalid input.
      *
      * @dataProvider invalidDecodeInputProvider
