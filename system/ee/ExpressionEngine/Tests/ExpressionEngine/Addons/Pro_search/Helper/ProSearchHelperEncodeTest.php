@@ -231,4 +231,69 @@ class ProSearchHelperEncodeTest extends TestCase
 
         $this->assertSame([], pro_search_decode($encodedScalar));
     }
+
+    /**
+     * pro_strpos_all returns every literal match offset.
+     *
+     * @dataProvider strposAllMatchProvider
+     * @param string $haystack
+     * @param string $needle
+     * @param array $expected
+     * @return void
+     */
+    public function testStrposAllReturnsEveryLiteralMatchOffset(string $haystack, string $needle, array $expected): void
+    {
+        $actual = pro_strpos_all($haystack, $needle);
+
+        $this->assertSame($expected, $actual);
+
+        foreach ($actual as $offset) {
+            $this->assertIsInt($offset);
+        }
+    }
+
+    /**
+     * Match inputs for pro_strpos_all.
+     *
+     * @return array
+     */
+    public function strposAllMatchProvider(): array
+    {
+        return [
+            'single match' => ['alpha beta', 'beta', [6]],
+            'multiple matches' => ['alpha beta alpha', 'alpha', [0, 11]],
+            'regex metacharacter literal' => ['a.b.a.b', '.', [1, 3, 5]],
+            'regex delimiter literal' => ['a#b#a#b', '#', [1, 3, 5]],
+            'first and last positions' => ['abxxab', 'ab', [0, 4]],
+        ];
+    }
+
+    /**
+     * pro_strpos_all returns an empty array when no needle is matched.
+     *
+     * @dataProvider strposAllNoMatchProvider
+     * @param string|null $haystack
+     * @param string $needle
+     * @return void
+     */
+    public function testStrposAllReturnsEmptyArrayWhenNoNeedleIsMatched($haystack, string $needle): void
+    {
+        $this->assertSame([], pro_strpos_all($haystack, $needle));
+    }
+
+    /**
+     * No-match inputs for pro_strpos_all.
+     *
+     * @return array
+     */
+    public function strposAllNoMatchProvider(): array
+    {
+        return [
+            'null haystack' => [null, 'a'],
+            'empty haystack' => ['', 'a'],
+            'missing needle' => ['abc', 'z'],
+            'case-sensitive mismatch' => ['Alpha', 'alpha'],
+            'needle longer than haystack' => ['ab', 'abc'],
+        ];
+    }
 }
