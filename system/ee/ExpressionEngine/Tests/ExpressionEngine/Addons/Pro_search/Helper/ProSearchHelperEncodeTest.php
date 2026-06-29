@@ -550,6 +550,171 @@ class ProSearchHelperEncodeTest extends TestCase
     }
 
     /**
+     * pro_array_add_prefix casts values while preserving keys and caller input.
+     *
+     * @return void
+     */
+    public function testArrayAddPrefixCastsValuesAndPreservesKeysWithoutMutatingCallerInput(): void
+    {
+        $params = [
+            'entry_id' => 12,
+            7 => 'seven',
+            'zero' => 0,
+            'false' => false,
+            'null' => null,
+            'float' => 3.5,
+            'true' => true,
+        ];
+
+        $actual = pro_array_add_prefix($params, 'cat:');
+
+        $this->assertSame([
+            'entry_id' => 'cat:12',
+            7 => 'cat:seven',
+            'zero' => 'cat:0',
+            'false' => 'cat:',
+            'null' => 'cat:',
+            'float' => 'cat:3.5',
+            'true' => 'cat:1',
+        ], $actual);
+        $this->assertSame([
+            'entry_id' => 12,
+            7 => 'seven',
+            'zero' => 0,
+            'false' => false,
+            'null' => null,
+            'float' => 3.5,
+            'true' => true,
+        ], $params);
+    }
+
+    /**
+     * pro_array_add_prefix preserves legacy prefix boundary behavior.
+     *
+     * @dataProvider arrayAddPrefixBoundaryProvider
+     * @param array $params
+     * @param mixed $prefix
+     * @param array $expected
+     * @return void
+     */
+    public function testArrayAddPrefixPreservesPrefixBoundaries(array $params, $prefix, array $expected): void
+    {
+        $this->assertSame($expected, @pro_array_add_prefix($params, $prefix));
+    }
+
+    /**
+     * Prefix boundary inputs for pro_array_add_prefix.
+     *
+     * @return array
+     */
+    public function arrayAddPrefixBoundaryProvider(): array
+    {
+        return [
+            'empty prefix still casts values' => [
+                ['entry_id' => 12, 'keyword' => 'alpha'],
+                '',
+                ['entry_id' => '12', 'keyword' => 'alpha'],
+            ],
+            'zero string prefix is preserved' => [
+                ['entry_id' => 12],
+                '0',
+                ['entry_id' => '012'],
+            ],
+            'null prefix behaves as an empty prefix' => [
+                ['entry_id' => 12],
+                null,
+                ['entry_id' => '12'],
+            ],
+            'false prefix behaves as an empty prefix' => [
+                ['entry_id' => 12],
+                false,
+                ['entry_id' => '12'],
+            ],
+            'empty array returns empty array' => [
+                [],
+                'cat:',
+                [],
+            ],
+        ];
+    }
+
+    /**
+     * pro_array_add_prefix preserves legacy non-array input behavior.
+     *
+     * @dataProvider arrayAddPrefixLegacyNonArrayProvider
+     * @param mixed $params
+     * @return void
+     */
+    public function testArrayAddPrefixPreservesLegacyNonArrayInputBoundaries($params): void
+    {
+        $this->assertSame($params, @pro_array_add_prefix($params, 'cat:'));
+    }
+
+    /**
+     * Legacy non-array inputs for pro_array_add_prefix.
+     *
+     * @return array
+     */
+    public function arrayAddPrefixLegacyNonArrayProvider(): array
+    {
+        return [
+            'null input' => [null],
+            'false input' => [false],
+            'empty string input' => [''],
+        ];
+    }
+
+    /**
+     * pro_array_add_prefix subprocess coverage exercises all reachable branches.
+     *
+     * @return void
+     */
+    public function testArrayAddPrefixCoverageSubprocessCoversBranches(): void
+    {
+        $outputFile = sys_get_temp_dir() . '/pro-search-helper-array-add-prefix-' . uniqid('', true) . '.json';
+        $script = dirname(__DIR__, 4) . '/support/pro_search_helper_array_add_prefix_coverage.php';
+        $command = escapeshellarg(PHP_BINARY) . ' -d xdebug.mode=coverage ' . escapeshellarg($script) . ' ' . escapeshellarg($outputFile) . ' 2>&1';
+
+        exec($command, $output, $exitCode);
+
+        $this->assertSame(0, $exitCode, implode("\n", $output));
+        $this->assertFileExists($outputFile);
+
+        $result = json_decode(file_get_contents($outputFile), true);
+        @unlink($outputFile);
+
+        $this->assertIsArray($result);
+        $this->assertSame(
+            realpath(__DIR__ . '/../../../../../Addons/pro_search/helpers/pro_search_helper.php'),
+            $result['real_module_path']
+        );
+        $this->assertSame([
+            'entry_id' => 'cat:12',
+            7 => 'cat:seven',
+            'zero' => 'cat:0',
+            'false' => 'cat:',
+            'null' => 'cat:',
+            'float' => 'cat:3.5',
+            'true' => 'cat:1',
+        ], $result['prefixed_values']);
+        $this->assertSame(['entry_id' => '12', 'keyword' => 'alpha'], $result['empty_prefix']);
+        $this->assertSame(['entry_id' => '012'], $result['zero_string_prefix']);
+        $this->assertSame(['entry_id' => '12'], $result['null_prefix']);
+        $this->assertSame(['entry_id' => '12'], $result['false_prefix']);
+        $this->assertSame([], $result['empty_array']);
+        $this->assertNull($result['null_input']);
+        $this->assertFalse($result['false_input']);
+        $this->assertSame('', $result['empty_string_input']);
+
+        if ($result['xdebug_available'] ?? false) {
+            $this->assertEquals(100.0, $result['line_percentage']);
+            $this->assertEquals(100.0, $result['branch_percentage']);
+            $this->assertSame([], $result['uncovered_lines']);
+            $this->assertSame([], $result['uncovered_branches']);
+        }
+    }
+
+    /**
      * pro_search_decode returns an empty array for invalid input.
      *
      * @dataProvider invalidDecodeInputProvider
