@@ -1433,6 +1433,91 @@ class ProSearchHelperEncodeTest extends TestCase
     }
 
     /**
+     * pro_dump writes print_r output without exiting when disabled.
+     *
+     * @dataProvider dumpValueProvider
+     * @param mixed $value
+     * @return void
+     */
+    public function testDumpWritesPrintROutputWithoutExiting($value): void
+    {
+        ob_start();
+        $result = pro_dump($value, false);
+        $output = ob_get_clean();
+
+        $this->assertNull($result);
+        $this->assertSame('<pre>' . print_r($value, true) . '</pre>', $output);
+    }
+
+    /**
+     * Values that pro_dump should pass through print_r unchanged.
+     *
+     * @return array
+     */
+    public function dumpValueProvider(): array
+    {
+        $object = new stdClass();
+        $object->keywords = 'alpha';
+
+        return [
+            'scalar string' => ['alpha <beta>'],
+            'array preserves falsey values' => [[
+                'keywords' => 'alpha',
+                'empty_string' => '',
+                'zero' => 0,
+                'false' => false,
+                'null' => null,
+            ]],
+            'object' => [$object],
+        ];
+    }
+
+    /**
+     * pro_dump subprocess coverage exercises both exit branches.
+     *
+     * @return void
+     */
+    public function testDumpCoverageSubprocessCoversBranches(): void
+    {
+        $outputFile = sys_get_temp_dir() . '/pro-search-helper-pro-dump-' . uniqid('', true) . '.json';
+        $script = dirname(__DIR__, 4) . '/support/pro_search_helper_pro_dump_coverage.php';
+        $command = escapeshellarg(PHP_BINARY) . ' -d xdebug.mode=coverage ' . escapeshellarg($script) . ' ' . escapeshellarg($outputFile) . ' 2>&1';
+
+        exec($command, $output, $exitCode);
+
+        $this->assertSame(0, $exitCode, implode("\n", $output));
+        $this->assertFileExists($outputFile);
+
+        $result = json_decode(file_get_contents($outputFile), true);
+        @unlink($outputFile);
+
+        $firstValue = [
+            'keywords' => 'alpha',
+            'empty_string' => '',
+            'zero' => 0,
+            'false' => false,
+        ];
+        $expectedOutput = '<pre>' . print_r($firstValue, true) . '</pre>';
+        $expectedOutput .= '<pre>exit branch</pre>';
+
+        $this->assertIsArray($result);
+        $this->assertSame(
+            realpath(__DIR__ . '/../../../../../Addons/pro_search/helpers/pro_search_helper.php'),
+            $result['real_module_path']
+        );
+        $this->assertSame($expectedOutput, $result['captured_output']);
+        $this->assertSame(0, $result['exit_status']);
+
+        if ($result['xdebug_available'] ?? false) {
+            $this->assertSame(2, $result['total_branches']);
+            $this->assertEquals(100.0, $result['line_percentage']);
+            $this->assertEquals(100.0, $result['branch_percentage']);
+            $this->assertSame([], $result['uncovered_lines']);
+            $this->assertSame([], $result['uncovered_branches']);
+        }
+    }
+
+    /**
      * pro_search_decode returns an empty array for invalid input.
      *
      * @dataProvider invalidDecodeInputProvider
