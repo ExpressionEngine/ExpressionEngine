@@ -11,6 +11,18 @@ require_once __DIR__ . '/../../../../../Addons/pro_search/helpers/pro_search_hel
 class ProSearchHelperEncodeTest extends TestCase
 {
     /**
+     * Reset ExpressionEngine mocks after helper tests that touch ee().
+     *
+     * @return void
+     */
+    protected function tearDown(): void
+    {
+        if (function_exists('ee') && method_exists(ee(), 'resetMocks')) {
+            ee()->resetMocks();
+        }
+    }
+
+    /**
      * pro_search_encode filters empty values before encoding.
      *
      * @return void
@@ -230,6 +242,123 @@ class ProSearchHelperEncodeTest extends TestCase
         $encodedScalar = base64_encode(json_encode('scalar'));
 
         $this->assertSame([], pro_search_decode($encodedScalar));
+    }
+
+    /**
+     * pro_clean_string returns empty input unchanged without loading words.
+     *
+     * @dataProvider cleanStringEmptyInputProvider
+     * @param mixed $value
+     * @return void
+     */
+    public function testCleanStringReturnsEmptyInputWithoutLoadingWords($value): void
+    {
+        $loader = $this->getMockBuilder('stdClass')
+            ->addMethods(['library'])
+            ->getMock();
+        $loader->expects($this->never())->method('library');
+        ee()->setMock('load', $loader);
+
+        $this->assertSame($value, pro_clean_string($value, ['ignored']));
+    }
+
+    /**
+     * Empty legacy inputs for pro_clean_string.
+     *
+     * @return array
+     */
+    public function cleanStringEmptyInputProvider(): array
+    {
+        return [
+            'empty string' => [''],
+            'zero string' => ['0'],
+            'zero integer' => [0],
+            'null' => [null],
+            'false' => [false],
+        ];
+    }
+
+    /**
+     * pro_clean_string loads words and returns the final cleaned string.
+     *
+     * @return void
+     */
+    public function testCleanStringLoadsWordsAndReturnsFinalCleanedString(): void
+    {
+        $loader = $this->getMockBuilder('stdClass')
+            ->addMethods(['library'])
+            ->getMock();
+        $loader->expects($this->once())
+            ->method('library')
+            ->with('pro_search_words');
+        ee()->setMock('load', $loader);
+
+        $words = $this->getMockBuilder('stdClass')
+            ->addMethods(['clean', 'remove_diacritics'])
+            ->getMock();
+        $words->expects($this->once())
+            ->method('clean')
+            ->with(' Cafe Search ', true)
+            ->willReturn('cleaned cafe search');
+        $words->expects($this->once())
+            ->method('remove_diacritics')
+            ->with('cleaned cafe search')
+            ->willReturn('cafe search');
+        ee()->setMock('pro_search_words', $words);
+
+        $this->assertSame('cafe search', pro_clean_string(' Cafe Search ', ['cafe']));
+    }
+
+    /**
+     * pro_clean_string casts the ignore argument before cleaning.
+     *
+     * @dataProvider cleanStringIgnoreCoercionProvider
+     * @param mixed $ignore
+     * @param bool $expectedIgnore
+     * @return void
+     */
+    public function testCleanStringCastsIgnoreArgumentBeforeCleaning($ignore, bool $expectedIgnore): void
+    {
+        $loader = $this->getMockBuilder('stdClass')
+            ->addMethods(['library'])
+            ->getMock();
+        $loader->expects($this->once())
+            ->method('library')
+            ->with('pro_search_words');
+        ee()->setMock('load', $loader);
+
+        $words = $this->getMockBuilder('stdClass')
+            ->addMethods(['clean', 'remove_diacritics'])
+            ->getMock();
+        $words->expects($this->once())
+            ->method('clean')
+            ->with('alpha beta', $expectedIgnore)
+            ->willReturn('clean alpha beta');
+        $words->expects($this->once())
+            ->method('remove_diacritics')
+            ->with('clean alpha beta')
+            ->willReturn('clean alpha beta');
+        ee()->setMock('pro_search_words', $words);
+
+        $this->assertSame('clean alpha beta', pro_clean_string('alpha beta', $ignore));
+    }
+
+    /**
+     * Ignore argument coercion inputs for pro_clean_string.
+     *
+     * @return array
+     */
+    public function cleanStringIgnoreCoercionProvider(): array
+    {
+        return [
+            'null ignore' => [null, false],
+            'empty array ignore' => [[], false],
+            'empty string ignore' => ['', false],
+            'zero string ignore' => ['0', false],
+            'stop word array ignore' => [['alpha'], true],
+            'string ignore' => ['alpha', true],
+            'integer ignore' => [1, true],
+        ];
     }
 
     /**
