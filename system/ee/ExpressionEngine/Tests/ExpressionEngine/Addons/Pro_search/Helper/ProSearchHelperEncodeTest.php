@@ -362,6 +362,67 @@ class ProSearchHelperEncodeTest extends TestCase
     }
 
     /**
+     * pro_chr decodes numeric and named character references.
+     *
+     * @dataProvider proChrCharacterReferenceProvider
+     * @param mixed $value
+     * @param string $expected
+     * @return void
+     */
+    public function testProChrDecodesCharacterReferences($value, string $expected): void
+    {
+        $this->assertSame($expected, pro_chr($value));
+    }
+
+    /**
+     * Character reference inputs for pro_chr.
+     *
+     * @return array
+     */
+    public function proChrCharacterReferenceProvider(): array
+    {
+        return [
+            'decimal integer' => [65, 'A'],
+            'decimal string' => ['65', 'A'],
+            'numeric double quote with ENT_QUOTES' => [34, '"'],
+            'numeric single quote with ENT_QUOTES' => [39, "'"],
+            'named entity' => ['quot', '"'],
+            'invalid named entity is preserved' => ['not-a-real-entity', '&not-a-real-entity;'],
+            'invalid numeric code point is preserved' => [1114112, '&#1114112;'],
+        ];
+    }
+
+    /**
+     * pro_chr decodes UTF-8 code points without truncating bytes.
+     *
+     * @dataProvider proChrUtf8CodePointProvider
+     * @param mixed $value
+     * @param string $expectedHex
+     * @return void
+     */
+    public function testProChrDecodesUtf8CodePoints($value, string $expectedHex): void
+    {
+        $actual = pro_chr($value);
+
+        $this->assertSame($expectedHex, bin2hex($actual));
+        $this->assertSame(strlen(hex2bin($expectedHex)), strlen($actual));
+    }
+
+    /**
+     * UTF-8 code point inputs for pro_chr.
+     *
+     * @return array
+     */
+    public function proChrUtf8CodePointProvider(): array
+    {
+        return [
+            'named copyright entity' => ['copy', 'c2a9'],
+            'three-byte numeric code point' => [8364, 'e282ac'],
+            'highest valid Unicode code point' => [1114111, 'f48fbfbf'],
+        ];
+    }
+
+    /**
      * pro_hilite wraps literal needle matches in mark tags.
      *
      * @dataProvider hiliteMatchProvider
