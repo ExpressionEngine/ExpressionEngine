@@ -987,6 +987,79 @@ class ProSearchHelperEncodeTest extends TestCase
     }
 
     /**
+     * pro_languages returns configured languages and reuses its static cache.
+     *
+     * @dataProvider languagesConfigProvider
+     * @param string $scenario
+     * @param array $expectedLanguages
+     * @return void
+     */
+    public function testLanguagesSubprocessReturnsConfiguredLanguagesAndReusesCache(
+        string $scenario,
+        array $expectedLanguages
+    ): void {
+        $outputFile = sys_get_temp_dir() . '/pro-search-helper-pro-languages-' . uniqid('', true) . '.json';
+        $script = dirname(__DIR__, 4) . '/support/pro_search_helper_pro_languages_coverage.php';
+        $command = escapeshellarg(PHP_BINARY)
+            . ' -d xdebug.mode=coverage '
+            . escapeshellarg($script)
+            . ' '
+            . escapeshellarg($outputFile)
+            . ' '
+            . escapeshellarg($scenario)
+            . ' 2>&1';
+
+        exec($command, $output, $exitCode);
+
+        $this->assertSame(0, $exitCode, implode("\n", $output));
+        $this->assertFileExists($outputFile);
+
+        $result = json_decode(file_get_contents($outputFile), true);
+        @unlink($outputFile);
+
+        $this->assertIsArray($result);
+        $this->assertSame(
+            realpath(__DIR__ . '/../../../../../Addons/pro_search/helpers/pro_search_helper.php'),
+            $result['real_module_path']
+        );
+        $this->assertSame($expectedLanguages, $result['first_call']);
+        $this->assertSame($result['first_call'], $result['second_call']);
+        $this->assertSame(1, $result['load_file_call_count']);
+        $this->assertSame(['languages'], $result['load_file_names']);
+        $this->assertSame([], $result['replacement_config_load_file_names']);
+
+        if ($result['xdebug_available'] ?? false) {
+            $this->assertEquals(100.0, $result['line_percentage']);
+            $this->assertEquals(100.0, $result['branch_percentage']);
+            $this->assertSame([], $result['uncovered_lines']);
+            $this->assertSame([], $result['uncovered_branches']);
+        }
+    }
+
+    /**
+     * Config-file scenarios for pro_languages.
+     *
+     * @return array
+     */
+    public function languagesConfigProvider(): array
+    {
+        return [
+            'configured languages are sorted by key' => [
+                'populated',
+                [
+                    'alpha' => 'Alpha',
+                    'english' => 'English',
+                    'spanish' => 'Spanish',
+                ],
+            ],
+            'missing config is cast to an empty array' => [
+                'missing',
+                [],
+            ],
+        ];
+    }
+
+    /**
      * pro_search_decode returns an empty array for invalid input.
      *
      * @dataProvider invalidDecodeInputProvider
