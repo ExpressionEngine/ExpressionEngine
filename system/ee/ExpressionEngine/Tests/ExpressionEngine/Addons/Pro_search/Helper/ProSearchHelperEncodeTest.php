@@ -27,12 +27,45 @@ require_once __DIR__ . '/../../../../../Addons/pro_search/helpers/pro_search_hel
 class ProSearchHelperEncodeTest extends TestCase
 {
     /**
-     * Reset ExpressionEngine mocks after helper tests that touch ee().
+     * Whether the current request header existed before the test.
+     *
+     * @var bool
+     */
+    private $requestedWithHeaderWasSet = false;
+
+    /**
+     * Original current request header value.
+     *
+     * @var mixed
+     */
+    private $requestedWithHeaderValue;
+
+    /**
+     * Preserve request header state before each helper test.
+     *
+     * @return void
+     */
+    protected function setUp(): void
+    {
+        $this->requestedWithHeaderWasSet = array_key_exists('HTTP_X_REQUESTED_WITH', $_SERVER);
+        $this->requestedWithHeaderValue = $this->requestedWithHeaderWasSet ? $_SERVER['HTTP_X_REQUESTED_WITH'] : null;
+    }
+
+    /**
+     * Reset globals and ExpressionEngine mocks after helper tests.
      *
      * @return void
      */
     protected function tearDown(): void
     {
+        if ($this->requestedWithHeaderWasSet) {
+            $_SERVER['HTTP_X_REQUESTED_WITH'] = $this->requestedWithHeaderValue;
+        }
+
+        if (! $this->requestedWithHeaderWasSet) {
+            unset($_SERVER['HTTP_X_REQUESTED_WITH']);
+        }
+
         if (function_exists('ee') && method_exists(ee(), 'resetMocks')) {
             ee()->resetMocks();
         }
@@ -903,6 +936,110 @@ class ProSearchHelperEncodeTest extends TestCase
         $this->assertSame([], $result['empty_result']);
         $this->assertSame([], $result['null_result']);
         $this->assertSame([0, ''], array_keys($result['boundary_result']));
+
+        if ($result['xdebug_available'] ?? false) {
+            $this->assertEquals(100.0, $result['line_percentage']);
+            $this->assertEquals(100.0, $result['branch_percentage']);
+            $this->assertSame([], $result['uncovered_lines']);
+            $this->assertSame([], $result['uncovered_branches']);
+        }
+    }
+
+    /**
+     * is_ajax returns true only for the exact legacy Ajax header.
+     *
+     * @return void
+     */
+    public function testIsAjaxReturnsTrueForExactRequestedWithHeader(): void
+    {
+        $_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
+
+        $actual = is_ajax();
+
+        $this->assertTrue($actual);
+        $this->assertIsBool($actual);
+    }
+
+    /**
+     * is_ajax returns false when the request header is absent.
+     *
+     * @return void
+     */
+    public function testIsAjaxReturnsFalseWhenRequestedWithHeaderIsMissing(): void
+    {
+        unset($_SERVER['HTTP_X_REQUESTED_WITH']);
+
+        $actual = is_ajax();
+
+        $this->assertFalse($actual);
+        $this->assertIsBool($actual);
+    }
+
+    /**
+     * is_ajax rejects non-exact Ajax header values.
+     *
+     * @dataProvider nonAjaxRequestedWithProvider
+     * @param mixed $value
+     * @return void
+     */
+    public function testIsAjaxReturnsFalseForNonExactRequestedWithHeaders($value): void
+    {
+        $_SERVER['HTTP_X_REQUESTED_WITH'] = $value;
+
+        $actual = is_ajax();
+
+        $this->assertFalse($actual);
+        $this->assertIsBool($actual);
+    }
+
+    /**
+     * Non-Ajax request header values.
+     *
+     * @return array
+     */
+    public function nonAjaxRequestedWithProvider(): array
+    {
+        return [
+            'lowercase ajax header' => ['xmlhttprequest'],
+            'uppercase ajax header' => ['XMLHTTPREQUEST'],
+            'fetch header' => ['fetch'],
+            'empty string' => [''],
+            'zero string' => ['0'],
+            'null header value' => [null],
+            'header with surrounding whitespace' => [' XMLHttpRequest '],
+        ];
+    }
+
+    /**
+     * is_ajax subprocess coverage exercises all reachable branches.
+     *
+     * @return void
+     */
+    public function testIsAjaxCoverageSubprocessCoversBranches(): void
+    {
+        $outputFile = sys_get_temp_dir() . '/pro-search-helper-is-ajax-' . uniqid('', true) . '.json';
+        $script = dirname(__DIR__, 4) . '/support/pro_search_helper_is_ajax_coverage.php';
+        $command = escapeshellarg(PHP_BINARY) . ' -d xdebug.mode=coverage ' . escapeshellarg($script) . ' ' . escapeshellarg($outputFile) . ' 2>&1';
+
+        exec($command, $output, $exitCode);
+
+        $this->assertSame(0, $exitCode, implode("\n", $output));
+        $this->assertFileExists($outputFile);
+
+        $result = json_decode(file_get_contents($outputFile), true);
+        @unlink($outputFile);
+
+        $this->assertIsArray($result);
+        $this->assertSame(
+            realpath(__DIR__ . '/../../../../../Addons/pro_search/helpers/pro_search_helper.php'),
+            $result['real_module_path']
+        );
+        $this->assertTrue($result['exact_header_result']);
+        $this->assertFalse($result['missing_header_result']);
+        $this->assertFalse($result['lowercase_header_result']);
+        $this->assertFalse($result['empty_header_result']);
+        $this->assertFalse($result['zero_string_header_result']);
+        $this->assertFalse($result['null_header_result']);
 
         if ($result['xdebug_available'] ?? false) {
             $this->assertEquals(100.0, $result['line_percentage']);
