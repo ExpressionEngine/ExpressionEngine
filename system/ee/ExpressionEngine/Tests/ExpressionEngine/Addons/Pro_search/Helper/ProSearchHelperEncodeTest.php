@@ -648,6 +648,132 @@ class ProSearchHelperEncodeTest extends TestCase
     }
 
     /**
+     * pro_flatten_results returns indexed values by default.
+     *
+     * @return void
+     */
+    public function testFlattenResultsReturnsIndexedValuesByDefault(): void
+    {
+        $rows = [
+            ['channel_id' => '5', 'collection_id' => 'news'],
+            ['channel_id' => '6', 'collection_id' => 'blog'],
+            ['channel_id' => '5', 'collection_id' => 'archive'],
+        ];
+
+        $this->assertSame(['5', '6', '5'], pro_flatten_results($rows, 'channel_id'));
+    }
+
+    /**
+     * pro_flatten_results returns an empty array for empty result sets.
+     *
+     * @return void
+     */
+    public function testFlattenResultsReturnsEmptyArrayForEmptyResultSets(): void
+    {
+        $this->assertSame([], pro_flatten_results([], 'channel_id'));
+    }
+
+    /**
+     * pro_flatten_results preserves its legacy null-input boundary.
+     *
+     * @return void
+     */
+    public function testFlattenResultsTreatsLegacyNullInputAsEmptyArray(): void
+    {
+        $this->assertSame([], @pro_flatten_results(null, 'channel_id'));
+    }
+
+    /**
+     * pro_flatten_results preserves scalar value types without filtering.
+     *
+     * @return void
+     */
+    public function testFlattenResultsPreservesScalarValueTypes(): void
+    {
+        $rows = [
+            ['value' => 0],
+            ['value' => '0'],
+            ['value' => false],
+            ['value' => null],
+            ['value' => ''],
+        ];
+
+        $this->assertSame([0, '0', false, null, ''], pro_flatten_results($rows, 'value'));
+    }
+
+    /**
+     * pro_flatten_results indexes values by the requested key.
+     *
+     * @return void
+     */
+    public function testFlattenResultsIndexesValuesByRequestedKey(): void
+    {
+        $rows = [
+            ['collection_id' => 'news', 'channel_id' => '5'],
+            ['collection_id' => 'blog', 'channel_id' => '6'],
+        ];
+
+        $this->assertSame(
+            ['news' => '5', 'blog' => '6'],
+            pro_flatten_results($rows, 'channel_id', 'collection_id')
+        );
+    }
+
+    /**
+     * pro_flatten_results keeps the last value for duplicate keys.
+     *
+     * @return void
+     */
+    public function testFlattenResultsKeepsLastValueForDuplicateKeys(): void
+    {
+        $rows = [
+            ['collection_id' => 'news', 'channel_id' => '5'],
+            ['collection_id' => 'news', 'channel_id' => '7'],
+            ['collection_id' => 'blog', 'channel_id' => '6'],
+        ];
+
+        $this->assertSame(
+            ['news' => '7', 'blog' => '6'],
+            pro_flatten_results($rows, 'channel_id', 'collection_id')
+        );
+    }
+
+    /**
+     * pro_flatten_results treats only false as indexed mode.
+     *
+     * @dataProvider flattenResultsStrictFalseKeyProvider
+     * @param mixed $key
+     * @param array $row
+     * @param array $expected
+     * @return void
+     */
+    public function testFlattenResultsTreatsOnlyFalseAsIndexedMode($key, array $row, array $expected): void
+    {
+        $this->assertSame($expected, @pro_flatten_results([$row], 'value', $key));
+    }
+
+    /**
+     * Strict-false key boundary inputs for pro_flatten_results.
+     *
+     * @return array
+     */
+    public function flattenResultsStrictFalseKeyProvider(): array
+    {
+        return [
+            'null key uses empty string row key' => [
+                null,
+                ['' => 'empty-key', 'value' => 'alpha'],
+                ['empty-key' => 'alpha'],
+            ],
+            'integer zero key uses numeric row key' => [
+                0,
+                [0 => 'zero-key', 'value' => 'beta'],
+                ['zero-key' => 'beta'],
+            ],
+        ];
+    }
+
+    /**
      * pro_prep_word_list lowercases, filters duplicates, and sorts tokens.
      *
      * @return void
