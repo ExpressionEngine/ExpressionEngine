@@ -1060,6 +1060,142 @@ class ProSearchHelperEncodeTest extends TestCase
     }
 
     /**
+     * pro_get_cache delegates to sessions that expose cache().
+     *
+     * @return void
+     */
+    public function testGetCacheDelegatesToSessionCacheMethod(): void
+    {
+        $session = new class {
+            public $cacheCalls = [];
+
+            /**
+             * Record delegated cache lookups.
+             *
+             * @param string $class
+             * @param string $key
+             * @return array
+             */
+            public function cache($class, $key): array
+            {
+                $this->cacheCalls[] = [$class, $key];
+
+                return ['entry_id' => 42];
+            }
+        };
+
+        ee()->setMock('session', $session);
+
+        $this->assertSame(['entry_id' => 42], pro_get_cache('pro_search', 'results'));
+        $this->assertSame([['pro_search', 'results']], $session->cacheCalls);
+    }
+
+    /**
+     * pro_get_cache reads legacy session cache arrays without cache().
+     *
+     * @return void
+     */
+    public function testGetCacheReadsLegacyCacheArrayWhenCacheMethodIsUnavailable(): void
+    {
+        $session = new class {
+            public $cache = [
+                'pro_search' => [
+                    'params' => [
+                        'keywords' => 'alpha',
+                        'collection' => 'news',
+                    ],
+                ],
+            ];
+        };
+
+        ee()->setMock('session', $session);
+
+        $this->assertSame(
+            [
+                'keywords' => 'alpha',
+                'collection' => 'news',
+            ],
+            pro_get_cache('pro_search', 'params')
+        );
+    }
+
+    /**
+     * pro_get_cache returns false for legacy cache misses.
+     *
+     * @dataProvider getCacheLegacyMissProvider
+     * @param string $class
+     * @param string $key
+     * @return void
+     */
+    public function testGetCacheReturnsFalseForLegacyCacheMisses(string $class, string $key): void
+    {
+        $session = new class {
+            public $cache = [
+                'pro_search' => [
+                    'params' => [
+                        'keywords' => 'alpha',
+                    ],
+                ],
+            ];
+        };
+
+        ee()->setMock('session', $session);
+
+        $this->assertFalse(pro_get_cache($class, $key));
+    }
+
+    /**
+     * Missing legacy cache class and key combinations.
+     *
+     * @return array
+     */
+    public function getCacheLegacyMissProvider(): array
+    {
+        return [
+            'missing class' => ['missing', 'params'],
+            'missing key' => ['pro_search', 'missing'],
+        ];
+    }
+
+    /**
+     * pro_get_cache subprocess coverage exercises all reachable branches.
+     *
+     * @return void
+     */
+    public function testGetCacheCoverageSubprocessCoversBranches(): void
+    {
+        $outputFile = sys_get_temp_dir() . '/pro-search-helper-pro-get-cache-' . uniqid('', true) . '.json';
+        $script = dirname(__DIR__, 4) . '/support/pro_search_helper_pro_get_cache_coverage.php';
+        $command = escapeshellarg(PHP_BINARY) . ' -d xdebug.mode=coverage ' . escapeshellarg($script) . ' ' . escapeshellarg($outputFile) . ' 2>&1';
+
+        exec($command, $output, $exitCode);
+
+        $this->assertSame(0, $exitCode, implode("\n", $output));
+        $this->assertFileExists($outputFile);
+
+        $result = json_decode(file_get_contents($outputFile), true);
+        @unlink($outputFile);
+
+        $this->assertIsArray($result);
+        $this->assertSame(
+            realpath(__DIR__ . '/../../../../../Addons/pro_search/helpers/pro_search_helper.php'),
+            $result['real_module_path']
+        );
+        $this->assertSame(['entry_id' => 42], $result['results']['modern_cache']);
+        $this->assertSame([['pro_search', 'results']], $result['modern_cache_calls']);
+        $this->assertSame(['keywords' => 'alpha'], $result['results']['legacy_hit']);
+        $this->assertFalse($result['results']['legacy_missing_class']);
+        $this->assertFalse($result['results']['legacy_missing_key']);
+
+        if ($result['xdebug_available'] ?? false) {
+            $this->assertEquals(100.0, $result['line_percentage']);
+            $this->assertEquals(100.0, $result['branch_percentage']);
+            $this->assertSame([], $result['uncovered_lines']);
+            $this->assertSame([], $result['uncovered_branches']);
+        }
+    }
+
+    /**
      * pro_search_decode returns an empty array for invalid input.
      *
      * @dataProvider invalidDecodeInputProvider
