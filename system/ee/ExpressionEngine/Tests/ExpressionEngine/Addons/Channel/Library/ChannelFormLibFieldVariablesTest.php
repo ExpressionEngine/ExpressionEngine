@@ -4,11 +4,14 @@ require_once __DIR__ . '/ChannelFormLibTestBase.php';
 
 class ChannelFormLibFieldVariablesTest extends ChannelFormLibTestBase
 {
-    public function testCustomFieldsLoopSwapsIntegerFieldIdButNotIntegerConditionals()
+    public function testCustomFieldsLoopSwapsIntegerSingleVariablesButNotIntegerConditionals()
     {
         $customFieldVariables = [
             'field_id' => 9,
             'field_name' => 'title_ar',
+            'field_data' => 300,
+            'rows' => 8,
+            'maxlength' => 256,
             'field_type' => 'text',
             'textinput' => 1,
         ];
@@ -20,10 +23,10 @@ class ChannelFormLibFieldVariablesTest extends ChannelFormLibTestBase
         $result = $method->invoke(
             $this->channelFormLib,
             $customFieldVariables,
-            '[{field_id} : {field_name} : {textinput}]'
+            '[{field_id} : {field_name} : {field_data} : {rows} : {maxlength} : {textinput}]'
         );
 
-        $this->assertSame('[9 : title_ar : {textinput}]', $result);
+        $this->assertSame('[9 : title_ar : 300 : 8 : 256 : {textinput}]', $result);
     }
 
     public function testBuildCustomFieldVariablesReturnsEmptyArrayForNoFields()
