@@ -1354,6 +1354,85 @@ class ProSearchHelperEncodeTest extends TestCase
     }
 
     /**
+     * pro_zebra alternates odd/even classes and honors explicit resets.
+     *
+     * @dataProvider zebraSequenceProvider
+     * @param array $resetValues
+     * @param array $expectedClasses
+     * @return void
+     */
+    public function testZebraAlternatesClassesAndHonorsResets(array $resetValues, array $expectedClasses): void
+    {
+        $actualClasses = [];
+
+        foreach ($resetValues as $resetValue) {
+            $actualClasses[] = pro_zebra($resetValue);
+        }
+
+        $this->assertSame($expectedClasses, $actualClasses);
+        $this->assertContainsOnly('string', $actualClasses);
+        $this->assertSame([], array_diff($actualClasses, ['odd', 'even']));
+    }
+
+    /**
+     * pro_zebra reset and continuation scenarios.
+     *
+     * @return array
+     */
+    public function zebraSequenceProvider(): array
+    {
+        return [
+            'reset starts a fresh odd/even sequence' => [
+                [true, false, false, false],
+                ['odd', 'even', 'odd', 'even'],
+            ],
+            'truthy reset restarts from odd mid-sequence' => [
+                [true, false, false, true, false],
+                ['odd', 'even', 'odd', 'odd', 'even'],
+            ],
+            'falsey reset values continue the current sequence' => [
+                [true, false, false, 0, '', false],
+                ['odd', 'even', 'odd', 'even', 'odd', 'even'],
+            ],
+        ];
+    }
+
+    /**
+     * pro_zebra subprocess coverage exercises all reachable branches.
+     *
+     * @return void
+     */
+    public function testZebraCoverageSubprocessCoversBranches(): void
+    {
+        $outputFile = sys_get_temp_dir() . '/pro-search-helper-pro-zebra-' . uniqid('', true) . '.json';
+        $script = dirname(__DIR__, 4) . '/support/pro_search_helper_pro_zebra_coverage.php';
+        $command = escapeshellarg(PHP_BINARY) . ' -d xdebug.mode=coverage ' . escapeshellarg($script) . ' ' . escapeshellarg($outputFile) . ' 2>&1';
+
+        exec($command, $output, $exitCode);
+
+        $this->assertSame(0, $exitCode, implode("\n", $output));
+        $this->assertFileExists($outputFile);
+
+        $result = json_decode(file_get_contents($outputFile), true);
+        @unlink($outputFile);
+
+        $this->assertIsArray($result);
+        $this->assertSame(
+            realpath(__DIR__ . '/../../../../../Addons/pro_search/helpers/pro_search_helper.php'),
+            $result['real_module_path']
+        );
+        $this->assertSame(['odd', 'even', 'odd', 'odd', 'even', 'odd', 'even'], $result['sequence']);
+        $this->assertSame([], array_diff($result['sequence'], ['odd', 'even']));
+
+        if ($result['xdebug_available'] ?? false) {
+            $this->assertEquals(100.0, $result['line_percentage']);
+            $this->assertEquals(100.0, $result['branch_percentage']);
+            $this->assertSame([], $result['uncovered_lines']);
+            $this->assertSame([], $result['uncovered_branches']);
+        }
+    }
+
+    /**
      * pro_search_decode returns an empty array for invalid input.
      *
      * @dataProvider invalidDecodeInputProvider
