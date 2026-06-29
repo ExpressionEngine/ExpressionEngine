@@ -111,4 +111,124 @@ class ProSearchHelperEncodeTest extends TestCase
         $this->assertSame('e30', pro_search_encode([]));
         $this->assertSame('{}', pro_search_encode([], false));
     }
+
+    /**
+     * pro_search_decode returns an empty array for invalid input.
+     *
+     * @dataProvider invalidDecodeInputProvider
+     * @param mixed $value
+     * @return void
+     */
+    public function testDecodeReturnsEmptyArrayForInvalidInput($value): void
+    {
+        $this->assertSame([], pro_search_decode($value));
+    }
+
+    /**
+     * Invalid input values for pro_search_decode.
+     *
+     * @return array
+     */
+    public function invalidDecodeInputProvider(): array
+    {
+        return [
+            'empty string' => [''],
+            'null' => [null],
+            'false' => [false],
+            'zero integer' => [0],
+            'array' => [[]],
+        ];
+    }
+
+    /**
+     * pro_search_decode returns raw JSON arrays when URL decoding is disabled.
+     *
+     * @return void
+     */
+    public function testDecodeReturnsRawJsonWhenUrlDecodingIsDisabled(): void
+    {
+        $rawJson = '{"keywords":"alpha beta","filters":{"category":["1","2"]}}';
+
+        $this->assertSame([
+            'keywords' => 'alpha beta',
+            'filters' => [
+                'category' => ['1', '2'],
+            ],
+        ], pro_search_decode($rawJson, false));
+    }
+
+    /**
+     * pro_search_decode returns raw serialized arrays when URL decoding is disabled.
+     *
+     * @return void
+     */
+    public function testDecodeReturnsRawSerializedArraysWhenUrlDecodingIsDisabled(): void
+    {
+        $params = [
+            'keywords' => 'serialized',
+            'collection' => 'articles',
+        ];
+
+        $this->assertSame($params, pro_search_decode(serialize($params), false));
+    }
+
+    /**
+     * pro_search_decode forces URL decoding for legacy serialized payloads.
+     *
+     * @return void
+     */
+    public function testDecodeForcesUrlDecodingForLegacySerializedPayloads(): void
+    {
+        $params = [
+            'keywords' => 'legacy',
+            'collection' => 'archive',
+        ];
+        $encoded = base64_encode(serialize($params));
+
+        $this->assertStringStartsWith('YTo', $encoded);
+        $this->assertSame($params, pro_search_decode($encoded, false));
+    }
+
+    /**
+     * pro_search_decode repairs URI spaces before base64 decoding.
+     *
+     * @return void
+     */
+    public function testDecodeRepairsUriSpacesBeforeBase64Decoding(): void
+    {
+        $params = ['k' => '/>'];
+        $encoded = base64_encode(json_encode($params, JSON_FORCE_OBJECT));
+
+        $this->assertStringContainsString('+', $encoded);
+        $this->assertSame($params, pro_search_decode(str_replace('+', ' ', $encoded)));
+    }
+
+    /**
+     * pro_search_decode restores URL-safe underscores before base64 decoding.
+     *
+     * @return void
+     */
+    public function testDecodeRestoresUrlSafeUnderscoresBeforeBase64Decoding(): void
+    {
+        $params = ['k' => '/?'];
+        $encoded = base64_encode(json_encode($params, JSON_FORCE_OBJECT));
+        $urlSafe = rtrim(str_replace('/', '_', $encoded), '=');
+
+        $this->assertStringContainsString('/', $encoded);
+        $this->assertStringContainsString('_', $urlSafe);
+        $this->assertStringNotContainsString('/', $urlSafe);
+        $this->assertSame($params, pro_search_decode($urlSafe));
+    }
+
+    /**
+     * pro_search_decode returns an empty array when the decoded payload is not an array.
+     *
+     * @return void
+     */
+    public function testDecodeReturnsEmptyArrayWhenDecodedPayloadIsNotArray(): void
+    {
+        $encodedScalar = base64_encode(json_encode('scalar'));
+
+        $this->assertSame([], pro_search_decode($encodedScalar));
+    }
 }
