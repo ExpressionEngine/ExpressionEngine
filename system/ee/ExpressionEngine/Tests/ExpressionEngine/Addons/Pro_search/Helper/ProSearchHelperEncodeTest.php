@@ -1196,6 +1196,164 @@ class ProSearchHelperEncodeTest extends TestCase
     }
 
     /**
+     * pro_set_cache delegates to sessions that expose set_cache().
+     *
+     * @dataProvider setCacheValueProvider
+     * @param mixed $value
+     * @return void
+     */
+    public function testSetCacheDelegatesToSessionSetCacheMethod($value): void
+    {
+        $session = new class {
+            public $cache = [
+                'legacy' => [
+                    'untouched' => true,
+                ],
+            ];
+
+            public $setCacheCalls = [];
+
+            /**
+             * Record delegated cache writes.
+             *
+             * @param string $class
+             * @param string $key
+             * @param mixed $value
+             * @return void
+             */
+            public function set_cache($class, $key, $value): void
+            {
+                $this->setCacheCalls[] = [$class, $key, $value];
+            }
+        };
+
+        ee()->setMock('session', $session);
+
+        pro_set_cache('pro_search', 'results', $value);
+
+        $this->assertSame([['pro_search', 'results', $value]], $session->setCacheCalls);
+        $this->assertSame(['legacy' => ['untouched' => true]], $session->cache);
+    }
+
+    /**
+     * pro_set_cache writes directly to legacy session cache arrays.
+     *
+     * @dataProvider setCacheValueProvider
+     * @param mixed $value
+     * @return void
+     */
+    public function testSetCacheWritesLegacyCacheArrayWhenSetCacheMethodIsUnavailable($value): void
+    {
+        $session = new class {
+            public $cache = [
+                'pro_search' => [
+                    'existing' => 'keep',
+                ],
+            ];
+        };
+
+        ee()->setMock('session', $session);
+
+        pro_set_cache('pro_search', 'results', $value);
+
+        $this->assertSame($value, $session->cache['pro_search']['results']);
+        $this->assertSame('keep', $session->cache['pro_search']['existing']);
+    }
+
+    /**
+     * pro_set_cache creates missing legacy cache buckets.
+     *
+     * @return void
+     */
+    public function testSetCacheCreatesMissingLegacyCacheBucket(): void
+    {
+        $session = new class {
+            public $cache = [];
+        };
+
+        ee()->setMock('session', $session);
+
+        pro_set_cache('pro_search', 'results', ['entry_id' => 42]);
+
+        $this->assertSame(
+            [
+                'pro_search' => [
+                    'results' => ['entry_id' => 42],
+                ],
+            ],
+            $session->cache
+        );
+    }
+
+    /**
+     * pro_set_cache subprocess coverage exercises all reachable branches.
+     *
+     * @return void
+     */
+    public function testSetCacheCoverageSubprocessCoversBranches(): void
+    {
+        $outputFile = sys_get_temp_dir() . '/pro-search-helper-pro-set-cache-' . uniqid('', true) . '.json';
+        $script = dirname(__DIR__, 4) . '/support/pro_search_helper_pro_set_cache_coverage.php';
+        $command = escapeshellarg(PHP_BINARY) . ' -d xdebug.mode=coverage ' . escapeshellarg($script) . ' ' . escapeshellarg($outputFile) . ' 2>&1';
+
+        exec($command, $output, $exitCode);
+
+        $this->assertSame(0, $exitCode, implode("\n", $output));
+        $this->assertFileExists($outputFile);
+
+        $result = json_decode(file_get_contents($outputFile), true);
+        @unlink($outputFile);
+
+        $this->assertIsArray($result);
+        $this->assertSame(
+            realpath(__DIR__ . '/../../../../../Addons/pro_search/helpers/pro_search_helper.php'),
+            $result['real_module_path']
+        );
+        $this->assertSame(
+            [[
+                'pro_search',
+                'results',
+                [
+                    'entry_id' => 42,
+                    'keywords' => 'alpha',
+                ],
+            ]],
+            $result['modern_set_cache_calls']
+        );
+        $this->assertSame(['legacy' => ['untouched' => true]], $result['modern_cache']);
+        $this->assertSame(
+            [
+                'pro_search' => [
+                    'params' => false,
+                ],
+            ],
+            $result['legacy_cache']
+        );
+
+        if ($result['xdebug_available'] ?? false) {
+            $this->assertEquals(100.0, $result['line_percentage']);
+            $this->assertEquals(100.0, $result['branch_percentage']);
+            $this->assertSame([], $result['uncovered_lines']);
+            $this->assertSame([], $result['uncovered_branches']);
+        }
+    }
+
+    /**
+     * Cache values that pro_set_cache should preserve exactly.
+     *
+     * @return array
+     */
+    public function setCacheValueProvider(): array
+    {
+        return [
+            'array payload' => [['entry_id' => 42, 'keywords' => 'alpha']],
+            'false payload' => [false],
+            'null payload' => [null],
+            'zero string payload' => ['0'],
+        ];
+    }
+
+    /**
      * pro_search_decode returns an empty array for invalid input.
      *
      * @dataProvider invalidDecodeInputProvider
