@@ -870,6 +870,123 @@ class ProSearchHelperEncodeTest extends TestCase
     }
 
     /**
+     * pro_by_keywords compares keyword rows without case sensitivity.
+     *
+     * @dataProvider byKeywordsComparisonProvider
+     * @param array $left
+     * @param array $right
+     * @param string $expectedSign
+     * @return void
+     */
+    public function testByKeywordsComparesRowsWithoutCaseSensitivity(array $left, array $right, string $expectedSign): void
+    {
+        $actual = pro_by_keywords($left, $right);
+
+        $this->assertIsInt($actual);
+
+        if ($expectedSign === 'negative') {
+            $this->assertLessThan(0, $actual);
+
+            return;
+        }
+
+        if ($expectedSign === 'positive') {
+            $this->assertGreaterThan(0, $actual);
+
+            return;
+        }
+
+        $this->assertSame(0, $actual);
+    }
+
+    /**
+     * Keyword comparison inputs for pro_by_keywords.
+     *
+     * @return array
+     */
+    public function byKeywordsComparisonProvider(): array
+    {
+        return [
+            'left keyword sorts before right keyword' => [
+                ['keywords_clean' => 'Alpha'],
+                ['keywords_clean' => 'beta'],
+                'negative',
+            ],
+            'left keyword sorts after right keyword' => [
+                ['keywords_clean' => 'delta'],
+                ['keywords_clean' => 'Charlie'],
+                'positive',
+            ],
+            'case-only differences compare equal' => [
+                ['keywords_clean' => 'MiXeD'],
+                ['keywords_clean' => 'mixed'],
+                'zero',
+            ],
+            'empty keyword sorts before non-empty keyword' => [
+                ['keywords_clean' => ''],
+                ['keywords_clean' => 'alpha'],
+                'negative',
+            ],
+        ];
+    }
+
+    /**
+     * pro_by_keywords orders rows by their clean keyword values.
+     *
+     * @return void
+     */
+    public function testByKeywordsOrdersRowsByCleanKeywordValues(): void
+    {
+        $rows = [
+            ['entry_id' => 30, 'keywords_clean' => 'zulu'],
+            ['entry_id' => 10, 'keywords_clean' => 'Alpha'],
+            ['entry_id' => 20, 'keywords_clean' => 'bravo'],
+        ];
+
+        usort($rows, 'pro_by_keywords');
+
+        $this->assertSame([10, 20, 30], array_column($rows, 'entry_id'));
+        $this->assertSame(['Alpha', 'bravo', 'zulu'], array_column($rows, 'keywords_clean'));
+    }
+
+    /**
+     * pro_by_keywords subprocess coverage records reachable behavior.
+     *
+     * @return void
+     */
+    public function testByKeywordsCoverageSubprocessRecordsReachableBehavior(): void
+    {
+        $outputFile = sys_get_temp_dir() . '/pro-search-helper-pro-by-keywords-' . uniqid('', true) . '.json';
+        $script = dirname(__DIR__, 4) . '/support/pro_search_helper_pro_by_keywords_coverage.php';
+        $command = escapeshellarg(PHP_BINARY) . ' -d xdebug.mode=coverage ' . escapeshellarg($script) . ' ' . escapeshellarg($outputFile) . ' 2>&1';
+
+        exec($command, $output, $exitCode);
+
+        $this->assertSame(0, $exitCode, implode("\n", $output));
+        $this->assertFileExists($outputFile);
+
+        $result = json_decode(file_get_contents($outputFile), true);
+        @unlink($outputFile);
+
+        $this->assertIsArray($result);
+        $this->assertSame(
+            realpath(__DIR__ . '/../../../../../Addons/pro_search/helpers/pro_search_helper.php'),
+            $result['real_module_path']
+        );
+        $this->assertLessThan(0, $result['comparisons']['sorts_before']);
+        $this->assertGreaterThan(0, $result['comparisons']['sorts_after']);
+        $this->assertSame(0, $result['comparisons']['case_insensitive_equal']);
+        $this->assertSame([10, 20, 30], $result['sorted_entry_ids']);
+
+        if ($result['xdebug_available'] ?? false) {
+            $this->assertEquals(100.0, $result['line_percentage']);
+            $this->assertEquals(100.0, $result['branch_percentage']);
+            $this->assertSame([], $result['uncovered_lines']);
+            $this->assertSame([], $result['uncovered_branches']);
+        }
+    }
+
+    /**
      * pro_search_decode returns an empty array for invalid input.
      *
      * @dataProvider invalidDecodeInputProvider
