@@ -480,6 +480,98 @@ class ProSearchHelperEncodeTest extends TestCase
     }
 
     /**
+     * pro_param_string builds legacy parameter strings from string values only.
+     *
+     * @dataProvider paramStringProvider
+     * @param array $params
+     * @param string $expected
+     * @return void
+     */
+    public function testParamStringBuildsLegacyParameterStrings(array $params, string $expected): void
+    {
+        $actual = pro_param_string($params);
+
+        $this->assertSame($expected, $actual);
+        $this->assertIsString($actual);
+
+        if ($expected === '') {
+            return;
+        }
+
+        $this->assertSame($expected, trim($actual));
+    }
+
+    /**
+     * Parameter string inputs.
+     *
+     * @return array
+     */
+    public function paramStringProvider(): array
+    {
+        return [
+            'ordered string parameters' => [
+                [
+                    'keywords' => 'alpha beta',
+                    'collection' => 'news',
+                    'sort' => 'desc',
+                ],
+                'keywords="alpha beta" collection="news" sort="desc"',
+            ],
+            'string boundary values' => [
+                [
+                    'empty' => '',
+                    'zero' => '0',
+                    'spaces' => '  alpha  ',
+                ],
+                'empty="" zero="0" spaces="  alpha  "',
+            ],
+            'literal string values' => [
+                [
+                    'quote' => 'a "quoted" value',
+                    'html' => '<b>&</b>',
+                    'braces' => '{segment_1}',
+                ],
+                'quote="a "quoted" value" html="<b>&</b>" braces="{segment_1}"',
+            ],
+            'empty input' => [
+                [],
+                '',
+            ],
+            'all non-string values skipped' => [
+                [
+                    'none' => null,
+                    'false' => false,
+                    'true' => true,
+                    'count' => 3,
+                    'items' => ['alpha'],
+                    'object' => new stdClass(),
+                ],
+                '',
+            ],
+            'mixed values preserve surviving string order' => [
+                [
+                    'before' => 'alpha',
+                    'limit' => 10,
+                    'after' => 'beta',
+                    'zero_string' => '0',
+                    'empty' => '',
+                ],
+                'before="alpha" after="beta" zero_string="0" empty=""',
+            ],
+        ];
+    }
+
+    /**
+     * pro_param_string preserves its legacy null-input boundary.
+     *
+     * @return void
+     */
+    public function testParamStringTreatsLegacyNullInputAsEmptyString(): void
+    {
+        $this->assertSame('', @pro_param_string(null));
+    }
+
+    /**
      * pro_prep_word_list lowercases, filters duplicates, and sorts tokens.
      *
      * @return void
