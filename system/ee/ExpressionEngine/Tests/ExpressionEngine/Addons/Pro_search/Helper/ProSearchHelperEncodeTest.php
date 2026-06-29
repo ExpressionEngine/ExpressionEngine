@@ -10,6 +10,14 @@ if (!defined('BASEPATH')) {
     define('BASEPATH', SYSPATH . 'ee/legacy/');
 }
 
+if (!defined('LD')) {
+    define('LD', '{');
+}
+
+if (!defined('RD')) {
+    define('RD', '}');
+}
+
 if (!function_exists('ee')) {
     require_once __DIR__ . '/../../../../eeObjectMock.php';
 }
@@ -569,6 +577,74 @@ class ProSearchHelperEncodeTest extends TestCase
     public function testParamStringTreatsLegacyNullInputAsEmptyString(): void
     {
         $this->assertSame('', @pro_param_string(null));
+    }
+
+    /**
+     * pro_prep_in_conditionals expands legacy IN conditionals.
+     *
+     * @dataProvider prepInConditionalsProvider
+     * @param string $tagdata
+     * @param string $expected
+     * @return void
+     */
+    public function testPrepInConditionalsExpandsLegacyConditionals(string $tagdata, string $expected): void
+    {
+        $actual = pro_prep_in_conditionals($tagdata);
+
+        $this->assertSame($expected, $actual);
+        $this->assertIsString($actual);
+    }
+
+    /**
+     * Legacy IN conditional inputs.
+     *
+     * @return array
+     */
+    public function prepInConditionalsProvider(): array
+    {
+        return [
+            'plain in values' => [
+                'before {if status IN (open|closed)}body{/if} after',
+                'before {if status == "open" OR status == "closed"}body{/if} after',
+            ],
+            'not in values' => [
+                '{if entry_id NOT IN (1|2|3)}hidden{/if}',
+                '{if entry_id != "1" AND entry_id != "2" AND entry_id != "3"}hidden{/if}',
+            ],
+            'compact not in hyphenated identifier' => [
+                '{if field-name NOTIN (alpha|beta)}hidden{/if}',
+                '{if field-name != "alpha" AND field-name != "beta"}hidden{/if}',
+            ],
+            'legacy ampersand separators' => [
+                '{if category IN (news&amp;sports&arts)}',
+                '{if category == "news" OR category == "sports" OR category == "arts"}',
+            ],
+            'quoted operands' => [
+                '{if "status" IN ("open"|\'closed\'|pending)}',
+                '{if "status" == "open" OR "status" == \'closed\' OR "status" == "pending"}',
+            ],
+            'multiple conditionals' => [
+                'before {if foo IN (1|2)}A{/if} middle {if bar NOT IN (3|4)}B{/if} after',
+                'before {if foo == "1" OR foo == "2"}A{/if} middle {if bar != "3" AND bar != "4"}B{/if} after',
+            ],
+            'empty item list boundary' => [
+                '{if status IN ()}empty{/if}',
+                '{if status == ""}empty{/if}',
+            ],
+        ];
+    }
+
+    /**
+     * pro_prep_in_conditionals leaves non-matching tagdata unchanged.
+     *
+     * @return void
+     */
+    public function testPrepInConditionalsLeavesUnmatchedTagdataUnchanged(): void
+    {
+        $tagdata = '{if status in (open|closed)}body{/if} {if status == "open"}open{/if}';
+
+        $this->assertSame($tagdata, pro_prep_in_conditionals($tagdata));
+        $this->assertSame('', pro_prep_in_conditionals());
     }
 
     /**
