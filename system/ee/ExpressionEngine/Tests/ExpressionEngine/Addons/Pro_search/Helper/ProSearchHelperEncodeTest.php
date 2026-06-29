@@ -233,6 +233,79 @@ class ProSearchHelperEncodeTest extends TestCase
     }
 
     /**
+     * pro_hilite wraps literal needle matches in mark tags.
+     *
+     * @dataProvider hiliteMatchProvider
+     * @param string $haystack
+     * @param string $needle
+     * @param string $expected
+     * @return void
+     */
+    public function testHiliteWrapsLiteralNeedleMatches(string $haystack, string $needle, string $expected): void
+    {
+        $this->assertSame($expected, pro_hilite($haystack, $needle));
+    }
+
+    /**
+     * Match inputs for pro_hilite.
+     *
+     * @return array
+     */
+    public function hiliteMatchProvider(): array
+    {
+        return [
+            'multiple matches' => [
+                'alpha beta alpha',
+                'alpha',
+                '<mark>alpha</mark> beta <mark>alpha</mark>',
+            ],
+            'regex metacharacters are literal' => [
+                'Find a+b? before a+b?.',
+                'a+b?',
+                'Find <mark>a+b?</mark> before <mark>a+b?</mark>.',
+            ],
+            'regex delimiter is literal' => [
+                'a#b#a#b',
+                '#',
+                'a<mark>#</mark>b<mark>#</mark>a<mark>#</mark>b',
+            ],
+            'case-sensitive matching' => [
+                'Alpha alpha',
+                'alpha',
+                'Alpha <mark>alpha</mark>',
+            ],
+            'markup remains unescaped' => [
+                '<p>alpha & beta</p>',
+                'alpha & beta',
+                '<p><mark>alpha & beta</mark></p>',
+            ],
+        ];
+    }
+
+    /**
+     * pro_hilite returns the original haystack when no needle is matched.
+     *
+     * @return void
+     */
+    public function testHiliteReturnsOriginalHaystackWhenNeedleIsMissing(): void
+    {
+        $this->assertSame('alpha beta', pro_hilite('alpha beta', 'gamma'));
+    }
+
+    /**
+     * pro_hilite preserves its legacy empty-needle boundary behavior.
+     *
+     * @return void
+     */
+    public function testHilitePreservesEmptyNeedleBoundaryBehavior(): void
+    {
+        $this->assertSame(
+            '<mark></mark>a<mark></mark>b<mark></mark>c<mark></mark>',
+            pro_hilite('abc', '')
+        );
+    }
+
+    /**
      * pro_strpos_all returns every literal match offset.
      *
      * @dataProvider strposAllMatchProvider
