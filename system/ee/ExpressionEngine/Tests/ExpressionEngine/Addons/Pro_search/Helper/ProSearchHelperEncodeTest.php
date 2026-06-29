@@ -715,6 +715,161 @@ class ProSearchHelperEncodeTest extends TestCase
     }
 
     /**
+     * pro_param_is_numeric accepts legacy numeric parameter syntax.
+     *
+     * @dataProvider paramIsNumericAcceptedProvider
+     * @param string $value
+     * @return void
+     */
+    public function testParamIsNumericAcceptsLegacyNumericParameterSyntax(string $value): void
+    {
+        $actual = pro_param_is_numeric($value);
+
+        $this->assertSame(1, $actual);
+        $this->assertIsInt($actual);
+    }
+
+    /**
+     * Accepted numeric parameter syntax values.
+     *
+     * @return array
+     */
+    public function paramIsNumericAcceptedProvider(): array
+    {
+        return [
+            'zero' => ['0'],
+            'plain digits' => ['123'],
+            'pipe-separated digits' => ['1|2|300'],
+            'ampersand-separated digits' => ['1&2&300'],
+            'mixed separators' => ['1|2&300'],
+            'equals-prefixed digits' => ['=123'],
+            'equals-prefixed list' => ['=1|2&300'],
+            'lowercase not-prefixed digits' => ['not 123'],
+            'uppercase not-prefixed digits' => ['NOT 123'],
+            'not-prefixed mixed list' => ['not 1|2&300'],
+            'not prefix with tab whitespace' => ["not\t123"],
+            'trailing pipe separator' => ['1|'],
+            'trailing ampersand separator' => ['not 1&'],
+        ];
+    }
+
+    /**
+     * pro_param_is_numeric rejects non-numeric parameter syntax.
+     *
+     * @dataProvider paramIsNumericRejectedProvider
+     * @param string $value
+     * @return void
+     */
+    public function testParamIsNumericRejectsNonNumericParameterSyntax(string $value): void
+    {
+        $actual = pro_param_is_numeric($value);
+
+        $this->assertSame(0, $actual);
+        $this->assertIsInt($actual);
+    }
+
+    /**
+     * Rejected non-numeric parameter syntax values.
+     *
+     * @return array
+     */
+    public function paramIsNumericRejectedProvider(): array
+    {
+        return [
+            'empty string' => [''],
+            'letters only' => ['alpha'],
+            'digits with letters' => ['123alpha'],
+            'bare not' => ['not'],
+            'not without whitespace' => ['not123'],
+            'not with multiple spaces' => ['not  123'],
+            'negative number' => ['-1'],
+            'not negative number' => ['not -1'],
+            'decimal number' => ['1.5'],
+            'scientific notation' => ['1e3'],
+            'comma-separated digits' => ['1,2'],
+            'repeated pipe separator' => ['1||2'],
+            'repeated ampersand separator' => ['1&&2'],
+            'leading pipe separator' => ['|1'],
+            'leading ampersand separator' => ['&1'],
+            'separator with leading space' => ['1 |2'],
+            'separator with trailing space' => ['1| 2'],
+            'equals with whitespace' => ['= 1'],
+            'double equals' => ['==1'],
+            'not with equals' => ['not =1'],
+        ];
+    }
+
+    /**
+     * pro_param_is_numeric subprocess coverage exercises all reachable code.
+     *
+     * @return void
+     */
+    public function testParamIsNumericCoverageSubprocessCoversReachableCode(): void
+    {
+        $outputFile = sys_get_temp_dir() . '/pro-search-helper-param-is-numeric-' . uniqid('', true) . '.json';
+        $script = dirname(__DIR__, 4) . '/support/pro_search_helper_param_is_numeric_coverage.php';
+        $command = escapeshellarg(PHP_BINARY) . ' -d xdebug.mode=coverage ' . escapeshellarg($script) . ' ' . escapeshellarg($outputFile) . ' 2>&1';
+
+        exec($command, $output, $exitCode);
+
+        $this->assertSame(0, $exitCode, implode("\n", $output));
+        $this->assertFileExists($outputFile);
+
+        $result = json_decode(file_get_contents($outputFile), true);
+        @unlink($outputFile);
+
+        $this->assertIsArray($result);
+        $this->assertSame(
+            realpath(__DIR__ . '/../../../../../Addons/pro_search/helpers/pro_search_helper.php'),
+            $result['real_module_path']
+        );
+        $this->assertSame([
+            'zero' => 1,
+            'plain_digits' => 1,
+            'pipe_separated_digits' => 1,
+            'ampersand_separated_digits' => 1,
+            'mixed_separators' => 1,
+            'equals_prefixed_digits' => 1,
+            'equals_prefixed_list' => 1,
+            'not_prefixed_digits' => 1,
+            'uppercase_not_prefixed_digits' => 1,
+            'not_prefixed_mixed_list' => 1,
+            'not_prefix_with_tab_whitespace' => 1,
+            'trailing_pipe_separator' => 1,
+            'trailing_ampersand_separator' => 1,
+        ], $result['accepted']);
+        $this->assertSame([
+            'empty_string' => 0,
+            'letters_only' => 0,
+            'digits_with_letters' => 0,
+            'bare_not' => 0,
+            'not_without_whitespace' => 0,
+            'not_with_multiple_spaces' => 0,
+            'negative_number' => 0,
+            'not_negative_number' => 0,
+            'decimal_number' => 0,
+            'scientific_notation' => 0,
+            'comma_separated_digits' => 0,
+            'repeated_pipe_separator' => 0,
+            'repeated_ampersand_separator' => 0,
+            'leading_pipe_separator' => 0,
+            'leading_ampersand_separator' => 0,
+            'separator_with_leading_space' => 0,
+            'separator_with_trailing_space' => 0,
+            'equals_with_whitespace' => 0,
+            'double_equals' => 0,
+            'not_with_equals' => 0,
+        ], $result['rejected']);
+
+        if ($result['xdebug_available'] ?? false) {
+            $this->assertEquals(100.0, $result['line_percentage']);
+            $this->assertEquals(100.0, $result['branch_percentage']);
+            $this->assertSame([], $result['uncovered_lines']);
+            $this->assertSame([], $result['uncovered_branches']);
+        }
+    }
+
+    /**
      * pro_search_decode returns an empty array for invalid input.
      *
      * @dataProvider invalidDecodeInputProvider
