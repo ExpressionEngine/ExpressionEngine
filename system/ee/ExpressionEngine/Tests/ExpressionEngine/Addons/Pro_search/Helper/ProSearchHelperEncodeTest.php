@@ -370,6 +370,116 @@ class ProSearchHelperEncodeTest extends TestCase
     }
 
     /**
+     * pro_format applies the default HTML and EE parameter encoding.
+     *
+     * @return void
+     */
+    public function testFormatAppliesDefaultHtmlAndEeParameterEncoding(): void
+    {
+        $this->assertSame(
+            'A &amp; &lt;B&gt; &#123;x&#125; &quot;q&quot;',
+            pro_format('A & <B> {x} "q"')
+        );
+    }
+
+    /**
+     * pro_format applies requested string formats.
+     *
+     * @dataProvider formatProvider
+     * @param string $value
+     * @param string $format
+     * @param string $expected
+     * @return void
+     */
+    public function testFormatAppliesRequestedStringFormats(string $value, string $format, string $expected): void
+    {
+        $this->assertSame($expected, pro_format($value, $format));
+    }
+
+    /**
+     * Format inputs for pro_format.
+     *
+     * @return array
+     */
+    public function formatProvider(): array
+    {
+        return [
+            'url encoding' => [
+                'A & <B> {x} "q"',
+                'url',
+                'A+%26+%3CB%3E+%7Bx%7D+%22q%22',
+            ],
+            'explicit html encoding' => [
+                'A & <B> {x} "q"',
+                'html',
+                'A &amp; &lt;B&gt; &#123;x&#125; &quot;q&quot;',
+            ],
+            'ee encode' => [
+                'A & <B> {x} "q"',
+                'ee-encode',
+                'A & <B> &#123;x&#125; &quot;q&quot;',
+            ],
+            'ee decode' => [
+                'A &amp; &lt;B&gt; &#123;x&#125; &quot;q&quot;',
+                'ee-decode',
+                'A &amp; &lt;B&gt; {x} "q"',
+            ],
+            'unknown format passthrough' => [
+                'A & <B> {x} "q"',
+                'raw',
+                'A & <B> {x} "q"',
+            ],
+        ];
+    }
+
+    /**
+     * pro_format delegates clean formatting through Pro Search words.
+     *
+     * @return void
+     */
+    public function testFormatDelegatesCleanFormatThroughProSearchWords(): void
+    {
+        $loader = $this->getMockBuilder('stdClass')
+            ->addMethods(['library'])
+            ->getMock();
+        $loader->expects($this->once())
+            ->method('library')
+            ->with('pro_search_words');
+        ee()->setMock('load', $loader);
+
+        $words = $this->getMockBuilder('stdClass')
+            ->addMethods(['clean', 'remove_diacritics'])
+            ->getMock();
+        $words->expects($this->once())
+            ->method('clean')
+            ->with(' Café Search ', false)
+            ->willReturn('cleaned café search');
+        $words->expects($this->once())
+            ->method('remove_diacritics')
+            ->with('cleaned café search')
+            ->willReturn('cleaned cafe search');
+        ee()->setMock('pro_search_words', $words);
+
+        $this->assertSame('cleaned cafe search', pro_format(' Café Search ', 'clean'));
+    }
+
+    /**
+     * pro_format preserves clean format's empty-string guard.
+     *
+     * @return void
+     */
+    public function testFormatCleanReturnsEmptyStringWithoutLoadingWords(): void
+    {
+        $loader = $this->getMockBuilder('stdClass')
+            ->addMethods(['library'])
+            ->getMock();
+        $loader->expects($this->never())->method('library');
+        ee()->setMock('load', $loader);
+
+        $this->assertSame('', pro_format('', 'clean'));
+    }
+
+    /**
      * pro_prep_word_list lowercases, filters duplicates, and sorts tokens.
      *
      * @return void
