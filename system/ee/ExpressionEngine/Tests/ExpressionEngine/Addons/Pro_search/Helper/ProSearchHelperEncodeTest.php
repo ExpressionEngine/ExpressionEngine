@@ -774,6 +774,145 @@ class ProSearchHelperEncodeTest extends TestCase
     }
 
     /**
+     * pro_associate_results indexes complete rows by the requested key.
+     *
+     * @return void
+     */
+    public function testAssociateResultsIndexesRowsByRequestedKey(): void
+    {
+        $rows = [
+            ['collection_id' => 'news', 'channel_id' => '5'],
+            ['collection_id' => 'blog', 'channel_id' => '6'],
+        ];
+
+        $actual = pro_associate_results($rows, 'collection_id');
+
+        $this->assertSame([
+            'news' => ['collection_id' => 'news', 'channel_id' => '5'],
+            'blog' => ['collection_id' => 'blog', 'channel_id' => '6'],
+        ], $actual);
+        $this->assertSame(['news', 'blog'], array_keys($actual));
+    }
+
+    /**
+     * pro_associate_results keeps first rows and skips rows missing the key.
+     *
+     * @return void
+     */
+    public function testAssociateResultsKeepsFirstRowForDuplicateKeysAndIgnoresMissingKeys(): void
+    {
+        $rows = [
+            ['collection_id' => 'news', 'channel_id' => '5'],
+            ['collection_id' => 'news', 'channel_id' => '7'],
+            ['channel_id' => '8'],
+            ['collection_id' => 'blog', 'channel_id' => '6'],
+        ];
+
+        $this->assertSame([
+            'news' => ['collection_id' => 'news', 'channel_id' => '5'],
+            'blog' => ['collection_id' => 'blog', 'channel_id' => '6'],
+        ], pro_associate_results($rows, 'collection_id'));
+    }
+
+    /**
+     * pro_associate_results sorts only when the sort flag is strict true.
+     *
+     * @return void
+     */
+    public function testAssociateResultsSortsByKeyOnlyWhenSortIsStrictTrue(): void
+    {
+        $rows = [
+            ['collection_id' => 'beta', 'channel_id' => '6'],
+            ['collection_id' => 'alpha', 'channel_id' => '5'],
+        ];
+
+        $this->assertSame(
+            ['alpha', 'beta'],
+            array_keys(pro_associate_results($rows, 'collection_id', true))
+        );
+        $this->assertSame(
+            ['beta', 'alpha'],
+            array_keys(pro_associate_results($rows, 'collection_id', 1))
+        );
+    }
+
+    /**
+     * pro_associate_results preserves normalized PHP array-key boundaries.
+     *
+     * @return void
+     */
+    public function testAssociateResultsPreservesNormalizedBoundaryKeys(): void
+    {
+        $zeroIntegerRow = ['collection_id' => 0, 'label' => 'zero integer'];
+        $zeroStringRow = ['collection_id' => '0', 'label' => 'zero string'];
+        $nullRow = ['collection_id' => null, 'label' => 'null'];
+        $emptyStringRow = ['collection_id' => '', 'label' => 'empty string'];
+
+        $actual = pro_associate_results([
+            $zeroIntegerRow,
+            $zeroStringRow,
+            $nullRow,
+            $emptyStringRow,
+        ], 'collection_id');
+
+        $this->assertSame([
+            0 => $zeroIntegerRow,
+            '' => $nullRow,
+        ], $actual);
+    }
+
+    /**
+     * pro_associate_results returns empty arrays for empty and legacy null input.
+     *
+     * @return void
+     */
+    public function testAssociateResultsReturnsEmptyArrayForEmptyAndLegacyNullResultSets(): void
+    {
+        $this->assertSame([], pro_associate_results([], 'collection_id'));
+        $this->assertSame([], @pro_associate_results(null, 'collection_id'));
+    }
+
+    /**
+     * pro_associate_results subprocess coverage exercises all reachable branches.
+     *
+     * @return void
+     */
+    public function testAssociateResultsCoverageSubprocessCoversBranches(): void
+    {
+        $outputFile = sys_get_temp_dir() . '/pro-search-helper-associate-results-' . uniqid('', true) . '.json';
+        $script = dirname(__DIR__, 4) . '/support/pro_search_helper_associate_results_coverage.php';
+        $command = escapeshellarg(PHP_BINARY) . ' -d xdebug.mode=coverage ' . escapeshellarg($script) . ' ' . escapeshellarg($outputFile) . ' 2>&1';
+
+        exec($command, $output, $exitCode);
+
+        $this->assertSame(0, $exitCode, implode("\n", $output));
+        $this->assertFileExists($outputFile);
+
+        $result = json_decode(file_get_contents($outputFile), true);
+        @unlink($outputFile);
+
+        $this->assertIsArray($result);
+        $this->assertSame(
+            realpath(__DIR__ . '/../../../../../Addons/pro_search/helpers/pro_search_helper.php'),
+            $result['real_module_path']
+        );
+        $this->assertSame(['news', 'blog'], array_keys($result['unique_result']));
+        $this->assertSame(['news', 'blog'], array_keys($result['duplicate_missing_result']));
+        $this->assertSame(['alpha', 'beta'], array_keys($result['sorted_result']));
+        $this->assertSame(['beta', 'alpha'], array_keys($result['strict_sort_result']));
+        $this->assertSame([], $result['empty_result']);
+        $this->assertSame([], $result['null_result']);
+        $this->assertSame([0, ''], array_keys($result['boundary_result']));
+
+        if ($result['xdebug_available'] ?? false) {
+            $this->assertEquals(100.0, $result['line_percentage']);
+            $this->assertEquals(100.0, $result['branch_percentage']);
+            $this->assertSame([], $result['uncovered_lines']);
+            $this->assertSame([], $result['uncovered_branches']);
+        }
+    }
+
+    /**
      * pro_prep_word_list lowercases, filters duplicates, and sorts tokens.
      *
      * @return void
