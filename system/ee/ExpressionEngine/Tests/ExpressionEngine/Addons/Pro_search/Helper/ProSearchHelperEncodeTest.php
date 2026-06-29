@@ -296,4 +296,104 @@ class ProSearchHelperEncodeTest extends TestCase
             'needle longer than haystack' => ['ab', 'abc'],
         ];
     }
+
+    /**
+     * pro_substr_pad returns snippets for each supplied offset.
+     *
+     * @dataProvider substrPadSnippetProvider
+     * @param string $haystack
+     * @param array $positions
+     * @param int $length
+     * @param int $pad
+     * @param array $expected
+     * @return void
+     */
+    public function testSubstrPadReturnsSnippetsForOffsets(
+        string $haystack,
+        array $positions,
+        int $length,
+        int $pad,
+        array $expected
+    ): void {
+        $actual = pro_substr_pad($haystack, $positions, $length, $pad);
+
+        $this->assertSame($expected, $actual);
+
+        foreach ($actual as $snippet) {
+            $this->assertIsString($snippet);
+        }
+    }
+
+    /**
+     * Snippet extraction inputs for pro_substr_pad.
+     *
+     * @return array
+     */
+    public function substrPadSnippetProvider(): array
+    {
+        return [
+            'exact length without padding' => [
+                'alpha beta gamma',
+                [6],
+                4,
+                0,
+                ['beta'],
+            ],
+            'left and right padding around match' => [
+                'alpha beta gamma',
+                [6],
+                4,
+                2,
+                ['a beta g'],
+            ],
+            'left padding clamps to start' => [
+                'alpha beta gamma',
+                [1],
+                3,
+                5,
+                ['alpha beta ga'],
+            ],
+            'right padding clamps to haystack end' => [
+                'alpha beta gamma',
+                [12],
+                5,
+                3,
+                ['a gamma'],
+            ],
+            'zero length can return surrounding padding only' => [
+                'alpha beta gamma',
+                [6],
+                0,
+                2,
+                ['a be'],
+            ],
+            'multiple offsets preserve supplied order' => [
+                'alpha beta gamma beta',
+                [6, 0],
+                5,
+                0,
+                ['beta ', 'alpha'],
+            ],
+        ];
+    }
+
+    /**
+     * pro_substr_pad returns an empty array when no offsets are supplied.
+     *
+     * @return void
+     */
+    public function testSubstrPadReturnsEmptyArrayWithoutOffsets(): void
+    {
+        $this->assertSame([], pro_substr_pad('alpha beta gamma', [], 4, 2));
+    }
+
+    /**
+     * pro_substr_pad returns an empty array for legacy null offsets.
+     *
+     * @return void
+     */
+    public function testSubstrPadReturnsEmptyArrayForNullOffsets(): void
+    {
+        $this->assertSame([], @pro_substr_pad('alpha beta gamma', null, 4, 2));
+    }
 }
