@@ -174,6 +174,85 @@ class ProSearchHelperEncodeTest extends TestCase
     }
 
     /**
+     * pro_not_empty preserves its legacy filter boundaries.
+     *
+     * @dataProvider notEmptyValueProvider
+     * @param mixed $value
+     * @param bool $expected
+     * @return void
+     */
+    public function testNotEmptyPreservesLegacyFilterBoundaries($value, bool $expected): void
+    {
+        $actual = pro_not_empty($value);
+
+        $this->assertSame($expected, $actual);
+        $this->assertIsBool($actual);
+    }
+
+    /**
+     * Legacy empty and non-empty values for pro_not_empty.
+     *
+     * @return array
+     */
+    public function notEmptyValueProvider(): array
+    {
+        return [
+            'null is empty' => [null, false],
+            'false is empty' => [false, false],
+            'empty string is empty' => ['', false],
+            'zero string is not empty' => ['0', true],
+            'zero integer is not empty' => [0, true],
+            'zero float is not empty' => [0.0, true],
+            'empty array is not empty' => [[], true],
+            'non-empty array is not empty' => [['alpha'], true],
+            'true is not empty' => [true, true],
+            'blank string is not empty' => [' ', true],
+            'object is not empty' => [new stdClass(), true],
+        ];
+    }
+
+    /**
+     * pro_not_empty subprocess coverage exercises all reachable branches.
+     *
+     * @return void
+     */
+    public function testNotEmptyCoverageSubprocessCoversBranches(): void
+    {
+        $outputFile = sys_get_temp_dir() . '/pro-search-helper-pro-not-empty-' . uniqid('', true) . '.json';
+        $script = dirname(__DIR__, 4) . '/support/pro_search_helper_pro_not_empty_coverage.php';
+        $command = escapeshellarg(PHP_BINARY) . ' -d xdebug.mode=coverage ' . escapeshellarg($script) . ' ' . escapeshellarg($outputFile) . ' 2>&1';
+
+        exec($command, $output, $exitCode);
+
+        $this->assertSame(0, $exitCode, implode("\n", $output));
+        $this->assertFileExists($outputFile);
+
+        $result = json_decode(file_get_contents($outputFile), true);
+        @unlink($outputFile);
+
+        $this->assertIsArray($result);
+        $this->assertSame(
+            realpath(__DIR__ . '/../../../../../Addons/pro_search/helpers/pro_search_helper.php'),
+            $result['real_module_path']
+        );
+        $this->assertFalse($result['results']['null']);
+        $this->assertFalse($result['results']['false']);
+        $this->assertFalse($result['results']['empty_string']);
+        $this->assertTrue($result['results']['zero_string']);
+        $this->assertTrue($result['results']['zero_integer']);
+        $this->assertTrue($result['results']['zero_float']);
+        $this->assertTrue($result['results']['empty_array']);
+        $this->assertTrue($result['results']['object']);
+
+        if ($result['xdebug_available'] ?? false) {
+            $this->assertEquals(100.0, $result['line_percentage']);
+            $this->assertEquals(100.0, $result['branch_percentage']);
+            $this->assertSame([], $result['uncovered_lines']);
+            $this->assertSame([], $result['uncovered_branches']);
+        }
+    }
+
+    /**
      * pro_search_decode returns an empty array for invalid input.
      *
      * @dataProvider invalidDecodeInputProvider
