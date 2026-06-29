@@ -375,6 +375,181 @@ class ProSearchHelperEncodeTest extends TestCase
     }
 
     /**
+     * pro_array_get_prefixed returns matching parameters with original keys.
+     *
+     * @return void
+     */
+    public function testArrayGetPrefixedReturnsMatchingValuesWithOriginalKeys(): void
+    {
+        $params = [
+            'form_id' => '10',
+            'form_class' => 'primary',
+            'not_form_id' => '20',
+            'Form_id' => 'wrong-case',
+            'form_empty' => '',
+            'form_zero' => 0,
+            'form_false' => false,
+            'form_null' => null,
+        ];
+
+        $actual = pro_array_get_prefixed($params, 'form_');
+
+        $this->assertSame([
+            'form_id' => '10',
+            'form_class' => 'primary',
+            'form_empty' => '',
+            'form_zero' => 0,
+            'form_false' => false,
+            'form_null' => null,
+        ], $actual);
+    }
+
+    /**
+     * pro_array_get_prefixed strips prefixes only when requested with strict true.
+     *
+     * @dataProvider arrayGetPrefixedStripProvider
+     * @param mixed $strip
+     * @param array $expected
+     * @return void
+     */
+    public function testArrayGetPrefixedStripsPrefixesOnlyWhenStrictTrue($strip, array $expected): void
+    {
+        $params = [
+            'form_id' => '10',
+            'form_' => 'empty-key',
+            'form_class' => 'primary',
+            'not_form_id' => '20',
+        ];
+
+        $this->assertSame($expected, pro_array_get_prefixed($params, 'form_', $strip));
+    }
+
+    /**
+     * Prefix stripping flag inputs for pro_array_get_prefixed.
+     *
+     * @return array
+     */
+    public function arrayGetPrefixedStripProvider(): array
+    {
+        return [
+            'strict true strips prefix' => [
+                true,
+                [
+                    'id' => '10',
+                    '' => 'empty-key',
+                    'class' => 'primary',
+                ],
+            ],
+            'false keeps original keys' => [
+                false,
+                [
+                    'form_id' => '10',
+                    'form_' => 'empty-key',
+                    'form_class' => 'primary',
+                ],
+            ],
+            'truthy non-boolean keeps original keys' => [
+                1,
+                [
+                    'form_id' => '10',
+                    'form_' => 'empty-key',
+                    'form_class' => 'primary',
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * pro_array_get_prefixed returns an empty array without a usable array and prefix.
+     *
+     * @dataProvider arrayGetPrefixedEmptyInputProvider
+     * @param mixed $array
+     * @param mixed $prefix
+     * @return void
+     */
+    public function testArrayGetPrefixedReturnsEmptyArrayWithoutUsableArrayAndPrefix($array, $prefix): void
+    {
+        $this->assertSame([], @pro_array_get_prefixed($array, $prefix, true));
+    }
+
+    /**
+     * pro_array_get_prefixed treats the zero string as a usable prefix.
+     *
+     * @return void
+     */
+    public function testArrayGetPrefixedTreatsZeroStringAsUsablePrefix(): void
+    {
+        $this->assertSame(
+            ['id' => '10'],
+            pro_array_get_prefixed(['0id' => '10', 'form_id' => '20'], '0', true)
+        );
+    }
+
+    /**
+     * Empty-input boundaries for pro_array_get_prefixed.
+     *
+     * @return array
+     */
+    public function arrayGetPrefixedEmptyInputProvider(): array
+    {
+        return [
+            'empty array' => [[], 'form_'],
+            'null array' => [null, 'form_'],
+            'false array' => [false, 'form_'],
+            'string array' => ['form_id=10', 'form_'],
+            'empty prefix' => [['form_id' => '10'], ''],
+            'null prefix' => [['form_id' => '10'], null],
+            'false prefix' => [['form_id' => '10'], false],
+        ];
+    }
+
+    /**
+     * pro_array_get_prefixed subprocess coverage records all reachable behavior.
+     *
+     * @return void
+     */
+    public function testArrayGetPrefixedCoverageSubprocessRecordsReachableBehavior(): void
+    {
+        $outputFile = sys_get_temp_dir() . '/pro-search-helper-array-get-prefixed-' . uniqid('', true) . '.json';
+        $script = dirname(__DIR__, 4) . '/support/pro_search_helper_array_get_prefixed_coverage.php';
+        $command = escapeshellarg(PHP_BINARY) . ' -d xdebug.mode=coverage ' . escapeshellarg($script) . ' ' . escapeshellarg($outputFile) . ' 2>&1';
+
+        exec($command, $output, $exitCode);
+
+        $this->assertSame(0, $exitCode, implode("\n", $output));
+        $this->assertFileExists($outputFile);
+
+        $result = json_decode(file_get_contents($outputFile), true);
+        @unlink($outputFile);
+
+        $this->assertIsArray($result);
+        $this->assertSame(
+            realpath(__DIR__ . '/../../../../../Addons/pro_search/helpers/pro_search_helper.php'),
+            $result['real_module_path']
+        );
+        $this->assertSame(
+            ['form_id', 'form_class', 'form_empty', 'form_zero', 'form_false', 'form_null'],
+            array_keys($result['original_keys'])
+        );
+        $this->assertSame(['id', '', 'class'], array_keys($result['stripped_keys']));
+        $this->assertSame(['form_id', 'form_', 'form_class'], array_keys($result['truthy_strip_keys']));
+        $this->assertSame([], $result['empty_prefix']);
+        $this->assertSame([], $result['null_array']);
+        $this->assertSame([], $result['string_array']);
+        $this->assertSame(['0id' => '10'], $result['zero_string_prefix']);
+        $this->assertSame('', $result['original_keys']['form_empty']);
+        $this->assertSame(0, $result['original_keys']['form_zero']);
+        $this->assertFalse($result['original_keys']['form_false']);
+        $this->assertNull($result['original_keys']['form_null']);
+
+        if ($result['xdebug_available'] ?? false) {
+            $this->assertEquals(100.0, $result['line_percentage']);
+            $this->assertSame([], $result['uncovered_lines']);
+            $this->assertGreaterThanOrEqual(90.0, $result['branch_percentage']);
+        }
+    }
+
+    /**
      * pro_search_decode returns an empty array for invalid input.
      *
      * @dataProvider invalidDecodeInputProvider
