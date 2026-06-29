@@ -2,8 +2,16 @@
 
 use PHPUnit\Framework\TestCase;
 
+if (!defined('SYSPATH')) {
+    define('SYSPATH', realpath(__DIR__ . '/../../../../../../..') . '/');
+}
+
 if (!defined('BASEPATH')) {
-    define('BASEPATH', __DIR__ . '/../../../../../../legacy/');
+    define('BASEPATH', SYSPATH . 'ee/legacy/');
+}
+
+if (!function_exists('ee')) {
+    require_once __DIR__ . '/../../../../eeObjectMock.php';
 }
 
 require_once __DIR__ . '/../../../../../Addons/pro_search/helpers/pro_search_helper.php';
@@ -359,6 +367,93 @@ class ProSearchHelperEncodeTest extends TestCase
             'string ignore' => ['alpha', true],
             'integer ignore' => [1, true],
         ];
+    }
+
+    /**
+     * pro_prep_word_list lowercases, filters duplicates, and sorts tokens.
+     *
+     * @return void
+     */
+    public function testPrepWordListNormalizesSortsAndDeduplicatesWords(): void
+    {
+        $input = "Beta beta\nAlpha, ALPHA can't!";
+        $this->mockProMultibyteStrtolower($input);
+
+        $this->assertSame("alpha beta can't", pro_prep_word_list($input));
+    }
+
+    /**
+     * pro_prep_word_list preserves legacy punctuation cleanup rules.
+     *
+     * @return void
+     */
+    public function testPrepWordListRemovesPunctuationWithoutSplittingWords(): void
+    {
+        $input = "two-word email@example.com foo_bar O'Malley rock&roll";
+        $this->mockProMultibyteStrtolower($input);
+
+        $this->assertSame(
+            "emailexamplecom foo_bar o'malley rockroll twoword",
+            pro_prep_word_list($input)
+        );
+    }
+
+    /**
+     * pro_prep_word_list collapses whitespace-only input to an empty string.
+     *
+     * @return void
+     */
+    public function testPrepWordListReturnsEmptyStringForWhitespaceOnlyInput(): void
+    {
+        $input = " \n\t ";
+        $this->mockProMultibyteStrtolower($input);
+
+        $this->assertSame('', pro_prep_word_list($input));
+    }
+
+    /**
+     * pro_prep_word_list handles its default empty input.
+     *
+     * @return void
+     */
+    public function testPrepWordListReturnsEmptyStringForDefaultInput(): void
+    {
+        $this->mockProMultibyteStrtolower('');
+
+        $this->assertSame('', pro_prep_word_list());
+    }
+
+    /**
+     * pro_prep_word_list normalizes the value returned by Pro_multibyte.
+     *
+     * @return void
+     */
+    public function testPrepWordListUsesReturnedMultibyteLowercaseValue(): void
+    {
+        $input = 'MiXeD Input';
+        $this->mockProMultibyteStrtolower($input, 'gamma alpha gamma');
+
+        $this->assertSame('alpha gamma', pro_prep_word_list($input));
+    }
+
+    /**
+     * Mock Pro Search multibyte lowercasing for word-list helper tests.
+     *
+     * @param mixed $expectedInput
+     * @param string|null $lowercaseResult
+     * @return void
+     */
+    private function mockProMultibyteStrtolower($expectedInput, ?string $lowercaseResult = null): void
+    {
+        $multibyte = $this->getMockBuilder('stdClass')
+            ->addMethods(['strtolower'])
+            ->getMock();
+        $multibyte->expects($this->once())
+            ->method('strtolower')
+            ->with($expectedInput)
+            ->willReturn($lowercaseResult ?? mb_strtolower((string) $expectedInput));
+
+        ee()->setMock('pro_multibyte', $multibyte);
     }
 
     /**
