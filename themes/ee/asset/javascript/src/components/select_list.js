@@ -71,6 +71,8 @@ function flattenItemsForVirtualization(items) {
 
 
 function getVirtualItemHeight(item) {
+  if (!item) return 40;
+
   var height = 40;
 
   if (item.instructions) {
@@ -577,7 +579,8 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
         groupToggle: props.groupToggle,
         toggles: props.toggles,
         state: this.state,
-        toggleChanged: props.toggleChanged
+        toggleChanged: props.toggleChanged,
+        virtualizationHeight: props.virtualizationHeight || 400
       })), !props.multi && props.tooMany && props.selected[0] && React.createElement(SelectedItem, {
         item: this.getFullItem(props.selected[0]),
         clearSelection: this.clearSelection,
@@ -1087,15 +1090,42 @@ var VirtualizedItemList = /*#__PURE__*/function (_React$Component5) {
     key: "getVisibleRange",
     value: function getVisibleRange() {
       var scrollTop = this.state.scrollTop;
-      var containerHeight = 400; // Default container height
-
-      var itemHeight = 40; // Base item height
-
+      var containerHeight = this.props.virtualizationHeight || 400;
       var overscan = 10; // Render extra items above/below viewport
 
-      var startIndex = Math.max(0, Math.floor(scrollTop / itemHeight) - overscan);
-      var visibleCount = Math.ceil(containerHeight / itemHeight) + overscan * 2;
-      var endIndex = Math.min(this.props.items.length - 1, startIndex + visibleCount);
+      var items = this.props.items;
+
+      if (!items.length) {
+        return {
+          startIndex: 0,
+          endIndex: 0
+        };
+      }
+
+      var startIndex = 0;
+      var cumulativeHeight = 0;
+
+      while (startIndex < items.length) {
+        var itemHeight = getVirtualItemHeight(items[startIndex]);
+
+        if (cumulativeHeight + itemHeight > scrollTop) {
+          break;
+        }
+
+        cumulativeHeight += itemHeight;
+        startIndex++;
+      }
+
+      var endIndex = startIndex;
+      var visibleHeight = 0;
+
+      while (endIndex < items.length && visibleHeight < containerHeight) {
+        visibleHeight += getVirtualItemHeight(items[endIndex]);
+        endIndex++;
+      }
+
+      startIndex = Math.max(0, startIndex - overscan);
+      endIndex = Math.min(items.length - 1, endIndex + overscan);
       return {
         startIndex: startIndex,
         endIndex: endIndex

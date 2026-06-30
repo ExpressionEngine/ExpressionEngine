@@ -46,6 +46,8 @@ function flattenItemsForVirtualization(items, depth = 0) {
 
 // Helper function to calculate item height for virtualization
 function getVirtualItemHeight(item) {
+  if (!item) return 40
+
   let height = 40
 
   if (item.instructions) {
@@ -551,6 +553,7 @@ class SelectList extends React.Component {
               toggles={props.toggles}
               state={this.state}
               toggleChanged={props.toggleChanged}
+              virtualizationHeight={props.virtualizationHeight || 400}
             />
           }
         </FieldInputs>
@@ -904,13 +907,38 @@ class VirtualizedItemList extends React.Component {
 
   getVisibleRange() {
     const scrollTop = this.state.scrollTop
-    const containerHeight = 400 // Default container height
-    const itemHeight = 40 // Base item height
+    const containerHeight = this.props.virtualizationHeight || 400
     const overscan = 10 // Render extra items above/below viewport
+    const items = this.props.items
 
-    const startIndex = Math.max(0, Math.floor(scrollTop / itemHeight) - overscan)
-    const visibleCount = Math.ceil(containerHeight / itemHeight) + (overscan * 2)
-    const endIndex = Math.min(this.props.items.length - 1, startIndex + visibleCount)
+    if (!items.length) {
+      return { startIndex: 0, endIndex: 0 }
+    }
+
+    let startIndex = 0
+    let cumulativeHeight = 0
+
+    while (startIndex < items.length) {
+      const itemHeight = getVirtualItemHeight(items[startIndex])
+
+      if (cumulativeHeight + itemHeight > scrollTop) {
+        break
+      }
+
+      cumulativeHeight += itemHeight
+      startIndex++
+    }
+
+    let endIndex = startIndex
+    let visibleHeight = 0
+
+    while (endIndex < items.length && visibleHeight < containerHeight) {
+      visibleHeight += getVirtualItemHeight(items[endIndex])
+      endIndex++
+    }
+
+    startIndex = Math.max(0, startIndex - overscan)
+    endIndex = Math.min(items.length - 1, endIndex + overscan)
 
     return { startIndex, endIndex }
   }
