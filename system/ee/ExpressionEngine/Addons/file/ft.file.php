@@ -9,6 +9,7 @@
  */
 
 use ExpressionEngine\Addons\FilePicker\FilePicker;
+use ExpressionEngine\Dependency\League\Flysystem\FileExistsException;
 use ExpressionEngine\Library\CP\EntryManager\ColumnInterface;
 use ExpressionEngine\Library\CP\Table;
 use ExpressionEngine\Library\Filesystem\FilesystemException;
@@ -466,31 +467,51 @@ JSC;
         $data['filesystem'] = $data['filesystem'] ?? $data['model_object']->UploadDestination->getFilesystem();
         $data['source_image'] = $data['source_image'] ?? $data['model_object']->getAbsolutePath();
 
-        $params_copy = $params;
-        foreach ($params as $key => $val) {
-            $clean_key = explode(':', $key);
-            if ($clean_key[0] == 'resize' && isset($clean_key[1])) {
-                $params[$clean_key[1]] = $val;
-            }
+        if (!$data['model_object']->isImage()) {
+            return false;
         }
 
-        unset($params['wrap']);
+        $resize_params = $this->with_prefixed_image_params($params, 'resize');
+        unset($resize_params['wrap']);
+        $crop_params = $this->with_prefixed_image_params($params, 'crop');
 
-        $data['source_image'] = $resized = $this->process_image('resize', $data, $params, false, true);
+        if (!$data['model_object']->isEditableImage()) {
+            $data['source_image'] = $this->process_image('resize', $data, $resize_params, false, true);
 
-        $params = $params_copy;
-        foreach ($params as $key => $val) {
-            $clean_key = explode(':', $key);
-            if ($clean_key[0] == 'crop' && isset($clean_key[1])) {
-                $params[$clean_key[1]] = $val;
-            }
+            return $this->process_image('crop', $data, $crop_params, $tagdata);
         }
 
-        $out = $this->process_image('crop', $data, $params, $tagdata);
+        ee()->load->library('image_lib');
 
-        @unlink($resized);
+        $cached_crop = $this->existing_image_manipulation_result('crop', $data, $crop_params, $tagdata);
+        if ($cached_crop !== null) {
+            return $cached_crop;
+        }
 
-        return $out;
+        $source = null;
+        $resized = null;
+
+        try {
+            $source = $data['filesystem']->copyToTempFile($data['source_image']);
+        } catch (FilesystemException $e) {
+            log_message('debug', $e->getMessage());
+
+            return $data['model_object']->getAbsoluteURL();
+        }
+
+        try {
+            $resized = $data['filesystem']->createTempFile();
+            $resize_result = $this->run_image_manipulation('resize', $resize_params, $source['path'], $resized['path']);
+
+            if ($resize_result !== true) {
+                return $resize_result;
+            }
+
+            return $this->process_image_from_local_source('crop', $data, $crop_params, $tagdata, $resized['path']);
+        } finally {
+            $this->close_temp_file($resized);
+            $this->close_temp_file($source);
+        }
     }
 
     /**
@@ -550,6 +571,22 @@ JSC;
      */
     private function process_image($function = 'resize', $data = [], $params = array(), $tagdata = false, $return_as_path = false)
     {
+        return $this->process_image_using_source($function, $data, $params, $tagdata, $return_as_path);
+    }
+
+    /**
+     * Generic image processing using an already-local source image.
+     */
+    private function process_image_from_local_source($function, $data, $params, $tagdata, $local_source_path, $return_as_path = false)
+    {
+        return $this->process_image_using_source($function, $data, $params, $tagdata, $return_as_path, $local_source_path);
+    }
+
+    /**
+     * Generic image processing with optional local source override.
+     */
+    private function process_image_using_source($function = 'resize', $data = [], $params = array(), $tagdata = false, $return_as_path = false, $local_source_path = null)
+    {
         if (!in_array($function, ['resize', 'crop', 'rotate', 'webp', 'avif'])) {
             return false;
         }
@@ -566,134 +603,329 @@ JSC;
         }
 
         ee()->load->library('image_lib');
+
+        $destination = $this->image_manipulation_destination($function, $data, $params);
+
+        if (!$this->ensure_image_manipulation_directory($data['filesystem'], $destination['directory'])) {
+            return false;
+        }
+
+        $props = null;
+        $needs_props = $this->image_result_needs_properties($tagdata);
+        $destination_exists = $data['filesystem']->exists($destination['path']);
+
+        if ($destination_exists && $needs_props) {
+            $props = $this->read_existing_image_properties($data['filesystem'], $destination['path']);
+        }
+
+        if (!$destination_exists || ($needs_props && !$props)) {
+            $props = $this->create_image_manipulation($function, $data, $params, $destination['path'], $local_source_path);
+
+            if (!is_array($props)) {
+                return $props;
+            }
+        }
+
+        return $this->format_processed_image($data, $params, $tagdata, $return_as_path, $destination, $props);
+    }
+
+    /**
+     * Add unprefixed stage parameters from a prefixed resize_crop parameter set.
+     */
+    private function with_prefixed_image_params($params, $prefix)
+    {
+        foreach ($params as $key => $val) {
+            $clean_key = explode(':', $key);
+            if ($clean_key[0] == $prefix && isset($clean_key[1])) {
+                $params[$clean_key[1]] = $val;
+            }
+        }
+
+        return $params;
+    }
+
+    /**
+     * Determine the destination path and URL for a generated manipulation.
+     */
+    private function image_manipulation_destination($function, &$data, $params)
+    {
         $filename = ee()->image_lib->explode_name($data['fs_filename']);
         if ($function == 'webp' || $function == 'avif') {
             $filename['name'] = $filename['name'] . '_' . $filename['ext'];
             $filename['ext'] = '.' . $function;
         }
+
         $new_image = substr($filename['name'], 0, 150) . '_' . $function . '_' . md5(serialize($params)) . $filename['ext'];
         $data['fs_filename'] = $filename['name'] . '_' . $function . $filename['ext'];
+        $directory = rtrim($data['model_object']->getBaseServerPath() . $data['model_object']->getSubfoldersPath(), '/') . '/_' . $function . DIRECTORY_SEPARATOR;
 
-        $new_image_dir = rtrim($data['model_object']->getBaseServerPath() . $data['model_object']->getSubfoldersPath(), '/') . '/_' . $function . DIRECTORY_SEPARATOR;
-        if (! $data['filesystem']->isDir($new_image_dir)) {
-            $data['filesystem']->mkdir($new_image_dir);
-            $data['filesystem']->addIndexHtml($new_image_dir);
-        } elseif (!$data['filesystem']->isWritable($new_image_dir)) {
+        $fileNameOnModel = $data['model_object']->file_name;
+        $data['model_object']->file_name = $new_image;
+        $url = $data['model_object']->getAbsoluteManipulationURL($function);
+        $data['model_object']->file_name = $fileNameOnModel;
+
+        return [
+            'directory' => $directory,
+            'filename' => $new_image,
+            'path' => $directory . $new_image,
+            'url' => $url,
+        ];
+    }
+
+    /**
+     * Ensure the manipulation directory exists and is writable.
+     */
+    private function ensure_image_manipulation_directory($filesystem, $directory)
+    {
+        if (! $filesystem->isDir($directory)) {
+            $filesystem->mkdir($directory);
+            $filesystem->addIndexHtml($directory);
+
+            return true;
+        }
+
+        return $filesystem->isWritable($directory);
+    }
+
+    /**
+     * Determine whether the caller needs image dimensions.
+     */
+    private function image_result_needs_properties($tagdata)
+    {
+        return $tagdata !== false;
+    }
+
+    /**
+     * Return an existing manipulation result, or null when generation is required.
+     */
+    private function existing_image_manipulation_result($function, $data, $params, $tagdata, $return_as_path = false)
+    {
+        $destination = $this->image_manipulation_destination($function, $data, $params);
+
+        if (!$this->ensure_image_manipulation_directory($data['filesystem'], $destination['directory'])) {
             return false;
         }
 
-        $destination_path = $new_image_dir . $new_image;
+        if (!$data['filesystem']->exists($destination['path'])) {
+            return null;
+        }
+
         $props = null;
+        if ($this->image_result_needs_properties($tagdata)) {
+            $props = $this->read_existing_image_properties($data['filesystem'], $destination['path']);
 
-        if (!$data['filesystem']->exists($destination_path)) {
-            // We need to get a temporary local copy of the file in case it's stored
-            // on another filesystem.
-            try {
-                $source = $data['filesystem']->copyToTempFile($data['source_image']);
-            } catch (FilesystemException $e) {
-                // if the file does not exist (e.g. we run a local copy without all files)
-                // just return the original URL
-                log_message('debug', $e->getMessage());
-                return $data['model_object']->getAbsoluteURL();
+            if (!$props) {
+                return null;
             }
-            $new = $data['filesystem']->createTempFile();
+        }
 
-            // If no per-tag quality is provided, use the configured default
-            // while preserving the historical 75 fallback.
-            $imageQuality = 75;
-            if (is_int(ee()->config->item('image_manipulation_quality')) && 0 < ee()->config->item('image_manipulation_quality') && ee()->config->item('image_manipulation_quality') <= 100) {
-                $imageQuality = ee()->config->item('image_manipulation_quality');
-            }
+        return $this->format_processed_image($data, $params, $tagdata, $return_as_path, $destination, $props);
+    }
 
-            $imageLibConfig = array(
-                'image_library' => ee()->config->item('image_resize_protocol'),
-                'library_path' => ee()->config->item('image_library_path'),
-                'source_image' => $source['path'],
-                'new_image' => $new['path'],
-                'maintain_ratio' => isset($params['maintain_ratio']) ? get_bool_from_string($params['maintain_ratio']) : true,
-                'master_dim' => (isset($params['master_dim']) && in_array($params['master_dim'], ['auto', 'width', 'height'])) ? $params['master_dim'] : 'auto',
+    /**
+     * Generate a manipulation and write it to the destination path.
+     */
+    private function create_image_manipulation($function, $data, $params, $destination_path, $local_source_path = null)
+    {
+        $source = null;
+        $new = null;
+        $stream = null;
 
-                'quality' => isset($params['quality']) ? (int) $params['quality'] : $imageQuality,
-                'x_axis' => isset($params['x']) ? (int) $params['x'] : 0,
-                'y_axis' => isset($params['y']) ? (int) $params['y'] : 0,
-                'rotation_angle' => (isset($params['angle']) && in_array($params['angle'], ['90', '180', '270', 'vrt', 'hor'])) ? $params['angle'] : null,
-            );
-            //technically, both dimensions are always required, so we'll set defaults
-            if ($imageLibConfig['master_dim'] != 'auto') {
-                $imageLibConfig['width'] = 100;
-                $imageLibConfig['height'] = 100;
-            }
-            if (isset($params['width'])) {
-                $imageLibConfig['width'] = (int) $params['width'];
-                if ($imageLibConfig['master_dim'] == 'auto' && !isset($params['height'])) {
-                    $imageLibConfig['master_dim'] = 'width';
-                    $imageLibConfig['height'] = 100;
-                }
-            }
-            if (isset($params['height'])) {
-                $imageLibConfig['height'] = (int) $params['height'];
-                if ($imageLibConfig['master_dim'] == 'auto' && !isset($params['width'])) {
-                    $imageLibConfig['master_dim'] = 'height';
-                    $imageLibConfig['width'] = 100;
-                }
-            }
-
-            // if position parameter is provided, use it to calculate x and y
-            if ($function == 'crop' && isset($params['position'])) {
-                $props = ee()->image_lib->get_image_properties($source['path'], true);
-                if (isset($params['width'])) {
-                    $imageLibConfig['x_axis'] += floor(($props['width'] - (int) $params['width']) / 2);
-                }
-                if (isset($params['height'])) {
-                    $imageLibConfig['y_axis'] += floor(($props['height'] - (int) $params['height']) / 2);
-                }
-            }
-
-            ee()->image_lib->clear();
-            if (!isset($imageLibConfig['width'])) {
-                ee()->image_lib->width = '';
-            }
-            if (!isset($imageLibConfig['height'])) {
-                ee()->image_lib->height = '';
-            }
-            ee()->image_lib->initialize($imageLibConfig);
-
-            if (!ee()->image_lib->$function()) {
-                if (ee()->config->item('debug') == 2 or (ee()->config->item('debug') == 1 and ee('Permission')->isSuperAdmin())) {
-                    return ee()->image_lib->display_errors();
-                }
+        if ($local_source_path !== null) {
+            if (!$this->local_source_path_is_readable($local_source_path)) {
+                log_message('debug', 'Cannot create image manipulation from unreadable local source path: ' . $local_source_path);
 
                 return ee()->TMPL->no_results();
             }
 
-            // Write transformed file into correct location
-            $data['filesystem']->writeStream($destination_path, fopen($new['path'], 'r+'));
-            $data['filesystem']->ensureCorrectAccessMode($destination_path);
+            $source_path = $local_source_path;
+        } else {
+            // We need to get a temporary local copy of the file in case it's stored
+            // on another filesystem.
+            try {
+                $source = $data['filesystem']->copyToTempFile($data['source_image']);
+                $source_path = $source['path'];
+            } catch (FilesystemException $e) {
+                // if the file does not exist (e.g. we run a local copy without all files)
+                // just return the original URL
+                log_message('debug', $e->getMessage());
+
+                return $data['model_object']->getAbsoluteURL();
+            }
+        }
+
+        try {
+            $new = $data['filesystem']->createTempFile();
+            $result = $this->run_image_manipulation($function, $params, $source_path, $new['path']);
+
+            if ($result !== true) {
+                return $result;
+            }
+
+            $stream = fopen($new['path'], 'r+');
+            if ($stream === false) {
+                log_message('debug', 'Cannot open generated image stream: ' . $new['path']);
+
+                return ee()->TMPL->no_results();
+            }
+
+            $wrote_destination = false;
+            try {
+                $data['filesystem']->writeStream($destination_path, $stream);
+                $wrote_destination = true;
+            } catch (FileExistsException $e) {
+                log_message('debug', $e->getMessage());
+
+                if (!$data['filesystem']->exists($destination_path)) {
+                    throw $e;
+                }
+            }
+
+            if ($wrote_destination) {
+                $data['filesystem']->ensureCorrectAccessMode($destination_path);
+            }
 
             // Get image properties before we destroy local file
-            $props = ee()->image_lib->get_image_properties($new['path'], true);
+            return ee()->image_lib->get_image_properties($new['path'], true);
+        } finally {
+            if (is_resource($stream)) {
+                fclose($stream);
+            }
+            $this->close_temp_file($new);
+            $this->close_temp_file($source);
+        }
+    }
 
-            // Clean up temporary files
-            fclose($new['file']);
-            fclose($source['file']);
+    /**
+     * Run a local image manipulation from source path to destination path.
+     */
+    private function run_image_manipulation($function, $params, $source_path, $destination_path)
+    {
+        $imageLibConfig = $this->image_lib_config($function, $params, $source_path, $destination_path);
+
+        // if position parameter is provided, use it to calculate x and y
+        if ($function == 'crop' && isset($params['position'])) {
+            $props = ee()->image_lib->get_image_properties($source_path, true);
+            if (isset($params['width'])) {
+                $imageLibConfig['x_axis'] += floor(($props['width'] - (int) $params['width']) / 2);
+            }
+            if (isset($params['height'])) {
+                $imageLibConfig['y_axis'] += floor(($props['height'] - (int) $params['height']) / 2);
+            }
         }
 
-        $fileNameOnModel = $data['model_object']->file_name;
-        $data['model_object']->file_name = $new_image;
-        $destination_url = $data['model_object']->getAbsoluteManipulationURL($function);
-        $data['model_object']->file_name = $fileNameOnModel;
+        ee()->image_lib->clear();
+        if (!isset($imageLibConfig['width'])) {
+            ee()->image_lib->width = '';
+        }
+        if (!isset($imageLibConfig['height'])) {
+            ee()->image_lib->height = '';
+        }
+        ee()->image_lib->initialize($imageLibConfig);
 
-        if (!$props) {
-            $tmp = $data['filesystem']->copyToTempFile($destination_path);
-            $props = ee()->image_lib->get_image_properties($tmp['path'], true);
-            fclose($tmp['file']);
+        if (!ee()->image_lib->$function()) {
+            if (ee()->config->item('debug') == 2 or (ee()->config->item('debug') == 1 and ee('Permission')->isSuperAdmin())) {
+                return ee()->image_lib->display_errors();
+            }
+
+            return ee()->TMPL->no_results();
         }
 
+        return true;
+    }
+
+    /**
+     * Build Image_lib config for a local manipulation.
+     */
+    private function image_lib_config($function, $params, $source_path, $destination_path)
+    {
+        $imageLibConfig = array(
+            'image_library' => ee()->config->item('image_resize_protocol'),
+            'library_path' => ee()->config->item('image_library_path'),
+            'source_image' => $source_path,
+            'new_image' => $destination_path,
+            'maintain_ratio' => isset($params['maintain_ratio']) ? get_bool_from_string($params['maintain_ratio']) : true,
+            'master_dim' => (isset($params['master_dim']) && in_array($params['master_dim'], ['auto', 'width', 'height'])) ? $params['master_dim'] : 'auto',
+
+            'quality' => isset($params['quality']) ? (int) $params['quality'] : $this->default_image_manipulation_quality(),
+            'x_axis' => isset($params['x']) ? (int) $params['x'] : 0,
+            'y_axis' => isset($params['y']) ? (int) $params['y'] : 0,
+            'rotation_angle' => (isset($params['angle']) && in_array($params['angle'], ['90', '180', '270', 'vrt', 'hor'])) ? $params['angle'] : null,
+        );
+
+        //technically, both dimensions are always required, so we'll set defaults
+        if ($imageLibConfig['master_dim'] != 'auto') {
+            $imageLibConfig['width'] = 100;
+            $imageLibConfig['height'] = 100;
+        }
+        if (isset($params['width'])) {
+            $imageLibConfig['width'] = (int) $params['width'];
+            if ($imageLibConfig['master_dim'] == 'auto' && !isset($params['height'])) {
+                $imageLibConfig['master_dim'] = 'width';
+                $imageLibConfig['height'] = 100;
+            }
+        }
+        if (isset($params['height'])) {
+            $imageLibConfig['height'] = (int) $params['height'];
+            if ($imageLibConfig['master_dim'] == 'auto' && !isset($params['width'])) {
+                $imageLibConfig['master_dim'] = 'height';
+                $imageLibConfig['width'] = 100;
+            }
+        }
+
+        return $imageLibConfig;
+    }
+
+    /**
+     * Return the configured image quality, falling back to 75.
+     */
+    private function default_image_manipulation_quality()
+    {
+        if (is_int(ee()->config->item('image_manipulation_quality')) && 0 < ee()->config->item('image_manipulation_quality') && ee()->config->item('image_manipulation_quality') <= 100) {
+            return ee()->config->item('image_manipulation_quality');
+        }
+
+        return 75;
+    }
+
+    /**
+     * Read image properties from an already-generated manipulation.
+     */
+    private function read_existing_image_properties($filesystem, $destination_path)
+    {
+        $tmp = null;
+
+        try {
+            $tmp = $filesystem->copyToTempFile($destination_path);
+
+            return ee()->image_lib->get_image_properties($tmp['path'], true);
+        } catch (FilesystemException $e) {
+            log_message('debug', $e->getMessage());
+
+            return null;
+        } finally {
+            $this->close_temp_file($tmp);
+        }
+    }
+
+    /**
+     * Determine whether a caller-supplied local source path can be used directly.
+     */
+    private function local_source_path_is_readable($path)
+    {
+        return is_string($path) && $path !== '' && is_file($path) && is_readable($path);
+    }
+
+    /**
+     * Format image processing output for chain, single-tag, and tag-pair callers.
+     */
+    private function format_processed_image($data, $params, $tagdata, $return_as_path, $destination, $props)
+    {
         if ($tagdata === null) {
             // called when chaining modifiers
             $vars = array_merge($data, [
-                'url' => $destination_url,
-                'source_image' => $destination_path,
+                'url' => $destination['url'],
+                'source_image' => $destination['path'],
                 'width' => $props['width'],
                 'height' => $props['height']
             ]);
@@ -702,19 +934,29 @@ JSC;
         } elseif ($tagdata === false) {
             // single tag or call from resize_crop
             if (isset($params['wrap'])) {
-                return $this->_wrap_it($data, $params['wrap'], $destination_url);
+                return $this->_wrap_it($data, $params['wrap'], $destination['url']);
             }
 
-            return ($return_as_path ? $destination_path : $destination_url);
+            return ($return_as_path ? $destination['path'] : $destination['url']);
         } else {
             // tag pair
             $vars = [
-                'url' => $destination_url,
+                'url' => $destination['url'],
                 'width' => $props['width'],
                 'height' => $props['height']
             ];
 
             return ee()->TMPL->parse_variables($tagdata, [$vars]);
+        }
+    }
+
+    /**
+     * Close a temp-file handle if it is open.
+     */
+    private function close_temp_file($tmp)
+    {
+        if (is_array($tmp) && isset($tmp['file']) && is_resource($tmp['file'])) {
+            fclose($tmp['file']);
         }
     }
 

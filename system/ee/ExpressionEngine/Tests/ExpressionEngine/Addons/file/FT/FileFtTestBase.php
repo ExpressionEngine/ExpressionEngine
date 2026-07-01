@@ -1115,6 +1115,9 @@ namespace {
         /** @var array<int, array<string, mixed>> */
         public $writeStreamCalls = [];
 
+        /** @var array<string, \Exception> */
+        public $writeStreamExceptions = [];
+
         /** @var array<int, string> */
         public $ensureCorrectAccessModeCalls = [];
 
@@ -1235,6 +1238,15 @@ namespace {
                 'path' => $path,
                 'stream_uri' => $metadata['uri'] ?? null,
             ];
+
+            if (array_key_exists($path, $this->writeStreamExceptions)) {
+                if ($this->writeStreamExceptions[$path] instanceof \ExpressionEngine\Dependency\League\Flysystem\FileExistsException) {
+                    $this->existingPaths[$path] = true;
+                }
+
+                throw $this->writeStreamExceptions[$path];
+            }
+
             $this->existingPaths[$path] = true;
         }
 
