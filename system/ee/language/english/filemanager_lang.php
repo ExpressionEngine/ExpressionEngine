@@ -88,7 +88,7 @@ $lang = array(
 
     'invalid_mime' => 'Invalid mime type, file could not be processed',
 
-    'invalid_short_name' => 'The image manipulation short name may only contain alpha-numeric characters, dashes and underscores, and cannot be named "thumbs".',
+    'invalid_short_name' => 'The image manipulation short name may only contain alpha-numeric characters, dashes and underscores, and cannot use a built-in manipulation name: "thumbs", "resize", "crop", "rotate", "webp", or "avif".',
 
     'link' => 'Link',
 
