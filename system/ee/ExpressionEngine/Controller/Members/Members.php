@@ -929,7 +929,7 @@ class Members extends CP_Controller
         foreach (ee('Model')->make('Member')->getDisplay()->getFields() as $field) {
             $sections['custom_fields'][] = [
                 'title' => $field->getLabel(),
-                'desc' => $field->getInstructions(),
+                'desc' => ee('Format')->make('Text', (string) $field->getInstructions())->convertToEntities()->compile(),
                 'fields' => [
                     $field->getName() => [
                         'type' => 'html',
