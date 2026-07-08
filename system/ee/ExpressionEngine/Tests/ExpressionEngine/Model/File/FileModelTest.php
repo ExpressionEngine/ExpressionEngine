@@ -30,6 +30,38 @@ class FileModelTest extends TestCase
         $this->assertArrayHasKey('file_hw_original', $values);
         $this->assertNull($values['file_hw_original']);
     }
+
+    /**
+     * Assert image dimensions are split into width and height accessors.
+     *
+     * @return void
+     */
+    public function testDimensionsAreReadFromOriginalFileDimensions()
+    {
+        $file = new FileModel();
+        $file->setRawProperty('file_hw_original', '480 640');
+
+        $this->assertSame('640', $file->width);
+        $this->assertSame('480', $file->height);
+    }
+
+    /**
+     * Assert missing image dimensions do not raise PHP warnings.
+     *
+     * @return void
+     */
+    public function testDimensionsUseEmptyStringsWhenOriginalFileDimensionsAreUnavailable()
+    {
+        $file = new FileModel();
+
+        $file->setRawProperty('file_hw_original', '');
+        $this->assertSame('', $file->width);
+        $this->assertSame('', $file->height);
+
+        $file->setRawProperty('file_hw_original', null);
+        $this->assertSame('', $file->width);
+        $this->assertSame('', $file->height);
+    }
 }
 
 class FileWithUnreadableRootStub extends FileModel

@@ -21,18 +21,28 @@ namespace ExpressionEngine\Model\File;
  */
 class File extends FileSystemEntity
 {
+    /**
+     * Get the stored original image width.
+     *
+     * @return string Original image width, or an empty string when unavailable.
+     */
     public function get__width()
     {
-        $dimensions = explode(" ", $this->getProperty('file_hw_original'));
+        $dimensions = explode(" ", (string) $this->getProperty('file_hw_original'));
 
-        return $dimensions[1];
+        return $dimensions[1] ?? '';
     }
 
+    /**
+     * Get the stored original image height.
+     *
+     * @return string Original image height, or an empty string when unavailable.
+     */
     public function get__height()
     {
-        $dimensions = explode(" ", $this->getProperty('file_hw_original'));
+        $dimensions = explode(" ", (string) $this->getProperty('file_hw_original'));
 
-        return $dimensions[0];
+        return $dimensions[0] ?? '';
     }
 
     public function get__title()
