@@ -844,13 +844,13 @@ class CI_DB_driver
     }
 
     /**
-     * Display an error message
+     * Display or throw a database error message.
      *
-     * @access	public
-     * @param	string	the error message
-     * @param	string	any "swap" values
-     * @param	boolean	whether to localize the message
-     * @return	string	sends the application/error_db.php template
+     * @param string|array $error The error message or language key.
+     * @param string $swap Replacement text for localized messages.
+     * @param bool $native Whether the message is already formatted.
+     * @return void
+     * @throws Exception
      */
     public function display_error($error = '', $swap = '', $native = false)
     {
@@ -868,7 +868,7 @@ class CI_DB_driver
         }
 
         if ($native == true) {
-            $message = $error;
+            $message = (array) $error;
         } else {
             $message = (! is_array($error)) ? array(str_replace('%s', $swap, $LANG->line($error))) : $error;
         }

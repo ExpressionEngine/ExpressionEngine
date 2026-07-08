@@ -440,7 +440,7 @@ class DBDriverTest extends TestCase
         ee()->setMock('session', null);
 
         try {
-            $driver->display_error(['native message'], '', true);
+            $driver->display_error('native message', '', true);
             $this->fail('Expected exception.');
         } catch (Exception $exception) {
             $this->assertStringContainsString('native message', $exception->getMessage());
