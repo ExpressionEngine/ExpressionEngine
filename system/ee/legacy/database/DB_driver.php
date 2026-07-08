@@ -777,12 +777,10 @@ class CI_DB_driver
     }
 
     /**
-     * Enables a native PHP function to be run, using a platform agnostic wrapper.
+     * Run a driver-specific native PHP function through a common wrapper.
      *
-     * @access	public
-     * @param	string	the function name
-     * @param	mixed	any parameters needed by the function
-     * @return	mixed
+     * @param string $function The native function name without the driver prefix.
+     * @return mixed
      */
     public function call_function($function)
     {
@@ -798,11 +796,12 @@ class CI_DB_driver
             }
 
             return false;
-        } else {
-            $args = (func_num_args() > 1) ? array_splice(func_get_args(), 1) : null;
-
-            return call_user_func_array($function, $args);
         }
+
+        $args = func_get_args();
+        array_shift($args);
+
+        return call_user_func_array($function, $args);
     }
 
     /**

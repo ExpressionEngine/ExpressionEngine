@@ -353,36 +353,8 @@ class DBDriverTest extends TestCase
     {
         $driver = new DBDriverMethodHarness(['dbdriver' => 'db_driver_test']);
 
-        $demoResult = null;
-        $demoException = null;
-        try {
-            $demoResult = $driver->call_function('demo');
-        } catch (Throwable $exception) {
-            $demoException = $exception;
-        }
-
-        if ($demoException instanceof Throwable) {
-            $this->assertStringContainsString('call_user_func_array', $demoException->getMessage());
-        } else {
-            $this->assertTrue($demoResult === 'demo:' || $demoResult === null);
-        }
-
-        $helperResult = null;
-        $helperException = null;
-        try {
-            $helperResult = $driver->call_function('helper', 2, 3);
-        } catch (Throwable $exception) {
-            $helperException = $exception;
-        }
-
-        if ($helperException instanceof Throwable) {
-            $this->assertTrue(
-                strpos($helperException->getMessage(), 'array_splice') !== false
-                || strpos($helperException->getMessage(), 'Cannot pass parameter 1 by reference') !== false
-            );
-        } else {
-            $this->assertSame(5, $helperResult);
-        }
+        $this->assertSame('demo:', $driver->call_function('demo'));
+        $this->assertSame(5, $driver->call_function('helper', 2, 3));
 
         $driver->db_debug = false;
         $this->assertFalse($driver->call_function('missing'));
