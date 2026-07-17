@@ -137,6 +137,7 @@ class FileFtDisplayFieldTest extends FileFtTestBase
                 'content_type' => 'all',
                 'filebrowser' => false,
                 'existing_limit' => null,
+                'input_id' => 'feature_file',
             ],
         ], $this->fileFieldMock->fieldCalls);
     }
@@ -173,6 +174,40 @@ class FileFtDisplayFieldTest extends FileFtTestBase
                 'content_type' => 'all',
                 'filebrowser' => false,
                 'existing_limit' => 9,
+                'input_id' => 'asset_file',
+            ],
+        ], $this->fileFieldMock->fieldCalls);
+    }
+
+    /**
+     * Assert Grid file inputs do not receive duplicate IDs before namespacing.
+     *
+     * @return void
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function testDisplayFieldOmitsInputIdForGridFields()
+    {
+        define('REQ', 'PAGE');
+
+        $fieldtype = $this->makeFieldtype([], 0, 'col_id_2', FileFtDisplayFieldSpy::class);
+        $fieldtype->_init(['content_type' => 'grid']);
+        $this->fileFieldMock->fieldReturn = '<grid file picker>';
+
+        $result = $fieldtype->display_field('');
+
+        $this->assertSame('<grid file picker>', $result);
+        $this->assertSame(1, $fieldtype->frontendJsCalls);
+        $this->assertSame([
+            [
+                'field_name' => 'col_id_2',
+                'data' => '',
+                'allowed_file_dirs' => 'all',
+                'content_type' => 'all',
+                'filebrowser' => false,
+                'existing_limit' => null,
+                'input_id' => null,
             ],
         ], $this->fileFieldMock->fieldCalls);
     }

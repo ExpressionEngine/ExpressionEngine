@@ -32,9 +32,12 @@ class File_field
      *              Either 'all' or ONE directory ID
      * @param string $content_type The content type allowed.
      *              Either 'all' or 'image'
+     * @param bool $filebrowser Whether the file browser is available
+     * @param int|null $existing_limit Maximum number of existing files to show
+     * @param string|null $input_id ID for the rendered upload input
      * @return string Fully rendered file field
      */
-    public function field($field_name, $data = '', $allowed_file_dirs = 'all', $content_type = 'all', $filebrowser = true, $existing_limit = null)
+    public function field($field_name, $data = '', $allowed_file_dirs = 'all', $content_type = 'all', $filebrowser = true, $existing_limit = null, $input_id = null)
     {
         // Load necessary library, helper, model and langfile
         ee()->load->library('filemanager');
@@ -93,12 +96,18 @@ class File_field
 
         // Create a standard file upload field and dropdown for folks
         // without javascript
-        $vars['upload'] = form_upload(array(
+        $upload_attributes = array(
             'name' => $field_name,
             'value' => $vars['filename'],
             'data-content-type' => $content_type,
             'data-directory' => $specified_directory
-        ));
+        );
+
+        if ($input_id !== null) {
+            $upload_attributes['id'] = $input_id;
+        }
+
+        $vars['upload'] = form_upload($upload_attributes);
 
         $vars['allowed_file_dirs'] = $allowed_file_dirs;
         $vars['directory'] = form_hidden($field_name . '_directory', $vars['upload_location_id']);
