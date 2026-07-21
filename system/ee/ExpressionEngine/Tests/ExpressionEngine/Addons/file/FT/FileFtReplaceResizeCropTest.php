@@ -139,6 +139,96 @@ class FileFtReplaceResizeCropSpy extends File_ft
     }
 }
 
+class FileFtReplaceResizeCropLifecycleFilesystemStub extends FileFtProcessImageFilesystemStub
+{
+    /** @var array<int, array<string, mixed>> */
+    public $temporaryFiles = [];
+
+    /**
+     * Return a tracked temporary copy of the requested source image.
+     *
+     * @param string $path
+     * @return array<string, mixed>
+     */
+    public function copyToTempFile($path)
+    {
+        $this->copyToTempFileCalls[] = $path;
+
+        return $this->createTrackedTempFile('temp-image-data');
+    }
+
+    /**
+     * Create a tracked writable temporary file.
+     *
+     * @return array<string, mixed>
+     */
+    public function createTempFile()
+    {
+        $this->createTempFileCalls++;
+
+        return $this->createTrackedTempFile('generated-image-data');
+    }
+
+    /**
+     * Create a temporary file whose resource state remains observable by the test.
+     *
+     * @param string $contents
+     * @return array<string, mixed>
+     */
+    private function createTrackedTempFile($contents)
+    {
+        $file = tmpfile();
+        fwrite($file, $contents);
+        $temporaryFile = [
+            'file' => $file,
+            'path' => stream_get_meta_data($file)['uri'],
+        ];
+        $this->temporaryFiles[] = $temporaryFile;
+
+        return $temporaryFile;
+    }
+}
+
+class FileFtReplaceResizeCropLifecycleImageLibStub extends FileFtImageLibStub
+{
+    /** @var FileFtReplaceResizeCropLifecycleFilesystemStub */
+    private $filesystem;
+
+    /** @var bool|null */
+    public $sourceWasOpenDuringCrop;
+
+    /** @var bool|null */
+    public $resizedWasOpenDuringCrop;
+
+    /**
+     * Seed the filesystem whose temporary resources should be observed.
+     *
+     * @param FileFtReplaceResizeCropLifecycleFilesystemStub $filesystem
+     * @return void
+     */
+    public function __construct(FileFtReplaceResizeCropLifecycleFilesystemStub $filesystem)
+    {
+        $this->filesystem = $filesystem;
+    }
+
+    /**
+     * Record source resource state when the crop action begins.
+     *
+     * @param string $name
+     * @param array<int, mixed> $arguments
+     * @return bool
+     */
+    public function __call($name, $arguments)
+    {
+        if ($name === 'crop') {
+            $this->sourceWasOpenDuringCrop = is_resource($this->filesystem->temporaryFiles[0]['file']);
+            $this->resizedWasOpenDuringCrop = is_resource($this->filesystem->temporaryFiles[1]['file']);
+        }
+
+        return parent::__call($name, $arguments);
+    }
+}
+
 class FileFtReplaceResizeCropTest extends FileFtTestBase
 {
     /**
@@ -518,6 +608,39 @@ class FileFtReplaceResizeCropTest extends FileFtTestBase
             $this->imageLibMock->initializeCalls[1]['source_image']
         );
         $this->assertSame(['resize', 'crop'], $this->imageLibMock->actionCalls);
+    }
+
+    /**
+     * Assert the original source handle is released before the resized image enters the crop stage.
+     *
+     * @return void
+     */
+    public function testReplaceResizeCropClosesOriginalSourceBeforeCropping()
+    {
+        $fieldtype = $this->makeFieldtype();
+        $filesystem = new FileFtReplaceResizeCropLifecycleFilesystemStub();
+        $modelObject = new FileFtProcessImageModelObjectStub([
+            'filesystem' => $filesystem,
+        ]);
+        $imageLib = new FileFtReplaceResizeCropLifecycleImageLibStub($filesystem);
+        $this->setImageLib($imageLib);
+        $data = [
+            'model_object' => $modelObject,
+            'fs_filename' => 'hero.jpg',
+            'filesystem' => $filesystem,
+            'source_image' => '/srv/uploads/gallery/hero.jpg',
+        ];
+
+        $fieldtype->replace_resize_crop($data, [
+            'resize:width' => '320',
+            'crop:width' => '150',
+            'crop:height' => '60',
+        ], false);
+
+        $this->assertFalse($imageLib->sourceWasOpenDuringCrop);
+        $this->assertTrue($imageLib->resizedWasOpenDuringCrop);
+        $this->assertFalse(is_resource($filesystem->temporaryFiles[0]['file']));
+        $this->assertFalse(is_resource($filesystem->temporaryFiles[1]['file']));
     }
 
     /**
