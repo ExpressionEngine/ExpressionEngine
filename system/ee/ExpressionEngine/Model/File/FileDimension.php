@@ -96,6 +96,12 @@ class FileDimension extends Model
 
     /**
      * Prevent custom manipulations from colliding with built-in manipulation folders.
+     *
+     * @param string $key Field key being validated
+     * @param mixed $value Field value being validated
+     * @param array $params Validation rule parameters
+     * @param \ExpressionEngine\Service\Validation\Rule\Callback $rule Validation callback rule
+     * @return bool|string True when valid, otherwise a localized error message
      */
     public function validateShortNameIsNotReserved($key, $value, $params, $rule)
     {
