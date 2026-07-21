@@ -392,11 +392,11 @@ class FileFtReplaceResizeCropTest extends FileFtTestBase
     }
 
     /**
-     * Assert resize failures stop resize-crop before crop or final writes run.
+     * Assert resize failures return the original URL before crop or final writes run.
      *
      * @return void
      */
-    public function testReplaceResizeCropReturnsResizeFailureWithoutRunningCrop()
+    public function testReplaceResizeCropReturnsOriginalUrlWhenResizeFails()
     {
         $fieldtype = $this->makeFieldtype();
         $filesystem = new FileFtProcessImageFilesystemStub();
@@ -421,7 +421,7 @@ class FileFtReplaceResizeCropTest extends FileFtTestBase
             'crop:height' => '60',
         ], false);
 
-        $this->assertSame('resize failed', $result);
+        $this->assertSame('https://example.com/uploads/gallery/hero.jpg', $result);
         $this->assertSame(['/srv/uploads/gallery/hero.jpg'], $filesystem->copyToTempFileCalls);
         $this->assertSame([], $filesystem->writeStreamCalls);
         $this->assertSame(['resize'], $imageLib->actionCalls);

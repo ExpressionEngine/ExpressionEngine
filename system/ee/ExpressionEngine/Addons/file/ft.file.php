@@ -504,7 +504,7 @@ JSC;
             $resize_result = $this->run_image_manipulation('resize', $resize_params, $source['path'], $resized['path']);
 
             if ($resize_result !== true) {
-                return $resize_result;
+                return $data['model_object']->getAbsoluteURL();
             }
 
             return $this->process_image_from_local_source('crop', $data, $crop_params, $tagdata, $resized['path']);
