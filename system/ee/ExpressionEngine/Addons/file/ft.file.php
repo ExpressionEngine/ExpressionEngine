@@ -502,6 +502,8 @@ JSC;
         try {
             $resized = $data['filesystem']->createTempFile();
             $resize_result = $this->run_image_manipulation('resize', $resize_params, $source['path'], $resized['path']);
+            $this->close_temp_file($source);
+            $source = null;
 
             if ($resize_result !== true) {
                 return $data['model_object']->getAbsoluteURL();
