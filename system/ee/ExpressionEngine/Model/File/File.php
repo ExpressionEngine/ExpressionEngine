@@ -24,25 +24,58 @@ class File extends FileSystemEntity
     /**
      * Get the stored original image width.
      *
-     * @return string Original image width, or an empty string when unavailable.
+     * @return string|null Original image width as a numeric string, or null when unavailable.
      */
     public function get__width()
     {
-        $dimensions = explode(" ", (string) $this->getProperty('file_hw_original'));
+        $dimensions = $this->getOriginalDimensions();
 
-        return $dimensions[1] ?? '';
+        return $dimensions === null ? null : $dimensions['width'];
     }
 
     /**
      * Get the stored original image height.
      *
-     * @return string Original image height, or an empty string when unavailable.
+     * @return string|null Original image height as a numeric string, or null when unavailable.
      */
     public function get__height()
     {
-        $dimensions = explode(" ", (string) $this->getProperty('file_hw_original'));
+        $dimensions = $this->getOriginalDimensions();
 
-        return $dimensions[0] ?? '';
+        return $dimensions === null ? null : $dimensions['height'];
+    }
+
+    /**
+     * Parse the stored original image dimensions as an atomic pair.
+     *
+     * @return array|null Height and width as positive numeric strings, or null when invalid.
+     */
+    private function getOriginalDimensions()
+    {
+        $value = $this->getProperty('file_hw_original');
+
+        if (! is_string($value)) {
+            return null;
+        }
+
+        $dimensions = explode(' ', $value);
+
+        if (count($dimensions) !== 2) {
+            return null;
+        }
+
+        list($height, $width) = $dimensions;
+
+        if (
+            ! ctype_digit($height)
+            || ! ctype_digit($width)
+            || (int) $height <= 0
+            || (int) $width <= 0
+        ) {
+            return null;
+        }
+
+        return compact('height', 'width');
     }
 
     public function get__title()

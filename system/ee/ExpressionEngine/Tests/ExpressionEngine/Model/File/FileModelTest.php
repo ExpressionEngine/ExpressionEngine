@@ -46,21 +46,33 @@ class FileModelTest extends TestCase
     }
 
     /**
-     * Assert missing image dimensions do not raise PHP warnings.
+     * Assert unavailable or invalid dimensions return null as an atomic pair.
      *
+     * @dataProvider invalidOriginalDimensionsProvider
      * @return void
      */
-    public function testDimensionsUseEmptyStringsWhenOriginalFileDimensionsAreUnavailable()
+    public function testInvalidOriginalFileDimensionsReturnNull($dimensions)
     {
         $file = new FileModel();
+        $file->setRawProperty('file_hw_original', $dimensions);
 
-        $file->setRawProperty('file_hw_original', '');
-        $this->assertSame('', $file->width);
-        $this->assertSame('', $file->height);
+        $this->assertNull($file->width);
+        $this->assertNull($file->height);
+    }
 
-        $file->setRawProperty('file_hw_original', null);
-        $this->assertSame('', $file->width);
-        $this->assertSame('', $file->height);
+    public static function invalidOriginalDimensionsProvider()
+    {
+        return array(
+            'empty' => array(''),
+            'null' => array(null),
+            'height only' => array('480'),
+            'non-numeric width' => array('480 wide'),
+            'extra component' => array('480 640 extra'),
+            'zero height' => array('0 640'),
+            'zero width' => array('480 0'),
+            'negative height' => array('-480 640'),
+            'negative width' => array('480 -640'),
+        );
     }
 }
 
