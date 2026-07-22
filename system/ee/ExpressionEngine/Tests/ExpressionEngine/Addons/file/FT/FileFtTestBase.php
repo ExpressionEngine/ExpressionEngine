@@ -399,9 +399,10 @@ namespace {
          * @param string $contentType
          * @param bool $filebrowser
          * @param int|null $existingLimit
+         * @param string|null $inputId
          * @return string
          */
-        public function field($fieldName, $data, $allowedFileDirs, $contentType, $filebrowser, $existingLimit)
+        public function field($fieldName, $data, $allowedFileDirs, $contentType, $filebrowser, $existingLimit, $inputId)
         {
             $this->fieldCalls[] = [
                 'field_name' => $fieldName,
@@ -410,6 +411,7 @@ namespace {
                 'content_type' => $contentType,
                 'filebrowser' => $filebrowser,
                 'existing_limit' => $existingLimit,
+                'input_id' => $inputId,
             ];
 
             return $this->fieldReturn;

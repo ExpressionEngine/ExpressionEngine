@@ -3243,7 +3243,7 @@ class FileFieldFieldTest extends TestCase
             'file_name' => '',
         ];
 
-        $result = $this->subject->field('asset_file', '{filedir_9}spec%20sheet.pdf', 'all', 'image');
+        $result = $this->subject->field('asset_file', '{filedir_9}spec%20sheet.pdf', 'all', 'image', true, null, 'asset_file');
 
         $this->assertSame('<rendered-output>', $result);
         $this->assertSame(['filemanager'], $this->loadMock->libraries);
@@ -3269,6 +3269,7 @@ class FileFieldFieldTest extends TestCase
         $this->assertStringContainsString('data-directory="all"', $vars['upload_link']);
         $this->assertStringContainsString('name="asset_file_hidden_file"', $vars['hidden']);
         $this->assertStringContainsString('value="spec sheet.pdf"', $vars['hidden']);
+        $this->assertStringContainsString('id="asset_file"', $vars['upload']);
     }
 
     /**
