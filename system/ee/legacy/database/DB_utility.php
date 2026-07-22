@@ -239,10 +239,10 @@ class CI_DB_utility extends CI_DB_forge
     }
 
     /**
-     * Database Backup
+     * Build a database backup using the requested format and table selection.
      *
-     * @access	public
-     * @return	void
+     * @param array|string $params Backup preferences or a single table name.
+     * @return string|null
      */
     public function backup($params = array())
     {
@@ -250,7 +250,7 @@ class CI_DB_utility extends CI_DB_forge
         // array then we know that it is simply the table
         // name, which is a valid short cut.
         if (is_string($params)) {
-            $params = array('tables' => $params);
+            $params = array('tables' => array($params));
         }
 
         // ------------------------------------------------------
@@ -273,6 +273,10 @@ class CI_DB_utility extends CI_DB_forge
                     $prefs[$key] = $params[$key];
                 }
             }
+        }
+
+        if (is_string($prefs['tables'])) {
+            $prefs['tables'] = array($prefs['tables']);
         }
 
         // ------------------------------------------------------
@@ -307,7 +311,8 @@ class CI_DB_utility extends CI_DB_forge
 
         // Set the filename if not provided - Only needed with Zip files
         if ($prefs['filename'] == '' and $prefs['format'] == 'zip') {
-            $prefs['filename'] = (count($prefs['tables']) == 1) ? $prefs['tables'] : $this->db->database;
+            $tables = array_values($prefs['tables']);
+            $prefs['filename'] = (count($tables) == 1) ? $tables[0] : $this->db->database;
             $prefs['filename'] .= '_' . date('Y-m-d_H-i', time());
         }
 
