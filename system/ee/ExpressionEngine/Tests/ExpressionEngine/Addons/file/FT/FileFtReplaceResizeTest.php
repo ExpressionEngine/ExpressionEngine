@@ -547,6 +547,110 @@ class FileFtReplaceResizeTest extends FileFtTestBase
     }
 
     /**
+     * Assert cached single-tag manipulations return the URL without copying the destination for dimensions.
+     *
+     * @return void
+     */
+    public function testReplaceResizeReturnsCachedUrlWithoutCopyingDestinationForSingleTags()
+    {
+        $fieldtype = $this->makeFieldtype();
+        $filesystem = new FileFtProcessImageFilesystemStub();
+        $modelObject = new FileFtProcessImageModelObjectStub([
+            'filesystem' => $filesystem,
+        ]);
+        $params = ['height' => '240'];
+        $hash = md5(serialize($params));
+        $destinationPath = '/srv/uploads/gallery/_resize' . DIRECTORY_SEPARATOR . 'hero_resize_' . $hash . '.jpg';
+        $destinationUrl = 'https://example.com/uploads/gallery/_resize/hero_resize_' . $hash . '.jpg';
+        $filesystem->directories['/srv/uploads/gallery/_resize' . DIRECTORY_SEPARATOR] = true;
+        $filesystem->existingPaths[$destinationPath] = true;
+        $data = [
+            'model_object' => $modelObject,
+            'fs_filename' => 'hero.jpg',
+            'filesystem' => $filesystem,
+            'source_image' => '/srv/uploads/gallery/hero.jpg',
+        ];
+
+        $result = $fieldtype->replace_resize($data, $params, false);
+
+        $this->assertSame($destinationUrl, $result);
+        $this->assertSame([], $filesystem->copyToTempFileCalls);
+        $this->assertSame([], $filesystem->writeStreamCalls);
+        $this->assertSame([], $this->imageLibMock->initializeCalls);
+    }
+
+    /**
+     * Assert stale cached destinations are regenerated when chained output needs dimensions.
+     *
+     * @return void
+     */
+    public function testReplaceResizeRegeneratesWhenCachedDestinationCannotBeCopiedForChaining()
+    {
+        $fieldtype = $this->makeFieldtype();
+        $filesystem = new FileFtProcessImageFilesystemStub();
+        $modelObject = new FileFtProcessImageModelObjectStub([
+            'filesystem' => $filesystem,
+        ]);
+        $params = ['height' => '240'];
+        $hash = md5(serialize($params));
+        $destinationPath = '/srv/uploads/gallery/_resize' . DIRECTORY_SEPARATOR . 'hero_resize_' . $hash . '.jpg';
+        $destinationUrl = 'https://example.com/uploads/gallery/_resize/hero_resize_' . $hash . '.jpg';
+        $filesystem->directories['/srv/uploads/gallery/_resize' . DIRECTORY_SEPARATOR] = true;
+        $filesystem->existingPaths[$destinationPath] = true;
+        $filesystem->copyToTempFileExceptions[$destinationPath] = 'cached manipulation disappeared';
+        $data = [
+            'model_object' => $modelObject,
+            'fs_filename' => 'hero.jpg',
+            'filesystem' => $filesystem,
+            'source_image' => '/srv/uploads/gallery/hero.jpg',
+        ];
+
+        $result = $fieldtype->replace_resize($data, $params, null);
+
+        $this->assertSame($destinationPath, $result['source_image']);
+        $this->assertSame($destinationUrl, $result['url']);
+        $this->assertSame([
+            $destinationPath,
+            '/srv/uploads/gallery/hero.jpg',
+        ], $filesystem->copyToTempFileCalls);
+        $this->assertCount(1, $filesystem->writeStreamCalls);
+        $this->assertSame(['resize'], $this->imageLibMock->actionCalls);
+    }
+
+    /**
+     * Assert a concurrent final cache write is treated as a benign cache winner.
+     *
+     * @return void
+     */
+    public function testReplaceResizeTreatsConcurrentFinalWriteAsCacheHit()
+    {
+        $fieldtype = $this->makeFieldtype();
+        $filesystem = new FileFtProcessImageFilesystemStub();
+        $modelObject = new FileFtProcessImageModelObjectStub([
+            'filesystem' => $filesystem,
+        ]);
+        $params = ['width' => '320'];
+        $hash = md5(serialize($params));
+        $destinationPath = '/srv/uploads/gallery/_resize' . DIRECTORY_SEPARATOR . 'hero_resize_' . $hash . '.jpg';
+        $destinationUrl = 'https://example.com/uploads/gallery/_resize/hero_resize_' . $hash . '.jpg';
+        $filesystem->writeStreamExceptions[$destinationPath] = new \ExpressionEngine\Dependency\League\Flysystem\FileExistsException($destinationPath);
+        $data = [
+            'model_object' => $modelObject,
+            'fs_filename' => 'hero.jpg',
+            'filesystem' => $filesystem,
+            'source_image' => '/srv/uploads/gallery/hero.jpg',
+        ];
+
+        $result = $fieldtype->replace_resize($data, $params, false);
+
+        $this->assertSame($destinationUrl, $result);
+        $this->assertSame(['/srv/uploads/gallery/hero.jpg'], $filesystem->copyToTempFileCalls);
+        $this->assertCount(1, $filesystem->writeStreamCalls);
+        $this->assertSame([], $filesystem->ensureCorrectAccessModeCalls);
+        $this->assertSame(['resize'], $this->imageLibMock->actionCalls);
+    }
+
+    /**
      * Assert height-only resize requests infer the missing width and switch master_dim to height.
      *
      * @return void
