@@ -203,7 +203,8 @@ context('Channel Create/Edit', () => {
         page.load_edit_for_channel(2) // 2nd row, not channel id 2
         page.get('settings_tab').click()
         page.get('channel_description').clear().type('Some description')
-        page.get('channel_lang').check('en', { force: true })
+        page.get('channel_lang_filter').clear().type('English')
+        page.get('channel_lang').filter('[value="en"]').check({ force: true })
         page.get('channel_url').clear().type('http://someurl/channel')
         page.get('comment_url').clear().type('http://someurl/channel/comment')
         page.get('search_results_url').clear().type('http://someurl/channel/search/results')
@@ -275,6 +276,7 @@ context('Channel Create/Edit', () => {
         // Now make sure settings were duplicated
         page.get('settings_tab').click()
         page.get('channel_description').should('have.value', 'Some description')
+        page.get('channel_lang_filter').clear().type('English')
         page.get('channel_lang').filter(':checked').should('have.value', 'en')
 
         page.get('channel_url').should('have.value', 'http://someurl/channel')
