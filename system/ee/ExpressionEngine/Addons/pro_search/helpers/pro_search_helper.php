@@ -47,7 +47,11 @@ if (! function_exists('pro_search_encode')) {
 }
 
 /**
- * Decode a query back to the array
+ * Decode a Pro Search query payload back to an array.
+ *
+ * @param string $str Encoded query string.
+ * @param bool $url Whether the payload is URL-safe base64 encoded.
+ * @return array
  */
 if (! function_exists('pro_search_decode')) {
     function pro_search_decode($str = '', $url = true)
@@ -71,18 +75,68 @@ if (! function_exists('pro_search_decode')) {
             $str = str_replace(' ', '+', $str);
 
             // Decode back
-            $str = base64_decode($str);
+            $str = base64_decode($str, true);
+
+            if ($str === false) {
+                return array();
+            }
         }
 
         // Decoding method
-        $array = (substr($str, 0, 2) == 'a:') ? @unserialize($str) : @json_decode($str, true);
+        $array = (substr($str, 0, 2) == 'a:')
+            ? @unserialize($str, array('allowed_classes' => false))
+            : @json_decode($str, true);
 
         // Force array output
-        if (! is_array($array)) {
+        if (! is_array($array) || contains_non_scalar_or_recursive_values($array)) {
             $array = array();
         }
 
         return $array;
+    }
+}
+
+/**
+ * Determine if an array contains non-scalar or recursive values.
+ *
+ * @param array $array Decoded query array.
+ * @return bool
+ */
+if (! function_exists('contains_non_scalar_or_recursive_values')) {
+    function contains_non_scalar_or_recursive_values($array)
+    {
+        $nonScalar = false;
+        $recursive = false;
+
+        set_error_handler(function () use (&$recursive) {
+            $recursive = true;
+
+            return true;
+        });
+
+        try {
+            array_walk_recursive($array, function ($value) use (&$nonScalar) {
+                if (is_object($value) || is_resource($value)) {
+                    $nonScalar = true;
+                }
+            });
+        } catch (Throwable $exception) {
+            $recursive = true;
+        } finally {
+            restore_error_handler();
+        }
+
+        if ($recursive) {
+            return true;
+        }
+
+        foreach ($array as $value) {
+            if (is_object($value) || is_resource($value)) {
+                return true;
+            }
+        }
+
+        return $nonScalar;
     }
 }
 
