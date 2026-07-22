@@ -381,6 +381,11 @@ class Fluid_field_parser
 
         $total_fields = count($fluid_field_data);
         $total_groups = count($groups);
+        $frontedit_disabled = false;
+        if (isset($params['disable'])) {
+            $disable = explode("|", $params['disable']);
+            $frontedit_disabled = in_array('frontedit', $disable);
+        }
 
         $group_cond_keys = array_fill_keys(array_map(function ($name) use ($fluid_field_name) {
             return "{$fluid_field_name}:$name";
@@ -498,6 +503,7 @@ class Fluid_field_parser
                     $prevField = ($firstInGroup) ? ($g > 0 && isset($groups[$g - 1]) ? $groups[$g - 1]['fields'][count($groups[$g - 1]['fields']) - 1] : null) : $group['fields'][$fieldCount - 1];
                     $nextField = ($lastInGroup) ? ($g < $total_groups && isset($groups[$g + 1]) ? $groups[$g + 1]['fields'][0] : null) : $group['fields'][$fieldCount + 1];
 
+                    $currentFluidSubFieldId = $fluid_field->ChannelField->field_id ?? $fluid_field->field_id ?? null;
                     $meta = [
                         $fluid_field_name . ':first' => (int) ($g == 0 && $firstInGroup),
                         $fluid_field_name . ':last' => (int) (($g + 1) == $total_groups && $lastInGroup),
@@ -508,6 +514,8 @@ class Fluid_field_parser
                         $fluid_field_name . ':count_in_group' => $fieldCount + 1,
                         $fluid_field_name . ':index_in_group' => $fieldCount,
                         $fluid_field_name . ':current_field_name' => $field_name,
+                        $fluid_field_name . ':current_field_id' => $currentFluidSubFieldId,
+                        $fluid_field_name . ':current_field_data_id' => $fluid_field->getId(),
                         $fluid_field_name . ':next_field_name' => ($nextField) ? $nextField->ChannelField->field_name : null,
                         $fluid_field_name . ':prev_field_name' => ($prevField) ? $prevField->ChannelField->field_name : null,
                         $fluid_field_name . ':current_fieldtype' => $groups[$g]['fields'][$fieldCount]->ChannelField->field_type,
@@ -536,7 +544,44 @@ class Fluid_field_parser
                     $field = $group_tags["$group_prefix:$field_name"];
 
                     $parsed = $tag->parse($field, $meta);
-                    $chunk_output .= $parsed;
+                    $frontEditLink = '';
+                    $normalizedFluidFieldName = preg_replace('/^' . preg_quote((string) $this->_prefix, '/') . '/', '', (string) $fluid_field_name);
+                    $manualFluidFieldNames = array_unique(array_filter([
+                        'fluid_field',
+                        $normalizedFluidFieldName,
+                    ]));
+                    $manualFluidFieldNamesPattern = implode('|', array_map(function ($name) {
+                        return preg_quote($name, '/');
+                    }, $manualFluidFieldNames));
+                    $manualFrontEditTokenPattern = '/\{frontedit_link\b(?:[^{}]|\{[^{}]*\})*\}/si';
+                    $manualFieldNamePattern = '/\bfield_name\s*=\s*([\'"@])(?:' . $manualFluidFieldNamesPattern . ')\1/i';
+                    $manualFieldIdPattern = '/\bfield_id\s*=\s*([\'"@])' . preg_quote((string) $fluid_field_id, '/') . '\1/i';
+                    $hasManualFrontEdit = false;
+                    $hasFrontEditContext = isset($channel_row['site_id'], $channel_row['channel_id']);
+
+                    if (preg_match_all($manualFrontEditTokenPattern, $my_tagdata, $manualFrontEditTokens)) {
+                        foreach ($manualFrontEditTokens[0] as $manualFrontEditToken) {
+                            if (preg_match($manualFieldNamePattern, $manualFrontEditToken) || preg_match($manualFieldIdPattern, $manualFrontEditToken)) {
+                                $hasManualFrontEdit = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!$frontedit_disabled && !$hasManualFrontEdit && $hasFrontEditContext) {
+                        $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLinkWithParams(
+                            $channel_row['site_id'],
+                            $channel_row['channel_id'],
+                            $entry_id,
+                            $fluid_field_id,
+                            [
+                                'fluid_item_field_id' => $currentFluidSubFieldId,
+                                'fluid_item_data_id' => $fluid_field->getId(),
+                            ]
+                        );
+                    }
+
+                    $chunk_output .= $frontEditLink . $parsed;
                     $i++;
                     $fieldCount++;
                 }
