@@ -30,6 +30,50 @@ class FileModelTest extends TestCase
         $this->assertArrayHasKey('file_hw_original', $values);
         $this->assertNull($values['file_hw_original']);
     }
+
+    /**
+     * Assert image dimensions are split into width and height accessors.
+     *
+     * @return void
+     */
+    public function testDimensionsAreReadFromOriginalFileDimensions()
+    {
+        $file = new FileModel();
+        $file->setRawProperty('file_hw_original', '480 640');
+
+        $this->assertSame('640', $file->width);
+        $this->assertSame('480', $file->height);
+    }
+
+    /**
+     * Assert unavailable or invalid dimensions return null as an atomic pair.
+     *
+     * @dataProvider invalidOriginalDimensionsProvider
+     * @return void
+     */
+    public function testInvalidOriginalFileDimensionsReturnNull($dimensions)
+    {
+        $file = new FileModel();
+        $file->setRawProperty('file_hw_original', $dimensions);
+
+        $this->assertNull($file->width);
+        $this->assertNull($file->height);
+    }
+
+    public static function invalidOriginalDimensionsProvider()
+    {
+        return array(
+            'empty' => array(''),
+            'null' => array(null),
+            'height only' => array('480'),
+            'non-numeric width' => array('480 wide'),
+            'extra component' => array('480 640 extra'),
+            'zero height' => array('0 640'),
+            'zero width' => array('480 0'),
+            'negative height' => array('-480 640'),
+            'negative width' => array('480 -640'),
+        );
+    }
 }
 
 class FileWithUnreadableRootStub extends FileModel

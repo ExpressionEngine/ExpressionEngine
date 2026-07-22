@@ -81,6 +81,8 @@ abstract class Field
     }
 
     /**
+     * Convert the field into a shared form definition.
+     *
      * @return array
      */
     public function toArray(): array
@@ -90,6 +92,10 @@ abstract class Field
             if (!is_null($value)) {
                 $return[$key] = $value;
             }
+        }
+
+        if (isset($return['group_toggle']) && is_string($return['group_toggle'])) {
+            $return['group_toggle'] = ['y' => $return['group_toggle']];
         }
 
         return $return;

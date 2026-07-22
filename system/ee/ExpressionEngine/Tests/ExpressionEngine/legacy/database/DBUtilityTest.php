@@ -223,17 +223,17 @@ class DBUtilityTest extends TestCase
         $db->tables = ['exp_members'];
         $utility = new DBUtilityTestable($db);
 
-        try {
-            $utility->backup('exp_members');
-        } catch (Throwable $exception) {
-            $this->assertStringContainsString('count()', $exception->getMessage());
-        }
+        $this->assertSame(gzencode('SQLDATA'), $utility->backup('exp_members'));
+        $this->assertSame('exp_members', $utility->backupPrefs[0]['tables'][0]);
 
         $gzip = $utility->backup(['format' => 'gzip', 'tables' => ['exp_members']]);
         $this->assertSame(gzencode('SQLDATA'), $gzip);
 
         $txt = $utility->backup(['format' => 'txt', 'tables' => ['exp_members']]);
         $this->assertSame('SQLDATA', $txt);
+
+        $txtFromStringTablePreference = $utility->backup(['format' => 'txt', 'tables' => 'exp_members']);
+        $this->assertSame('SQLDATA', $txtFromStringTablePreference);
 
         $txtFromInvalidFormat = $utility->backup(['format' => 'invalid', 'tables' => ['exp_members']]);
         $this->assertSame('SQLDATA', $txtFromInvalidFormat);
@@ -252,6 +252,35 @@ class DBUtilityTest extends TestCase
         $this->assertSame('ZIP_BINARY', $zipData);
         $this->assertSame(['zip'], $load->libraries);
         $this->assertSame([['backup.sql', 'SQLDATA']], $zip->data);
+    }
+
+    public function testBackupUsesSingleTableNameForDefaultZipFilename(): void
+    {
+        $db = new DBUtilityDbStub();
+        $utility = new DBUtilityTestable($db);
+
+        $load = new DBUtilityLoadStub();
+        $zip = new DBUtilityZipStub();
+        ee()->setMock('load', $load);
+        ee()->setMock('zip', $zip);
+
+        $utility->backup([
+            'format' => 'zip',
+            'filename' => '',
+            'tables' => ['exp_members'],
+        ]);
+
+        $this->assertCount(1, $zip->data);
+        $this->assertMatchesRegularExpression('/^exp_members_\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}\\.sql$/', $zip->data[0][0]);
+
+        $utility->backup([
+            'format' => 'zip',
+            'filename' => '',
+            'tables' => 'exp_members',
+        ]);
+
+        $this->assertCount(2, $zip->data);
+        $this->assertMatchesRegularExpression('/^exp_members_\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}\\.sql$/', $zip->data[1][0]);
     }
 
     public function testBackupGeneratesDefaultZipFilenameWhenMissing(): void

@@ -153,9 +153,10 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
     }
 
     /**
-     * Show the publish field
+     * Render the publish field for the current request.
      *
-     * @access  public
+     * @param mixed $data Stored file field data
+     * @return string Rendered file field
      */
     public function display_field($data)
     {
@@ -188,7 +189,8 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
             $allowed_file_dirs,
             $content_type,
             $filebrowser,
-            ($show_existing == 'y') ? $existing_limit : null
+            ($show_existing == 'y') ? $existing_limit : null,
+            ($this->content_type() === 'channel') ? $this->field_name : null
         );
     }
 

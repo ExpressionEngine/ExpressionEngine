@@ -777,12 +777,10 @@ class CI_DB_driver
     }
 
     /**
-     * Enables a native PHP function to be run, using a platform agnostic wrapper.
+     * Run a driver-specific native PHP function through a common wrapper.
      *
-     * @access	public
-     * @param	string	the function name
-     * @param	mixed	any parameters needed by the function
-     * @return	mixed
+     * @param string $function The native function name without the driver prefix.
+     * @return mixed
      */
     public function call_function($function)
     {
@@ -798,11 +796,12 @@ class CI_DB_driver
             }
 
             return false;
-        } else {
-            $args = (func_num_args() > 1) ? array_splice(func_get_args(), 1) : null;
-
-            return call_user_func_array($function, $args);
         }
+
+        $args = func_get_args();
+        array_shift($args);
+
+        return call_user_func_array($function, $args);
     }
 
     /**
@@ -845,13 +844,13 @@ class CI_DB_driver
     }
 
     /**
-     * Display an error message
+     * Display or throw a database error message.
      *
-     * @access	public
-     * @param	string	the error message
-     * @param	string	any "swap" values
-     * @param	boolean	whether to localize the message
-     * @return	string	sends the application/error_db.php template
+     * @param string|array $error The error message or language key.
+     * @param string $swap Replacement text for localized messages.
+     * @param bool $native Whether the message is already formatted.
+     * @return void
+     * @throws Exception
      */
     public function display_error($error = '', $swap = '', $native = false)
     {
@@ -869,7 +868,7 @@ class CI_DB_driver
         }
 
         if ($native == true) {
-            $message = $error;
+            $message = (array) $error;
         } else {
             $message = (! is_array($error)) ? array(str_replace('%s', $swap, $LANG->line($error))) : $error;
         }

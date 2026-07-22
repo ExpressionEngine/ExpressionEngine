@@ -241,7 +241,7 @@ jobs:
 
             - name: Start SMTP Server
               run: |
-                npm install -g maildev
+                npm install -g maildev@2.x
                 maildev &
 
             # This will get a Stable Chrome version that is 2 releases back from latest, and install it

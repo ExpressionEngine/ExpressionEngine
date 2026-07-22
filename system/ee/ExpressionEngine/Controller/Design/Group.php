@@ -476,17 +476,35 @@ class Group extends AbstractDesignController
         ee()->cp->render('settings/form', $vars);
     }
 
+    /**
+     * Remove a Template Group.
+     *
+     * @return void
+     */
     public function remove()
     {
-        if (! ee('Permission')->can('delete_template_groups')) {
+        if (
+            ! ee('Permission')->can('delete_template_groups') ||
+            ee('Request')->method() !== 'POST'
+        ) {
             show_error(lang('unauthorized_access'), 403);
         }
 
+        $group_id = ee()->input->post('group_id');
+        $group_name = ee()->input->post('group_name');
+
+        if (
+            ! is_numeric($group_id) &&
+            (! is_string($group_name) || $group_name === '')
+        ) {
+            show_error(lang('group_not_found'));
+        }
+
         $groups = ee('Model')->get('TemplateGroup');
-        if (is_numeric(ee()->input->post('group_id'))) {
-            $groups = $groups->filter('group_id', ee()->input->post('group_id'));
+        if (is_numeric($group_id)) {
+            $groups = $groups->filter('group_id', $group_id);
         } else {
-            $groups = $groups->filter('group_name', ee()->input->post('group_name'));
+            $groups = $groups->filter('group_name', $group_name);
         }
         $groups = $groups->filter('site_id', ee()->config->item('site_id'))
             ->all();

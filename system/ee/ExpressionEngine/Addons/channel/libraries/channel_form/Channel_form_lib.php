@@ -1113,10 +1113,12 @@ GRID_FALLBACK;
      */
     private function _swap_custom_field_variables($custom_field_variables_row, $tagdata)
     {
+        $integer_variables = array('field_id', 'field_data', 'rows', 'maxlength');
+
         foreach ($custom_field_variables_row as $key => $value) {
             if (is_array($value)) {
                 $tagdata = $this->swap_var_pair($key, $value, $tagdata);
-            } elseif ($key === 'field_id') {
+            } elseif (in_array($key, $integer_variables, true)) {
                 $tagdata = ee()->TMPL->swap_var_single($key, (string) $value, $tagdata);
             } elseif (! is_int($value)) {
                 // don't use our conditionals as vars

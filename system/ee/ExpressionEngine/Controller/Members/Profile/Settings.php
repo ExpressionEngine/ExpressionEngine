@@ -138,7 +138,7 @@ class Settings extends Profile
         foreach ($this->member->getDisplay()->getFields() as $field) {
             $vars['sections']['custom_fields'][] = array(
                 'title' => $field->getLabel(),
-                'desc' => $field->getInstructions(),
+                'desc' => ee('Format')->make('Text', (string) $field->getInstructions())->convertToEntities()->compile(),
                 'fields' => array(
                     $field->getName() => array(
                         'type' => 'html',
