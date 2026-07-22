@@ -597,6 +597,11 @@ class Template extends AbstractDesignController
             $_POST['template_engine'] = null;
         }
 
+        if (! ee('Permission')->isSuperAdmin()) {
+            $_POST['allow_php'] = $template->isNew() ? 'n' : $template->allow_php;
+            $_POST['php_parse_location'] = $template->isNew() ? 'o' : $template->php_parse_location;
+        }
+
         $template->set($_POST);
         $template->edit_date = ee()->localize->now;
         $template->last_author_id = ee()->session->userdata('member_id');
