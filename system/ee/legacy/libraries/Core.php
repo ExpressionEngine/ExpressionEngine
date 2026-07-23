@@ -163,7 +163,22 @@ class EE_Core
         // don't leak to JS by setting the httpOnly flag
         $secure = bool_config_item('cookie_secure');
         $httpOnly = (ee()->config->item('cookie_httponly')) ? bool_config_item('cookie_httponly') : true;
-        session_set_cookie_params(0, ee()->config->item('cookie_path'), ee()->config->item('cookie_domain'), $secure, $httpOnly);
+        $cookie_path = ee()->config->item('cookie_path');
+        $cookie_domain = ee()->config->item('cookie_domain');
+
+        if (PHP_VERSION_ID >= 70300) {
+            session_set_cookie_params(array(
+                'lifetime' => 0,
+                'path' => $cookie_path,
+                'domain' => $cookie_domain,
+                'secure' => $secure,
+                'httponly' => $httpOnly,
+                'samesite' => 'Lax',
+            ));
+        } else {
+            $cookie_path = ($cookie_path ?: '/') . '; SameSite=Lax';
+            session_set_cookie_params(0, $cookie_path, $cookie_domain, $secure, $httpOnly);
+        }
 
         // this look backwards, but QUERY_MARKER is only used where we MUST
         // have a ?, and do not want to double up
