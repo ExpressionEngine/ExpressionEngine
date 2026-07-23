@@ -12,6 +12,8 @@ namespace ExpressionEngine\Controller\Publish;
 
 use CP_Controller;
 use ExpressionEngine\Model\Channel\ChannelEntry;
+use ExpressionEngine\Service\Validation\Result as ValidationResult;
+use ExpressionEngine\Service\Validation\Rule;
 
 /**
  * Abstract Publish Controller
@@ -413,6 +415,7 @@ abstract class AbstractPublish extends CP_Controller
         $hidden_fields = $entry->evaluateConditionalFields();
 
         $result = $entry->validate();
+        $this->validateEntryStatusAccess($entry, $result);
 
         if ($response = $this->ajaxValidation($result)) {
             if (isset($response[0]) && $response[0] == 'success') {
@@ -441,6 +444,118 @@ abstract class AbstractPublish extends CP_Controller
         }
 
         return $result;
+    }
+
+    /**
+     * Validate the entry status belongs to the channel and is assigned to the current member.
+     *
+     * @param ChannelEntry $entry Entry being validated.
+     * @param ValidationResult $result Validation result to update.
+     * @return void
+     */
+    protected function validateEntryStatusAccess(ChannelEntry $entry, ValidationResult $result)
+    {
+        if ($result->hasErrors('status')) {
+            return;
+        }
+
+        $status = $entry->status;
+        if ($status === null || $status === '') {
+            return;
+        }
+
+        if (! is_scalar($status)) {
+            $this->addStatusAccessValidationFailure($result, 'invalid');
+
+            return;
+        }
+
+        $status = (string) $status;
+        if ($status === '') {
+            $this->addStatusAccessValidationFailure($result, 'invalid');
+
+            return;
+        }
+
+        if ($this->memberCanAccessEntryStatus($entry, $status)) {
+            return;
+        }
+
+        $this->addStatusAccessValidationFailure($result, $status);
+    }
+
+    protected function memberCanAccessEntryStatus(ChannelEntry $entry, $status)
+    {
+        $channel_statuses = $this->getEntryChannelStatusNames($entry);
+
+        if (! array_key_exists($status, $channel_statuses)) {
+            return false;
+        }
+
+        if (ee('Permission')->isSuperAdmin()) {
+            return true;
+        }
+
+        $member = ee()->session->getMember();
+        if (empty($member) || ! method_exists($member, 'getAssignedStatuses')) {
+            return false;
+        }
+
+        $assigned_statuses = $member->getAssignedStatuses();
+        if (! is_iterable($assigned_statuses)) {
+            return false;
+        }
+
+        foreach ($assigned_statuses as $assigned_status) {
+            if ($this->getStatusName($assigned_status) === $status) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected function getEntryChannelStatusNames(ChannelEntry $entry)
+    {
+        $status_names = [];
+        $channel = $entry->Channel;
+        $statuses = (! empty($channel)) ? $channel->Statuses : null;
+
+        if (is_iterable($statuses)) {
+            foreach ($statuses as $status) {
+                $status_name = $this->getStatusName($status);
+                if ($status_name !== null && $status_name !== '') {
+                    $status_names[$status_name] = true;
+                }
+            }
+        }
+
+        return ! empty($status_names) ? $status_names : ['open' => true, 'closed' => true];
+    }
+
+    protected function getStatusName($status)
+    {
+        if (is_object($status) && method_exists($status, 'getProperty')) {
+            $status = $status->getProperty('status');
+        } elseif (is_object($status) && isset($status->status)) {
+            $status = $status->status;
+        } elseif (is_array($status) && array_key_exists('status', $status)) {
+            $status = $status['status'];
+        }
+
+        return is_scalar($status) ? (string) $status : null;
+    }
+
+    protected function addStatusAccessValidationFailure(ValidationResult $result, $status)
+    {
+        $status_message = (is_scalar($status) && (string) $status !== '') ? (string) $status : 'invalid';
+
+        $rule = new Rule\Callback(function () {
+            return 'status_not_available_desc';
+        });
+        $rule->setParameters([htmlentities($status_message, ENT_QUOTES, 'UTF-8')]);
+        $rule->validate('status', $status_message);
+        $result->addFailed('status', $rule);
     }
 
     protected function saveEntryAndRedirect($entry)
