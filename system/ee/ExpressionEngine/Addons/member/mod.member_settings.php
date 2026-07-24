@@ -712,10 +712,14 @@ class Member_settings extends Member
         // Load the form helper
         ee()->load->helper('form');
 
-        // UGH- we need these 3 to get the data js or it throws a Legacy\Facade error
+        // Temporarily masquerade as CP so these libraries can initialize, then
+        // restore router state so downstream template/layout parsing keeps the
+        // original front-end context.
+        $original_router_class = ee()->router->fetch_class();
         ee()->router->set_class('cp');
         ee()->load->library('cp');
         ee()->load->library('javascript');
+        ee()->router->set_class($original_router_class);
 
         /** ----------------------------------------
         /**  Build the custom profile fields
