@@ -8,6 +8,14 @@
           </div>
 
         <?php if (isset($head['action_button'])): ?>
+            <?php
+            if (!isset($head['action_button']['attrs'])) {
+                $head['action_button']['attrs'] = '';
+            }
+            if (isset($head['action_button']['shortcut']) && !empty($head['action_button']['shortcut'])) {
+                $head['action_button']['attrs'] .= ' data-shortcut="' . (string) $head['action_button']['shortcut'] . '"';
+            }
+            ?>
             <div class="button-wrap">
             <?php if (isset($head['action_button']['choices'])): ?>
                 <button type="button" class="button button--primary js-dropdown-toggle has-sub" data-dropdown-pos="bottom-end"><?=$head['action_button']['text']?></button>
@@ -27,7 +35,7 @@
                     </div>
                 </div>
             <?php else: ?>
-                <a class="button button--primary" href="<?=$head['action_button']['href']?>"><?=$head['action_button']['text']?></a>
+                <a class="button button--primary" <?=$head['action_button']['attrs']?> href="<?=$head['action_button']['href']?>"><?=$head['action_button']['text']?></a>
             <?php endif ?>
             </div>
         <?php endif ?>

@@ -33,7 +33,7 @@ context('Fields of different types', () => {
 		cy.log('verifies fields page exists')
 		cy.visit('admin.php?/cp/fields')
 		cy.get('.main-nav__title > h1').contains('Field')
-		cy.get('.main-nav__toolbar > .button').contains('New Field')
+		cy.get('.main-nav__toolbar > .button').contains('Add Field')
 		cy.get('.filter-bar').should('exist')
 		cy.get('.filter-bar').should('exist')
 
@@ -124,7 +124,7 @@ context('Fields of different types', () => {
 			// Create a publish layout
 			cy.visit('admin.php?/cp/channels')
 			cy.get('div.list-item__content-right > div > div > a.layout-set.button.button--default').first().click()
-			cy.get('a.button').contains('New Layout').first().click()
+			cy.get('a.button').contains('Add Channel Layout').first().click()
 			cy.get("input[name = 'layout_name']").type('AATestPublishLayout')
 			cy.get('#fieldset-roles input[type=checkbox]').eq(0).check()
 

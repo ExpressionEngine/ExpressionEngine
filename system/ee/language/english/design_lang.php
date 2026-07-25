@@ -34,11 +34,11 @@ $lang = array(
 
     'btn_update_and_finish_editing' => 'Save &amp; Finish Editing',
 
-    'create_new_template' => 'Create New Template',
+    'create_new_template' => 'Add Template',
 
     'create_new_template_group' => 'Create a New Template Group',
 
-    'create_partial' => 'Create Partial',
+    'create_partial' => 'Add Template Partial',
 
     'create_template_group_error' => 'Cannot Create Template Group',
 
@@ -60,7 +60,7 @@ $lang = array(
 
     'create_template_success_desc' => 'The template <b>%s/%s</b> has been created.',
 
-    'create_template_variable' => 'Create Template Variable',
+    'create_template_variable' => 'Add Template Variable',
 
     'create_template_variable_error' => 'Cannot Create Template Variable',
 

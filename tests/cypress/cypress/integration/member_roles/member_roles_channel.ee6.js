@@ -88,9 +88,9 @@ context('Member Roles / Channel Permissions ', () => {
 
     cy.visit('admin.php?/cp/channels')
     cy.hasNoErrors()
-    cy.get('a').contains('New Channel').should('exist')
+    cy.get('a').contains('Add Channel').should('exist')
     cy.dismissLicenseAlert()
-    cy.get('a').contains('New Channel').click()
+    cy.get('a').contains('Add Channel').click()
     cy.hasNoErrors()
  })
 

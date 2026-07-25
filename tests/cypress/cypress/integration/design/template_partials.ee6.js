@@ -48,7 +48,7 @@ context('Template Partials', () => {
 
     it('Validate the form', function() {
         //page.get('create_new_button').click()
-        cy.get('a').contains('Create New').first().click()
+        cy.get('a').contains('Add Template Partial').first().click()
 
         form.get('name').clear().type('lots of neat stuff').trigger('blur')
 
@@ -60,7 +60,7 @@ context('Template Partials', () => {
         // skip 'Cannot figure out how to populate a codemirror form element', () => {
 
         //page.get('create_new_button').click()
-        cy.get('a').contains('Create New').first().click()
+        cy.get('a').contains('Add Template Partial').first().click()
 
         cy.hasNoErrors()
 

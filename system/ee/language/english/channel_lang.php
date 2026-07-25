@@ -150,7 +150,7 @@ $lang = array(
 
     'roles_desc' => 'Choose the member role(s) to apply this layout to.',
 
-    'new_layout' => 'New Layout',
+    'new_layout' => 'Add Channel Layout',
 
     'no_channels' => 'No <b>Channels</b> found.',
 

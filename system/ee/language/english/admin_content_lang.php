@@ -358,11 +358,11 @@ $lang = array(
 
     'is_conditional_desc' => 'This field is being used as conditional for the field(s) listed below.',
 
-    'new_category' => 'New Category',
+    'new_category' => 'Add Category',
 
-    'new_channel' => 'New Channel',
+    'new_channel' => 'Add Channel',
 
-    'new_field' => 'New Field',
+    'new_field' => 'Add Field',
 
     'new_group_instructions' => 'Field is required if you are creating a new group',
 
