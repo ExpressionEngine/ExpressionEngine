@@ -20,6 +20,7 @@ class FieldDisplay
     protected $visible = true;
     protected $conditional = false;
     protected $width = 100;
+    protected $required_condition = true;
 
     public function __construct($field)
     {
@@ -95,7 +96,7 @@ class FieldDisplay
 
     public function isRequired()
     {
-        return $this->field->getItem('field_required') == 'y';
+        return get_bool_from_string($this->field->getItem('field_required'));
     }
 
     public function collapse()
@@ -111,6 +112,16 @@ class FieldDisplay
     public function isCollapsed()
     {
         return $this->collapsed;
+    }
+
+    public function required()
+    {
+        return $this->field->setItem('field_required', 'y');
+    }
+
+    public function notRequired()
+    {
+        return $this->field->setItem('field_required', 'n');
     }
 
     public function titleIsHidden()
@@ -188,6 +199,19 @@ class FieldDisplay
         $this->field->setItem('in_modal_context', $in_modal);
 
         return $this;
+    }
+
+
+    public function setRequiredCondition($required_condition)
+    {
+        $this->required_condition = $required_condition;
+
+        return $this;
+    }
+
+    public function getRequiredCondition()
+    {
+        return (bool) $this->required_condition;
     }
 }
 
