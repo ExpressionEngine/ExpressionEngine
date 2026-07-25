@@ -53,10 +53,15 @@ class Date extends Filter
             '31536000' => ucwords(lang('last') . ' 365 ' . lang('days')),
         );
 
+        $this->addDatePickerScript();
+
+        $this->setSelectedValues();
+    }
+
+    protected function setSelectedValues()
+    {
         $date_format = ee()->session->userdata('date_format', ee()->config->item('date_format'));
         ee()->javascript->set_global('date.date_format', $date_format);
-
-        $this->addDatePickerScript();
 
         $value = $this->value();
         if ($value && (is_array($value) || ! array_key_exists($value, $this->options))) {
