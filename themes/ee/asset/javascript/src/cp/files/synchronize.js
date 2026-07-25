@@ -108,7 +108,7 @@ EE.file_manager.sync = function(upload_directory_id) {
 			EE.file_manager.sync_running -= 1;
 
 			// Update the progress bar
-			var total_count       = EE.file_manager.sync_file_count,
+			var total_count       = EE.file_manager.sync_file_count || 1,
 				current_count     = EE.file_manager.sync_files.length,
 				already_processed = total_count - current_count;
 
@@ -126,9 +126,13 @@ EE.file_manager.sync = function(upload_directory_id) {
 						EE.file_manager.sync_errors.push("<b>" + key + "</b>: " + data.errors[key]);
 					}
 				} else {
-					EE.file_manager.sync_errors.push("<b>Undefined errors</b>"); d
+					EE.file_manager.sync_errors.push("<b>Undefined errors</b>");
 				}
 			}
+		},
+		error: function(xhr, textStatus, errorThrown) {
+			var msg = (xhr && xhr.status) ? xhr.status + ' ' + xhr.statusText : (textStatus || errorThrown || 'error');
+			EE.file_manager.sync_errors.push("<b>Request failed</b>: " + msg);
 		}
 	});
 };
