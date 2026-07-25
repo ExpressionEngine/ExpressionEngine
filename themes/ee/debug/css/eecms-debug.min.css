@@ -14213,6 +14213,22 @@ body[data-theme=dark] .hljs .apache .hljs-attribute {
     top: 3px;
   }
 }
+.ee-debugger .link-to-layout {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20px;
+}
+@media (max-width: 767px) {
+  .ee-debugger .link-to-layout {
+    padding: 10px 15px 10px 15px;
+    flex: 1 1;
+    margin: 0;
+  }
+}
+.ee-debugger .link-to-layout > i {
+  font-family: "Font Awesome 6 Pro";
+}
 .ee-debugger *, .ee-debugger :after, .ee-debugger :before {
   box-sizing: inherit;
 }
