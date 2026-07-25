@@ -41,13 +41,13 @@ class FileFtAcceptsContentTypeTest extends FileFtTestBase
             'field_content_type' => 'image',
         ], 24, 'hero_asset');
         $expectedSettings = $fieldtype->settings;
-        $expectedContentId = $fieldtype->content_id;
-        $expectedFieldName = $fieldtype->field_name;
+        $expectedContentId = $this->fieldtypeContentId($fieldtype);
+        $expectedFieldName = $this->fieldtypeName($fieldtype);
 
         $this->assertTrue($fieldtype->accepts_content_type('blocks/7'));
         $this->assertSame($expectedSettings, $fieldtype->settings);
-        $this->assertSame($expectedContentId, $fieldtype->content_id);
-        $this->assertSame($expectedFieldName, $fieldtype->field_name);
+        $this->assertSame($expectedContentId, $this->fieldtypeContentId($fieldtype));
+        $this->assertSame($expectedFieldName, $this->fieldtypeName($fieldtype));
     }
 
     /**

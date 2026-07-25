@@ -8,6 +8,9 @@
  */
 
 use Mexitek\PHPColors\Color;
+use ExpressionEngine\Service\Accessibility\Color\ContrastAlgorithm;
+use ExpressionEngine\Service\Accessibility\Color\Gpc;
+use ExpressionEngine\Service\Accessibility\Color\Wcag;
 
 class Colorpicker_ft extends EE_Fieldtype
 {
@@ -196,6 +199,233 @@ class Colorpicker_ft extends EE_Fieldtype
         }
 
         return $contrast;
+    }
+
+    /**
+     * :complementary modifier
+     *
+     * Returns the color "opposite" or complementary to your color.
+     */
+    public function replace_complementary($data, $params = [], $tagdata = false)
+    {
+        try {
+            return $this->applyContrast(
+                $data,
+                "#" . (new Color($data))->complementary(),
+                $params
+            );
+        } catch (\Exception $e) {}
+
+        return $data;
+    }
+
+    /**
+     * :darken modifier
+     *
+     * Returns a darker shade of your color
+     */
+    public function replace_darken($data, $params = [], $tagdata = false)
+    {
+        try {
+            $percent = $this->normalizePercent($params['percent'] ?? null, 10);
+            $color = new Color($data);
+
+            if ((int) $percent === 0) {
+                return $this->applyContrast($data, "#" . $color->getHex(), $params);
+            }
+
+            return $this->applyContrast($data, "#" . $color->darken((int) $percent), $params);
+        } catch (\Exception $e) {}
+
+        return $data;
+    }
+
+    /**
+     * :lighten modifier
+     *
+     * Returns a lighter tint of your color
+     */
+    public function replace_lighten($data, $params = [], $tagdata = false)
+    {
+        try {
+            $percent = $this->normalizePercent($params['percent'] ?? null, 10);
+            $color = new Color($data);
+
+            if ((int) $percent === 0) {
+                return $this->applyContrast($data, "#" . $color->getHex(), $params);
+            }
+
+            return $this->applyContrast($data, "#" . $color->lighten((int) $percent), $params);
+        } catch (\Exception $e) {}
+
+        return $data;
+    }
+
+     /**
+     * :rotate modifier
+     *
+     * Returns a color with a hue rotated X degrees
+     */
+    public function replace_rotate($data, $params = [], $tagdata = false)
+    {
+        try {
+            $degrees = (float) ($params['degrees'] ?? 0);
+            $hsl = Color::hexToHsl($data);
+            $hsl['H'] = fmod($hsl['H'] + $degrees, 360.0);
+
+            if ($hsl['H'] < 0) {
+                $hsl['H'] += 360.0;
+            }
+
+            return $this->applyContrast($data, "#" . Color::hslToHex($hsl), $params);
+        } catch (\Exception $e) {}
+
+        return $data;
+    }
+
+    /**
+     * :saturate modifier
+     *
+     * Returns a more saturated color
+     */
+    public function replace_saturate($data, $params = [], $tagdata = false)
+    {
+        try {
+            $percent = $this->normalizePercent($params['percent'] ?? null, 10);
+
+            $hsl = Color::hexToHsl($data);
+            $hsl['S'] = ($hsl['S'] * 100) + $percent;
+            $hsl['S'] = ($hsl['S'] > 100) ? 1 : $hsl['S'] / 100;
+
+            return $this->applyContrast($data, "#" . Color::hslToHex($hsl), $params);
+        } catch (\Exception $e) {}
+
+        return $data;
+    }
+
+    /**
+     * :desaturate modifier
+     *
+     * Returns a less saturated color
+     */
+    public function replace_desaturate($data, $params = [], $tagdata = false)
+    {
+        try {
+            $percent = $this->normalizePercent($params['percent'] ?? null, 10);
+
+            $hsl = Color::hexToHsl($data);
+            $hsl['S'] = ($hsl['S'] * 100) - $percent;
+            $hsl['S'] = ($hsl['S'] < 0) ? 0 : $hsl['S'] / 100;
+
+            return $this->applyContrast($data, "#" . Color::hslToHex($hsl), $params);
+        } catch (\Exception $e) {}
+
+        return $data;
+    }
+
+
+    /**
+     * :mix modifier
+     *
+     * Returns a combination of two colors
+     */
+    public function replace_mix($data, $params = [], $tagdata = false)
+    {
+        try {
+            $first = new Color($data);
+            $second = $params['color'] ?? (($first->isLight() ? '#000000' : '#ffffff'));
+            $percent = $this->normalizePercent($params['percent'] ?? null, 50);
+            $mixAmount = 100 - (2 * $percent);
+
+            return $this->applyContrast($data, "#" . $first->mix($second, (int) $mixAmount), $params);
+        } catch (\Exception $e) {}
+
+        return $data;
+    }
+
+    /**
+     * :rgb modifier
+     *
+     * Returns the rgb string for the color
+     */
+    public function replace_rgb($data, $params = [], $tagdata = false)
+    {
+        try {
+            return implode(', ',(new Color($data))->getRgb());
+        } catch (\Exception $e) {}
+
+        return $data;
+    }
+
+    /**
+     * :hsl modifier
+     *
+     * Returns the hsl string for the color
+     */
+    public function replace_hsl($data, $params = [], $tagdata = false)
+    {
+        try {
+            $hsl = (new Color($data))->getHsl();
+            return implode(', ', [
+                (int) round($hsl['H']),
+                (int) round($hsl['S'] * 100) . '%',
+                (int) round($hsl['L'] * 100) . '%',
+            ]);
+        } catch (\Exception $e) {}
+
+        return $data;
+    }
+
+    private function normalizePercent($value, $default): float
+    {
+        if ($value === null || $value === '' || ! is_numeric($value)) {
+            $value = $default;
+        }
+
+        return max(0, min(100, (float) $value));
+    }
+
+    private function applyContrast($reference, string $color, array $params): string
+    {
+        $algorithm = $this->contrastAlgorithm($params);
+
+        if ($algorithm === null) {
+            return $color;
+        }
+
+        $target = $this->contrastTarget($params, $algorithm);
+
+        return $algorithm->adjustForegroundForBackground(
+            Color::hexToRgb($color),
+            Color::hexToRgb($reference),
+            $target
+        );
+    }
+
+    private function contrastAlgorithm(array $params)
+    {
+        if (array_key_exists('contrast_ratio', $params)) {
+            return new Wcag();
+        }
+
+        if (array_key_exists('perceptual_contrast', $params)) {
+            return new Gpc();
+        }
+
+        return null;
+    }
+
+    private function contrastTarget(array $params, ContrastAlgorithm $algorithm): float
+    {
+        $value = ($algorithm instanceof Gpc)
+            ? $params['perceptual_contrast']
+            : $params['contrast_ratio'];
+
+        if ($value === '' || ! is_numeric($value)) {
+            $value = $algorithm->defaultTarget();
+        }
+
+        return $algorithm->normalizeTarget((float) $value);
     }
 
     // -----------------------------------------------------------------------
