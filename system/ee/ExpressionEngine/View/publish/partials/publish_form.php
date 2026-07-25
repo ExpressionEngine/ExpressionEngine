@@ -1,3 +1,5 @@
+<style>@media (max-width: 767px) { .edit-layout-btn { display: none !important; } }</style>
+
 <div class="panel">
 <div class="form-standard" data-publish>
     <?=form_open($form_url, $form_attributes, (isset($form_hidden)) ? $form_hidden : array())?>
@@ -48,6 +50,14 @@
                 <button type="button" class="tab-bar__tab js-tab-button" rel="t-autosaves"><?=lang('autosaves')?></button>
             <?php endif; ?>
             </div>
+            <?php endif; ?>
+
+            <?php if (!empty($edit_layout_url)): ?>
+                <a class="button button--secondary fal fa-object-group edit-layout-btn" style="margin-left: auto; align-self: center;"
+                   href="<?=$edit_layout_url?>"
+                   title="<?=$edit_layout_label?>">
+                    <span class="hidden"><?=$edit_layout_label?></span>
+                </a>
             <?php endif; ?>
 
             <?php if (isset($pro_class)) : ?>
