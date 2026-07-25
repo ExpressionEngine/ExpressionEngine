@@ -244,9 +244,9 @@ class EE_Cache_file extends CI_Driver
      *
      * @return	bool
      */
-    public function is_writable($key, $scope = Cache::LOCAL_SCOPE)
+    public function is_writable($key = '', $scope = Cache::LOCAL_SCOPE)
     {
-        $path = $this->_cache_path . $this->_namespaced_key($key, $scope);
+        $path = $this->_cache_path . (empty($key) ? '' : $this->_namespaced_key($key, $scope));
         return is_really_writable($path);
     }
 

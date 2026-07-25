@@ -486,7 +486,7 @@ class Addons extends CP_Controller
             $addon_info->updateProlets();
         }
 
-        ee()->cache->file->delete('/addons-status');
+        ee()->cache->delete('/addons-status');
         ee('CP/JumpMenu')->clearAllCaches();
 
         foreach (array('first', 'third') as $party) {
@@ -672,7 +672,7 @@ class Addons extends CP_Controller
             }
         }
 
-        ee()->cache->file->delete('/addons-status');
+        ee()->cache->delete('/addons-status');
         ee('CP/JumpMenu')->clearAllCaches();
 
         $return = $this->base_url;
