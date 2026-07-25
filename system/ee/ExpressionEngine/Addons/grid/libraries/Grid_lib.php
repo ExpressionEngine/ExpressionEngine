@@ -864,7 +864,7 @@ class Grid_lib
                 'col_name' => '',
                 'col_instructions' => '',
                 'col_required' => 'n',
-                'col_search' => 'n',
+                'col_search' => 'y',
                 'col_width' => '',
                 'col_settings' => array()
             );
