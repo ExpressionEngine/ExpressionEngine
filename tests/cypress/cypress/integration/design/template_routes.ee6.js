@@ -31,7 +31,7 @@ context('Template Routes', () => {
             route: 'foo/bar'
         })
 
-        //cy.get('i').filter(':visible').contains('Choose wisely').first().click()
+        //cy.get('i').filter(':visible').contains('Please select').first().click()
         //cy.get('.select--open .select__dropdown-item span').contains('/').first().click()
         //cy.wait(300)
         page.get('update_button').filter(':visible').first().click()

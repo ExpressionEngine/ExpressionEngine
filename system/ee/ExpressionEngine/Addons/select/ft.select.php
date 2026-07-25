@@ -81,7 +81,7 @@ class Select_ft extends OptionFieldtype
                 'field_name' => $this->field_name,
                 'choices' => $this->_get_historic_field_options($data),
                 'value' => $data,
-                'empty_text' => lang('choose_wisely'),
+                'empty_text' => lang('please_select'),
                 'field_disabled' => $this->get_setting('field_disabled'),
                 'ignoreSectionLabel' => $this->get_setting('ignore_section_label')
             ]);
