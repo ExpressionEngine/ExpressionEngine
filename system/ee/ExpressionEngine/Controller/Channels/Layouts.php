@@ -185,13 +185,12 @@ class Layouts extends AbstractChannelsController
         if (! ee()->input->post('field_layout')) {
             $default_layout = new DefaultChannelLayout($channel_id, null);
             $field_layout = $default_layout->getLayout();
-
             foreach ($channel->getAllCustomFields() as $custom_field) {
                 $field_layout[0]['fields'][] = array(
                     'field' => $entry->getCustomFieldPrefix() . $custom_field->field_id,
                     'visible' => true,
                     'collapsed' => false,
-                    'width' => 100
+                    'width' => 100,
                 );
             }
 

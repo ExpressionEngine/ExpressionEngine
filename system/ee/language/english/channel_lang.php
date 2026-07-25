@@ -114,6 +114,8 @@ $lang = array(
 
     'export_set' => 'Export Channel Set',
 
+    'field_new_name' => 'Field Name',
+
     'field_group' => 'Field Group',
 
     'field_groups' => 'Field groups',
@@ -145,6 +147,8 @@ $lang = array(
     'manage_channels' => 'Manage Channels',
 
     'maximum_channels_reached' => 'You have reached the maximum number of Channels allowed.',
+
+    'rename_title' => 'Rename Field Title',
 
     'rename_tab' => 'Rename tab',
 
