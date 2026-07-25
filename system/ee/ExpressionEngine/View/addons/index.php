@@ -14,23 +14,27 @@
             <span class="tab-bar__tab-notification"><?=count($updates)?></span>
         </button>
         <?php endif; ?>
+        <button type="button" class="tab-bar__tab js-tab-button" rel="t-licenses">
+            <?=lang('licensed')?>
+            <span class="tab-bar__tab-notification tab-notification-generic"><?=count($licenses)?></span></button>
+        </button>
     </div>
 </div>
 
 <div class="tab t-all tab-open">
 
     <div class="add-on-card-list">
-        <?php $addons = $installed; foreach ($addons as $addon): ?>
+        <?php $addons = $installed; foreach ($addons as $addon) : ?>
             <?php $this->embed('_shared/add-on-card', ['addon' => $addon, 'show_updates' => false]); ?>
         <?php endforeach; ?>
     </div>
 
-    <?php if (count($uninstalled)): ?>
+    <?php if (count($uninstalled)) : ?>
         <h4 class="line-heading"><?=lang('uninstalled')?></h4>
         <hr>
 
         <div class="add-on-card-list">
-            <?php foreach ($uninstalled as $addon): ?>
+            <?php foreach ($uninstalled as $addon) : ?>
                 <?php $this->embed('_shared/add-on-card', ['addon' => $addon, 'show_updates' => false]); ?>
             <?php endforeach; ?>
         </div>
@@ -40,7 +44,17 @@
 <?php if (!empty($updates)) : ?>
     <div class="tab t-updates">
         <div class="add-on-card-list">
-            <?php foreach ($updates as $addon): ?>
+            <?php foreach ($updates as $addon) : ?>
+                <?php $this->embed('_shared/add-on-card', ['addon' => $addon, 'show_updates' => true]); ?>
+            <?php endforeach; ?>
+        </div>
+    </div>
+<?php endif; ?>
+
+<?php if (!empty($licenses)) : ?>
+    <div class="tab t-licenses">
+        <div class="add-on-card-list">
+            <?php foreach ($licenses as $addon) : ?>
                 <?php $this->embed('_shared/add-on-card', ['addon' => $addon, 'show_updates' => true]); ?>
             <?php endforeach; ?>
         </div>
