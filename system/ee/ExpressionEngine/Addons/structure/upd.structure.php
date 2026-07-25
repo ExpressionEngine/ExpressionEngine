@@ -122,13 +122,16 @@ class Structure_upd
         $this->create_table_structure_members();
         $this->create_table_structure_nav_history();
 
-        // populate listings
-        $this->populate_listings();
-
         // Insert the root node
         $data = array('site_id' => '0', 'entry_id' => '0', 'parent_id' => '0', 'channel_id' => '0', 'listing_cid' => '0', 'lft' => '1', 'rgt' => '2', 'dead' => 'root', 'updated' => date('Y-m-d H:i:s'));
         $sql = ee()->db->insert_string('structure', $data);
         ee()->db->query($sql);
+
+        // convert existing Pages to, um, pages
+        $this->populate_pages();
+
+        // populate listings
+        $this->populate_listings();
 
         // Insert the action id
         $action_id = ee()->cp->fetch_action_id('Structure', 'ajax_move_set_data');
@@ -669,6 +672,68 @@ class Structure_upd
 
         // Add a history revision every time Structure is upgraded.
         add_structure_nav_revision(false, 'Upgraded Structure to ' . $this->version);
+    }
+
+    public function populate_pages()
+    {
+        require_once('libraries/nestedset/structure_nestedset.php');
+        require_once('libraries/nestedset/structure_nestedset_adapter_ee.php');
+
+        $adapter = new Structure_Nestedset_Adapter_Ee('exp_structure', 'lft', 'rgt', 'entry_id');
+        $this->nset = new Structure_Nestedset($adapter);
+
+        $parentNode = $this->nset->getNode(0);
+        $configuredChannels = [];
+
+        $sites = ee()->db->select('site_id, site_pages')->from('sites')->get();
+        foreach ($sites->result_array() as $site) {
+            $site_pages = unserialize(base64_decode($site['site_pages']));
+            $site_id = $site['site_id'];
+
+            foreach ($site_pages[$site_id]['uris'] as $entry_id => $uri) {
+                // If we have an entry id but no node, we have listing entry
+                if ($entry_id) {
+
+                    // Get the channel ID for the listing
+                    $results = ee()->db->select('channel_id')->from('channel_titles')->where('entry_id', $entry_id)->get();
+                    $channel_id = $results->row('channel_id');
+                    if (!isset($configuredChannels[$channel_id])) {
+                        $channelSettings = array(
+                            'site_id' => $site_id,
+                            'channel_id' => $channel_id,
+                            'type' => 'page',
+                            'template_id' => 0,
+                            'split_assets' => 'n',
+                            'show_in_page_selector' => 'y'
+                        );
+                        ee()->db->insert('structure_channels', $channelSettings);
+                        $configuredChannels[$channel_id] = $channel_id;
+                    }
+
+                    // Get the template ID for the listing
+                    if (is_array($site_pages[$site_id]['templates'][$entry_id])) {
+                        $template_id = $site_pages[$site_id]['templates'][$entry_id][0];
+                    } else {
+                        $template_id = $site_pages[$site_id]['templates'][$entry_id];
+                    }
+
+                    $data = array(
+                        'site_id'               => $site_id,
+                        'entry_id'              => $entry_id,
+                        'parent_id'             => 0,
+                        'channel_id'            => $channel_id,
+                        'template_id'           => $template_id,
+                        'listing_cid'           => 0,
+                        'hidden'                => 'n',
+                        'dead'                  => '',
+                        'structure_url_title'   => $uri,
+                    );
+
+                    // create new node
+                    $this->nset->newLastChild($parentNode['right'], $data);
+                }
+            }
+        }
     }
 
     public function populate_listings()
