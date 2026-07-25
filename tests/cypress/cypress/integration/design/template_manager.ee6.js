@@ -83,6 +83,20 @@ context('Template Manager', () => {
             page.hasAlert()
             page.get('alert').contains('Template Group Updated')
             page.get('alert').contains('cypress-test-three')
+            cy.get('.secondary-sidebar__design').should('contain', 'cypress-test-three')
+            cy.get('.secondary-sidebar__design').should('not.contain', 'search')
+
+            cy.log('can change the case while keeping same name')
+            form.load_edit_for_group('cypress-test-three')
+            form.get('name').clear().type('Cypress-test-three')
+            cy.get('button').contains('Save Template Group').first().click({failOnStatusCode:false})
+            cy.hasNoErrors()
+            page.hasAlert()
+            page.get('alert').contains('Template Group Updated')
+            page.get('alert').contains('Cypress-test-three')
+            cy.get('.secondary-sidebar__design').should('contain', 'Cypress-test-three')
+            cy.get('.secondary-sidebar__design').should('not.contain', 'cypress-test-three')
+
         })
 
         it('validates template group form', function() {
