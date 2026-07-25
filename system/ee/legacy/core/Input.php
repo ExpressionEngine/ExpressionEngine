@@ -160,6 +160,11 @@ class EE_Input
             }
         }
 
+        // let config override set session cookies lifetime
+        if (bool_config_item('expire_session_on_browser_close') && in_array($name, ['sessionid', 'last_activity', 'last_visit'])) {
+            $data['expire'] = 0;
+        }
+
         // Handle expiration dates.
         if (! is_numeric($data['expire'])) {
             ee()->load->library('logger');
