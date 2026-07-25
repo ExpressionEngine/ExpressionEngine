@@ -12,7 +12,10 @@ return array(
     'built_in' => true,
     'fieldtypes' => array(
         'toggle' => array(
-            'compatibility' => 'toggle'
+            'compatibility' => 'toggle',
+            'use' => array(
+                'MemberField'
+            )
         )
     )
 );
