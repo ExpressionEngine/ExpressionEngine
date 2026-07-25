@@ -1064,10 +1064,12 @@ $(document).ready(function () {
 		$(this).parents('tr').toggleClass('grid__item--collapsed');
 
 		if ($(this).parents('tr').hasClass('grid__item--collapsed')) {
+			$(this).parents('tr').find('.grid-row-description').show();
 			$(this).parents('tr').find('td:not(.grid-field__item-fieldset)').each(function() {
 				$(this).hide();
 			});
 		} else {
+			$(this).parents('tr').find('.grid-row-description').hide();
 			$(this).parents('tr').find('td:not(.grid-field__item-fieldset)').each(function() {
 				$(this).show();
 			});

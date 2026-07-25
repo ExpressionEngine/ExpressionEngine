@@ -399,6 +399,11 @@ else: ?>
                                     </button>
                                     <?php endif ?>
                                 </label>
+                                <span class="grid-row-description">
+                                    <span class="txt-only">
+                                        <?=isset($row['columns'][0]['attrs']['data-saved-value']) ? substr($row['columns'][0]['attrs']['data-saved-value'], 0, 50) : ''?>
+                                    </span>
+                                </span>
                             </div>
                         </td>
                         <?php endif; ?>
