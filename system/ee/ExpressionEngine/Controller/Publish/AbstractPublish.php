@@ -285,6 +285,7 @@ abstract class AbstractPublish extends CP_Controller
         }
 
         $currentAutosaveId = null;
+        $loopIndex = 0;
         foreach ($entry->getAutosaves()->filter('channel_id', $entry->channel_id)->sortBy('edit_date')->reverse() as $autosave) {
             if (! isset($authors[$autosave->author_id]) && $autosave->Author) {
                 $authors[$autosave->author_id] = $autosave->Author->getMemberName();
@@ -319,6 +320,21 @@ abstract class AbstractPublish extends CP_Controller
                 )
             );
             $i--;
+
+            if ($loopIndex == 0 && empty($autosave_id)) {
+                if ($autosave->edit_date > (ee()->localize->now - 3600) && $entry->author_id != $autosave->author_id) {
+                    ee('CP/Alert')->makeInline('autosave-warning')
+                        ->asWarning()
+                        ->withTitle(lang('existing_user_autosave'))
+                        ->addToBody(sprintf(
+                            lang('existing_user_autosave_desc'),
+                            isset($authors[$autosave->author_id]) ? $authors[$autosave->author_id] : lang('someone'), 
+                            ee()->localize->human_time($autosave->edit_date, true, true)
+                        ))
+                        ->now();
+                }
+                $loopIndex++;
+            }
         }
 
         if ($autosave_id && ! empty($data) && empty($currentAutosaveId)) {
