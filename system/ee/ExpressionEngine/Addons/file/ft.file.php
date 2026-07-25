@@ -477,6 +477,7 @@ JSC;
         }
 
         unset($params['wrap']);
+        $params['use_larger'] = true;
 
         $data['source_image'] = $resized = $this->process_image('resize', $data, $params, false, true);
 
@@ -588,6 +589,30 @@ JSC;
         $props = null;
 
         if (!$data['filesystem']->exists($destination_path)) {
+            if ($function == 'resize' && isset($params['width']) && isset($params['height']) && isset($params['use_larger']) && $params['use_larger'] === true) {
+                // if the original is smaller than the requested size, just return it
+                $props = ee()->image_lib->get_image_properties($data['source_image'], true);
+                //get the ratio of original
+                $ratio = $props['height'] / $props['width'];
+                $resizeRatio = ($props['height'] / $props['width']) - ($params['height'] / $params['width']);
+                $master_dim = isset($params['master_dim']) && in_array($params['master_dim'], ['width', 'height']) ? $params['master_dim'] : ($resizeRatio < 0 ? 'width' : 'height');
+                // calculate expected new dimensions based on ratio and provided width/height
+                if ($master_dim == 'width') {
+                    $expected_height = (int) ($params['width'] * $ratio);
+                    $expected_width = (int) $params['width'];
+                } else {
+                    $expected_height = (int) ($params['height']);
+                    $expected_width = (int) ($params['height'] / $ratio);
+                }
+                if ($expected_height < $params['height']) {
+                    $params['master_dim'] = 'height';
+                    $params['width'] = (int) $props['width'];
+                } elseif ($expected_width < $params['width']) {
+                    $params['master_dim'] = 'width';
+                    $params['height'] = (int) $props['height'];
+                }
+            }
+
             // We need to get a temporary local copy of the file in case it's stored
             // on another filesystem.
             try {
