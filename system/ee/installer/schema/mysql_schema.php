@@ -111,7 +111,6 @@ class EE_Schema
             'can_edit_members',
             'can_delete_members',
             'can_admin_roles',
-            'can_admin_mbr_templates',
             'can_ban_users',
             'can_admin_addons',
             'can_create_templates',

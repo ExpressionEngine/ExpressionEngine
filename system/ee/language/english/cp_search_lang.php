@@ -18,7 +18,6 @@ $lang = array(
 
     'design_email_notification' => 'Email Notification Template',
 
-    'design_member_profile_templates' => 'Member Profile Template',
 
     'design_system_offline' => 'System Offline Template',
 

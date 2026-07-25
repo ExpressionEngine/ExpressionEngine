@@ -73,14 +73,6 @@ class Urls extends Settings
                         'theme_folder_path' => array('type' => 'text', 'required' => true)
                     )
                 ),
-                ee('Config')->getFile()->getBoolean('legacy_member_templates') ?
-                array(
-                    'title' => 'member_segment_trigger',
-                    'desc' => 'member_segment_trigger_desc',
-                    'fields' => array(
-                        'profile_trigger' => array('type' => 'text')
-                    )
-                ) : null,
                 array(
                     'title' => 'category_segment_trigger',
                     'desc' => 'category_segment_trigger_desc',
@@ -147,11 +139,6 @@ class Urls extends Settings
                 'field' => 'theme_folder_path',
                 'label' => 'lang:themes_path',
                 'rules' => 'required|strip_tags|valid_xss_check|file_exists|callback__validateThemeFolderPath'
-            ),
-            array(
-                'field' => 'profile_trigger',
-                'label' => 'lang:member_segment_trigger',
-                'rules' => 'alpha_dash'
             ),
         ));
 

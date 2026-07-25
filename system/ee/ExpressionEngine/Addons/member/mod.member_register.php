@@ -43,8 +43,6 @@ class Member_register extends Member
         $reg_form = '';
         if (! empty($tagdata)) {
             $reg_form = ee()->TMPL->tagdata;
-        } elseif (ee('Config')->getFile()->getBoolean('legacy_member_templates')) {
-            $reg_form = $this->_load_element('registration_form');
         }
 
         // Do we have custom fields to show?

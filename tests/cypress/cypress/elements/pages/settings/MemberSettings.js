@@ -13,7 +13,6 @@ class MemberSettings extends ControlPanel {
         'allow_member_localization_toggle': '[data-toggle-for=allow_member_localization]',
         'allow_member_localization': 'input[name=allow_member_localization]',//visible => false
         'default_primary_role': 'input[type!=hidden][name=default_primary_role]',
-        'member_theme': 'input[type!=hidden][name=member_theme]',
         'memberlist_order_by': 'input[type!=hidden][name=memberlist_order_by]',
         'memberlist_sort_order': 'input[type!=hidden][name=memberlist_sort_order]',
         'memberlist_row_limit': 'input[type!=hidden][name=memberlist_row_limit]',

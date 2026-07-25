@@ -728,8 +728,6 @@ class EE_Core
         // This permits the forum to be more light-weight as the template engine is
         // not needed under normal circumstances.
         $forum_trigger = (ee()->config->item('forum_is_installed') == "y") ? ee()->config->item('forum_trigger') : '';
-        $profile_trigger = ee()->config->item('profile_trigger');
-
         if (
             $forum_trigger &&
             in_array(ee()->uri->segment(1), preg_split('/\|/', $forum_trigger, -1, PREG_SPLIT_NO_EMPTY))
@@ -737,29 +735,6 @@ class EE_Core
             require PATH_THIRD . 'forum/mod.forum.php';
             $FRM = new Forum();
             $this->set_newrelic_transaction($forum_trigger . '/' . $FRM->current_request);
-
-            return;
-        }
-
-        if ($profile_trigger && $profile_trigger == ee()->uri->segment(1)) {
-            // We do the same thing with the member profile area.
-
-            if (! file_exists(PATH_MOD . 'member/mod.member.php')) {
-                exit();
-            }
-
-            require PATH_MOD . 'member/mod.member.php';
-
-            // Clean up the URLs to remove unnecessary detail
-            $this->set_newrelic_transaction(function () {
-                $request = preg_replace('/\/[\d]+$/', '', ee()->uri->uri_string);
-
-                return preg_replace('/search\/.*$/', 'search', $request);
-            });
-
-            $member = new Member();
-            $member->_set_properties(array('trigger' => $profile_trigger));
-            ee()->output->set_output($member->manager());
 
             return;
         }

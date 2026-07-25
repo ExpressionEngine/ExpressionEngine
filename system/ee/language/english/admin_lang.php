@@ -350,7 +350,6 @@ $lang = array(
 
     'emoticon_url' => 'URL to the directory containing your smileys ',
 
-    'empty_profile_trigger' => 'You must specify a Profile Triggering Word',
 
     'empty_stmp_fields' => 'The %s field is required for SMTP.',
 
@@ -510,9 +509,6 @@ $lang = array(
 
     'member_import' => 'Member Import Utility',
 
-    'member_theme' => 'Default Member Profile Theme',
-
-    'member_theme_exp' => 'Determines which theme to use for the various membership pages: login, registration, profile, etc.',
 
     'members_and_groups' => 'Members and Groups',
 
@@ -668,9 +664,6 @@ $lang = array(
 
     'profile_buttons_exp' => 'This is the path to the directory containing the images used in the member profile pages.',
 
-    'profile_trigger' => 'Profile Triggering Word',
-
-    'profile_trigger_notes' => 'When this word is encountered your URL it will display your member profile area. The word you choose cannot be the name of an existing template group',
 
     'prv_msg_allow_attachments' => 'Allow attachments in private messages?',
 

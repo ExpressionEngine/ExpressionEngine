@@ -485,9 +485,6 @@ $lang = array(
 
     'member_settings' => 'Member Settings',
 
-    'member_theme' => 'Member profile theme',
-
-    'member_theme_desc' => 'Default theme used for member profiles.',
 
     'memberlist_order_by' => 'Sort by',
 

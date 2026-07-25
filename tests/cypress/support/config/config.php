@@ -9,8 +9,6 @@ if (! defined('BASEPATH')) {
 // https://docs.expressionengine.com/latest/general/system_configuration_overrides.html
 
 $config['save_tmpl_files'] = 'n';
-$config['legacy_member_templates'] = 'y';
-
 $config['log_date_format'] = 'Y-m-d H:i:s';
 $config['log_threshold'] = '1';
 $config['app_version'] = '7.5.26';
