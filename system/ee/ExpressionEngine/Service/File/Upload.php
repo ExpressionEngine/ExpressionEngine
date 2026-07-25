@@ -47,6 +47,14 @@ class Upload
                 'modified_by' => ($file->modified_by_member_id && $file->ModifyAuthor) ? $file->ModifyAuthor->getMemberName() : '',
                 'date_modified' => ee()->localize->human_time($file->modified_date)
             ]);
+            if ($file->directory_id != 0) {
+                $subfolderMap = array_reverse($file->getSubfoldersMap(), true);
+                $subfolderPath = [];
+                foreach ($subfolderMap as $subfolderId => $subfolderName) {
+                    $subfolderPath[] = '<a href="' . ee('CP/URL')->make('files/directory/' . $file->UploadDestination->getId(), ['directory_id' => $subfolderId])->compile() . '">' . $subfolderName . '</a>';
+                }
+                $metadata['subfolders'] = implode(" / ", $subfolderPath);
+            }
         }
 
         $sections = array(

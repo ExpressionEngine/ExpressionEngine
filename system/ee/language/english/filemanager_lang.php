@@ -1014,6 +1014,8 @@ $lang = array(
 
     /* Subfolders */
 
+    'subfolders' => 'Subfolders',
+
     'subfolder_directory_already_exists' => 'Subfolder already exists',
 
     'subfolder_directory_already_exists_desc' => 'Directory with this name already exists on the file system',
