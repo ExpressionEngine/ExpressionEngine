@@ -3023,7 +3023,12 @@ class EE_Template
                     return $this->no_results;
                 }
             } else {
-                ee()->functions->redirect(ee()->functions->create_url(ee()->functions->extract_path("=" . $match[2])));
+                ee()->functions->redirect(
+                    ee()->functions->create_url(ee()->functions->extract_path("=" . $match[2])),
+                    false,
+                    null,
+                    ee()->config->item('redirect_forward_url_parameters') === 'y'
+                );
             }
         }
     }
@@ -3154,6 +3159,7 @@ class EE_Template
                     // If the status code isn't a 3xx redirect code, it will be ignored
                     // by redirect().
                     $status_code = null;
+                    $forward_url_parameters = ee()->config->item('redirect_forward_url_parameters') === 'y';
 
                     if (isset($match[5])) {
                         $status_code = $match[5];
@@ -3161,14 +3167,20 @@ class EE_Template
 
                     // handle full URLs, don't need to prepend site details
                     if (filter_var($match[2], FILTER_VALIDATE_URL)) {
-                        ee()->functions->redirect($match[2], false, $status_code);
+                        ee()->functions->redirect(
+                            $match[2],
+                            false,
+                            $status_code,
+                            $forward_url_parameters
+                        );
                     }
 
                     // Functions::redirect() exits on its own
                     ee()->functions->redirect(
                         ee()->functions->create_url(ee()->functions->extract_path("=" . $match['2'])),
                         false,
-                        $status_code
+                        $status_code,
+                        $forward_url_parameters
                     );
                 }
             }

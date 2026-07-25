@@ -93,6 +93,13 @@ class DebugOutput extends Settings
                     )
                 ),
                 array(
+                    'title' => 'redirect_forward_url_parameters',
+                    'desc' => 'redirect_forward_url_parameters_desc',
+                    'fields' => array(
+                        'redirect_forward_url_parameters' => array('type' => 'yes_no')
+                    )
+                ),
+                array(
                     'title' => 'caching_driver',
                     'desc' => 'caching_driver_desc',
                     'fields' => array(
