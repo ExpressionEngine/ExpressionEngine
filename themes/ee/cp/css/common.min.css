@@ -27443,6 +27443,10 @@ input[type=button].btn-block {
   max-width: 550px;
 }
 
+.modal-wrap.must-interact .dialog__close {
+  display: none;
+}
+
 .modal {
   background-color: var(--ee-bg-0);
   margin-bottom: 40px;
@@ -47841,7 +47845,7 @@ a.ck.ck-button.ck-on {
 .rx-toolbar .rx-button-topbar svg,
 .rx-topbar .rx-button-toolbar svg,
 .rx-topbar .rx-button-topbar svg {
-  fill: var(--ee-text-primary);
+  fill: var(--ee-text-primary) !important;
 }
 .rx-toolbar .rx-button-toolbar:hover,
 .rx-toolbar .rx-button-topbar:hover,
@@ -48153,6 +48157,35 @@ a.ck.ck-button.ck-on {
   overflow: none;
   white-space: pre-wrap;
   padding: 1rem;
+}
+
+.rx-dropdown {
+  background-color: var(--ee-bg-dropdown) !important;
+  color: var(--ee-text-primary);
+  box-shadow: 0 1px 4px 0 var(--ee-shadow-dropdown) !important;
+  z-index: 1000 !important;
+}
+.rx-dropdown .rx-form {
+  padding: 0 !important;
+}
+.rx-dropdown .rx-dropdown-items {
+  padding: 0;
+}
+.rx-dropdown .rx-dropdown-items .rx-form-item {
+  padding: 16px 16px 0 16px;
+}
+.rx-dropdown .rx-dropdown-items .rx-form-input {
+  color: var(--ee-input-color);
+  background-color: var(--ee-input-bg);
+  border: 1px solid var(--ee-input-border);
+}
+.rx-dropdown .rx-dropdown-items .rx-form-flex {
+  display: block;
+}
+.rx-dropdown .rx-dropdown-items .rx-form-button.rx-form-button-primary {
+  font-weight: 700;
+  font-size: 14px;
+  padding: 8px 24px;
 }
 
 .ck-content ul {

@@ -23,6 +23,13 @@ jobs:
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
           path: __redactorx
 
+      - name: Checkout Redactor
+        uses: actions/checkout@v4
+        with:
+          repository: ExpressionEngine/Redactor
+          token: ${{ secrets.ORG_ACCESS_TOKEN }}
+          path: __redactor
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -54,6 +61,7 @@ jobs:
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           APP_REPO_PATH: ${{ github.workspace }}
           REDACTORX_REPO_PATH: ${{ github.workspace }}/__redactorx
+          REDACTOR_REPO_PATH: ${{ github.workspace }}/__redactor
         run: |
           gulp app --local --head --skip-lint --skip-pro --version=${{ steps.tagName.outputs.tag }}
 
