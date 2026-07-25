@@ -1381,6 +1381,17 @@ class ChannelEntry extends ContentModel
             // sort for comparison later
             sort($my_statuses);
 
+            // check Structure settings
+            $my_structure_type = null;
+            if (ee('Addon')->get('structure')->isInstalled()) {
+                require_once PATH_ADDONS . 'structure/sql.structure.php';
+                $sql = new \Sql_structure();
+                $structure_channels = $sql->get_structure_channels();
+                if (isset($structure_channels[$this->Channel->getId()])) {
+                    $my_structure_type = $structure_channels[$this->Channel->getId()]['type'];
+                }
+            }
+
             $channel_filter_options = array();
 
             $channels = $this->getModelFacade()->get('Channel', $allowed_channel_ids)
@@ -1398,7 +1409,9 @@ class ChannelEntry extends ContentModel
                 sort($channel_fields);
 
                 if ($my_fields == $channel_fields &&
-                    $my_statuses == $channel_statuses) {
+                    $my_statuses == $channel_statuses &&
+                    (empty($my_structure_type) || (isset($structure_channels[$channel->getId()]) && $my_structure_type == $structure_channels[$channel->getId()]['type']))
+                ) {
                     $channel_filter_options[$channel->channel_id] = $channel->channel_title;
                 }
             }
