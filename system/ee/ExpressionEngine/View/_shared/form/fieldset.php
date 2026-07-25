@@ -73,9 +73,15 @@ if (is_array($setting_group)) {
     $setting_group = implode('|', $setting_group);
 }
 
+$show_anchor_links = ee()->session->userdata('show_anchor_links', ee()->config->item('show_anchor_links'));
 $fieldset_id = '';
+$fieldset_href = '';
 if (isset($setting['fields']) && !empty($setting['fields'])) {
     $fieldset_id = ' id="fieldset-' . implode('-', array_keys($setting['fields'])) . '"';
+
+    if (isset($show_anchor_links) && $show_anchor_links == 'y') {
+        $fieldset_href = 'data-track-hash="fieldset-' . implode('-', array_keys($setting['fields'])) . '"';
+    }
 }
 
 // Grids have to be in a div for an overflow bug in Firefox
@@ -83,7 +89,7 @@ $element = ($grid) ? 'div' : 'fieldset'; ?>
 <<?=$element?> <?=$fieldset_id?> class="<?=$fieldset_classes?>" <?php if ($setting_group): ?> data-group="<?=$setting_group?>"<?php endif ?><?php if (isset($setting['attrs'])): foreach ($setting['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; endif; ?>>
 	<div class="field-instruct <?=($grid) ? form_error_class(array_keys($setting['fields'])) : '' ?>">
 		<?php if (isset($setting['title'])): ?>
-		<label for="smth"><?=lang($setting['title'])?></label>
+		<label for="smth" <?=$fieldset_href?>><?=lang($setting['title'])?></label>
 		<?php endif; ?>
 		<?php if (isset($setting['desc']) && !empty($setting['desc'])): ?>
 		<em><?=lang($setting['desc'])?></em>

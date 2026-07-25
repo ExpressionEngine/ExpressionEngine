@@ -92,6 +92,10 @@ $lang = array(
 
     'show_ee_news_desc' => 'When enabled, the latest news about ExpressionEngine will appear on the control panel\'s homepage.',
 
+    'show_anchor_links' => 'Add anchor links?',
+
+    'show_anchor_links_desc' => 'Enabling this option will add anchor links to the labels',
+
     'site_default' => 'Use site default',
 
     'site_license_key' => 'Site License Key',
