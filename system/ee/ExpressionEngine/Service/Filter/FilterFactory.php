@@ -362,6 +362,16 @@ class FilterFactory
     }
 
     /**
+     * This will instantiate and return a default Checkboxes filter
+     *
+     * @return Filter\Checkboxes a Checkboxes Filter object
+     */
+    protected function createDefaultCheckboxes($name, $label, array $options, $shortLabel = null)
+    {
+        return new Filter\Checkboxes($name, $label, $options, $shortLabel);
+    }
+
+    /**
      * This will instantiate and return a default FileManagerColumns filter
      *
      * @return Filter\FileManagerColumns a FileManagerColumns Filter object
