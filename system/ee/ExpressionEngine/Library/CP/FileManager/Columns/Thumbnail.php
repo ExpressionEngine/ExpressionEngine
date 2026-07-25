@@ -41,7 +41,10 @@ class Thumbnail extends EntryManager\Columns\Column
                 $url = ee('CP/URL')->make('files/directory/' . $file->upload_location_id, array_merge($addQueryString, ['directory_id' => $file->file_id]));
                 $file_thumbnail = '<a href="' . $url . '">' . $thumb->tag . '</a>';
             } elseif (ee('Permission')->can('edit_files')) {
-                $file_thumbnail = '<a href="' . ee('CP/URL')->make('files/file/view/' . $file->file_id) . ($file->isImage() ? '" class="imgpreview" data-url="' . $thumb->url : '') . '" alt="' . $file->title . '">' . $thumb->tag . '</a>'; 
+                if (ee()->uri->segment(3) == 'directory') {
+                    $addQueryString['upload_location_id'] = (int) ee()->uri->segment(4);
+                }
+                $file_thumbnail = '<a href="' . ee('CP/URL')->make('files/file/view/' . $file->file_id, $addQueryString) . ($file->isImage() ? '" class="imgpreview" data-url="' . $thumb->url : '') . '" alt="' . $file->title . '">' . $thumb->tag . '</a>'; 
             }
         }
 

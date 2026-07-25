@@ -26,7 +26,10 @@ class Title extends EntryManager\Columns\Title
                 $url = ee('CP/URL')->make('files/directory/' . $file->upload_location_id, array_merge($addQueryString, ['directory_id' => $file->file_id]));
                 $title = '<a href="' . $url . '">' . $title . '</a>';
             } elseif (ee('Permission')->can('edit_files')) {
-                $title = '<a href="' . ee('CP/URL')->make('files/file/view/' . $file->file_id) . '">' . $title . '</a>';
+                if (ee()->uri->segment(3) == 'directory') {
+                    $addQueryString['upload_location_id'] = (int) ee()->uri->segment(4);
+                }
+                $title = '<a href="' . ee('CP/URL')->make('files/file/view/' . $file->file_id, $addQueryString) . '">' . $title . '</a>';
             }
         }
 
