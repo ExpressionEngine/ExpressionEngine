@@ -43,6 +43,23 @@ class Mfa
     }
 
     /**
+     * Generate manual code for MFA app setup
+     *
+     * @param string $secret
+     * @return string
+     */
+    public function generateManualCode($secret)
+    {
+        $totp = TOTP::createFromSecret(Base32::encodeUpper($secret), new InternalClock());
+        $totp->setIssuer(ee()->config->item('site_name'));
+        $totp->setLabel(ee()->session->userdata('username'));
+
+        $str = $totp->getSecret();
+
+        return $str;
+    }
+
+    /**
      * Generate QR code
      *
      * @param string $secret
