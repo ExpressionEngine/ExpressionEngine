@@ -750,7 +750,9 @@ class Auth_result
             // We'll manually add the username to the Session array so
             // the logger class can use it.
             ee()->session->userdata['username'] = $this->member('username');
-            ee()->logger->log_action(lang('member_logged_in'));
+            if (ee()->config->item('log_cp_visits') !== 'n') {
+                ee()->logger->log_action(lang('member_logged_in'));
+            }
 
             // -------------------------------------------
             // 'cp_member_login' hook.
