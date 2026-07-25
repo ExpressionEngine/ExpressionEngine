@@ -130,7 +130,10 @@ class Result
                 $this->primary_keys[$alias] = $alias . '__' . $object->getPrimaryKey();
             }
 
-            $row_object_ids[$alias] = $object->getId();
+            // If the model id is empty we should not connect this object later
+            if($object->getId()) {
+                $row_object_ids[$alias] = $object->getId();
+            }
         }
 
         // connect ids
