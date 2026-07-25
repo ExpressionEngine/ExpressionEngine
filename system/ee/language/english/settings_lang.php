@@ -752,6 +752,8 @@ $lang = array(
 
     'cookie_settings' => 'Cookie Settings',
 
+    'cli_settings' => 'Command Line Interface Settings',
+
     'cp_session_type' => '<abbr title="Control Panel">CP</abbr> session type',
 
     'cs_session' => 'Cookies and session ID',
@@ -835,6 +837,10 @@ $lang = array(
     'cli_enabled' => 'Enable the Command Line Interface',
 
     'cli_enabled_shorthand' => 'Enable the CLI',
+
+    'cli_user' => 'Default CLI user',
+
+    'cli_user_desc' => 'This member will be set as author for any content created via CLI.',
 
     'un_min_len' => 'Minimum username length',
 

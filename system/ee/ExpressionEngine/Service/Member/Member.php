@@ -79,6 +79,32 @@ class Member
     }
 
     /**
+     * Get the default CLI author
+     *
+     * @return \ExpressionEngine\Model\Member\Member|null
+     */
+    public function getDefaultCLIAuthor()
+    {
+        $member = null;
+        if (!empty(ee()->config->item('cli_member_id'))) {
+            $member_id = ee()->config->item('cli_member_id');
+            $member = ee('Model')->get('Member')
+                ->fields('member_id')
+                ->filter('member_id', $member_id)
+                ->first();
+        }
+        if (empty($member)) {
+            $member = ee('Model')->get('Member')
+                ->fields('member_id')
+                ->filter('role_id', self::SUPERADMIN)
+                ->order('member_id', 'asc')
+                ->first();
+        }
+
+        return $member;
+    }
+
+    /**
      * Calculate password complexity/rank
      * using metrics provided by passwordmeter.com
      * @return int
