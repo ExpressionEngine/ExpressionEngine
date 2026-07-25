@@ -380,6 +380,16 @@ else: ?>
                                     <span class="sr-only"><?=lang('collapse')?></span>
                                     <i class="fal fa-caret-square-up fa-fw"></i>
                                 </a>
+                                <?php if ($reorder): ?>
+                                <button type="button" class="grid-field__item-tool js-grid-move-up" title="<?=lang('move_row_up')?>">
+                                    <span class="sr-only"><?=lang('move_row_up')?></span>
+                                    <i class="fal fa-arrow-up fa-fw"></i>
+                                </button>
+                                <button type="button" class="grid-field__item-tool js-grid-move-down" title="<?=lang('move_row_down')?>">
+                                    <span class="sr-only"><?=lang('move_row_down')?></span>
+                                    <i class="fal fa-arrow-down fa-fw"></i>
+                                </button>
+                                <?php endif ?>
 
                                 <button type="button" data-dropdown-offset="0px, -30px" data-dropdown-pos="bottom-end" class="grid-field__item-tool js-dropdown-toggle"><i class="fal fa-fw fa-cog"></i></button>
 
@@ -502,6 +512,12 @@ else: ?>
                                 <?php if ($reorder): ?>
                                 <button type="button" class="button button--small button--default cursor-move js-grid-reorder-handle">
                                     <span class="grid-field__column-tool"><i class="fal fa-fw fa-arrows-alt"></i></span>
+                                </button>
+                                <button type="button" class="button button--small button--default js-grid-move-up" title="<?=lang('move_row_up')?>">
+                                    <span class="grid-field__column-tool" title="<?=lang('move_row_up')?>"><i class="fal fa-fw fa-arrow-up"><span class="hidden"><?=lang('move_row_up')?></span></i></span>
+                                </button>
+                                <button type="button" class="button button--small button--default js-grid-move-down" title="<?=lang('move_row_down')?>">
+                                    <span class="grid-field__column-tool" title="<?=lang('move_row_down')?>"><i class="fal fa-fw fa-arrow-down"><span class="hidden"><?=lang('move_row_down')?></span></i></span>
                                 </button>
                                 <?php endif ?>
                                 <button type="button" rel="remove_row" class="button button--small button--default">

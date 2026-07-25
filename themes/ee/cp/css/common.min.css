@@ -27443,6 +27443,10 @@ input[type=button].btn-block {
   max-width: 550px;
 }
 
+.modal-wrap.must-interact .dialog__close {
+  display: none;
+}
+
 .modal {
   background-color: var(--ee-bg-0);
   margin-bottom: 40px;
@@ -32106,6 +32110,16 @@ fieldset .field-control #eye {
 .field-no-results .grid-field__column--tools a:last-child, .grid-field__column--tools .select-popup:last-child, .grid-field__column--tools select:last-child, .grid-field__column--tools .select__button:last-child, .grid-field__column--tools .markItUpHeader ul a:last-child, .markItUpHeader ul .grid-field__column--tools a:last-child, .grid-field__column--tools .filter-bar__button:last-child, .grid-field__column--tools .license-status-badge:last-child {
   margin-bottom: 0px;
 }
+.grid-field__column--tools .button:disabled, .grid-field__column--tools .pagination__link:disabled, .grid-field__column--tools .no-results a:disabled, .no-results .grid-field__column--tools a:disabled,
+.grid-field__column--tools .field-no-results a:disabled,
+.field-no-results .grid-field__column--tools a:disabled, .grid-field__column--tools .select-popup:disabled, .grid-field__column--tools select:disabled, .grid-field__column--tools .select__button:disabled, .grid-field__column--tools .markItUpHeader ul a:disabled, .markItUpHeader ul .grid-field__column--tools a:disabled, .grid-field__column--tools .filter-bar__button:disabled, .grid-field__column--tools .license-status-badge:disabled {
+  cursor: not-allowed;
+}
+.grid-field__column--tools .button:disabled .grid-field__column-tool, .grid-field__column--tools .pagination__link:disabled .grid-field__column-tool, .grid-field__column--tools .no-results a:disabled .grid-field__column-tool, .no-results .grid-field__column--tools a:disabled .grid-field__column-tool,
+.grid-field__column--tools .field-no-results a:disabled .grid-field__column-tool,
+.field-no-results .grid-field__column--tools a:disabled .grid-field__column-tool, .grid-field__column--tools .select-popup:disabled .grid-field__column-tool, .grid-field__column--tools select:disabled .grid-field__column-tool, .grid-field__column--tools .select__button:disabled .grid-field__column-tool, .grid-field__column--tools .markItUpHeader ul a:disabled .grid-field__column-tool, .markItUpHeader ul .grid-field__column--tools a:disabled .grid-field__column-tool, .grid-field__column--tools .filter-bar__button:disabled .grid-field__column-tool, .grid-field__column--tools .license-status-badge:disabled .grid-field__column-tool {
+  opacity: 0.45;
+}
 
 .grid-field__column-tool:last-child {
   margin-bottom: 0;
@@ -32155,6 +32169,11 @@ fieldset .field-control #eye {
 .grid-field__item-fieldset .grid-field__item-tools .grid-field__item-tool:hover {
   color: var(--ee-link);
 }
+.grid-field__item-fieldset .grid-field__item-tools .grid-field__item-tool:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  color: var(--ee-text-tertiary);
+}
 .grid-field__item-fieldset .grid-field__item-tools .grid-field__item-tool .dropdown, .grid-field__item-fieldset .grid-field__item-tools .grid-field__item-tool .select__dropdown {
   max-height: 90vh;
   overflow-y: auto;
@@ -32189,7 +32208,7 @@ fieldset .field-control #eye {
 .grid-field__item-fieldset tr.grid__item--collapsed td.grid-field__item-fieldset {
   border-bottom: none !important;
 }
-.grid-field__item-fieldset tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool {
+.grid-field__item-fieldset tr.grid__item--collapsed td.grid-field__item-fieldset a.grid-field__item-tool {
   transform: rotate(180deg);
 }
 
@@ -32257,7 +32276,7 @@ fieldset .field-control #eye {
 .grid-field.vertical-layout .grid-field__table > tbody tr.grid__item--collapsed td.grid-field__item-fieldset {
   border-bottom: none !important;
 }
-.grid-field.vertical-layout .grid-field__table > tbody tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool {
+.grid-field.vertical-layout .grid-field__table > tbody tr.grid__item--collapsed td.grid-field__item-fieldset a.grid-field__item-tool {
   transform: rotate(180deg);
 }
 .grid-field.vertical-layout .grid-field__table > tbody td.required:before {
@@ -32353,7 +32372,7 @@ fieldset .field-control #eye {
   .grid-field:not(.horizontal-layout) .grid-field__table > tbody tr.grid__item--collapsed td.grid-field__item-fieldset {
     border-bottom: none !important;
   }
-  .grid-field:not(.horizontal-layout) .grid-field__table > tbody tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool {
+  .grid-field:not(.horizontal-layout) .grid-field__table > tbody tr.grid__item--collapsed td.grid-field__item-fieldset a.grid-field__item-tool {
     transform: rotate(180deg);
   }
   .grid-field:not(.horizontal-layout) .grid-field__table .row-counter-column {
@@ -32526,8 +32545,8 @@ fieldset .field-control #eye {
 .grid-field.overwidth .grid-field__table > tbody tr.grid__item--collapsed td.grid-field__item-fieldset {
   border-bottom: none !important;
 }
-.live-preview__form-content .grid-field .grid-field__table > tbody tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool,
-.grid-field.overwidth .grid-field__table > tbody tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool {
+.live-preview__form-content .grid-field .grid-field__table > tbody tr.grid__item--collapsed td.grid-field__item-fieldset a.grid-field__item-tool,
+.grid-field.overwidth .grid-field__table > tbody tr.grid__item--collapsed td.grid-field__item-fieldset a.grid-field__item-tool {
   transform: rotate(180deg);
 }
 .live-preview__form-content .grid-field .grid-field__table > tbody td.required:before,
