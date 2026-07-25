@@ -8,7 +8,21 @@
 
 	<!-- Columns -->
 	<div class="dropdown dropdown__scroll" rev="toggle-columns">
+		<div class="dropdown__search">
+			<div class="search-input">
+				<label for="<?=$name?>" class="sr-only"><?=$name?></label>
+				<input
+					type="text"
+					name="<?=$name?>"
+					id="<?=$name?>"
+					value="<?=htmlentities($value, ENT_QUOTES, 'UTF-8')?>"
+					placeholder="<?=$placeholder?>"
+					class="search-input__input input--small"
+				>
+			</div>
+		</div>
 		<div class="dropdown__header"><?=lang('columns_filter')?></div>
+
 	<?php foreach ($available_columns as $field_name => $field_label): ?>
 		<div class="dropdown__item">
 			<a class="dropdown-reorder"><label><input type="checkbox" <?php if (in_array($field_name, $selected_columns)): echo 'checked'; endif; ?> class="checkbox checkbox--small" name="columns[]" value="<?=$field_name?>" style="top: 1px; margin-right: 5px;"/> <?=$field_label?></label></a>
