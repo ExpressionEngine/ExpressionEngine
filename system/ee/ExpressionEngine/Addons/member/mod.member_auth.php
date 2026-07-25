@@ -829,8 +829,11 @@ class Member_auth extends Member
             if (substr($reset_url, 0, 4) !== 'http') {
                 $reset_url = reduce_double_slashes(ee()->functions->fetch_site_index(0, 0) . '/' . $reset_url);
             }
+        } elseif (ee('Config')->getFile()->getBoolean('legacy_member_templates')) {
+            $profile_trigger = ee()->config->item('profile_trigger');
+            $reset_url = reduce_double_slashes(ee()->functions->fetch_site_index(0, 0) . '/' . $profile_trigger . '/reset_password');
         } else {
-            $reset_url = reduce_double_slashes(ee()->functions->fetch_site_index(0, 0) . '/' . ee()->config->item('profile_trigger') . '/reset_password');
+            return ee()->output->show_user_error('general', array(lang('mbr_missing_password_reset_url')));
         }
 
         // Add the reset code and possible forum_id to the reset pass url.
