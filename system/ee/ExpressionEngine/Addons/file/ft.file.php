@@ -340,6 +340,22 @@ JSC;
 
         // Make sure we have file_info to work with
         if ($tagdata !== false && isset($data['file_id'])) {
+            if (strpos($tagdata, LD . 'uploaded_by_') !== false && isset($data['uploaded_by_member_id']) && !empty($data['uploaded_by_member_id'])) {
+                $uploadedBy = ee('Model')->get('Member', $data['uploaded_by_member_id'])->fields('username', 'screen_name', 'email', 'avatar_filename', 'avatar_width', 'avatar_height')->first(true)->toArray();
+                if (!empty($uploadedBy)) {
+                    foreach ($uploadedBy as $memberField => $fieldData) {
+                        $data['uploaded_by_' . $memberField] = $fieldData;
+                    }
+                }
+            }
+            if (strpos($tagdata, LD . 'modified_by_') !== false && isset($data['modified_by_member_id']) && !empty($data['modified_by_member_id'])) {
+                $modifiedBy = ee('Model')->get('Member', $data['modified_by_member_id'])->fields('username', 'screen_name', 'email', 'avatar_filename', 'avatar_width', 'avatar_height')->first(true)->toArray();
+                if (!empty($modifiedBy)) {
+                    foreach ($modifiedBy as $memberField => $fieldData) {
+                        $data['modified_by_' . $memberField] = $fieldData;
+                    }
+                }
+            }
             return ee()->TMPL->parse_variables($tagdata, array($data));
         }
 
