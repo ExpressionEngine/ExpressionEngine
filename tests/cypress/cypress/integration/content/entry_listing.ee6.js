@@ -39,4 +39,34 @@ context('Entry Listing Page', () => {
         cy.get('.entry').first().find('.absolute_index').invoke('text').should('eq', '5')
     })
 
+    it('paginate top and bottom tags', () => {
+        cy.visit('/index.php/entries/paginate-top')
+
+        cy.hasNoErrors()
+
+        cy.get('.paginate-top .current-page').should('contain', '1')
+
+        cy.get('.entry').first().find('.count').invoke('text').should('eq', '1')
+        cy.get('.entry').first().find('.index').invoke('text').should('eq', '0')
+        cy.get('.entry').first().find('.absolute_count').invoke('text').should('eq', '1')
+        cy.get('.entry').first().find('.absolute_index').invoke('text').should('eq', '0')
+
+        cy.get('.entry').last().find('.count').invoke('text').should('eq', '5')
+        cy.get('.entry').last().find('.index').invoke('text').should('eq', '4')
+        cy.get('.entry').last().find('.absolute_count').invoke('text').should('eq', '5')
+        cy.get('.entry').last().find('.absolute_index').invoke('text').should('eq', '4')
+
+        cy.get('.pagination .next').click()
+
+        cy.hasNoErrors()
+
+        cy.get('.paginate-top .current-page').should('contain', '2')
+
+        cy.get('.entry').first().find('.count').invoke('text').should('eq', '1')
+        cy.get('.entry').first().find('.index').invoke('text').should('eq', '0')
+        cy.get('.entry').first().find('.absolute_count').invoke('text').should('eq', '6')
+        cy.get('.entry').first().find('.absolute_index').invoke('text').should('eq', '5')
+    })
+
+
 })
