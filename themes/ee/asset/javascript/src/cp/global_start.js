@@ -473,7 +473,7 @@ EE.cp.refreshSessionData = function(event, base) {
 
 	if (session_data) {
 		session_data = session_data[0];
-		var base_url = /^([^&]+)/.exec(EE.BASE); 
+		var base_url = /^([^&]+)/.exec(EE.BASE);
 		json_str = base_url[0] + '/login/refresh_csrf_token' + session_data;
 	}
 
@@ -563,6 +563,168 @@ EE.insert_placeholders = function () {
 		.trigger('blur');
 	});
 };
+
+EE.cp.thumbnailCreateUrl = function(fileId)
+{
+    if (EE.fileManager && EE.fileManager.thumbnailCreateUrl) {
+        return EE.fileManager.thumbnailCreateUrl.replace('{file_id}', encodeURIComponent(fileId));
+    }
+
+    return EE.BASE + "/files/file/createMissingThumbnail/" + encodeURIComponent(fileId);
+};
+
+EE.cp.fileManager = EE.cp.fileManager || {};
+
+EE.cp.fileManager.fileExistsUrl = function()
+{
+    if (EE.fileManager && EE.fileManager.fileExistsUrl) {
+        return EE.fileManager.fileExistsUrl;
+    }
+
+    return EE.BASE + "/files/file/exists";
+};
+
+EE.cp.fileManager.checkForMissingFiles = function(container)
+{
+    let $container = container ? $(container) : $(document);
+    let selector = '.f_manager-wrapper tr[file_id], .f_manager-wrapper .file-grid__file[file_id]';
+    let $files = $container.is(selector) ? $container : $container.find(selector);
+    let filesById = {};
+    let fileIds = [];
+    let chunkSize = 5;
+
+    $files.each(function(index, el) {
+        let $el = $(el);
+        let fileId = $el.attr('file_id');
+
+        if (! fileId || $el.data('file-exists-check-pending') || $el.data('file-exists-check-complete')) {
+            return;
+        }
+
+        $el.data('file-exists-check-pending', true);
+
+        if (! filesById[fileId]) {
+            filesById[fileId] = [];
+            fileIds.push(fileId);
+        }
+
+        filesById[fileId].push($el);
+    });
+
+    let markFileMissing = function($el) {
+        $el.addClass('missing');
+        $el.find('.file-not-found.hidden').removeClass('hidden');
+
+        // Display the missing-files alert banner if it is present
+        let $wrapper = $el.closest('.f_manager-wrapper');
+        let $alert = $wrapper.length ? $wrapper.find('.app-notice-missing-files.hidden') : $('.app-notice-missing-files.hidden');
+        $alert.removeClass('hidden');
+    };
+
+    let markFileCheckComplete = function(fileId) {
+        $.each(filesById[fileId], function(index, $el) {
+            $el.data('file-exists-check-pending', false);
+            $el.data('file-exists-check-complete', true);
+        });
+    };
+
+    for (let i = 0; i < fileIds.length; i += chunkSize) {
+        let chunk = fileIds.slice(i, i + chunkSize);
+        let requestSucceeded = false;
+
+        $.ajax({
+            url: EE.cp.fileManager.fileExistsUrl(),
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                file_ids: chunk
+            },
+            success: function(response) {
+                requestSucceeded = true;
+                let files = response && response.files ? response.files : {};
+
+                $.each(chunk, function(index, fileId) {
+                    let exists = files[fileId] && files[fileId].exists === true;
+
+                    if (! exists) {
+                        $.each(filesById[fileId], function(index, $el) {
+                            markFileMissing($el);
+                        });
+                    }
+                });
+            },
+            error: function() {
+                $.each(chunk, function(index, fileId) {
+                    $.each(filesById[fileId], function(index, $el) {
+                        $el.data('file-exists-check-pending', false);
+                    });
+                });
+            },
+            complete: function() {
+                if (requestSucceeded) {
+                    $.each(chunk, function(index, fileId) {
+                        markFileCheckComplete(fileId);
+                    });
+                }
+            }
+        });
+    }
+};
+
+// Replace images with fallback-src if available
+EE.cp.fallbackImage = function(element)
+{
+    let $el = $(element);
+
+    // If the element has a fallback-src and it is not the same as the current src we will swap
+    if($el.attr('fallback-src') && $el.attr('fallback-src') !== $el.attr('src')) {
+
+        let replaceSrc = function($el) {
+            $el.addClass('img-fallback');
+            $el.attr('src', $el.attr('fallback-src'));
+            $el.parent('.imgpreview').attr('data-url', $el.attr('fallback-src'));
+        };
+
+        let addCacheBuster = function(url) {
+            let separator = url.indexOf('?') === -1 ? '?' : '&';
+
+            return url + separator + 'thumbnail_retry=' + Date.now();
+        };
+
+        // If this is a thumbnail try to regenerate missing thumbnail
+        if($el.hasClass('thumbnail_img')) {
+            let $fileElement = $el.closest('[file_id], [data-file-id]');
+            let fileId = $el.data('file-id') || $el.attr('data-file-id') || $fileElement.attr('file_id') || $fileElement.data('file-id');
+
+            if($el.data('thumbnail-retry-attempted') || ! fileId) {
+                replaceSrc($el);
+                return;
+            }
+
+            $.ajax({
+                url: EE.cp.thumbnailCreateUrl(fileId),
+                success: function(data) {
+                    if(data.url) {
+                        $el.data('thumbnail-retry-attempted', true);
+                        $el.attr('src', addCacheBuster(data.url));
+                        $el.parent('.imgpreview').attr('data-url', data.url);
+                    }else {
+                        replaceSrc($el);
+                    }
+                },
+                error: function() {
+                    replaceSrc($el);
+                },
+                dataType: 'json'
+            });
+        }else{
+            replaceSrc($el);
+        }
+    }else{
+        $el.parent('.imgpreview').attr('data-url', EE.PATH_CP_GBL_IMG + 'missing.jpg');
+        $el.replaceWith('<i class="fal fa-exclamation-triangle fa-3x"></i>');
+    }
+}
 
 /**
  * Handle idle / inaction between windows
@@ -720,7 +882,7 @@ EE.cp.broadcastEvents = (function() {
 
 				if (session_data) {
 					session_data = session_data[0];
-					var base_url = /^([^&]+)/.exec(EE.BASE); 
+					var base_url = /^([^&]+)/.exec(EE.BASE);
 					json_str = base_url[0] + '/login/lock_cp' + session_data;
 				}
 

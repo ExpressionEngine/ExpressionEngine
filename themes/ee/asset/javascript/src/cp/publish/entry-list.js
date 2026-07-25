@@ -44,7 +44,7 @@ $(document).ready(function () {
 		}
 	}
 
-	function searchEntries(type = 'GET', url = null) 
+	function searchEntries(type = 'GET', url = null)
 	{
 		if (searching) {
 			searching.abort();
@@ -55,7 +55,7 @@ $(document).ready(function () {
 		if (url === null) {
 			url = typeof(_form.data('search-url'))!='undefined' ? _form.data('search-url') : _form.attr('action');
 		}
-		
+
 		var data = {};
 		if (type != 'GET') {
 			data = $('input[name!="columns[]"]', _form).serialize();
@@ -74,6 +74,7 @@ $(document).ready(function () {
 				sortableColumns();
 				ddFileToNotEmptyTable();
 				if ( ($('.f_manager-wrapper tbody').length || $('.f_manager-wrapper .file-grid__wrapper').length) && (!$('.f_manager-wrapper tbody, .f_manager-wrapper .file-grid__wrapper').parents('.modal').length)) {
+                    $('.f_manager-wrapper').trigger('ee.filemanager.changed');
 
 					makeDirectoryDroppable();
 
@@ -149,7 +150,7 @@ $(document).ready(function () {
 		if ($('input[name="filter_by_keyword"]').val()!='') {
 			searchEntries('POST');
 		}
-	
+
 	});
 
 	// Selecting a channel filter

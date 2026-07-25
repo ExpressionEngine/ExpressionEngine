@@ -42,7 +42,11 @@
 
 			if (data.isImage) {
 				// Set the thumbnail
-				references.input_img.attr('src', data.thumb_path);
+				references.input_img
+					.attr('fallback-src', data.thumb_fallback_path || data.path)
+					.attr('data-file-id', data.file_id)
+					.attr('onerror', 'window.EE.cp.fallbackImage(this)')
+					.attr('src', data.thumb_path);
 				if (figure.find('i').length) {
 					figure.find('i').remove();
 				}

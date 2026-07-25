@@ -230,6 +230,7 @@ class FileTest extends TestCase
         ee()->setMock('CP/URL', new UrlFactoryRecorder());
         ee()->setMock('Format', new FormatRecorder());
         ee()->setMock('File', new FileServiceRecorder($this->upload));
+        ee()->setMock('output', new OutputRecorder());
         ee()->setMock('load', $this->load);
         ee()->setMock('image_lib', new ImageLibRecorder());
         ee()->setMock('form_validation', $this->formValidation);
@@ -247,6 +248,22 @@ class FileTest extends TestCase
         FileDownloadRecorder::reset();
         ee()->resetMocks();
         ee()->config->resetConfig();
+    }
+
+    public function testRoutableMethods()
+    {
+        $controller_methods = [];
+
+        foreach (get_class_methods('ExpressionEngine\Controller\Files\File') as $method) {
+            $method = strtolower($method);
+            if (strncmp($method, '_', 1) != 0) {
+                $controller_methods[] = $method;
+            }
+        }
+
+        sort($controller_methods);
+
+        $this->assertEquals(['createmissingthumbnail', 'download', 'exists', 'getuploadlocationsanddirectoriesdropdownchoices', 'view'], $controller_methods);
     }
 
     /**
@@ -1341,6 +1358,87 @@ class FileTest extends TestCase
     }
 
     /**
+     * Assert exists() returns JSON for chunked file ID checks.
+     *
+     * @return void
+     */
+    public function testExistsReturnsJsonForBatchAndTreatsInaccessibleFilesAsMissing()
+    {
+        $available = new TestFileModel([
+            'file_id' => 11,
+            'exists' => true,
+        ]);
+        $missing = new TestFileModel([
+            'file_id' => 12,
+            'exists' => false,
+        ]);
+        $restricted = new TestFileModel([
+            'file_id' => 13,
+            'memberHasAccess' => false,
+            'exists' => true,
+        ]);
+
+        ee()->setMock('Request', new RequestRecorder([
+            'file_ids' => ['11', '12', '13', '99', 'bad'],
+        ]));
+        $this->bindFilesToModel([$available, $missing, $restricted]);
+
+        $response = $this->controller->exists();
+
+        $expected = [
+            'files' => [
+                11 => ['exists' => true],
+                12 => ['exists' => false],
+                13 => ['exists' => false],
+                99 => ['exists' => false],
+            ],
+        ];
+
+        $this->assertSame($expected, $response);
+        $this->assertSame($expected, ee()->output->ajaxResponses[0]);
+        $this->assertSame([
+            ['File', [11, 12, 13, 99]],
+        ], ee('Model')->getCalls);
+        $this->assertSame([
+            ['UploadDestination'],
+        ], $this->lastModelQuery()->withCalls);
+        $this->assertSame([
+            ['site_id', 'IN', [1, 0]],
+        ], $this->lastModelQuery()->filterCalls);
+        $this->assertCount(1, $available->memberAccessChecks);
+        $this->assertCount(1, $missing->memberAccessChecks);
+        $this->assertCount(1, $restricted->memberAccessChecks);
+    }
+
+    /**
+     * Assert route ID checks use the same JSON response shape.
+     *
+     * @return void
+     */
+    public function testExistsReturnsJsonForRouteId()
+    {
+        $file = new TestFileModel([
+            'file_id' => 44,
+            'exists' => true,
+        ]);
+        $this->bindFilesToModel([$file]);
+
+        $response = $this->controller->exists(44);
+
+        $expected = [
+            'files' => [
+                44 => ['exists' => true],
+            ],
+        ];
+
+        $this->assertSame($expected, $response);
+        $this->assertSame($expected, ee()->output->ajaxResponses[0]);
+        $this->assertSame([
+            ['File', [44]],
+        ], ee('Model')->getCalls);
+    }
+
+    /**
      * Attach a model query stub for the provided file lookup result.
      *
      * @param TestFileModel|null $file
@@ -1349,6 +1447,18 @@ class FileTest extends TestCase
     private function bindFileToModel($file): void
     {
         $query = new ModelQueryRecorder($file);
+        ee()->setMock('Model', new ModelServiceRecorder($query));
+    }
+
+    /**
+     * Attach a model query stub for a batch file lookup result.
+     *
+     * @param array<int, TestFileModel> $files
+     * @return void
+     */
+    private function bindFilesToModel(array $files): void
+    {
+        $query = new ModelQueryRecorder($files);
         ee()->setMock('Model', new ModelServiceRecorder($query));
     }
 
@@ -1887,12 +1997,37 @@ class RequestRecorder
 }
 
 /**
+ * Captures AJAX response payloads.
+ */
+class OutputRecorder
+{
+    /** @var array<int, mixed> */
+    public $ajaxResponses = [];
+
+    /**
+     * Record and return AJAX response payloads.
+     *
+     * @param mixed $payload
+     * @return mixed
+     */
+    public function send_ajax_response($payload)
+    {
+        $this->ajaxResponses[] = $payload;
+
+        return $payload;
+    }
+}
+
+/**
  * Supplies model queries for file lookups.
  */
 class ModelServiceRecorder
 {
     /** @var ModelQueryRecorder */
     public $lastQuery;
+
+    /** @var array<int, array{0: string, 1: mixed}> */
+    public $getCalls = [];
 
     /**
      * Store the query object returned by get().
@@ -1909,11 +2044,13 @@ class ModelServiceRecorder
      * Return the configured query recorder.
      *
      * @param string $model
-     * @param int $id
+     * @param mixed $id
      * @return ModelQueryRecorder
      */
-    public function get($model, $id)
+    public function get($model, $id = null)
     {
+        $this->getCalls[] = [$model, $id];
+
         return $this->lastQuery;
     }
 }
@@ -1923,7 +2060,7 @@ class ModelServiceRecorder
  */
 class ModelQueryRecorder
 {
-    /** @var TestFileModel|null */
+    /** @var TestFileModel|array<int, TestFileModel>|null */
     private $file;
 
     /** @var array<int, array<int, string>> */
@@ -1935,7 +2072,7 @@ class ModelQueryRecorder
     /**
      * Store the first() return value.
      *
-     * @param TestFileModel|null $file
+     * @param TestFileModel|array<int, TestFileModel>|null $file
      * @return void
      */
     public function __construct($file)
@@ -1988,7 +2125,31 @@ class ModelQueryRecorder
      */
     public function first()
     {
+        if (is_array($this->file)) {
+            return reset($this->file) ?: null;
+        }
+
         return $this->file;
+    }
+
+    /**
+     * Return the configured files indexed by a field.
+     *
+     * @param string $field
+     * @return array<int, TestFileModel>
+     */
+    public function indexBy($field)
+    {
+        $files = is_array($this->file) ? $this->file : [$this->file];
+        $indexed = [];
+
+        foreach ($files as $file) {
+            if ($file) {
+                $indexed[$file->$field] = $file;
+            }
+        }
+
+        return $indexed;
     }
 }
 

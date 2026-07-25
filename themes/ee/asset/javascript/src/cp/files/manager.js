@@ -156,7 +156,7 @@
 
 		function showBigImage(button) {
 			var tooltip = button.find('#preview');
-			var element = button.find('img.thumbnail_img');
+			var element = button.find('img.thumbnail_img, i');
 			var placement = 'top-end';
 			var offset = '60px, 25px';
 			new Popper(element, tooltip, {
@@ -190,11 +190,17 @@
 				} else {
 					style = 'max-height: 200px';
 				}
-				parent.prepend("<p id='preview'><img src='" + path + "' alt='"+alt+"' style='"+style+"' /></p>");
+                parent.prepend("<p id='preview'><img src='" + path + "' alt='"+alt+"' style='"+style+"' /></p>");
 				showBigImage(parent);
 			}, mouseleave: function () {
 				$("#preview").remove();
 			}
 		}, '.f_manager-wrapper .imgpreview');
+
+        EE.cp.fileManager.checkForMissingFiles();
+
+        $('body').on('ee.filemanager.changed', function(event, container) {
+            EE.cp.fileManager.checkForMissingFiles(container);
+        });
 	});
 })(jQuery);
