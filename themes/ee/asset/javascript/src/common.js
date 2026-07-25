@@ -1312,4 +1312,19 @@ $(document).ready(function(){
             });
 		})
 
+    $('body').on('change','.ee-buttons-field.selectable_buttons .button input[type=checkbox]', function (e) {
+
+        if ( !($(this).parents('.button-group').hasClass('multiple')) ) {
+            var elParent = $(this).parents('.selectable_buttons');
+            $(elParent).find('.button input[type=checkbox]').not(this).prop('checked', false);
+        }
+        $(this).parents('.button-group').find('.button input[type=checkbox]').each(function () {
+            if ($(this).prop('checked')) {
+                $(this).parent().addClass('active');
+            } else {
+                $(this).parent().removeClass('active')
+            }
+        });
+    });
+
 }); // close (document).ready
