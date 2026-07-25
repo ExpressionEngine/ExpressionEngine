@@ -566,6 +566,7 @@ class EE_Config
             'xss_clean_uploads',
             'redirect_method',
             'deft_lang',
+            'cp_theme',
             'xml_lang',
             'send_headers',
             'gzip_output',
