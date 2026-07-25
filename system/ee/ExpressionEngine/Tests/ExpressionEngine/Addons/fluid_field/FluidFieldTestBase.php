@@ -913,6 +913,11 @@ class FluidFieldRequestStub
     {
         return $this->values[$key] ?? null;
     }
+
+    public function post($key)
+    {
+        return $this->values[$key] ?? null;
+    }
 }
 
 class FluidFieldLivePreviewStub

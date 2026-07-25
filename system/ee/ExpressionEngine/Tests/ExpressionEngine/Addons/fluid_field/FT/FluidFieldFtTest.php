@@ -535,6 +535,56 @@ class FluidFieldFtTest extends FluidFieldTestBase
         $this->assertSame([], $this->javascript->global[0]['fields.fluid_field.groups']);
     }
 
+    public function testDisplaySettingsCastsSavedToggleValuesToBooleans()
+    {
+        $channelField = new FluidFieldChannelFieldStub(1, 'title', new FluidFieldFacadeStub(1));
+        $group = new FluidFieldGroupStub(10, 'Body Group', 'body_group');
+
+        $this->setModelGetCallback(function ($model, $id = null) use ($channelField, $group) {
+            if ($model === 'ChannelField') {
+                return $this->makeModelQuery(new FluidFieldTestCollection([$channelField]));
+            }
+
+            if ($model === 'ChannelFieldGroup') {
+                return $this->makeModelQuery(new FluidFieldTestCollection([$group]));
+            }
+
+            return $this->makeModelQuery(new FluidFieldTestCollection(), null);
+        });
+
+        $this->fieldtype->display_settings([
+            'field_channel_fields' => [1],
+            'field_channel_field_groups' => [10],
+            'fluid_field_allow_multiple' => [1 => 'n'],
+            'fluid_field_required' => [1 => 'y'],
+            'fluid_field_group_allow_multiple' => [10 => 'n'],
+            'fluid_field_group_required' => [10 => 'y'],
+        ]);
+
+        $fieldSelectRender = null;
+        $groupSelectRender = null;
+        foreach ($this->viewService->renders as $render) {
+            if ($render['view'] !== 'ee:_shared/form/fields/select') {
+                continue;
+            }
+
+            if (isset($render['data']['field_name']) && $render['data']['field_name'] === 'field_channel_fields') {
+                $fieldSelectRender = $render['data'];
+            }
+
+            if (isset($render['data']['field_name']) && $render['data']['field_name'] === 'field_channel_field_groups') {
+                $groupSelectRender = $render['data'];
+            }
+        }
+
+        $this->assertNotNull($fieldSelectRender);
+        $this->assertNotNull($groupSelectRender);
+        $this->assertFalse($fieldSelectRender['choices'][0]['toggles']['fluid_field_allow_multiple']);
+        $this->assertTrue($fieldSelectRender['choices'][0]['toggles']['fluid_field_required']);
+        $this->assertFalse($groupSelectRender['choices'][0]['toggles']['fluid_field_group_allow_multiple']);
+        $this->assertTrue($groupSelectRender['choices'][0]['toggles']['fluid_field_group_required']);
+    }
+
     public function testSaveSettingsReturnsDefaultsIntersectionWithoutReindex()
     {
         $field = new FluidFieldChannelFieldStub(1, 'field_one');
@@ -617,6 +667,76 @@ class FluidFieldFtTest extends FluidFieldTestBase
         $this->assertNotEmpty($this->logger->actions);
         $this->assertCount(1, $this->alert->alerts);
         $this->assertNotEmpty($this->config->sitePrefsUpdates);
+    }
+
+    public function testSaveSettingsDoesNotRemoveGroupsWhenGroupsAreUnchanged()
+    {
+        $this->fieldtype->settings['field_channel_fields'] = [1];
+        $this->fieldtype->settings['field_channel_field_groups'] = [5];
+
+        $deletedByGroup = new FluidFieldTestCollection();
+
+        $this->setModelGetCallback(function ($model, $id = null) use ($deletedByGroup) {
+            if ($model === 'ChannelField') {
+                return $this->makeModelQuery(new FluidFieldTestCollection());
+            }
+
+            if ($model === 'ChannelFieldGroup') {
+                return $this->makeModelQuery(new FluidFieldTestCollection());
+            }
+
+            if ($model === 'fluid_field:FluidField') {
+                return $this->makeModelQuery($deletedByGroup);
+            }
+
+            return $this->makeModelQuery(new FluidFieldTestCollection());
+        });
+
+        $result = $this->fieldtype->save_settings([
+            'field_channel_fields' => [1],
+            'field_channel_field_groups' => [5]
+        ]);
+
+        $this->assertSame([
+            'field_channel_fields' => [1],
+            'field_channel_field_groups' => [5]
+        ], $result);
+        $this->assertFalse($deletedByGroup->deleted);
+        $this->assertCount(0, $this->alert->alerts);
+    }
+
+    public function testSaveSettingsPersistsToggleStatesForSelectedFieldsAndGroups()
+    {
+        $this->fieldtype->settings['field_channel_fields'] = [1];
+        $this->fieldtype->settings['field_channel_field_groups'] = [5];
+        $this->request->values = [
+            'fluid_field_required' => ['1'],
+            'fluid_field_allow_multiple' => [],
+            'fluid_field_group_required' => [],
+            'fluid_field_group_allow_multiple' => ['5'],
+        ];
+
+        $this->setModelGetCallback(function ($model, $id = null) {
+            if ($model === 'ChannelField') {
+                return $this->makeModelQuery(new FluidFieldTestCollection());
+            }
+
+            if ($model === 'ChannelFieldGroup') {
+                return $this->makeModelQuery(new FluidFieldTestCollection());
+            }
+
+            return $this->makeModelQuery(new FluidFieldTestCollection());
+        });
+
+        $result = $this->fieldtype->save_settings([
+            'field_channel_fields' => [1],
+            'field_channel_field_groups' => [5]
+        ]);
+
+        $this->assertSame('y', $result['fluid_field_required'][1]);
+        $this->assertSame('n', $result['fluid_field_allow_multiple'][1]);
+        $this->assertSame('n', $result['fluid_field_group_required'][5]);
+        $this->assertSame('y', $result['fluid_field_group_allow_multiple'][5]);
     }
 
     public function testSettingsModifyColumnDeletesWhenActionIsDelete()
