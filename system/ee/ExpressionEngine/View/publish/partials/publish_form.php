@@ -5,8 +5,13 @@
     <?php if (!isset($pro_class)) : ?>
     <div class="panel-heading panel-heading__publish">
         <div class="title-bar title-bar--large">
-            <h3 class="title-bar__title">
+            <h3 class="title-bar__title <?php if (isset($head['uri']) && !empty($head['uri'])) : ?>structure-uri-title<?php endif; ?>">
                 <?=$head['title']?>
+                <?php if (isset($head['uri']) && !empty($head['uri'])) : ?>
+                    <span class="app-badge button-group-normal structure-uri-link">
+                        <span class="button button--default button--small"><?=$head['uri']?></span>
+                    </span>
+                <?php endif; ?>
                 <?php if (isset($version)) {
                     $this->embed('ee:publish/partials/revision_badge', $version);
                 } ?>
