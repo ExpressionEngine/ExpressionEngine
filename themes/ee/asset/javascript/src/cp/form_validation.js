@@ -80,6 +80,8 @@ EE.cp.formValidation = {
 
 		var that = this;
 
+		var typingTimer; //timer identifier
+
 		// Don't fire AJAX when submit button pressed
 		$(container).on('mousedown', this._buttonSelector, function() {
 			that.pause();
@@ -105,9 +107,29 @@ EE.cp.formValidation = {
 			}
 		})
 
-		$(this._textInputSelectors, container)
+		if ($(container).hasClass('ajax-validate') && $(container).find('.fieldset-required').length == 1) {
+
+			$(this._textInputSelectors, container)
 			.not('*[data-ajax-validate=no]')
-			.blur(function() {
+			.on('keypress', function (e) {
+				$(this).data('validating', false);
+				window.clearTimeout(typingTimer);
+			});
+
+			$(this._textInputSelectors, container)
+			.not('*[data-ajax-validate=no]')
+			.on('keyup', function (e) {
+				var _this  = $(this);
+				window.clearTimeout(typingTimer);
+				typingTimer = window.setTimeout(() => {
+					var element = _this;
+					that._sendAjaxRequest(element);
+				}, 500);
+			})
+		} else {
+			$(this._textInputSelectors, container)
+				.not('*[data-ajax-validate=no]')
+				.blur(function() {
 
 				// Unbind keydown validation when the invalid field loses focus
 				$(this).data('validating', false);
@@ -117,7 +139,8 @@ EE.cp.formValidation = {
 				setTimeout(function() {
 					that._sendAjaxRequest(element);
 				}, 0);
-		});
+			});
+		}
 
 		$(container).on('focusout', 'div.redactor-styles, div.ck-content', function() {
 			var element = $(this);
@@ -145,7 +168,7 @@ EE.cp.formValidation = {
 		// validation only)
 		$('form.ajax-validate .fieldset-invalid, form.ajax-validate div.grid-publish:has(div.invalid), form.ajax-validate div.grid-field:has(.invalid)').each(function() {
 			that._bindTextFieldTimer($(this));
-		});
+		})
 	},
 
 	/**
@@ -413,7 +436,12 @@ EE.cp.formValidation = {
 			container = field.parents('.field-control'),
 			fieldset = (container.parents('fieldset').length > 0) ? container.parents('fieldset') : container.parent(),
 			errorClass = 'em.ee-form-error-message',
-			grid = false;
+			grid = false,
+			modal_button = false;
+
+			if (form.parents('.modal').length) {
+				modal_button = form.parents('.modal').find('.dialog__buttons .button');
+			}
 
 		// Tabs
 		var tab_container = field.parents('.tab'),
@@ -471,6 +499,10 @@ EE.cp.formValidation = {
 			}
 
 			container.find('> ' + errorClass).remove();
+
+			if (modal_button) {
+				modal_button.removeClass('disable').removeAttr('disabled');
+			}
 
 			// If no more errors on this tab, remove invalid class from tab
 			if (tab.length > 0 &&  ! this._errorsExist(tab_container))
@@ -546,6 +578,10 @@ EE.cp.formValidation = {
 			// Disable submit button
 			button.addClass('disable').attr('disabled', 'disabled');
 
+			if (modal_button) {
+				modal_button.addClass('disable').attr('disabled', 'disabled');
+			}
+
 			button.each(function(index, thisButton) {
 				thisButton = $(thisButton);
 				if (!thisButton.hasClass('dropdown-toggle')) {
@@ -593,6 +629,7 @@ EE.cp.formValidation = {
 		// Bind the timer while typing/changing
 		inputs.data('validating', true).on('keydown input change', function() {
 
+
 			// Reset the timer, no need to validate if user is still typing
 			if (timer !== undefined) {
 				clearTimeout(timer);
@@ -600,21 +637,24 @@ EE.cp.formValidation = {
 
 			var field = $(this);
 
-			// Wait half a second, then clear the timer and send the AJAX request
-			timer = setTimeout(function() {
-				clearTimeout(timer);
-				if (field.is('textarea') && field.is('textarea:not(.rte-textarea)')) {
-					return false;
-				}
+			if (field.parents('form.ajax-validate').find('.fieldset-required').length != 1) {
+				// Wait half a second, then clear the timer and send the AJAX request
+				timer = setTimeout(function() {
+					clearTimeout(timer);
 
-				// Rich text wrappers validate when focus leaves the editor so we don't
-				// fire repeated requests while typing in contenteditable areas.
-				if (field.is('div.redactor-styles, div.ck-content')) {
-					return false;
-				} else {
+					// Skip non‑RTE textareas
+					if (field.is('textarea') && field.is('textarea:not(.rte-textarea)')) {
+						return false;
+					}
+
+					// Skip rich text editor contenteditable wrappers
+					if (field.is('div.redactor-styles, div.ck-content')) {
+						return false;
+					}
+
 					that._sendAjaxRequest(field);
-				}
-			}, 500);
+				}, 500);
+			}
 		});
 	}
 }

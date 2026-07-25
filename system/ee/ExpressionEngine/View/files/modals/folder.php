@@ -1,7 +1,7 @@
 <div class="modal-wrap modal-wrap--small <?=$name?> hidden">
     <div class="modal modal--no-padding dialog dialog--danger">
 
-        <?=form_open($form_url, '', (isset($hidden)) ? $hidden : array())?>
+        <?=form_open($form_url, 'class="ajax-validate"', (isset($hidden)) ? $hidden : array())?>
         <div class="dialog__header">
             <h2 class="dialog__title"><?=isset($title) ? $title : lang('new_folder') ?></h2>
             <div class="dialog__close js-modal-close"><i class="fal fa-times"></i></div>
@@ -25,9 +25,13 @@
               </div>
             </fieldset>
 
-            <fieldset>
-                <label for="folder_name"><?= lang('folder_name') ?></label>
-                <input id="folder_name" type="text" name="folder_name" autocomplete="off">
+            <fieldset class="fieldset-required">
+                <div class="field-instruct ">
+                    <label for="folder_name"><?= lang('folder_name') ?></label>
+                </div>
+                <div class="field-control">
+                    <input id="folder_name" type="text" name="folder_name" autocomplete="off">
+                </div>
             </fieldset>
         </div>
 
