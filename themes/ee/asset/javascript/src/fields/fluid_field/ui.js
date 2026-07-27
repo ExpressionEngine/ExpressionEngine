@@ -24,6 +24,187 @@
 			$(this).attr('data-field-count', savedFluidItems);
 		});
 
+		// Persist Fluid expand/collapse across Save when enabled via
+		// Hidden Configuration Variable - fluid_field_persist_collapse => y/n
+		var fluidPersistCollapse = (
+			typeof EE !== 'undefined' &&
+			EE.publish &&
+			EE.publish.fluid_persist_collapse
+		);
+		var persistFluidCollapseState = function() {};
+
+		if (fluidPersistCollapse) {
+			var getEntryId = function() {
+				if (typeof EE !== 'undefined' && EE.publish && EE.publish.entry_id) {
+					return String(EE.publish.entry_id);
+				}
+
+				var href = window.location.href;
+				var match = href.match(/publish\/edit\/entry\/(\d+)/);
+
+				if (match) {
+					return match[1];
+				}
+
+				var action = $('.form-standard > form').attr('action') || '';
+				match = action.match(/publish\/edit\/entry\/(\d+)/);
+
+				return match ? match[1] : null;
+			};
+
+			var getUserId = function() {
+				if (typeof EE !== 'undefined' && EE.user_id) {
+					return String(EE.user_id);
+				}
+
+				return 'anon';
+			};
+
+			var getFluidFieldKey = function($fluid) {
+				var $fieldset = $fluid.closest('fieldset[id^="fieldset-"]');
+
+				if ($fieldset.length) {
+					return $fieldset.attr('id').replace(/^fieldset-/, '');
+				}
+
+				var name = $fluid.find('.js-sorting-container .fluid__item :input[name]').first().attr('name') || '';
+				var match = name.match(/^([^\[\]]+)/);
+
+				return match ? match[1] : 'fluid';
+			};
+
+			// Use descendant query: malformed field-instruction HTML can nest later
+			// Fluid rows under an <em>, so direct-child selectors miss them.
+			var getFluidItems = function($fluid) {
+				return $fluid.find('.js-sorting-container .fluid__item').filter(function() {
+					return ! $(this).closest('.fluid-field-templates').length;
+				});
+			};
+
+			var getFluidItemId = function($item) {
+				var name = $item.find(':input[name*="[fields]"]').first().attr('name') || '';
+				var match = name.match(/\[(field_\d+|new_field_\d+)\]/);
+
+				if (match) {
+					return match[1];
+				}
+
+				// Best-effort fallback: position within this Fluid field (fragile on reorder)
+				var $items = getFluidItems($item.closest('.fluid'));
+				var index = $items.index($item);
+
+				return index >= 0 ? 'index_' + index : null;
+			};
+
+			var getStorageKey = function($fluid) {
+				var entryId = getEntryId();
+
+				if ( ! entryId) {
+					return null;
+				}
+
+				return [
+					'ee:fluidCollapse',
+					getUserId(),
+					entryId,
+					getFluidFieldKey($fluid)
+				].join(':');
+			};
+
+			var readCollapsedIds = function($fluid) {
+				var key = getStorageKey($fluid);
+
+				if ( ! key || typeof localStorage === 'undefined') {
+					return null;
+				}
+
+				try {
+					var raw = localStorage.getItem(key);
+
+					if ( ! raw) {
+						return [];
+					}
+
+					var data = JSON.parse(raw);
+
+					if ($.isArray(data)) {
+						return data;
+					}
+
+					if (data && $.isArray(data.collapsed)) {
+						return data.collapsed;
+					}
+				} catch (err) {}
+
+				return [];
+			};
+
+			var writeCollapsedIds = function($fluid, collapsedIds) {
+				var key = getStorageKey($fluid);
+
+				if ( ! key || typeof localStorage === 'undefined') {
+					return;
+				}
+
+				try {
+					localStorage.setItem(key, JSON.stringify({
+						collapsed: collapsedIds
+					}));
+				} catch (err) {}
+			};
+
+			persistFluidCollapseState = function($fluid) {
+				if ( ! $fluid || ! $fluid.length) {
+					return;
+				}
+
+				var collapsedIds = [];
+
+				getFluidItems($fluid).each(function() {
+					var $item = $(this);
+
+					if ( ! $item.hasClass('fluid__item--collapsed')) {
+						return;
+					}
+
+					var itemId = getFluidItemId($item);
+
+					if (itemId) {
+						collapsedIds.push(itemId);
+					}
+				});
+
+				writeCollapsedIds($fluid, collapsedIds);
+			};
+
+			var restoreFluidCollapseState = function($fluid) {
+				var collapsedIds = readCollapsedIds($fluid);
+
+				if (collapsedIds === null || ! collapsedIds.length) {
+					return;
+				}
+
+				var collapsedMap = {};
+
+				$.each(collapsedIds, function(i, id) {
+					collapsedMap[id] = true;
+				});
+
+				getFluidItems($fluid).each(function() {
+					var $item = $(this);
+					var itemId = getFluidItemId($item);
+
+					if (itemId && collapsedMap[itemId]) {
+						$item.addClass('fluid__item--collapsed');
+					}
+				});
+			};
+
+			$('.fluid').each(function() {
+				restoreFluidCollapseState($(this));
+			});
+		}
+
 		var addField = function(e) {
 			var fluidField   = $(this).closest('.fluid'),
 				fieldToAdd   = $(this).data('field-name'),
@@ -81,7 +262,8 @@
 
 		$('.fluid').on('click', 'a.js-fluid-remove', function(e) {
 			var el = $(this).closest('.fluid__item');
-			var fluidCount = $(this).parents('.fluid').attr('data-field-count');
+			var $fluid = $(this).closest('.fluid');
+			var fluidCount = $fluid.attr('data-field-count');
 
             // If we removed a field group fire 'remove' events on all of its fields
             if ($(el).data('field-type') == 'field_group') {
@@ -95,16 +277,21 @@
 
 			if (fluidCount > 0) {
 				fluidCount--;
-				el.parents('.fluid').attr('data-field-count', fluidCount);
+				$fluid.attr('data-field-count', fluidCount);
 			}
 
 			el.remove();
+			persistFluidCollapseState($fluid);
 			e.preventDefault();
 		});
 
 		// Toggle fluid item
 		$('.fluid').on('click', '.js-toggle-fluid-item', function() {
-			$(this).parents('.fluid__item').toggleClass('fluid__item--collapsed');
+			var $item = $(this).closest('.fluid__item');
+			var $fluid = $(this).closest('.fluid');
+
+			$item.toggleClass('fluid__item--collapsed');
+			persistFluidCollapseState($fluid);
 
 			// Hide the dropdown menu
 			$('.js-dropdown-toggle.dropdown-open').trigger('click');
@@ -114,7 +301,10 @@
 
 		// Hide all fluid items
 		$('.fluid').on('click', '.js-hide-all-fluid-items', function() {
-			$(this).parents('.fluid').find('.js-sorting-container .fluid__item').addClass('fluid__item--collapsed');
+			var $fluid = $(this).closest('.fluid');
+
+			$fluid.find('.js-sorting-container .fluid__item').addClass('fluid__item--collapsed');
+			persistFluidCollapseState($fluid);
 
 			// Hide the dropdown menu
 			$('.js-dropdown-toggle.dropdown-open').trigger('click');
@@ -124,7 +314,10 @@
 
 		// Show all fluid items
 		$('.fluid').on('click', '.js-show-all-fluid-items', function() {
-			$(this).parents('.fluid').find('.js-sorting-container .fluid__item').removeClass('fluid__item--collapsed');
+			var $fluid = $(this).closest('.fluid');
+
+			$fluid.find('.js-sorting-container .fluid__item').removeClass('fluid__item--collapsed');
+			persistFluidCollapseState($fluid);
 
 			// Hide the dropdown menu
 			$('.js-dropdown-toggle.dropdown-open').trigger('click');

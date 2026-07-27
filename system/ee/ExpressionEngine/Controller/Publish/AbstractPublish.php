@@ -121,6 +121,12 @@ abstract class AbstractPublish extends CP_Controller
             'publish.field.URL' => ee('CP/URL', 'publish/field/' . $channel_id . '/' . $entry_id)->compile(),
             'publish.url_title_prefix' => $entry->Channel->url_title_prefix,
             'publish.which' => ($entry_id) ? 'edit' : 'new',
+            'publish.entry_id' => (int) $entry_id,
+            // Hidden Configuration Variables (y/n):
+            //   fluid_field_persist_collapse - remember Fluid item expand/collapse across Save
+            //   publish_persist_scroll - restore publish form scroll position after Save
+            'publish.fluid_persist_collapse' => bool_config_item('fluid_field_persist_collapse'),
+            'publish.persist_scroll' => bool_config_item('publish_persist_scroll'),
             'publish.word_separator' => ee()->config->item('word_separator') != "dash" ? '_' : '-',
             'publish.has_conditional_fields' => $usesConditionalFields,
             'user.can_edit_html_buttons' => ee('Permission')->can('edit_html_buttons'),
