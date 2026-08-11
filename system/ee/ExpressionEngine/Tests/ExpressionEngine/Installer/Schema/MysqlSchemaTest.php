@@ -169,6 +169,19 @@ class MysqlSchemaTest extends TestCase
         );
     }
 
+    /**
+     * Ensure fresh installations store a year that is resolved at render time.
+     *
+     * @return void
+     */
+    public function testPostInstallMessageTemplateUsesDynamicCopyrightYear()
+    {
+        $template = \post_install_message_template();
+
+        $this->assertStringContainsString('&copy;{current_time format="%Y"}', $template);
+        $this->assertDoesNotMatchRegularExpression('/&copy;\d{4}/', $template);
+    }
+
     private function makeSchemaFixture(MysqlSchemaDbMock $db): \EE_Schema
     {
         $schema = new class extends \EE_Schema {
