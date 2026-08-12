@@ -517,6 +517,7 @@ context('Publish Entry', () => {
         cy.get('p').contains('has been created')
 
         cy.visit('admin.php?/cp/publish/edit/entry/1')
+        cy.viewport(1400, 900)
         cy.get('.grid-field tbody [rel=add_row]').should('be.visible');
         cy.get('.grid-field [rel=add_row]:visible').click();
         cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(0).find('input').type('row 1');
@@ -529,6 +530,23 @@ context('Publish Entry', () => {
         cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("quatro")').should('not.have.class', 'active')
         cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("cinco")').should('have.class', 'active')
 
+        cy.get('label:contains("Grid with Buttons")').parents('.fieldset-faux').find('.grid-field.entry-grid').should('not.have.class', 'overwidth')
+        cy.viewport(700, 900)
+        cy.get('label:contains("Grid with Buttons")').parents('.fieldset-faux').find('.grid-field.entry-grid').should('have.class', 'overwidth')
+        cy.get('label:contains("Grid with Buttons")').parents('.fieldset-faux').find('.grid-field.entry-grid .grid-field__item-fieldset').should('be.visible')
+        cy.viewport(1400, 900)
+        cy.get('label:contains("Grid with Buttons")').parents('.fieldset-faux').find('.grid-field.entry-grid').should('not.have.class', 'overwidth')
+        cy.get('label:contains("Grid with Buttons")').parents('.fieldset-faux').find('.grid-field.entry-grid .grid-field__item-fieldset').should('not.be.visible')
+
+        // Saving while overwidth must preserve the final auto layout on the
+        // next initialization, without leaving a stale inline visibility.
+        cy.viewport(700, 900)
+        cy.get('label:contains("Grid with Buttons")').parents('.fieldset-faux').find('.grid-field.entry-grid').should('have.class', 'overwidth')
+        cy.get('body').type('{ctrl}', {release: false}).type('s')
+        cy.get('p').contains('has been updated')
+        cy.reload()
+        cy.get('label:contains("Grid with Buttons")').parents('.fieldset-faux').find('.grid-field.entry-grid').should('have.class', 'overwidth').invoke('css', 'visibility').should('not.equal', 'hidden')
+
         cy.get('body').type('{ctrl}', {release: false}).type('s')
         cy.get('p').contains('has been updated')
         cy.get('.grid-field tbody tr:visible td:visible').eq(0).find('input').invoke('attr', 'value').then((val) => {
@@ -538,6 +556,24 @@ context('Publish Entry', () => {
         cy.get('.grid-field tbody tr:visible td:visible').eq(1).find('.button:contains("tres")').should('have.class', 'active')
         cy.get('.grid-field tbody tr:visible td:visible').eq(2).find('.button:contains("quatro")').should('not.have.class', 'active')
         cy.get('.grid-field tbody tr:visible td:visible').eq(2).find('.button:contains("cinco")').should('have.class', 'active')
+
+        cy.authVisit('admin.php?/cp/fields')
+        cy.get('.tbl-ctrls .list-item .list-item__content:contains("Grid with Buttons")').click()
+        cy.get('input[name="vertical_layout"][value="y"]:visible').check()
+        cy.get('body').type('{ctrl}', {release: false}).type('s')
+        cy.get('p').contains('has been updated')
+        cy.visit('admin.php?/cp/publish/edit/entry/1')
+        cy.get('label:contains("Grid with Buttons")').parents('.fieldset-faux').find('.grid-field.vertical-layout').should('exist')
+        cy.get('label:contains("Grid with Buttons")').parents('.fieldset-faux').find('.grid-field').should('not.have.class', 'overwidth')
+
+        cy.authVisit('admin.php?/cp/fields')
+        cy.get('.tbl-ctrls .list-item .list-item__content:contains("Grid with Buttons")').click()
+        cy.get('input[name="vertical_layout"][value="horizontal"]:visible').check()
+        cy.get('body').type('{ctrl}', {release: false}).type('s')
+        cy.get('p').contains('has been updated')
+        cy.visit('admin.php?/cp/publish/edit/entry/1')
+        cy.get('label:contains("Grid with Buttons")').parents('.fieldset-faux').find('.grid-field.horizontal-layout').should('exist')
+        cy.get('label:contains("Grid with Buttons")').parents('.fieldset-faux').find('.grid-field').should('not.have.class', 'overwidth')
 
         cy.visit('index.php/entries/grid')
         cy.hasNoErrors()
@@ -584,6 +620,23 @@ context('Publish Entry', () => {
 
         cy.get('label:contains("Sliderbilder")').parents('.fieldset-faux').find('.js-file-grid table.grid-field__table tbody tr:visible').should('have.length', 2)
 
+        cy.get('label:contains("Sliderbilder")').parents('.fieldset-faux').find('.grid-field.entry-grid').should('not.have.class', 'overwidth')
+        cy.viewport(700, 900)
+        cy.get('label:contains("Sliderbilder")').parents('.fieldset-faux').find('.grid-field.entry-grid').should('have.class', 'overwidth')
+        cy.get('label:contains("Sliderbilder")').parents('.fieldset-faux').find('.grid-field.entry-grid .grid-field__item-fieldset').should('be.visible')
+        cy.viewport(1400, 900)
+        cy.get('label:contains("Sliderbilder")').parents('.fieldset-faux').find('.grid-field.entry-grid').should('not.have.class', 'overwidth')
+        cy.get('label:contains("Sliderbilder")').parents('.fieldset-faux').find('.grid-field.entry-grid .grid-field__item-fieldset').should('not.be.visible')
+
+        // File Grid uses the same Grid instance, including saved auto-layout
+        // initialization and its no-paint row insertion path.
+        cy.viewport(700, 900)
+        cy.get('label:contains("Sliderbilder")').parents('.fieldset-faux').find('.grid-field.entry-grid').should('have.class', 'overwidth')
+        cy.get('body').type('{ctrl}', {release: false}).type('s')
+        cy.get('p').contains('has been updated')
+        cy.reload()
+        cy.get('label:contains("Sliderbilder")').parents('.fieldset-faux').find('.grid-field.entry-grid').should('have.class', 'overwidth').invoke('css', 'visibility').should('not.equal', 'hidden')
+
         cy.visit('index.php/entries/file-grid')
         cy.hasNoErrors()
         cy.logFrontendPerformance()
@@ -603,6 +656,10 @@ context('Publish Entry', () => {
 
         cy.visit('admin.php?/cp/publish/edit/entry/1')
         cy.get('.js-file-grid table.grid-field__table tbody tr:visible').first().find('a.remove').click();
+        cy.viewport(700, 900)
+        cy.get('.js-file-grid .grid-field.entry-grid').should('have.class', 'overwidth')
+        cy.viewport(1400, 900)
+        cy.get('.js-file-grid .grid-field.entry-grid').should('not.have.class', 'overwidth')
         cy.get('body').type('{ctrl}', {release: false}).type('s')
 
         cy.visit('index.php/entries/file-grid')
