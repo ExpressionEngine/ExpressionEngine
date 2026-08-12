@@ -513,7 +513,7 @@ context('Publish Entry', () => {
         cy.get('[name="grid[cols][new_2][col_settings][field_pre_populate]"][value="n"]:visible').check()
         cy.get('[name="grid[cols][new_2][col_settings][field_list_items]"]:visible').type('quatro{enter}cinco{enter}seis')
 
-        cy.get('body').type('{ctrl}', {release: false}).type('s')
+        cy.get('button[value="save"]:visible').first().click()
         cy.get('p').contains('has been created')
 
         cy.visit('admin.php?/cp/publish/edit/entry/1')
@@ -600,7 +600,7 @@ context('Publish Entry', () => {
         cy.get('.fields-grid-setup:visible [rel=add_new]').last().click()
         cy.get('[name="file_grid[cols][new_1][col_label]"]:visible').type("Slidertext")
 
-        cy.get('body').type('{ctrl}', {release: false}).type('s')
+        cy.get('button[value="save"]:visible').first().click()
         cy.get('p').contains('has been created')
 
         cy.visit('admin.php?/cp/publish/edit/entry/1')
