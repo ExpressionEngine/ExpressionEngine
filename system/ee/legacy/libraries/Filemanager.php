@@ -1319,7 +1319,16 @@ class Filemanager
                     ($prefs['width'] < $size['width'] && $prefs['height'] < $size['height'])
                 ) or
                 $size['resize_type'] == 'none') {
-                $config['new_image'] = $config['source_image'];
+                  // Copy into this manipulation's own temp file rather than aliasing onto                                                                                                                                                                   
+                  // the shared source, otherwise the in-place watermark below contaminates                                                                                                                                                                  
+                  // the source that every later manipulation (including 'thumbs') resizes from.                                                                                                                                                             
+                  if (! @copy($config['source_image'], $new['path'])) {                                                                                                                                                                                      
+                      log_message('error', 'Image Copy Failed: ' . $prefs['file_name']);                                                                                                                                                                     
+                                                                                                                                                                                                                                                             
+                      return false;                                                                                                                                                                                                                          
+                  }                                                                                                                                                                                                                                          
+                                                                                                                                                                                                                                                             
+                  $config['new_image'] = $new['path'];
             } elseif (isset($size['resize_type']) and $size['resize_type'] == 'crop') {
                 // Scale the larger dimension up so only one dimension of our
                 // image fits within the desired dimension
