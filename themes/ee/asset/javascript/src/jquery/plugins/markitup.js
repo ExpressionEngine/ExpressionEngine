@@ -68,6 +68,45 @@
 		$.browser = browser;
 	}
 
+	// Bullet glyphs are unambiguous, so the trailing space is optional. ASCII
+	// markers are not, so "*emphasis* text" keeps its asterisk and "3.5 GPA"
+	// keeps its number.
+	function stripListMarker(line) {
+		return line
+			.replace(/^(?:&bull;|&#8226;|&middot;|&#183;|[\u00b7\u2022\u2023\u2043\u2219\u25aa\u25ab\u25cb\u25cf\u25e6])\s*/, '')
+			.replace(/^(?:[-*+\u2013\u2014]|\d+[.)])\s+/, '');
+	}
+
+	// Local customization: a <ul>/<ol> button applied to a selection that has no
+	// list items yet turns each line of that selection into its own <li>.
+	function autoListItems(openWith, content) {
+		if (!/^\s*<(ul|ol)\b/i.test(openWith || '')) {
+			return content;
+		}
+		if (content === '' || /<li\b/i.test(content)) {
+			return content;
+		}
+
+		var items = content
+			.split(/\r?\n|<br\s*\/?>/i)
+			.map(function(line) {
+				line = line.replace(/^\s+|\s+$/g, '')
+					.replace(/^<p\b[^>]*>([\s\S]*)<\/p>$/i, '$1')
+					.replace(/^\s+|\s+$/g, '');
+
+				return stripListMarker(line).replace(/^\s+/, '');
+			})
+			.filter(function(line) {
+				return line !== '';
+			});
+
+		if (!items.length) {
+			return content;
+		}
+
+		return '<li>' + items.join('</li>\n<li>') + '</li>';
+	}
+
 	$.fn.markItUp = function(settings, extraSettings) {
 		var options, ctrlKey, shiftKey, altKey;
 		ctrlKey = shiftKey = altKey = false;
@@ -306,7 +345,13 @@
 				} else if (selection === '' && placeHolder !== '') {
 					block = openWith + placeHolder + closeWith;
 				} else {
-					block = openWith + (string||selection) + closeWith;
+					var content = (string||selection);
+					// Multi-insert calls build() once per line, which would wrap every
+					// line in its own list.
+					if (!(ctrlKey === true && shiftKey === true)) {
+						content = autoListItems(openWith, content);
+					}
+					block = openWith + content + closeWith;
 				}
 				return {	block:block,
 							openWith:openWith,
