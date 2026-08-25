@@ -509,6 +509,20 @@ class Rte_ft extends EE_Fieldtype
     }
 
     /**
+     * Replace a Pro Variables tag.
+     *
+     * @param string $data field data
+     * @param array $params field parameters
+     * @param string $tagdata template data
+     *
+     * @return string $data parsed field data
+     */
+    public function var_replace_tag($data, $params = array(), $tagdata = false)
+    {
+        return $this->replace_tag($this->pre_process($data), $params, $tagdata);
+    }
+
+    /**
      * Returns true if content type is accepted.
      *
      * @param string $name
