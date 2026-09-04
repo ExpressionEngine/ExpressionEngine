@@ -671,7 +671,10 @@ class EE_Relationship_data_parser
             foreach ($order_by as &$k) {
                 $k = ($k == 'date') ? 'entry_date' : $k;
 
-                $columns[$k][] = strtolower((string) $data[$k]);
+                // Related entries can come from channels that do not have the
+                // orderby field assigned (e.g. {parents} spanning channels), so
+                // the key may be missing entirely.
+                $columns[$k][] = isset($data[$k]) ? strtolower((string) $data[$k]) : '';
             }
 
             $columns['rel_order'][] = $rel_order;
