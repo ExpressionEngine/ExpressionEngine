@@ -71,6 +71,32 @@ class EE_TemplateParseLayoutVariablesTest extends EE_TemplateTestBase
     }
 
     /**
+     * Parse layout loop variables even when a previous loop did not use them.
+     *
+     * @return void
+     */
+    public function testParseLayoutVariablesIgnoresPreviousLoopMissingVariables()
+    {
+        ee()->setMock('Variables/Parser', new \ExpressionEngine\Service\Template\Variables\LegacyParser());
+
+        $this->template->parse_variables_row('{item}', [
+            'item' => 'Rock',
+            'index' => 0,
+            'count' => 1,
+        ]);
+
+        $result = $this->template->parseLayoutVariables(
+            "{layout:labels}{index}:{count}:{value}:{layout:paths index='{index}'};{/layout:labels}",
+            [
+                'labels' => ['Directory', 'Entry'],
+                'paths' => ['directory', 'entry'],
+            ]
+        );
+
+        $this->assertSame('0:1:Directory:directory;1:2:Entry:entry;', $result);
+    }
+
+    /**
      * Test parseLayoutVariables handles undefined variables
      */
     public function testParseLayoutVariablesHandlesUndefinedVariables()
