@@ -698,6 +698,7 @@ class EE_Template
     {
         $this->log_item("Layout Variables:", $layout_vars);
         $this->layout_conditionals = [];
+        $this->unfound_vars = [];
         $layout_conditionals = [];
 
         // get all the declared layout variables (excluding layout:contents)
