@@ -705,7 +705,7 @@ class Grid_lib
      * Given POSTed column settings, adds new columns to the database and
      * figures out if any columns need deleting
      *
-     * @param array POSTed column settings from field settings page
+     * @param array $settings POSTed column settings from the field settings page.
      * @return void
      */
     public function apply_settings($settings)
@@ -725,9 +725,8 @@ class Grid_lib
 
         // Go through ALL posted columns for this field
         foreach ($settings['grid']['cols'] as $col_field => $column) {
-            // Attempt to get the column ID; if the field name contains 'new_',
-            // it's a new field, otherwise extract column ID
-            if (defined('CLONING_MODE') && CLONING_MODE === true) {
+            // Clone retries can lose CLONING_MODE, but new tables still need independent columns.
+            if ($new_field || (defined('CLONING_MODE') && CLONING_MODE === true)) {
                 $col_field = 'new_' . str_replace('col_id_', '', $col_field);
             }
             $column['col_id'] = (strpos($col_field, 'new_') === false)
