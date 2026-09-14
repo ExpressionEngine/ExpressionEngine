@@ -35,7 +35,7 @@
 
                         echo $form;
                     ?>
-                    <?php isset($errors) ? $errors->renderError($field_name) : '' ?>
+                    <?= isset($errors) ? $errors->renderError($field_name) : '' ?>
                 </div>
             <?php endif; ?>
         <?php endforeach; ?>
