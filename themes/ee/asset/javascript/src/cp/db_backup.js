@@ -159,7 +159,7 @@ EE.cp.DbBackup = {
 		for (var key in table_counts) {
 			if (table_counts.hasOwnProperty(key)) {
 				if (key == response.table_name) {
-					progress += parseInt(response.offset);
+					progress += Math.min(parseInt(response.offset), table_counts[key]);
 					break;
 				} else {
 					progress += parseInt(table_counts[key]);
