@@ -245,18 +245,12 @@ class EE_Config
     }
 
     /**
-     * Site Preferences
+     * Load site preferences, optionally replacing the active configuration.
      *
-     * This function lets us retrieve Multi-site Manager configuration
-     * items from the database
-     *
-     * @access  public
-     * @param   string  Name of the site
-     * @param   int     ID of the site
-     * @param   boolean Whether or not this method should mutate the current
-     *   global config; when false, will just return the config for the
-     *   specified site
-     * @return  void
+     * @param string $site_name Name of the site.
+     * @param int $site_id ID of the site.
+     * @param bool $mutating Whether to replace the active configuration.
+     * @return array|void
      */
     public function site_prefs($site_name, $site_id = 1, $mutating = true)
     {
@@ -356,7 +350,7 @@ class EE_Config
 
         $config['email_newline_form_safe'] = $config['email_newline'];
         $config['email_newline'] = $this->setEmailNewline($config['email_newline']);
-        $config['email_crlf'] = $this->setEmailNewline($config['email_crlf'] ?? '');
+        $config['email_crlf'] = $this->setEmailNewline($config['email_crlf'] ?? $config['email_newline']);
 
         if ($mutating) {
             $this->config = $config;
