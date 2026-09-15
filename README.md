@@ -4,21 +4,19 @@
 
 # ExpressionEngine CMS
 
-ExpressionEngine is an open-source CMS for developers and agencies building custom websites. Model your content with Channels and custom fields, then publish it through templates you control.
+ExpressionEngine is an open-source CMS for developers and agencies building custom websites.
 
 **[Get started](#how-to-install) · [Documentation](https://docs.expressionengine.com/latest/) · [Community](#help-and-resources)**
 
 ## Why ExpressionEngine?
 
-- **Custom content structures:** [Channels](https://docs.expressionengine.com/latest/getting-started/the-big-picture.html#channels), custom fields, and relationships let you define content around your project, from news articles to staff profiles and product catalogs.
-- **Control over the frontend:** Write your own HTML and insert ExpressionEngine tags to display content, keeping control of your site's markup and design.
-- **Tools for content authors:** Publishing layouts organize editing fields; rich text editing and live preview help authors prepare content and check it in the site's design.
-- **Member management:** Roles and permissions let you manage different types of users and control their access to content and administration tools.
-- **Extensibility:** Use add-ons or build your own with documented [extension points](https://docs.expressionengine.com/latest/development/addon-development-overview.html) to meet project-specific needs.
+- **Model your content:** Define content types, called [Channels](https://docs.expressionengine.com/latest/getting-started/the-big-picture.html#channels), with custom fields and relationships for articles, staff profiles, or products.
+- **Bring your own HTML:** Add template tags to your markup to publish content in any design.
+- **Tailor the editing experience:** Arrange fields with publishing layouts, edit rich text, and preview changes in your site's design.
+- **Manage member access:** Use roles and permissions to control access to content and administration tools.
+- **Extend your site:** Browse [add-ons](https://expressionengine.com/add-ons) or [build your own](https://docs.expressionengine.com/latest/development/addon-development-overview.html).
 
 ## Your markup, powered by your content
-
-Channels organize content into entries with fields you define. Templates determine how that content appears.
 
 Connect your code to your content with simple template tags:
 
@@ -31,28 +29,18 @@ Connect your code to your content with simple template tags:
 {/exp:channel:entries}
 ```
 
-Here, `news` is a Channel and `summary` is a custom field. See the [Channel Entries documentation](https://docs.expressionengine.com/latest/channels/entries.html) for filtering and display options.
+This displays up to three entries from the `news` Channel. `summary` is a custom field. See [Channel Entries](https://docs.expressionengine.com/latest/channels/entries.html) for more options.
 
 ## How to install
 
-**For a new website, start with a packaged release.** It includes the dependencies needed to run ExpressionEngine.
+ExpressionEngine is a self-hosted PHP/MySQL application. Check the [system requirements](https://docs.expressionengine.com/latest/installation/requirements.html) before getting started.
 
-1. [Download ExpressionEngine](https://expressionengine.com/#ee-download) from the official website and extract the ZIP.
-2. Create an empty database, keep its connection details handy, and upload the extracted files to your site's root directory.
-3. Set the [required writable-file and directory permissions](https://docs.expressionengine.com/latest/installation/installation.html#3-set-file-permissions) for your server.
-4. Open `/admin.php` on your site and complete the installation wizard.
-5. Remove or rename `system/ee/installer/` as described in the [installation guide](https://docs.expressionengine.com/latest/installation/installation.html), then follow the [post-installation security steps](https://docs.expressionengine.com/latest/installation/best-practices.html).
+**[Download a packaged release](https://expressionengine.com/#ee-download)** with dependencies included, then follow the [installation guide](https://docs.expressionengine.com/latest/installation/installation.html) and [post-installation security steps](https://docs.expressionengine.com/latest/installation/best-practices.html).
 
-### System requirements
-
-ExpressionEngine is a self-hosted PHP/MySQL application. Check the [EE 7 system requirements](https://docs.expressionengine.com/latest/installation/requirements.html) for supported versions, required PHP extensions, and a server compatibility wizard before choosing hosting.
-
-After installation, read [The Big Picture](https://docs.expressionengine.com/latest/getting-started/the-big-picture.html) for the content and template model, or watch the [10-minute ExpressionEngine Primer](https://www.youtube.com/watch?v=qKaOirMRz2s) for a guided introduction.
-
-### Repository installation
+New to ExpressionEngine? Read [The Big Picture](https://docs.expressionengine.com/latest/getting-started/the-big-picture.html) for an introduction to Channels and templates.
 
 <details>
-<summary>Installing from source</summary>
+<summary>Source installation and previous versions</summary>
 
 The `7.dev` branch contains development toward the next EE 7 release. For a released installation, use the packaged download above.
 
@@ -82,9 +70,9 @@ The `7.dev` branch contains development toward the next EE 7 release. For a rele
 6. Visit `/admin.php` on your site and complete installation.
 7. Restore `EE_INSTALL_MODE=FALSE`, remove or rename `system/ee/installer/`, and follow the post-installation security steps linked above.
 
-</details>
-
 **Previous versions:** [GitHub Releases](https://github.com/ExpressionEngine/ExpressionEngine/releases) lists earlier releases. Its source ZIP and tar archives require the source-installation workflow above; use the extracted directory instead of cloning, and check that version's README for its build prerequisites.
+
+</details>
 
 ## Help and resources
 
