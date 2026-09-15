@@ -4,7 +4,7 @@
 
 # ExpressionEngine CMS
 
-ExpressionEngine is an open-source CMS for developers and agencies building custom websites. Define your content, bring your own HTML, and give editors a publishing experience tailored to the site.
+ExpressionEngine is a self-hosted, open-source PHP CMS for developers and agencies building custom websites. Define your content, bring your own HTML, and give editors a publishing experience tailored to the site.
 
 **[Get started](#how-to-install) · [Documentation](https://docs.expressionengine.com/latest/) · [Community](#help-and-resources)**
 
@@ -31,7 +31,7 @@ Connect your code to your content with simple template tags:
 
 This displays up to three entries from the `news` Channel. `summary` is a custom field. See [Channel Entries](https://docs.expressionengine.com/latest/channels/entries.html) for more options.
 
-**Build with your preferred AI coding assistant.** Work with [templates as files](https://docs.expressionengine.com/latest/templates/overview.html#saving-templates-as-files) in your editor, and use your assistant to draft templates, adapt layouts, and connect your HTML to Channels and custom fields.
+Work with [template files](https://docs.expressionengine.com/latest/templates/overview.html#saving-templates-as-files) in your editor, with ExpressionEngine documentation available through [Context7](https://context7.com/expressionengine/expressionengine-user-guide) for compatible AI assistants.
 
 Learn [how Channels and templates work together](https://docs.expressionengine.com/latest/getting-started/the-big-picture.html).
 
