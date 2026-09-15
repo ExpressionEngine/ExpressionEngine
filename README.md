@@ -4,7 +4,7 @@
 
 # ExpressionEngine CMS
 
-ExpressionEngine is an open-source CMS for developers and agencies building custom websites.
+ExpressionEngine is an open-source CMS for developers and agencies building custom websites. Define your content, bring your own HTML, and give editors a publishing experience tailored to the site.
 
 **[Get started](#how-to-install) · [Documentation](https://docs.expressionengine.com/latest/) · [Community](#help-and-resources)**
 
@@ -12,8 +12,8 @@ ExpressionEngine is an open-source CMS for developers and agencies building cust
 
 - **Model your content:** Define content types, called [Channels](https://docs.expressionengine.com/latest/getting-started/the-big-picture.html#channels), with custom fields and relationships for articles, staff profiles, or products.
 - **Bring your own HTML:** Add template tags to your markup to publish content in any design.
-- **Tailor the editing experience:** Arrange fields with publishing layouts, edit rich text, and preview changes in your site's design.
-- **Manage member access:** Use roles and permissions to control access to content and administration tools.
+- **Edit content in context:** Update content directly on your website with [front-end editing](https://docs.expressionengine.com/latest/advanced-usage/front-end/overview.html), or use tailored publishing layouts and live preview in the control panel.
+- **Built with security in mind:** Granular permissions, [multi-factor authentication](https://docs.expressionengine.com/latest/member/mfa.html), and ongoing security updates help protect your site and its users.
 - **Extend your site:** Browse [add-ons](https://expressionengine.com/add-ons) or [build your own](https://docs.expressionengine.com/latest/development/addon-development-overview.html).
 
 ## Your markup, powered by your content
@@ -31,13 +31,15 @@ Connect your code to your content with simple template tags:
 
 This displays up to three entries from the `news` Channel. `summary` is a custom field. See [Channel Entries](https://docs.expressionengine.com/latest/channels/entries.html) for more options.
 
+**Build with your preferred AI coding assistant.** Work with [templates as files](https://docs.expressionengine.com/latest/templates/overview.html#saving-templates-as-files) in your editor, and use your assistant to draft templates, adapt layouts, and connect your HTML to Channels and custom fields.
+
+Learn [how Channels and templates work together](https://docs.expressionengine.com/latest/getting-started/the-big-picture.html).
+
 ## How to install
 
 ExpressionEngine is a self-hosted PHP/MySQL application. Check the [system requirements](https://docs.expressionengine.com/latest/installation/requirements.html) before getting started.
 
 **[Download a packaged release](https://expressionengine.com/#ee-download)** with dependencies included, then follow the [installation guide](https://docs.expressionengine.com/latest/installation/installation.html) and [post-installation security steps](https://docs.expressionengine.com/latest/installation/best-practices.html).
-
-New to ExpressionEngine? Read [The Big Picture](https://docs.expressionengine.com/latest/getting-started/the-big-picture.html) for an introduction to Channels and templates.
 
 <details>
 <summary>Source installation and previous versions</summary>
@@ -77,6 +79,7 @@ The `7.dev` branch contains development toward the next EE 7 release. For a rele
 ## Help and resources
 
 - **Learn:** [Documentation](https://docs.expressionengine.com/latest/) for reference material and [ExpressionEngine University](https://u.expressionengine.com/) for tutorials.
+- **Build with AI:** [ExpressionEngine documentation on Context7](https://context7.com/expressionengine/expressionengine-user-guide) for coding assistants that support it.
 - **Ask the community:** [Forums](https://expressionengine.com/forums) and the [official Slack](https://expressionengine.com/blog/join-us-in-slack) for questions and discussion.
 - **Get official help:** [ExpressionEngine Support](https://expressionengine.com/support).
 - **Report bugs:** Search existing [GitHub issues](https://github.com/ExpressionEngine/ExpressionEngine/issues), then include reproduction steps in a new report.
