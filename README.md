@@ -1,4 +1,6 @@
-<img src="https://expressionengine.com/asset/img/expressionengine-with-text.svg" alt="ExpressionEngine Logo" height="70" >
+<p align="center">
+  <img src="https://expressionengine.com/asset/img/expressionengine-with-text.svg" alt="ExpressionEngine Logo" height="70" >
+</p>
 
 # ExpressionEngine CMS
 
