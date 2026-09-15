@@ -16,13 +16,9 @@ ExpressionEngine is an open-source CMS for developers and agencies building cust
 
 ## Your markup, powered by your content
 
-Channels organize content into entries with fields you define. Templates determine how that content appears, combining your markup with ExpressionEngine tags.
+Channels organize content into entries with fields you define. Templates determine how that content appears.
 
-To try this example in a Template, first create:
-
-- A Channel with the short name `news`.
-- A [Text Input field](https://docs.expressionengine.com/latest/fieldtypes/text.html) with the short name `summary`, assigned to that Channel.
-- Published entries with titles and summaries, using the `open` status, publication dates in the past, and no expiration date.
+Write your HTML, then add ExpressionEngine tags to display your content. This example lists up to three news entries with their titles and summaries:
 
 ```html
 {exp:channel:entries channel="news" limit="3" dynamic="no"}
@@ -33,7 +29,7 @@ To try this example in a Template, first create:
 {/exp:channel:entries}
 ```
 
-The tag displays up to three entries inside your HTML, replacing `{title}` and `{summary}` with each entry's content. `dynamic="no"` keeps this listing independent of URL-based entry selection. See the [Channel Entries documentation](https://docs.expressionengine.com/latest/channels/entries.html) for filtering and display options.
+Here, `news` is a Channel and `summary` is a custom field. See the [Channel Entries documentation](https://docs.expressionengine.com/latest/channels/entries.html) for filtering and display options.
 
 ## How to install
 
