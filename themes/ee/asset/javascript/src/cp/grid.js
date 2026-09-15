@@ -1052,7 +1052,7 @@ if (typeof _ !== 'undefined' && EE.grid_cache !== 'undefined') {
 
 $(document).ready(function () {
 	FluidField.on('grid', 'add', function(el) {
-  		EE.grid($('div', el));
+		EE.grid($('.grid-field', el));
 	});
 
 	// Toggle grid item
@@ -1136,22 +1136,19 @@ function updateGridAutoLayout(grid) {
 
 	var itemFieldsets = grid.find('.grid-field__item-fieldset');
 	var originalVisibility = grid[0].style.visibility;
-	var originalOverwidth = grid.hasClass('overwidth');
 
 	grid[0].style.visibility = 'hidden';
 	grid.removeClass('overwidth').addClass('horizontal-layout');
 	itemFieldsets.hide();
 
 	var widths = getGridAutoLayoutWidths(grid);
-	var isOverwidth = widths.tableWidth > widths.containerWidth;
+	// Keep row controls accessible when collapsed or forced vertical by Live Preview.
+	var isOverwidth = widths.tableWidth > widths.containerWidth
+		|| grid.find('.grid__item--collapsed').length > 0
+		|| grid.closest('.live-preview__form-content').length > 0;
 
-	if (originalOverwidth !== isOverwidth) {
-		grid.removeClass('horizontal-layout').toggleClass('overwidth', isOverwidth);
-		itemFieldsets.toggle(isOverwidth);
-	} else {
-		grid.removeClass('horizontal-layout').toggleClass('overwidth', originalOverwidth);
-		itemFieldsets.toggle(originalOverwidth);
-	}
+	grid.removeClass('horizontal-layout').toggleClass('overwidth', isOverwidth);
+	itemFieldsets.toggle(isOverwidth);
 
 	grid[0].style.visibility = originalVisibility;
 }
