@@ -4,21 +4,22 @@
 
 # ExpressionEngine CMS
 
-ExpressionEngine is a self-hosted, open-source PHP CMS for developers and agencies building custom websites. Define your content, bring your own HTML, and give editors a publishing experience tailored to the site.
+ExpressionEngine is a self-hosted, open-source PHP CMS for developers and agencies building custom websites. Define your content and give editors a publishing experience tailored to the site.
 
 **[Get started](#how-to-install) · [Documentation](https://docs.expressionengine.com/latest/) · [Community](#help-and-resources)**
 
 ## Why ExpressionEngine?
 
 - **Model your content:** Define content types, called [Channels](https://docs.expressionengine.com/latest/getting-started/the-big-picture.html#channels), with custom fields and relationships for articles, staff profiles, or products.
-- **Bring your own HTML:** Add template tags to your markup to publish content in any design.
-- **Edit content in context:** Update content directly on your website with [front-end editing](https://docs.expressionengine.com/latest/advanced-usage/front-end/overview.html), or use tailored publishing layouts and live preview in the control panel.
+- **Simple templating:** Build custom designs with HTML and readable template tags, without writing PHP.
+- **Edit content in context:** Let editors update content directly on the website with built-in [front-end editing](https://docs.expressionengine.com/latest/advanced-usage/front-end/overview.html).
+- **Publish with confidence:** Give editors tailored publishing layouts and live preview, with [entry versioning](https://docs.expressionengine.com/latest/control-panel/create.html#revisions-tab) to revisit saved revisions.
 - **Built with security in mind:** Granular permissions, [multi-factor authentication](https://docs.expressionengine.com/latest/member/mfa.html), and ongoing security updates help protect your site and its users.
-- **Extend your site:** Browse [add-ons](https://expressionengine.com/add-ons) or [build your own](https://docs.expressionengine.com/latest/development/addon-development-overview.html).
+- **Extend your site:** Add ecommerce with [CartThrob](https://expressionengine.com/add-ons/cartthrob) or [Expresso Store](https://expressionengine.com/add-ons/expresso-store), explore other [add-ons](https://expressionengine.com/add-ons), or [build your own](https://docs.expressionengine.com/latest/development/addon-development-overview.html).
 
 ## Your markup, powered by your content
 
-Build templates with HTML and simple ExpressionEngine template tags, without writing PHP:
+Display news entries with a few template tags:
 
 ```html
 {exp:channel:entries channel="news" limit="3" dynamic="no"}
@@ -31,7 +32,7 @@ Build templates with HTML and simple ExpressionEngine template tags, without wri
 
 This displays up to three entries from the `news` Channel. `summary` is a custom field. See [Channel Entries](https://docs.expressionengine.com/latest/channels/entries.html) for more options.
 
-Work with [template files](https://docs.expressionengine.com/latest/templates/overview.html#saving-templates-as-files) in your editor, with ExpressionEngine documentation available through [Context7](https://context7.com/expressionengine/expressionengine-user-guide) for compatible AI assistants.
+Work with [template files](https://docs.expressionengine.com/latest/templates/overview.html#saving-templates-as-files) in your editor, and give compatible coding agents and AI assistants access to ExpressionEngine documentation through [Context7](https://context7.com/expressionengine/expressionengine-user-guide).
 
 Learn [how Channels and templates work together](https://docs.expressionengine.com/latest/getting-started/the-big-picture.html).
 
@@ -79,8 +80,8 @@ The `7.dev` branch contains development toward the next EE 7 release. For a rele
 ## Help and resources
 
 - **Learn:** [Documentation](https://docs.expressionengine.com/latest/) for reference material and [ExpressionEngine University](https://u.expressionengine.com/) for tutorials.
-- **Build with AI:** [ExpressionEngine documentation on Context7](https://context7.com/expressionengine/expressionengine-user-guide) for coding assistants that support it.
-- **Ask the community:** [Forums](https://expressionengine.com/forums) and the [official Slack](https://expressionengine.com/blog/join-us-in-slack) for questions and discussion.
+- **Build with AI:** [ExpressionEngine documentation on Context7](https://context7.com/expressionengine/expressionengine-user-guide) for coding agents and AI assistants that support it.
+- **Ask the community:** [Official Slack](https://expressionengine.com/blog/join-us-in-slack) and [forums](https://expressionengine.com/forums) for questions and discussion.
 - **Get official help:** [ExpressionEngine Support](https://expressionengine.com/support).
 - **Report bugs:** Search existing [GitHub issues](https://github.com/ExpressionEngine/ExpressionEngine/issues), then include reproduction steps in a new report.
 - **Report security issues privately:** Follow the [security-reporting guide](https://docs.expressionengine.com/latest/bugs-and-security-reports.html).
