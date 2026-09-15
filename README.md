@@ -18,7 +18,7 @@ ExpressionEngine is a self-hosted, open-source PHP CMS for developers and agenci
 
 ## Your markup, powered by your content
 
-Connect your code to your content with simple template tags:
+Build templates with HTML and simple ExpressionEngine template tags, without writing PHP:
 
 ```html
 {exp:channel:entries channel="news" limit="3" dynamic="no"}
