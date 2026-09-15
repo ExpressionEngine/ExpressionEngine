@@ -18,7 +18,7 @@ ExpressionEngine is an open-source CMS for developers and agencies building cust
 
 Channels organize content into entries with fields you define. Templates determine how that content appears.
 
-Write your HTML, then add ExpressionEngine tags to display your content. This example lists up to three news entries with their titles and summaries:
+Connect your site's markup to your managed content with simple, readable template tags. Add them to an existing design yourself, or ask your AI coding assistant to do it for you. This example lists up to three news entries with their titles and summaries:
 
 ```html
 {exp:channel:entries channel="news" limit="3" dynamic="no"}
