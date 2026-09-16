@@ -195,7 +195,13 @@ class ProSearchGroupLabelRegressionTest extends TestCase
         return $batches;
     }
 
-    /** @dataProvider confirmationBatches */
+    /**
+     * Preserve group labels through table rendering and removal confirmation.
+     *
+     * @param array $labels
+     * @return void
+     * @dataProvider confirmationBatches
+     */
     public function testTableAndRemovalConfirmationPreserveEveryLabel($labels): void
     {
         $rows = [];
@@ -204,11 +210,48 @@ class ProSearchGroupLabelRegressionTest extends TestCase
         }
         $this->groups->method('get_by_site')->willReturn($rows);
         $data = $this->pageData('groups');
+        $this->assertRemovalLabels($labels, $data, 'group_id[]');
+    }
+
+    /**
+     * Preserve shortcut labels through table rendering and removal confirmation.
+     *
+     * @param array $labels
+     * @return void
+     * @dataProvider confirmationBatches
+     */
+    public function testShortcutRemovalConfirmationPreservesEveryLabel($labels): void
+    {
+        $rows = [];
+        foreach ($labels as $i => $label) {
+            $rows[] = ['shortcut_id' => $i + 1, 'shortcut_label' => $label, 'shortcut_name' => 'shortcut-' . $i];
+        }
+        $this->groups->method('get_one')->willReturn(['group_id' => 7, 'group_label' => 'Editorial searches']);
+        $shortcuts = $this->stub(['get_by_group']);
+        $shortcuts->method('get_by_group')->with(7)->willReturn($rows);
+        $property = new ReflectionProperty(Pro_search_mcp::class, 'shortcuts');
+        TestReflectionHelper::makeAccessible($property);
+        $property->setValue($this->mcp, $shortcuts);
+
+        $data = $this->pageData('shortcuts', 7);
+        $this->assertRemovalLabels($labels, $data, 'shortcut_id[]');
+    }
+
+    /**
+     * Check visible labels after attribute parsing and modal HTML insertion.
+     *
+     * @param array $labels
+     * @param array $data
+     * @param string $checkboxName
+     * @return void
+     */
+    private function assertRemovalLabels(array $labels, array $data, string $checkboxName): void
+    {
         // One render, with no form_prep() reset between any of these rows.
         $document = $this->parse($this->render(PATH_ADDONS . '../View/_shared/table.php', $data['table']));
         $xpath = new DOMXPath($document);
         $cells = $xpath->query('//tbody/tr/td[2]/a');
-        $checkboxes = $xpath->query('//input[@name="group_id[]"]');
+        $checkboxes = $xpath->query('//input[@name="' . $checkboxName . '"]');
         $this->assertSame(count($labels), $cells->length);
         $this->assertSame(count($labels), $checkboxes->length);
         $items = [];
