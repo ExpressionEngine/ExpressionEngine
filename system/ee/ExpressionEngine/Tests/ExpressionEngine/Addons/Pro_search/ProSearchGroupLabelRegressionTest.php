@@ -1,6 +1,7 @@
 <?php
 
 use ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Library\CP\URL;
 use PHPUnit\Framework\TestCase;
 
 class ProSearchGroupViewReady extends RuntimeException {}
@@ -173,6 +174,33 @@ class ProSearchGroupLabelRegressionTest extends TestCase
         $document = $this->parse($this->render(PATH_ADDONS . '../View/_shared/form/field.php', [
             'field_name' => 'group_label', 'field' => $field,
             'grid' => false, // Supplied by the parent fieldset in the ordinary edit form.
+        ]));
+        $this->assertSame($label, $document->getElementsByTagName('input')->item(0)->getAttribute('value'));
+    }
+
+    /**
+     * Preserve the stored label when creating a quick link from the page title.
+     *
+     * @param string $label
+     * @return void
+     * @dataProvider labels
+     */
+    public function testShortcutPageTitlePreservesQuicklinkName($label): void
+    {
+        $this->groups->method('get_one')->willReturn(['group_id' => 7, 'group_label' => $label]);
+        $this->pageData('shortcuts', 7);
+        $this->assertSame($label, ee()->view->cp_page_title);
+
+        $url = new URL('members/profile/quicklinks/create', null, [
+            'name' => ee()->view->cp_page_title
+        ]);
+        parse_str(parse_url($url->compile(), PHP_URL_QUERY), $query);
+        $this->assertSame($label, $query['name']);
+
+        $document = $this->parse($this->render(PATH_ADDONS . '../View/_shared/form/field.php', [
+            'field_name' => 'name',
+            'field' => ['type' => 'text', 'value' => $query['name']],
+            'grid' => false,
         ]));
         $this->assertSame($label, $document->getElementsByTagName('input')->item(0)->getAttribute('value'));
     }

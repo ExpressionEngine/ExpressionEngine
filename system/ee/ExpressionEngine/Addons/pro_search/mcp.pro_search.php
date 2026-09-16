@@ -1849,7 +1849,7 @@ class Pro_search_mcp
         // Set title and breadcrumb and view page
         // --------------------------------------
 
-        $this->_set_cp_var('cp_page_title', htmlspecialchars($group['group_label'], ENT_QUOTES, 'UTF-8'));
+        $this->_set_cp_var('cp_page_title', $group['group_label']);
         $this->_set_cp_crumb($this->mcp_url(), lang('pro_search_module_name'));
         $this->_set_cp_crumb($this->mcp_url('groups'), lang('groups'));
         $this->active = 'groups';
