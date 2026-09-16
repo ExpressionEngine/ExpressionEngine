@@ -1185,7 +1185,8 @@ class Comment
             //  {url_or_email_as_author}
             elseif ($key == "url_or_email_as_author") {
                 if ($url != '') {
-                    $tagdata = ee()->TMPL->swap_var_single($val, "<a href=\"" . $url . "\">" . $name . "</a>", $tagdata);
+                    $tagdata = ee()->TMPL->swap_var_single($val, '<a href="' . htmlspecialchars($url, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8', false) . '">' .
+                        htmlspecialchars($name, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8', false) . '</a>', $tagdata);
                 } else {
                     if ($email != '') {
                         $tagdata = ee()->TMPL->swap_var_single($val, ee()->typography->encode_email($email, $name), $tagdata);
@@ -1198,7 +1199,8 @@ class Comment
             //  {url_or_email_as_link}
             elseif ($key == "url_or_email_as_link") {
                 if ($url != '') {
-                    $tagdata = ee()->TMPL->swap_var_single($val, "<a href=\"" . $url . "\">" . $url . "</a>", $tagdata);
+                    $tagdata = ee()->TMPL->swap_var_single($val, '<a href="' . htmlspecialchars($url, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8', false) . '">' .
+                        htmlspecialchars($url, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8', false) . '</a>', $tagdata);
                 } else {
                     if ($email != '') {
                         $tagdata = ee()->TMPL->swap_var_single($val, ee()->typography->encode_email($email), $tagdata);
@@ -1212,7 +1214,8 @@ class Comment
 
             elseif ($key == 'url_as_author') {
                 if ($url != '') {
-                    $tagdata = ee()->TMPL->swap_var_single($val, '<a href="' . $url . '">' . $name . '</a>', $tagdata);
+                    $tagdata = ee()->TMPL->swap_var_single($val, '<a href="' . htmlspecialchars($url, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8', false) . '">' .
+                        htmlspecialchars($name, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8', false) . '</a>', $tagdata);
                 } else {
                     $tagdata = ee()->TMPL->swap_var_single($val, $name, $tagdata);
                 }
