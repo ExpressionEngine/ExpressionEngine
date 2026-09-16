@@ -223,6 +223,59 @@ class ProSearchShortcutPermissionsTest extends TestCase
     }
 
     /**
+     * Show the shortcut action only to users who can manage shortcuts.
+     *
+     * @param int $role
+     * @param array $permittedRoles
+     * @param bool $allowed
+     * @return void
+     * @dataProvider permissions
+     */
+    public function testSearchLogShortcutActionRequiresPermission($role, $permittedRoles, $allowed): void
+    {
+        $this->setProperty('member_group', $role);
+        $settings = $this->stub(['get']);
+        $settings->method('get')->willReturnMap([
+            ['search_log_size', 0],
+            ['can_view_search_log', [$role]],
+            ['can_manage_shortcuts', $permittedRoles],
+        ]);
+        ee()->setMock('pro_search_settings', $settings);
+
+        $request = $this->stub(['post', 'get']);
+        $request->method('get')->with('page', 1)->willReturn(1);
+        ee()->setMock('Request', $request);
+        $log = $this->stub(['get_site_count', 'get_member_ids', 'get_dates', 'get_filtered_rows']);
+        $log->method('get_site_count')->willReturn(1);
+        $log->method('get_member_ids')->willReturn([]);
+        $log->method('get_dates')->willReturn([]);
+        $log->method('get_filtered_rows')->willReturn([[
+            'log_id' => 9, 'keywords' => 'news', 'num_results' => 2,
+            'member_id' => 0, 'ip_address' => '127.0.0.1',
+            'search_date' => 0, 'parameters' => '',
+        ]]);
+        ee()->setMock('pro_search_log_model', $log);
+        ee()->setMock('db', new FakeDb());
+        ee()->setMock('localize', $this->stub(['human_time']));
+        $view = $this->stub(['make', 'render']);
+        $view->method('make')->willReturnSelf();
+        ee()->setMock('View', $view);
+
+        $table = $this->stub(['setNoResultsText', 'setColumns', 'setData', 'viewData']);
+        $table->expects($this->once())->method('setData')->willReturnCallback(function ($rows) use ($allowed) {
+            $this->assertCount(1, $rows);
+            $this->assertSame('news', $rows[0][0]);
+            $this->assertSame($allowed ? ['next'] : [], array_keys($rows[0][6]['toolbar_items']));
+        });
+        // Stop after assembling the real log rows, before unrelated page rendering.
+        $table->method('viewData')->willThrowException(new ProSearchShortcutViewReady());
+        ee()->setMock('CP/Table', $table);
+        $this->expectException(ProSearchShortcutViewReady::class);
+
+        $this->mcp->search_log();
+    }
+
+    /**
      * Use the real role check and expect denied requests to stop.
      *
      * @param int $role

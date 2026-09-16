@@ -2878,10 +2878,10 @@ class Pro_search_mcp
     // --------------------------------------------------------------------
 
     /**
-     * View search log
+     * Display the search log with optional filters.
      *
-     * @access      public
-     * @return      string
+     * @param string|null $filter
+     * @return array
      */
     public function search_log($filter = null)
     {
@@ -3052,7 +3052,7 @@ class Pro_search_mcp
 
                     // Shortcut toolbar
                     $r[] = array(
-                        'toolbar_items' => array(
+                        'toolbar_items' => $this->can_manage_shortcuts() ? array(
                             // 'view' => array(
                             //  'href'  => '#',
                             //  'title' => 'View details'
@@ -3061,7 +3061,7 @@ class Pro_search_mcp
                                 'href'  => $this->mcp_url('edit_shortcut/new', 'log_id=' . $row['log_id']),
                                 'title' => lang('create_shortcut_from_log')
                             )
-                        )
+                        ) : array()
                     );
 
                     // Add row to table body
