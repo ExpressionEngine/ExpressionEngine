@@ -1862,10 +1862,10 @@ class Pro_search_mcp
     }
 
     /**
-     * Edit shortcut
+     * Display the new or existing shortcut form.
      *
-     * @access      public
-     * @return      string
+     * @param string|int $shortcut_id
+     * @return array
      */
     public function edit_shortcut($shortcut_id = 'new')
     {
@@ -2009,7 +2009,7 @@ class Pro_search_mcp
         $this->_set_cp_var('cp_page_title', $title);
         $this->_set_cp_crumb($this->mcp_url(), lang('pro_search_module_name'));
         $this->_set_cp_crumb($this->mcp_url('groups'), lang('groups'));
-        $this->_set_cp_crumb($this->mcp_url('shortcuts/' . $group_id), $group_name);
+        $this->_set_cp_crumb($this->mcp_url('shortcuts/' . $group_id), htmlspecialchars($group_name, ENT_QUOTES, 'UTF-8'));
 
         $this->active = 'groups';
 
