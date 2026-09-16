@@ -1868,10 +1868,10 @@ class Pro_search_mcp
     }
 
     /**
-     * Edit a shortcut, creating a default group when needed.
+     * Display the new or existing shortcut form.
      *
-     * @param int|string $shortcut_id
-     * @return string
+     * @param string|int $shortcut_id
+     * @return array
      */
     public function edit_shortcut($shortcut_id = 'new')
     {
