@@ -126,6 +126,9 @@ class ProSearchGroupLabelRegressionTest extends TestCase
     public function testShortcutBreadcrumbDisplaysStoredLabelLiterally($id, $label): void
     {
         require_once PATH_ADDONS . 'pro_search/helpers/pro_search_helper.php';
+        $settings = $this->stub(['get']);
+        $settings->method('get')->with('can_manage_shortcuts')->willReturn([5]);
+        ee()->setMock('pro_search_settings', $settings);
         $this->groups->method('get_by_site')->willReturn([
             ['group_id' => 3, 'group_label' => 'Other group'],
             ['group_id' => 7, 'group_label' => $label],
