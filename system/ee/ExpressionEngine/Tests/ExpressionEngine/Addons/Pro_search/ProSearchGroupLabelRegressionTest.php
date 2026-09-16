@@ -99,6 +99,67 @@ class ProSearchGroupLabelRegressionTest extends TestCase
         $this->assertSame($label, $heading->textContent);
     }
 
+    /**
+     * Provide stored labels for new and existing shortcut forms.
+     *
+     * @return array
+     */
+    public static function shortcutForms(): array
+    {
+        $cases = [];
+        foreach (['new', 12] as $id) {
+            foreach (self::labels() as $name => $label) {
+                $cases[$id . ' ' . $name] = [$id, $label[0]];
+            }
+        }
+        return $cases;
+    }
+
+    /**
+     * Keep stored group labels as text in shortcut form breadcrumbs.
+     *
+     * @param string|int $id
+     * @param string $label
+     * @return void
+     * @dataProvider shortcutForms
+     */
+    public function testShortcutBreadcrumbDisplaysStoredLabelLiterally($id, $label): void
+    {
+        require_once PATH_ADDONS . 'pro_search/helpers/pro_search_helper.php';
+        $this->groups->method('get_by_site')->willReturn([
+            ['group_id' => 3, 'group_label' => 'Other group'],
+            ['group_id' => 7, 'group_label' => $label],
+        ]);
+        $row = ['group_id' => 7, 'shortcut_label' => '', 'shortcut_name' => '', 'parameters' => []];
+        $shortcuts = $this->stub(['empty_row', 'get_one']);
+        $shortcuts->method('empty_row')->willReturn($row);
+        $shortcuts->method('get_one')->with(12)->willReturn($row);
+        $property = new ReflectionProperty(Pro_search_mcp::class, 'shortcuts');
+        TestReflectionHelper::makeAccessible($property);
+        $property->setValue($this->mcp, $shortcuts);
+
+        $input = $this->stub(['get']);
+        $input->method('get')->willReturnMap([['group_id', $id === 'new' ? 7 : 3], ['log_id', false]]);
+        ee()->setMock('input', $input);
+        $view = $this->stub(['make', 'render']);
+        $view->method('make')->willReturnSelf();
+        $view->method('render')->willReturn('');
+        ee()->setMock('View', $view);
+
+        $data = $this->pageData('edit_shortcut', $id);
+        $this->assertSame($label, $data['sections'][0][0]['fields']['group_id']['choices'][7]);
+        $property = new ReflectionProperty(Pro_search_mcp::class, 'crumb');
+        TestReflectionHelper::makeAccessible($property);
+        $crumbs = $property->getValue($this->mcp);
+
+        // The shared header inserts the final breadcrumb title as raw HTML.
+        $document = $this->parse('<span>' . end($crumbs) . '</span>');
+        $breadcrumb = $document->getElementsByTagName('span')->item(0);
+        $this->assertNotNull($breadcrumb);
+        $this->assertSame(0, $breadcrumb->getElementsByTagName('*')->length);
+        $this->assertSame($label, $breadcrumb->textContent);
+    }
+
     /** @dataProvider labels */
     public function testEditFieldKeepsStoredLabelReadable($label): void
     {
