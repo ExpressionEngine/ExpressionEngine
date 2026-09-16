@@ -257,6 +257,62 @@ class MemberImportTest extends TestCase
     }
 
     /**
+     * Check assigned member IDs before writing imported members.
+     *
+     * @return void
+     */
+    public function testExistingMemberIdsAreCheckedBeforeImportWrites()
+    {
+        $role = $this->getMockBuilder(stdClass::class)->addMethods(array('getId'))->getMock();
+        $role->is_locked = 'n';
+        $role->method('getId')->willReturn(5);
+
+        $existingMember = $this->getMockBuilder(stdClass::class)
+            ->addMethods(array('set', 'save'))
+            ->getMock();
+        $existingMember->method('set')->willReturnSelf();
+        $existingMember->method('save')->willThrowException(new \RuntimeException('Member write reached.'));
+
+        $model = $this->getMockBuilder(stdClass::class)->addMethods(array('get', 'make'))->getMock();
+        $model->method('get')->willReturnCallback(function ($modelName) use ($role, $existingMember) {
+            $query = $this->getMockBuilder(stdClass::class)->addMethods(array('first'))->getMock();
+            $query->method('first')->willReturn($modelName === 'Role' ? $role : $existingMember);
+
+            return $query;
+        });
+        $model->expects($this->never())->method('make');
+        ee()->setMock('Model', $model);
+
+        $input = $this->getMockBuilder(stdClass::class)->addMethods(array('post'))->getMock();
+        $input->method('post')->willReturnCallback(function ($key) {
+            return $key === 'role_id' ? 5 : null;
+        });
+        ee()->setMock('input', $input);
+
+        $encrypt = $this->getMockBuilder(stdClass::class)->addMethods(array('generateKey'))->getMock();
+        $encrypt->method('generateKey')->willReturn('member-import-test-key');
+        ee()->setMock('Encrypt', $encrypt);
+
+        $session = $this->getMockBuilder(stdClass::class)->addMethods(array('userdata'))->getMock();
+        $session->method('userdata')->with('member_id')->willReturn(99);
+        ee()->setMock('session', $session);
+        $this->mockSuperAdmin(false);
+
+        $controller = $this->makeController();
+        $controller->localize = (object) array('now' => 1);
+        $this->setControllerProperty($controller, 'default_fields', array('username' => '', 'role_id' => ''));
+        $this->setControllerProperty($controller, 'members', array(
+            array('username' => 'first', 'role_id' => 5),
+            array('member_id' => 7, 'username' => 'imported', 'role_id' => 5),
+        ));
+
+        $this->expectException(UtilitiesShowErrorException::class);
+        $this->expectExceptionCode(422);
+
+        $controller->doImport();
+    }
+
+    /**
      * Create the controller without running its Control Panel constructor.
      *
      * @return MemberImport

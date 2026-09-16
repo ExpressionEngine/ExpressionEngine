@@ -279,7 +279,7 @@ $lang = array(
 
     'member_file_desc' => 'Delimited file from 3rd party containing member data to be converted into ExpressionEngine\'s Member XML format.',
 
-    'member_id_warning' => 'WARNING: If you have &lt;member_id&gt; tags in your XML, existing members with the same member_id will be OVERWRITTEN! Proceed with caution!',
+    'member_id_warning' => 'Member IDs already in use cannot be imported. Omit the &lt;member_id&gt; tag to let ExpressionEngine choose a new ID.',
 
     'missing_email_field' => 'You must assign a field to "email"',
 
@@ -316,7 +316,7 @@ $lang = array(
 
     'confirm_import' => 'Confirm Import',
 
-    'confirm_import_warning' => '<p class="txt-caution"><span class="icon--caution" title="exercise caution"></span> <b>Caution</b>: If your <abbr title="Extensible Markup Language">XML</abbr> file contains a tag named "<b>member_id</b>", stop.</p><p>Members in your database with matching <abbr title="Identifier">ID</abbr>s will be <b>overwritten</b> if you confirm this import.</p>',
+    'confirm_import_warning' => '<p class="txt-caution"><span class="icon--caution" title="exercise caution"></span> <b>Caution</b>: Member IDs already in use cannot be imported.</p><p>Omit the <b>member_id</b> tag to let ExpressionEngine choose a new ID.</p>',
 
     'custom_fields' => 'Custom Fields',
 

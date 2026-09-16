@@ -496,7 +496,9 @@ class MemberImport extends Utilities
 
                                 break;
                             case 'member_id':
-                                if (! in_array($tag->value, $m)) {
+                                if (! $this->memberIdIsAvailable($tag->value)) {
+                                    $errors[] = array(str_replace('%x', $tag->value, lang('member_id_in_use')));
+                                } elseif (! in_array($tag->value, $m)) {
                                     $m[] = $tag->value;
                                 } else {
                                     $errors[] = array(str_replace("%x", $tag->value, lang('duplicate_member_id')));
@@ -620,6 +622,7 @@ class MemberImport extends Utilities
         $this->default_fields['join_date'] = $this->localize->now;
 
         $this->authorizeImportRoles();
+        $this->preflightMemberIds();
 
         //  Rev it up, no turning back!
         $new_ids = array();
@@ -669,12 +672,11 @@ class MemberImport extends Utilities
                 unset($dupe['member_id']);
                 ee('Model')->make('Member', $dupe)->save();
             } elseif (isset($data['member_id'])) {
-                // member was pre-existing in EE
-                $member_obj = ee('Model')->get('Member', $data['member_id'])->first();
-                // do not allow changing self
-                if ($data['member_id'] == ee()->session->userdata('member_id')) {
-                    continue;
+                if (! $this->memberIdIsAvailable($data['member_id'])) {
+                    show_error(str_replace('%x', $data['member_id'], lang('member_id_in_use')), 422);
                 }
+
+                $member_obj = ee('Model')->make('Member');
             } else {
                 $member_obj = ee('Model')->make('Member');
             }
@@ -727,6 +729,39 @@ class MemberImport extends Utilities
             $this->getAuthorizedRole($roleId);
             $checkedRoleIds[$roleId] = true;
         }
+    }
+
+    /**
+     * Check every assigned member ID before writing the import batch.
+     *
+     * @return void
+     */
+    private function preflightMemberIds()
+    {
+        foreach ($this->members as $member) {
+            if (! isset($member['member_id']) || $member['member_id'] === '') {
+                continue;
+            }
+
+            if (! $this->memberIdIsAvailable($member['member_id'])) {
+                show_error(str_replace('%x', $member['member_id'], lang('member_id_in_use')), 422);
+            }
+        }
+    }
+
+    /**
+     * Determine whether a member ID is available for a new member.
+     *
+     * @param mixed $memberId
+     * @return bool
+     */
+    private function memberIdIsAvailable($memberId)
+    {
+        if ($memberId === null || $memberId === '') {
+            return true;
+        }
+
+        return ee('Model')->get('Member', (int) $memberId)->first() === null;
     }
 
     /**
