@@ -1751,8 +1751,9 @@ class Pro_search_mcp
     /**
      * List shortcuts for the given group.
      *
-     * @param int $group_id
-     * @return string
+     * @access      public
+     * @param       int $group_id
+     * @return      array
      */
     public function shortcuts($group_id)
     {
