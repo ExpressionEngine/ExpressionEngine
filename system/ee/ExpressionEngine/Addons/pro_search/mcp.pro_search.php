@@ -1722,10 +1722,16 @@ class Pro_search_mcp
     }
 
     /**
-     * Delete group and its shortcuts
+     * Delete groups and their shortcuts when the current user has permission.
+     *
+     * @return void
      */
     public function delete_group()
     {
+        if (! $this->can_manage_shortcuts()) {
+            show_error('Operation not permitted');
+        }
+
         // Make sure an ID is posted
         if ($group_id = ee()->input->post('group_id')) {
             // Delete it
@@ -1862,13 +1868,17 @@ class Pro_search_mcp
     }
 
     /**
-     * Edit shortcut
+     * Edit a shortcut, creating a default group when needed.
      *
-     * @access      public
-     * @return      string
+     * @param int|string $shortcut_id
+     * @return string
      */
     public function edit_shortcut($shortcut_id = 'new')
     {
+        if (! $this->can_manage_shortcuts()) {
+            show_error('Operation not permitted');
+        }
+
         // --------------------------------------
         // Get all groups
         // --------------------------------------
@@ -2017,13 +2027,16 @@ class Pro_search_mcp
     }
 
     /**
-     * Save shortcut
+     * Save a shortcut when the current user has permission.
      *
-     * @access      public
-     * @return      void
+     * @return void
      */
     public function save_shortcut()
     {
+        if (! $this->can_manage_shortcuts()) {
+            show_error('Operation not permitted');
+        }
+
         // --------------------------------------
         // Read parameters
         // --------------------------------------
@@ -2084,10 +2097,16 @@ class Pro_search_mcp
     }
 
     /**
-     * Delete shotcut
+     * Delete shortcuts when the current user has permission.
+     *
+     * @return void
      */
     public function delete_shortcut()
     {
+        if (! $this->can_manage_shortcuts()) {
+            show_error('Operation not permitted');
+        }
+
         // Make sure an ID is posted
         if ($shortcut_id = ee()->input->post('shortcut_id')) {
             // Delete it
@@ -2110,10 +2129,16 @@ class Pro_search_mcp
     }
 
     /**
-     * Order shortcuts
+     * Order shortcuts when the current user has permission.
+     *
+     * @return void
      */
     public function order_shortcuts()
     {
+        if (! $this->can_manage_shortcuts()) {
+            show_error('Operation not permitted');
+        }
+
         // Get order from POST
         if (($order = ee()->input->post('order')) && is_array($order)) {
             foreach ($order as $i => $id) {
