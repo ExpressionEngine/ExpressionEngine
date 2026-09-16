@@ -832,7 +832,10 @@ class ChannelEntry extends ContentModel
     }
 
     /**
-     * Modify the default layout for channels
+     * Prepare channel fields and title instructions for the publish layout.
+     *
+     * @param LayoutInterface|null $layout The layout to use for the channel fields.
+     * @return \ExpressionEngine\Model\Content\Display\LayoutDisplay
      */
     public function getDisplay(?LayoutInterface $layout = null)
     {
@@ -846,7 +849,7 @@ class ChannelEntry extends ContentModel
         if (! is_null($this->Channel->title_field_instructions) && $this->Channel->title_field_instructions != '') {
             $this->getCustomField('title')->setItem(
                 'field_instructions',
-                htmlentities((string) $this->Channel->title_field_instructions, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')
+                ee('Format')->make('Text', $this->Channel->title_field_instructions)->inlineHtml()->compile()
             );
         }
 

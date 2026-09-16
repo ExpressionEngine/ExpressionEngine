@@ -291,6 +291,117 @@ And if you made it to this &#x1F573;&#xFE0F; you did pretty good.']
         ];
     }
 
+    /**
+     * Preserve only basic inline formatting and keep the formatter chainable.
+     *
+     * @param string $content The untrusted text to format.
+     * @param string $expected The permitted HTML and escaped text.
+     * @return void
+     *
+     * @dataProvider inlineHtmlProvider
+     */
+    public function testInlineHtml($content, $expected)
+    {
+        $formatter = $this->format($content);
+
+        $this->assertSame($formatter, $formatter->inlineHtml());
+        $this->assertSame($expected, $formatter->compile());
+    }
+
+    /**
+     * Provide formatting, escaping, attribute, and malformed-markup cases.
+     *
+     * @return array
+     */
+    public static function inlineHtmlProvider(): array
+    {
+        return [
+            'empty text' => ['', ''],
+            'ordinary text' => ['Enter a short title.', 'Enter a short title.'],
+            'permitted tags' => [
+                '<b>Bold</b> <strong>Strong</strong> <i>Italic</i> <em>Emphasis</em> <u>Underline</u><br>Next line',
+                '<b>Bold</b> <strong>Strong</strong> <i>Italic</i> <i>Emphasis</i> <u>Underline</u><br>Next line',
+            ],
+            'emphasis avoids CP instruction-container styles' => [
+                '<EM><u>Title</u></EM> text',
+                '<i><u>Title</u></i> text',
+            ],
+            'nested formatting' => ['<b><u>Title</u></b>', '<b><u>Title</u></b>'],
+            'case and whitespace' => ["<STRONG\n>Title</STRONG >", '<strong>Title</strong>'],
+            'line break variants' => ['One<BR />Two<br/>Three<br>Four', 'One<br>Two<br>Three<br>Four'],
+            'attributes are discarded' => [
+                '<u class="example" style="text-decoration: underline" onclick="" data-note="inert">Title</u>',
+                '<u>Title</u>',
+            ],
+            'quoted angle brackets in attributes' => [
+                '<b title="a > b" data-note=\'c < d\'>Title</b>',
+                '<b>Title</b>',
+            ],
+            'unquoted attributes' => ['<i class=example>Title</i>', '<i>Title</i>'],
+            'line break attributes' => ['One<br class="example" />Two', 'One<br>Two'],
+            'unsupported tags' => ['<span>Title</span>', '&lt;span&gt;Title&lt;/span&gt;'],
+            'similar tag names' => [
+                '<stronger>Title</stronger><b-example>Text</b-example>',
+                '&lt;stronger&gt;Title&lt;/stronger&gt;&lt;b-example&gt;Text&lt;/b-example&gt;',
+            ],
+            'non-formatting elements' => [
+                '<script type="application/json">{}</script><img src="">',
+                '&lt;script type=&quot;application/json&quot;&gt;{}&lt;/script&gt;&lt;img src=&quot;&quot;&gt;',
+            ],
+            'entities remain text' => [
+                '&lt;b&gt;Title&lt;/b&gt; &#60;u&#62;',
+                '&amp;lt;b&amp;gt;Title&amp;lt;/b&amp;gt; &amp;#60;u&amp;#62;',
+            ],
+            'Unicode and special characters' => [
+                '東京 "Title" \'Example\' & < >',
+                '東京 &quot;Title&quot; &#039;Example&#039; &amp; &lt; &gt;',
+            ],
+            'invalid UTF-8' => ["Before\xFF after", "Before\xEF\xBF\xBD after"],
+            'text whitespace' => ["First\n\tSecond", "First\n\tSecond"],
+            'unclosed formatting' => ['<b><u>Title', '<b><u>Title</u></b>'],
+            'misnested formatting' => ['<b><u>Title</b> text</u>', '<b><u>Title</u></b> text'],
+            'unmatched closing tags' => ['</em>Title</b>', 'Title'],
+            'closing a line break' => ['One</br>Two', 'OneTwo'],
+            'incomplete tag' => ['<b class="example"', '&lt;b class=&quot;example&quot;'],
+            'unclosed attribute quote' => ['<u title="example>Title</u>', '&lt;u title=&quot;example&gt;Title'],
+        ];
+    }
+
+    /**
+     * Escape the entire input when tag recognition cannot complete.
+     *
+     * @return void
+     */
+    public function testInlineHtmlEscapesTextWhenRegexLimitIsReached()
+    {
+        $formatter = $this->format('<b>Title</b>');
+        $backtrack_limit = ini_set('pcre.backtrack_limit', '0');
+
+        try {
+            $text = $formatter->inlineHtml()->compile();
+        } finally {
+            ini_set('pcre.backtrack_limit', $backtrack_limit);
+        }
+
+        $this->assertSame('&lt;b&gt;Title&lt;/b&gt;', $text);
+    }
+
+    /**
+     * Keep malformed formatting inside the element containing the instructions.
+     *
+     * @return void
+     */
+    public function testInlineHtmlDoesNotAffectFollowingElements()
+    {
+        $text = $this->format('</em><b><u>Title')->inlineHtml()->compile();
+        $document = new \DOMDocument();
+        $document->loadHTML('<div><em id="instructions">' . $text . '</em><span id="following">Next field</span></div>');
+
+        $this->assertSame('Title', $document->getElementById('instructions')->textContent);
+        $this->assertSame('div', $document->getElementById('following')->parentNode->nodeName);
+        $this->assertSame(0, $document->getElementById('following')->getElementsByTagName('*')->length);
+    }
+
     public function testJson()
     {
         $sample = '"Hello"	<b>World</b>		&quot;period&quot;.
