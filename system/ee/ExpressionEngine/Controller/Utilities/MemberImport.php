@@ -35,9 +35,7 @@ class MemberImport extends Utilities
      */
     public function index()
     {
-        if (! ee('Permission')->can('access_utilities')) {
-            show_error(lang('unauthorized_access'), 403);
-        }
+        $this->authorizeImport();
 
         if (! AJAX_REQUEST) {
             if (! ee('Filesystem')->exists($this->cache)) {
@@ -48,6 +46,12 @@ class MemberImport extends Utilities
         }
 
         ee()->lang->loadfile('settings');
+
+        $roles = ee('Model')->get('Role')->order('name', 'asc');
+
+        if (! ee('Permission')->isSuperAdmin()) {
+            $roles->filter('is_locked', 'n');
+        }
 
         $vars['sections'] = array(
             array(
@@ -68,7 +72,7 @@ class MemberImport extends Utilities
                     'fields' => array(
                         'role_id' => array(
                             'type' => 'radio',
-                            'choices' => ee('Model')->get('Role')->order('name', 'asc')->all()->getDictionary('role_id', 'name'),
+                            'choices' => $roles->all()->getDictionary('role_id', 'name'),
                             'required' => true,
                             'no_results' => [
                                 'text' => sprintf(lang('no_found'), lang('roles'))
@@ -244,13 +248,11 @@ class MemberImport extends Utilities
      */
     public function memberImportConfirm()
     {
-        if (! ee('Permission')->can('access_utilities')) {
-            show_error(lang('unauthorized_access'), 403);
-        }
+        $this->authorizeImport();
 
         ee()->lang->loadfile('settings');
 
-        $role = ee('Model')->get('Role', ee()->input->post('role_id'))->first();
+        $role = $this->getAuthorizedRole(ee()->input->post('role_id'));
 
         $group_title = '';
         $group_name = ' -- ';
@@ -322,9 +324,7 @@ class MemberImport extends Utilities
      */
     public function processXml()
     {
-        if (! ee('Permission')->can('access_utilities')) {
-            show_error(lang('unauthorized_access'), 403);
-        }
+        $this->authorizeImport();
 
         ee()->lang->loadfile('member_import');
 
@@ -407,9 +407,7 @@ class MemberImport extends Utilities
      */
     public function validateXml($xml)
     {
-        if (! ee('Permission')->can('access_utilities')) {
-            show_error(lang('unauthorized_access'), 403);
-        }
+        $this->authorizeImport();
 
         ee()->lang->loadfile('members');
         ee()->lang->loadfile('member_import');
@@ -609,12 +607,10 @@ class MemberImport extends Utilities
      */
     public function doImport()
     {
-        if (! ee('Permission')->can('access_utilities')) {
-            show_error(lang('unauthorized_access'), 403);
-        }
+        $this->authorizeImport();
 
         //  Set our optional default values
-        $this->default_fields['role_id'] = ee()->input->post('role_id');
+        $this->default_fields['role_id'] = $this->getAuthorizedRole(ee()->input->post('role_id'))->getId();
         $this->default_fields['language'] = (ee()->input->post('language') == lang('none') or ee()->input->post('language') == '') ? 'english' : strtolower(ee()->input->post('language'));
         $this->default_fields['timezone'] = ee()->input->post('timezones') ?: null;
         $this->default_fields['date_format'] = ee()->input->post('date_format') ?: null;
@@ -622,6 +618,8 @@ class MemberImport extends Utilities
         $this->default_fields['include_seconds'] = ee()->input->post('include_seconds') ?: null;
         $this->default_fields['ip_address'] = '0.0.0.0';
         $this->default_fields['join_date'] = $this->localize->now;
+
+        $this->authorizeImportRoles();
 
         //  Rev it up, no turning back!
         $new_ids = array();
@@ -650,6 +648,9 @@ class MemberImport extends Utilities
 
             //  Add a unique_id for each member
             $data['unique_id'] = ee('Encrypt')->generateKey();
+
+            // Recheck the effective role after XML values and form defaults have been merged.
+            $data['role_id'] = $this->getAuthorizedRole($data['role_id'])->getId();
 
             /* -------------------------------------
             /*  See if we've already imported a member with this member_id -
@@ -694,6 +695,55 @@ class MemberImport extends Utilities
         ee('Filesystem')->deleteDir($this->cache, true);
 
         return $counter;
+    }
+
+    /**
+     * Authorize access to the member import workflow.
+     *
+     * @return void
+     */
+    private function authorizeImport()
+    {
+        if (! ee('Permission')->can('access_utilities') || ! ee('Permission')->can('access_import')) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+    }
+
+    /**
+     * Authorize every effective role before importing any members.
+     *
+     * @return void
+     */
+    private function authorizeImportRoles()
+    {
+        $checkedRoleIds = array();
+
+        foreach ($this->members as $member) {
+            $roleId = (int) (isset($member['role_id']) ? $member['role_id'] : $this->default_fields['role_id']);
+            if (isset($checkedRoleIds[$roleId])) {
+                continue;
+            }
+
+            $this->getAuthorizedRole($roleId);
+            $checkedRoleIds[$roleId] = true;
+        }
+    }
+
+    /**
+     * Resolve a role that the current member may assign during import.
+     *
+     * @param mixed $roleId
+     * @return \ExpressionEngine\Model\Role\Role
+     */
+    private function getAuthorizedRole($roleId)
+    {
+        $role = ee('Model')->get('Role', (int) $roleId)->first();
+
+        if (! $role || (! ee('Permission')->isSuperAdmin() && $role->is_locked == 'y')) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
+        return $role;
     }
 
     /**
@@ -790,9 +840,7 @@ class MemberImport extends Utilities
      */
     public function createCustomFields()
     {
-        if (! ee('Permission')->can('access_utilities')) {
-            show_error(lang('unauthorized_access'), 403);
-        }
+        $this->authorizeImport();
 
         $this->_create_custom_validation();
 
