@@ -91,7 +91,8 @@ The `7.dev` branch contains development toward the next EE 7 release. For a rele
 - **Learn:** [Documentation](https://docs.expressionengine.com/latest/) for reference material and [ExpressionEngine University](https://u.expressionengine.com/) for tutorials.
 - **Build with AI:** [ExpressionEngine documentation on Context7](https://context7.com/expressionengine/expressionengine-user-guide) for coding agents and AI assistants that support it.
 - **Ask the community:** [Official Slack](https://expressionengine.com/blog/join-us-in-slack) and [forums](https://expressionengine.com/forums) for questions and discussion.
-- **Get official help:** [ExpressionEngine Support](https://expressionengine.com/support).
+- **Get official help:** [Support plans](https://expressionengine.com/support) from the ExpressionEngine team.
+- **Find a developer:** [ExpressionEngine Partners](https://expressionengine.com/partners) for site builds, upgrades, and ongoing development.
 - **Report bugs:** Search existing [GitHub issues](https://github.com/ExpressionEngine/ExpressionEngine/issues), then include reproduction steps in a new report.
 - **Report security issues privately:** Follow the [security-reporting guide](https://docs.expressionengine.com/latest/bugs-and-security-reports.html).
 
