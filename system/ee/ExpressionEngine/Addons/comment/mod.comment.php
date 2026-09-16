@@ -2042,8 +2042,8 @@ class Comment
         }
 
         if ($edited_comment && $comment_vars->getVariable('editable')) {
-            // POST comments are already sanitized in the constructor.
-            $comment->comment = isset($_POST['comment'])
+            // POST comments and globally filtered GET comments are already sanitized.
+            $comment->comment = isset($_POST['comment']) || ee()->input->_enable_xss === true
                 ? $edited_comment
                 : ee('Security/XSS')->clean($edited_comment);
         }

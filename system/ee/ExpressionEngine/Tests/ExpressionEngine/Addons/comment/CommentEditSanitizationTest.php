@@ -12,11 +12,20 @@ class CommentEditSanitizationTest extends TestCase
 {
     private $get;
     private $post;
+    private $cookie;
+    private $server;
 
+    /**
+     * Load comment dependencies and preserve request state.
+     *
+     * @return void
+     */
     protected function setUp(): void
     {
         $this->get = $_GET;
         $this->post = $_POST;
+        $this->cookie = $_COOKIE;
+        $this->server = $_SERVER;
         ee()->resetMocks();
 
         require_once SYSPATH . 'ee/ExpressionEngine/Boot/boot.common.php';
@@ -27,12 +36,22 @@ class CommentEditSanitizationTest extends TestCase
         if (!defined('CSRF_TOKEN')) {
             define('CSRF_TOKEN', 'comment-edit-test-token');
         }
+        if (!defined('UTF8_ENABLED')) {
+            define('UTF8_ENABLED', false);
+        }
     }
 
+    /**
+     * Restore request state and clear test doubles.
+     *
+     * @return void
+     */
     protected function tearDown(): void
     {
         $_GET = $this->get;
         $_POST = $this->post;
+        $_COOKIE = $this->cookie;
+        $_SERVER = $this->server;
         ee()->resetMocks();
         Mockery::close();
     }
@@ -45,28 +64,42 @@ class CommentEditSanitizationTest extends TestCase
     public static function commentInputs(): array
     {
         $cases = [];
-        foreach (['get', 'mixed', 'post'] as $source) {
+        $sources = [['get', false], ['mixed', false], ['post', false], ['get', true], ['mixed', true]];
+        foreach ($sources as [$source, $globalFiltering]) {
+            $label = $source . ($globalFiltering ? ' with global filtering' : '');
             // Inert markup rejected by the sanitizer; no executable content.
-            $cases[$source . ' rejected markup'] = [
-                $source, '<blink>Comment</blink>', '&lt;blink&gt;Comment&lt;/blink&gt;'
+            $cases[$label . ' rejected markup'] = [
+                $source, '<blink>Comment</blink>', '&lt;blink&gt;Comment&lt;/blink&gt;', $globalFiltering
             ];
             $ordinary = "Ordinary comment\n<strong>Thank you</strong>";
-            $cases[$source . ' ordinary formatting'] = [$source, $ordinary, $ordinary];
-            $cases[$source . ' encoded link'] = [
+            $cases[$label . ' ordinary formatting'] = [$source, $ordinary, $ordinary, $globalFiltering];
+            $cases[$label . ' encoded link'] = [
                 $source,
                 '<a href="https://example.test/report%2523part.txt">Download</a>',
-                '<a href="https://example.test/report%23part.txt">Download</a>'
+                '<a href="https://example.test/report%23part.txt">Download</a>',
+                $globalFiltering
             ];
         }
 
         return $cases;
     }
 
-    /** @dataProvider commentInputs */
-    public function testSelectedCommentIsCleanedBeforeValidationSaveAndOutput($source, $text, $expected): void
+    /**
+     * Verify sanitized comment text at persistence and output boundaries.
+     *
+     * @param string $source The request field supplying the selected comment.
+     * @param string $text The submitted comment text.
+     * @param string $expected The comment after one sanitization pass.
+     * @param bool $globalFiltering Whether input sanitization cleans all request values.
+     * @return void
+     * @dataProvider commentInputs
+     */
+    public function testSelectedCommentIsCleanedBeforeValidationSaveAndOutput($source, $text, $expected, $globalFiltering): void
     {
         $_GET = ['comment_id' => '7', 'csrf_token' => CSRF_TOKEN, 'comment' => $text];
         $_POST = [];
+        $_COOKIE = [];
+        $_SERVER['PHP_SELF'] = '/index.php';
         if ($source !== 'get') {
             $_POST['comment_id'] = '7';
         }
@@ -76,9 +109,8 @@ class CommentEditSanitizationTest extends TestCase
         }
 
         $config = new FakeConfig();
-        $config->items = ['charset' => 'UTF-8', 'disable_csrf_protection' => false, 'global_xss_filtering' => false];
+        $config->items = ['charset' => 'UTF-8', 'disable_csrf_protection' => false, 'global_xss_filtering' => $globalFiltering];
         ee()->setMock('config', $config);
-        ee()->setMock('input', (new ReflectionClass(EE_Input::class))->newInstanceWithoutConstructor());
         ee()->setMock('Security/XSS', new class extends XSS {
             protected function _decode_entity($match)
             {
@@ -86,6 +118,11 @@ class CommentEditSanitizationTest extends TestCase
                 return $this->entity_decode($match[0], 'UTF-8');
             }
         });
+        // Run startup sanitization without loading an installed site's config.
+        $input = (new ReflectionClass(EE_Input::class))->newInstanceWithoutConstructor();
+        $input->_enable_xss = $globalFiltering;
+        $input->_sanitize_globals();
+        ee()->setMock('input', $input);
         ee()->setMock('session', new class {
             public $userdata = ['member_id' => 17];
             public function cache($class, $key) { return []; }
