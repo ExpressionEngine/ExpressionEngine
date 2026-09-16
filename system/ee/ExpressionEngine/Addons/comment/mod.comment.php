@@ -2044,7 +2044,7 @@ class Comment
         }
 
         if ($edited_comment && $comment_vars->getVariable('editable')) {
-            $comment->comment = $edited_comment;
+            $comment->comment = ee('Security/XSS')->clean($edited_comment);
         }
 
         // save if we changed something
