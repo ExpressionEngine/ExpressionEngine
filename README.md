@@ -1,20 +1,29 @@
 <p align="center">
-  <img src="https://expressionengine.com/asset/img/expressionengine-with-text.svg" alt="ExpressionEngine Logo" height="70" >
+  <img src="https://expressionengine.com/asset/img/expressionengine-with-text.svg" alt="ExpressionEngine Logo" width="400" >
 </p>
 
 # ExpressionEngine CMS
 
 ExpressionEngine is a self-hosted, open-source PHP CMS for developers and agencies building custom websites. Define your content and give editors a publishing experience tailored to the site.
 
-**[Get started](#how-to-install) · [Documentation](https://docs.expressionengine.com/latest/) · [Community](#help-and-resources)**
+<p align="center">
+  <strong><a href="#how-to-install">Get started</a></strong> ·
+  <a href="https://docs.expressionengine.com/latest/">Documentation</a> ·
+  <a href="#help-and-resources">Community</a>
+</p>
 
 ## Why ExpressionEngine?
 
 - **Model your content:** Define content types, called [Channels](https://docs.expressionengine.com/latest/getting-started/the-big-picture.html#channels), with custom fields and relationships for articles, staff profiles, or products.
+
 - **Simple templating:** Build custom designs with HTML and readable template tags, without writing PHP.
+
 - **Edit content in context:** Let editors update content directly on the website with built-in [front-end editing](https://docs.expressionengine.com/latest/advanced-usage/front-end/overview.html).
+
 - **Publish with confidence:** Give editors tailored publishing layouts and live preview, with [entry versioning](https://docs.expressionengine.com/latest/control-panel/create.html#revisions-tab) to revisit saved revisions.
+
 - **Built with security in mind:** Granular permissions, [multi-factor authentication](https://docs.expressionengine.com/latest/member/mfa.html), and ongoing security updates help protect your site and its users.
+
 - **Extend your site:** Add ecommerce with [CartThrob](https://expressionengine.com/add-ons/cartthrob) or [Expresso Store](https://expressionengine.com/add-ons/expresso-store), explore other [add-ons](https://expressionengine.com/add-ons), or [build your own](https://docs.expressionengine.com/latest/development/addon-development-overview.html).
 
 ## Your markup, powered by your content
