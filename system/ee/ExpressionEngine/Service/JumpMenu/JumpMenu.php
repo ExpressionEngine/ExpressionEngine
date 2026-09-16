@@ -1933,7 +1933,7 @@ class JumpMenu extends AbstractJumpMenu
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'utilities/sandr',
-                'permission' => 'can_access_data'
+                'permission' => 'is_super_admin'
             ),
 
             //misc
