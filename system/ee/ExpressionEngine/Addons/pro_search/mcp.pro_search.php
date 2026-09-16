@@ -1749,10 +1749,10 @@ class Pro_search_mcp
     // --------------------------------------------------------------------
 
     /**
-     * List shortcuts for given group
+     * List shortcuts for the given group.
      *
-     * @access      public
-     * @return      string
+     * @param int $group_id
+     * @return string
      */
     public function shortcuts($group_id)
     {
@@ -1824,7 +1824,7 @@ class Pro_search_mcp
                 'name'  => 'shortcut_id[]',
                 'value' => $id,
                 'data'  => array(
-                    'confirm' => $shortcut['shortcut_label']
+                    'confirm' => '<span>' . htmlspecialchars($shortcut['shortcut_label'], ENT_QUOTES, 'UTF-8') . '</span>'
                 )
             );
 
