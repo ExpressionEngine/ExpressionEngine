@@ -1992,12 +1992,10 @@ class Comment
     }
 
     /**
-     * Frontend comment editing
+     * Update or moderate a frontend comment and send the AJAX response.
      *
-     *
-     * @access	public
-     * @param	string
-     * @return	string
+     * @param bool $ajax_request Unused legacy AJAX request flag.
+     * @return void
      */
     public function edit_comment($ajax_request = true)
     {
@@ -2044,7 +2042,10 @@ class Comment
         }
 
         if ($edited_comment && $comment_vars->getVariable('editable')) {
-            $comment->comment = ee('Security/XSS')->clean($edited_comment);
+            // POST comments are already sanitized in the constructor.
+            $comment->comment = isset($_POST['comment'])
+                ? $edited_comment
+                : ee('Security/XSS')->clean($edited_comment);
         }
 
         // save if we changed something

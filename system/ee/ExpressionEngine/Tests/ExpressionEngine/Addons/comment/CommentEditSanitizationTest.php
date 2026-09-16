@@ -37,6 +37,11 @@ class CommentEditSanitizationTest extends TestCase
         Mockery::close();
     }
 
+    /**
+     * Provide selected comment inputs and their expected sanitized values.
+     *
+     * @return array
+     */
     public static function commentInputs(): array
     {
         $cases = [];
@@ -47,6 +52,11 @@ class CommentEditSanitizationTest extends TestCase
             ];
             $ordinary = "Ordinary comment\n<strong>Thank you</strong>";
             $cases[$source . ' ordinary formatting'] = [$source, $ordinary, $ordinary];
+            $cases[$source . ' encoded link'] = [
+                $source,
+                '<a href="https://example.test/report%2523part.txt">Download</a>',
+                '<a href="https://example.test/report%23part.txt">Download</a>'
+            ];
         }
 
         return $cases;
