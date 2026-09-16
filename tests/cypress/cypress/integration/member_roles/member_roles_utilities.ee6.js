@@ -58,7 +58,7 @@ context('Member Roles / Utilities Permissions', () => {
 
        cy.get('.box').contains('Back Up Database')
        cy.get('.box').contains('SQL Manager')
-       cy.get('.box').contains('Query Form')
+       cy.get('.box').should('not.contain', 'Query Form')
 
        cy.get('.box').contains('Cache Manager')
        cy.get('.box').contains('Content Reindex')
@@ -101,7 +101,7 @@ context('Member Roles / Utilities Permissions', () => {
 
         cy.get('.box').contains('Back Up Database')
         cy.get('.box').contains('SQL Manager')
-        cy.get('.box').contains('Query Form')
+        cy.get('.box').should('not.contain', 'Query Form')
 
         cy.get('.box').contains('Cache Manager')
         cy.get('.box').contains('Content Reindex')
@@ -144,7 +144,7 @@ context('Member Roles / Utilities Permissions', () => {
 
         cy.get('.box').contains('Back Up Database')
         cy.get('.box').contains('SQL Manager')
-        cy.get('.box').contains('Query Form')
+        cy.get('.box').should('not.contain', 'Query Form')
 
         cy.get('.box').contains('Cache Manager')
         cy.get('.box').contains('Content Reindex')
@@ -188,7 +188,7 @@ context('Member Roles / Utilities Permissions', () => {
 
         cy.get('.box').contains('Back Up Database')
         cy.get('.box').contains('SQL Manager')
-        cy.get('.box').contains('Query Form')
+        cy.get('.box').should('not.contain', 'Query Form')
 
         cy.get('.box').contains('Cache Manager')
         cy.get('.box').contains('Content Reindex')

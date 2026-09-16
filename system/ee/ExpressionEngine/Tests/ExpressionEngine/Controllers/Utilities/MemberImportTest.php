@@ -8,40 +8,16 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace ExpressionEngine\Controller\Utilities {
-
-    /**
-     * Raised when member import denies a request.
-     */
-    class MemberImportShowErrorException extends \RuntimeException
-    {
-    }
-
-    if (! function_exists(__NAMESPACE__ . '\\show_error')) {
-        /**
-         * Replace the controller error response with an exception.
-         *
-         * @param string $message
-         * @param int $status
-         * @return void
-         *
-         * @throws MemberImportShowErrorException
-         */
-        function show_error($message, $status = 500)
-        {
-            throw new MemberImportShowErrorException((string) $message, $status);
-        }
-    }
-}
-
 namespace ExpressionEngine\Tests\Controllers\Utilities {
 
 use ExpressionEngine\Controller\Utilities\MemberImport;
-use ExpressionEngine\Controller\Utilities\MemberImportShowErrorException;
+use ExpressionEngine\Controller\Utilities\UtilitiesShowErrorException;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use ReflectionMethod;
 use stdClass;
+
+require_once __DIR__ . '/UtilitiesTestHelper.php';
 
 class MemberImportTest extends TestCase
 {
@@ -92,7 +68,7 @@ class MemberImportTest extends TestCase
         $permission->method('isSuperAdmin')->willReturn(false);
         ee()->setMock('Permission', $permission);
 
-        $this->expectException(MemberImportShowErrorException::class);
+        $this->expectException(UtilitiesShowErrorException::class);
         $this->expectExceptionCode(403);
 
         $this->makeController()->index();
@@ -114,7 +90,7 @@ class MemberImportTest extends TestCase
         $permission->method('isSuperAdmin')->willReturn(false);
         ee()->setMock('Permission', $permission);
 
-        $this->expectException(MemberImportShowErrorException::class);
+        $this->expectException(UtilitiesShowErrorException::class);
         $this->expectExceptionCode(403);
 
         $this->makeController()->index();
@@ -183,7 +159,7 @@ class MemberImportTest extends TestCase
         try {
             $controller->doImport();
             $this->fail('Expected the locked role to be rejected.');
-        } catch (MemberImportShowErrorException $exception) {
+        } catch (UtilitiesShowErrorException $exception) {
             $this->assertSame(403, $exception->getCode());
         }
 
@@ -246,7 +222,7 @@ class MemberImportTest extends TestCase
         $this->mockRoleLookup($role);
         $this->mockSuperAdmin(false);
 
-        $this->expectException(MemberImportShowErrorException::class);
+        $this->expectException(UtilitiesShowErrorException::class);
         $this->expectExceptionCode(403);
 
         $this->invokeAuthorizedRole(1);
