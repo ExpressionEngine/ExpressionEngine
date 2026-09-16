@@ -1580,7 +1580,7 @@ class Pro_search_mcp
                 'name'  => 'group_id[]',
                 'value' => $id,
                 'data'  => array(
-                    'confirm' => $group['group_label']
+                    'confirm' => '<span>' . htmlspecialchars($group['group_label'], ENT_QUOTES, 'UTF-8') . '</span>'
                 )
             );
 
@@ -1681,6 +1681,10 @@ class Pro_search_mcp
      */
     public function save_group()
     {
+        if (! $this->can_manage_shortcuts()) {
+            show_error('Operation not permitted');
+        }
+
         // --------------------------------------
         // Data to save
         // --------------------------------------
@@ -1844,7 +1848,7 @@ class Pro_search_mcp
         // Set title and breadcrumb and view page
         // --------------------------------------
 
-        $this->_set_cp_var('cp_page_title', $group['group_label']);
+        $this->_set_cp_var('cp_page_title', htmlspecialchars($group['group_label'], ENT_QUOTES, 'UTF-8'));
         $this->_set_cp_crumb($this->mcp_url(), lang('pro_search_module_name'));
         $this->_set_cp_crumb($this->mcp_url('groups'), lang('groups'));
         $this->active = 'groups';
