@@ -335,29 +335,9 @@ class Member_settings extends Member
         /** ----------------------------------------
         /**  Parse conditional pairs
         /** ----------------------------------------*/
+        $content = ee()->functions->prep_conditionals($content, $row);
+
         foreach ($this->var_cond as $val) {
-            /** ----------------------------------------
-            /**  Conditional statements
-            /** ----------------------------------------*/
-            $cond = ee()->functions->prep_conditional($val['0']);
-
-            $lcond = substr($cond, 0, strpos($cond, ' '));
-            $rcond = substr($cond, strpos($cond, ' '));
-
-            if (array_key_exists($val['3'], $row)) {
-                $lcond = str_replace($val['3'], "\$row['" . $val['3'] . "']", $lcond);
-                $cond = $lcond . ' ' . $rcond;
-                $cond = str_replace("\|", "|", $cond);
-
-                eval("\$result = " . $cond . ";");
-
-                if ($result) {
-                    $content = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "\\1", $content);
-                } else {
-                    $content = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "", $content);
-                }
-            }
-
             /** ----------------------------------------
             /**  {if accept_email}
             /** ----------------------------------------*/
@@ -543,36 +523,6 @@ class Member_settings extends Member
             ee()->legacy_api->instantiate('channel_fields');
 
             /** ----------------------------------------
-            /**  Parse conditionals for custom fields
-            /** ----------------------------------------*/
-            foreach ($this->var_cond as $val) {
-                // Prep the conditional
-                $cond = ee()->functions->prep_conditional($val['0']);
-
-                $lcond = substr($cond, 0, strpos($cond, ' '));
-                $rcond = substr($cond, strpos($cond, ' '));
-
-                if (array_key_exists($val['3'], $fnames)) {
-                    $m_field_id_name = 'm_field_id_' . $fnames[$val['3']]['0'];
-
-                    $lcond = str_replace($val['3'], "\$row['" . $m_field_id_name . "']", $lcond);
-
-                    $cond = $lcond . ' ' . $rcond;
-
-                    $cond = str_replace("\|", "|", $cond);
-
-                    eval("\$rez = " . $cond . ";");
-
-                    if ($rez) {
-                        $content = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "\\1", $content);
-                    } else {
-                        $content = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "", $content);
-                    }
-                }
-            }
-            // END CONDITIONALS
-
-            /** ----------------------------------------
             /**  Parse single variables
             /** ----------------------------------------*/
             foreach ($this->var_single as $key => $val) {
@@ -613,7 +563,6 @@ class Member_settings extends Member
                 $content = str_replace("/{custom_profile_fields}/s", '', $content);
             } else {
                 $str = '';
-                $var_conds = ee()->functions->assign_conditional_variables($field_chunk);
                 $member_field = '';
 
                 foreach ($member_fields as $member_field) {
@@ -655,28 +604,7 @@ class Member_settings extends Member
                     $temp = str_replace('{field_description}', $member_field->m_field_description, $temp);
                     $temp = str_replace('{field_data}', $field_data, $temp);
 
-                    foreach ($var_conds as $val) {
-                        // Prep the conditional
-
-                        $cond = ee()->functions->prep_conditional($val['0']);
-
-                        $lcond = substr($cond, 0, strpos($cond, ' '));
-                        $rcond = substr($cond, strpos($cond, ' '));
-
-                        if (array_key_exists($val['3'], $field_row)) {
-                            $lcond = str_replace($val['3'], "\$field_row['" . $val['3'] . "']", $lcond);
-                            $cond = $lcond . ' ' . $rcond;
-                            $cond = str_replace("\|", "|", $cond);
-
-                            eval("\$result = " . $cond . ";");
-
-                            if ($result) {
-                                $temp = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "\\1", $temp);
-                            } else {
-                                $temp = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "", $temp);
-                            }
-                        }
-                    }
+                    $temp = ee()->functions->prep_conditionals($temp, $field_row);
 
                     $str .= $temp;
                 }

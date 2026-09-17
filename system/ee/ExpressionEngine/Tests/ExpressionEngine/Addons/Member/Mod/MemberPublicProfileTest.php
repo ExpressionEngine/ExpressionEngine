@@ -142,6 +142,7 @@ class MemberPublicProfileTest extends TestCase
             . '<p>{group_title}/{primary_role_name}</p>'
             . '<p>public:{biography}|{m_field_id_7}</p>'
             . '<p>private:{private_notes}|{m_field_id_8}</p>'
+            . '{if member_id > 0}<p>has member</p>{/if}'
             . '{if biography != ""}<p>has biography</p>{/if}'
             . '{custom_profile_fields}{notepad}';
         $member = new MemberPublicProfileMemberMock(array(
@@ -175,6 +176,7 @@ class MemberPublicProfileTest extends TestCase
         $this->assertStringContainsString('<img src="signature.png" width="240" height="80">', $content);
         $this->assertStringContainsString('<p>Members/Members</p>', $content);
         $this->assertStringContainsString('<p>public:Public profile text|Public profile text</p>', $content);
+        $this->assertStringContainsString('<p>has member</p>', $content);
         $this->assertStringContainsString('<p>has biography</p>', $content);
         $this->assertStringContainsString('<p>biography:Public profile text</p>', $content);
         $this->assertStringNotContainsString('Private preference', $content);
@@ -240,6 +242,7 @@ class MemberPublicProfileTest extends TestCase
 
         $template = $this->mockService('TMPL', ['fetch_param']);
         $template->tagdata = $legacy ? '' : $tagdata;
+        $template->protect_javascript = false;
         $template->method('fetch_param')->with('member_id')->willReturn($legacy ? false : '42');
         $config = $this->mockService('Config', ['getFile', 'getBoolean']);
         $config->method('getFile')->willReturnSelf();
@@ -247,12 +250,17 @@ class MemberPublicProfileTest extends TestCase
 
         // Keep the real variable and conditional parsers while isolating URL/form generation and fieldtypes.
         ee()->setMock('Variables/Parser', new LegacyParser());
+        $real_functions = new EE_Functions();
         $functions = $this->getMockBuilder(EE_Functions::class)
-            ->onlyMethods(['fetch_site_index', 'fetch_action_id', 'form_declaration', 'encode_ee_tags'])->getMock();
+            ->onlyMethods(['fetch_site_index', 'fetch_action_id', 'form_declaration', 'encode_ee_tags', 'prep_conditionals'])
+            ->getMock();
         $functions->method('fetch_site_index')->willReturn('/');
         $functions->method('fetch_action_id')->willReturn('1');
         $functions->method('form_declaration')->willReturn('');
         $functions->method('encode_ee_tags')->willReturnArgument(0);
+        $functions->expects($this->atLeast(2))
+            ->method('prep_conditionals')
+            ->willReturnCallback(array($real_functions, 'prep_conditionals'));
         ee()->setMock('functions', $functions);
         $this->mockService('legacy_api', ['instantiate']);
 
@@ -261,7 +269,7 @@ class MemberPublicProfileTest extends TestCase
         $profile->cur_id = $legacy ? '42' : '';
         $profile->method('_load_element')->willReturnMap(array(
             ['public_profile', $tagdata],
-            ['public_custom_profile_fields', '<p>{field_name}:{field_data}</p>'],
+            ['public_custom_profile_fields', '{if field_label != ""}<p>{field_name}:{field_data}</p>{/if}'],
         ));
         $profile->method('_member_path')->willReturn('/member/');
         $profile->method('list_js')->willReturn('');
