@@ -5,7 +5,7 @@
             <fieldset class="tbl-search right">
                 <a class="btn tn action" href="<?=$create_new_url?>"><?=lang('create_new')?></a>
             </fieldset>
-            <h1><?=$cp_page_title?></h1>
+            <h1><?=htmlspecialchars($cp_page_title, ENT_QUOTES, 'UTF-8')?></h1>
             <?=ee('CP/Alert')->getAllInlines()?>
             <?php $this->embed('ee:_shared/table', $table); ?>
             <?=$pagination?>

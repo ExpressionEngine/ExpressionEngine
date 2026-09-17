@@ -1580,7 +1580,7 @@ class Pro_search_mcp
                 'name'  => 'group_id[]',
                 'value' => $id,
                 'data'  => array(
-                    'confirm' => $group['group_label']
+                    'confirm' => '<span>' . htmlspecialchars($group['group_label'], ENT_QUOTES, 'UTF-8') . '</span>'
                 )
             );
 
@@ -1681,6 +1681,10 @@ class Pro_search_mcp
      */
     public function save_group()
     {
+        if (! $this->can_manage_shortcuts()) {
+            show_error('Operation not permitted');
+        }
+
         // --------------------------------------
         // Data to save
         // --------------------------------------
@@ -1718,10 +1722,16 @@ class Pro_search_mcp
     }
 
     /**
-     * Delete group and its shortcuts
+     * Delete groups and their shortcuts when the current user has permission.
+     *
+     * @return void
      */
     public function delete_group()
     {
+        if (! $this->can_manage_shortcuts()) {
+            show_error('Operation not permitted');
+        }
+
         // Make sure an ID is posted
         if ($group_id = ee()->input->post('group_id')) {
             // Delete it
@@ -1745,10 +1755,11 @@ class Pro_search_mcp
     // --------------------------------------------------------------------
 
     /**
-     * List shortcuts for given group
+     * List shortcuts for the given group.
      *
      * @access      public
-     * @return      string
+     * @param       int $group_id
+     * @return      array
      */
     public function shortcuts($group_id)
     {
@@ -1820,7 +1831,7 @@ class Pro_search_mcp
                 'name'  => 'shortcut_id[]',
                 'value' => $id,
                 'data'  => array(
-                    'confirm' => $shortcut['shortcut_label']
+                    'confirm' => '<span>' . htmlspecialchars($shortcut['shortcut_label'], ENT_QUOTES, 'UTF-8') . '</span>'
                 )
             );
 
@@ -1858,13 +1869,17 @@ class Pro_search_mcp
     }
 
     /**
-     * Edit shortcut
+     * Display the new or existing shortcut form.
      *
-     * @access      public
-     * @return      string
+     * @param string|int $shortcut_id
+     * @return array
      */
     public function edit_shortcut($shortcut_id = 'new')
     {
+        if (! $this->can_manage_shortcuts()) {
+            show_error('Operation not permitted');
+        }
+
         // --------------------------------------
         // Get all groups
         // --------------------------------------
@@ -2005,7 +2020,7 @@ class Pro_search_mcp
         $this->_set_cp_var('cp_page_title', $title);
         $this->_set_cp_crumb($this->mcp_url(), lang('pro_search_module_name'));
         $this->_set_cp_crumb($this->mcp_url('groups'), lang('groups'));
-        $this->_set_cp_crumb($this->mcp_url('shortcuts/' . $group_id), $group_name);
+        $this->_set_cp_crumb($this->mcp_url('shortcuts/' . $group_id), htmlspecialchars($group_name, ENT_QUOTES, 'UTF-8'));
 
         $this->active = 'groups';
 
@@ -2013,13 +2028,16 @@ class Pro_search_mcp
     }
 
     /**
-     * Save shortcut
+     * Save a shortcut when the current user has permission.
      *
-     * @access      public
-     * @return      void
+     * @return void
      */
     public function save_shortcut()
     {
+        if (! $this->can_manage_shortcuts()) {
+            show_error('Operation not permitted');
+        }
+
         // --------------------------------------
         // Read parameters
         // --------------------------------------
@@ -2080,10 +2098,16 @@ class Pro_search_mcp
     }
 
     /**
-     * Delete shotcut
+     * Delete shortcuts when the current user has permission.
+     *
+     * @return void
      */
     public function delete_shortcut()
     {
+        if (! $this->can_manage_shortcuts()) {
+            show_error('Operation not permitted');
+        }
+
         // Make sure an ID is posted
         if ($shortcut_id = ee()->input->post('shortcut_id')) {
             // Delete it
@@ -2106,10 +2130,16 @@ class Pro_search_mcp
     }
 
     /**
-     * Order shortcuts
+     * Order shortcuts when the current user has permission.
+     *
+     * @return void
      */
     public function order_shortcuts()
     {
+        if (! $this->can_manage_shortcuts()) {
+            show_error('Operation not permitted');
+        }
+
         // Get order from POST
         if (($order = ee()->input->post('order')) && is_array($order)) {
             foreach ($order as $i => $id) {
@@ -2849,10 +2879,10 @@ class Pro_search_mcp
     // --------------------------------------------------------------------
 
     /**
-     * View search log
+     * Display the search log with optional filters.
      *
-     * @access      public
-     * @return      string
+     * @param string|null $filter
+     * @return array
      */
     public function search_log($filter = null)
     {
@@ -3023,7 +3053,7 @@ class Pro_search_mcp
 
                     // Shortcut toolbar
                     $r[] = array(
-                        'toolbar_items' => array(
+                        'toolbar_items' => $this->can_manage_shortcuts() ? array(
                             // 'view' => array(
                             //  'href'  => '#',
                             //  'title' => 'View details'
@@ -3032,7 +3062,7 @@ class Pro_search_mcp
                                 'href'  => $this->mcp_url('edit_shortcut/new', 'log_id=' . $row['log_id']),
                                 'title' => lang('create_shortcut_from_log')
                             )
-                        )
+                        ) : array()
                     );
 
                     // Add row to table body
