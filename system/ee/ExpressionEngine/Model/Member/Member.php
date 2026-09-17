@@ -730,19 +730,26 @@ class Member extends ContentModel
             $roles->filter('is_locked', 'n');
         }
 
-        $assignedRoleIds = $this->Roles->pluck('role_id');
+        $assignedRoleIds = [];
+
+        // New members have no stored assignments; only inspect explicitly populated relationships.
+        if (! $this->isNew() || $this->getAssociation('Roles')->isLoaded()) {
+            $assignedRoleIds = $this->Roles->pluck('role_id');
+        }
 
         if ($key == 'role_id') {
             $assignedRoleIds[] = $roleId;
         }
 
-        foreach ($this->RoleGroups as $roleGroup) {
-            if (! $roleGroup->getId()) {
-                continue;
-            }
+        if (! $this->isNew() || $this->getAssociation('RoleGroups')->isLoaded()) {
+            foreach ($this->RoleGroups as $roleGroup) {
+                if (! $roleGroup->getId()) {
+                    continue;
+                }
 
-            $groupRoleIds = array_filter($roleGroup->Roles->pluck('role_id'));
-            $assignedRoleIds = array_merge($assignedRoleIds, $groupRoleIds);
+                $groupRoleIds = array_filter($roleGroup->Roles->pluck('role_id'));
+                $assignedRoleIds = array_merge($assignedRoleIds, $groupRoleIds);
+            }
         }
 
         if (! empty(array_diff($assignedRoleIds, $roles->all()->pluck('role_id')))) {

@@ -11,6 +11,7 @@
 namespace ExpressionEngine\Tests\Model\Member;
 
 use ExpressionEngine\Model\Member\Member;
+use ExpressionEngine\Service\Model\Association\ToMany;
 use ExpressionEngine\Service\Model\Collection;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -33,14 +34,18 @@ class MemberRoleValidationTest extends TestCase
      * @dataProvider roleAssignmentProvider
      * @param bool $isSuperAdmin
      * @param int[] $availableRoleIds
-     * @param int[] $groupRoleIds
+     * @param int[]|null $directRoleIds Null indicates an unloaded association.
+     * @param int[]|null $groupRoleIds Null indicates an unloaded association.
+     * @param bool $isNew
      * @param bool|string $expected
      * @return void
      */
     public function testRoleAssignmentsUseAvailableRoles(
         $isSuperAdmin,
         array $availableRoleIds,
-        array $groupRoleIds,
+        $directRoleIds,
+        $groupRoleIds,
+        $isNew,
         $expected
     ) {
         $query = $this->getMockBuilder(stdClass::class)
@@ -63,15 +68,33 @@ class MemberRoleValidationTest extends TestCase
             ->addMethods(array('getId'))
             ->getMock();
         $roleGroup->method('getId')->willReturn(3);
-        $roleGroup->Roles = $this->roleCollection($groupRoleIds);
+        // A lazy lookup without a member ID can return unrelated, unavailable roles.
+        $roleGroup->Roles = $this->roleCollection($groupRoleIds === null ? array(99) : $groupRoleIds);
+
+        $directRoles = $this->getMockBuilder(ToMany::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(array('isLoaded'))
+            ->getMock();
+        $directRoles->method('isLoaded')->willReturn($directRoleIds !== null);
+
+        $roleGroups = $this->getMockBuilder(ToMany::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(array('isLoaded'))
+            ->getMock();
+        $roleGroups->method('isLoaded')->willReturn($groupRoleIds !== null);
 
         $member = $this->getMockBuilder(Member::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(array('getModelFacade', '__get'))
+            ->onlyMethods(array('getModelFacade', '__get', 'isNew', 'getAssociation'))
             ->getMock();
         $member->method('getModelFacade')->willReturn($model);
+        $member->method('isNew')->willReturn($isNew);
+        $member->method('getAssociation')->willReturnMap(array(
+            array('Roles', $directRoles),
+            array('RoleGroups', $roleGroups),
+        ));
         $member->method('__get')->willReturnMap(array(
-            array('Roles', new Collection()),
+            array('Roles', $this->roleCollection($directRoleIds === null ? array(99) : $directRoleIds)),
             array('RoleGroups', new Collection(array($roleGroup))),
         ));
 
@@ -92,10 +115,19 @@ class MemberRoleValidationTest extends TestCase
     public static function roleAssignmentProvider()
     {
         return array(
-            'group includes unavailable role' => array(false, array(5), array(6), 'invalid_role_id'),
-            'all roles are available' => array(false, array(5, 6), array(6), true),
-            'empty group' => array(false, array(5), array(0), true),
-            'unrestricted assignment' => array(true, array(5, 6), array(6), true),
+            'group includes unavailable role' => array(false, array(5), array(), array(6), false, 'invalid_role_id'),
+            'direct role is unavailable' => array(false, array(5), array(6), array(), false, 'invalid_role_id'),
+            'all roles are available' => array(false, array(5, 6), array(6), array(6), false, true),
+            'empty group' => array(false, array(5), array(), array(0), false, true),
+            'unrestricted assignment' => array(true, array(5, 6), array(6), array(6), false, true),
+            'stored roles require validation' => array(false, array(5), null, array(), false, 'invalid_role_id'),
+            'stored groups require validation' => array(false, array(5), array(), null, false, 'invalid_role_id'),
+            'new member without extra roles' => array(false, array(5), null, null, true, true),
+            'new member with allowed direct role' => array(false, array(5, 6), array(6), null, true, true),
+            'new member with unavailable role' => array(false, array(5), array(6), null, true, 'invalid_role_id'),
+            'new member with allowed group' => array(false, array(5, 6), null, array(6), true, true),
+            'new member with unavailable group' => array(false, array(5), null, array(6), true, 'invalid_role_id'),
+            'new member with unavailable primary role' => array(false, array(6), null, null, true, 'invalid_role_id'),
         );
     }
 
