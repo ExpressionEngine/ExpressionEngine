@@ -107,7 +107,7 @@ class Member_settings extends Member
         }
 
         $member = ee('Model')->get('Member', (int) $this->cur_id)
-            ->with(['PrimaryRole' => 'RoleSettings'])
+            ->with('PrimaryRole')
             ->filter('role_id', 'NOT IN', $not_in)
             ->first();
 
@@ -115,21 +115,17 @@ class Member_settings extends Member
             return ee()->output->show_user_error('general', array(ee()->lang->line('profile_not_available')));
         }
 
-        // Fetch the row
-        $row = array_merge(
-            $member->getValues(),
-            $member->PrimaryRole->getValues(),
-            $member->PrimaryRole->RoleSettings->getValues()
-        );
-
         // Use member field names
         $member_fields = ee('Model')->get('MemberField')
             ->all();
 
-        foreach ($member_fields as $member_field) {
-            $key = 'm_field_id_' . $member_field->m_field_id;
-            $row[$member_field->m_field_name] = array_key_exists($key, $row) ? $row[$key] : '';
+        if (! ee('Permission')->isSuperAdmin()) {
+            $member_fields = $member_fields->filter(function ($field) {
+                return $field->m_field_public == 'y';
+            });
         }
+
+        $row = $this->getPublicProfileData($member, $member_fields);
 
         /** ----------------------------------------
         /**  Fetch the template
@@ -530,12 +526,6 @@ class Member_settings extends Member
         // Grab the data for the particular member
 
         if ($member_fields) {
-            if (! ee('Permission')->isSuperAdmin()) {
-                $member_fields = $member_fields->filter(function ($field) {
-                    return $field->m_field_public == 'y';
-                });
-            }
-
             $fnames = array();
 
             $member_field_ids = array();
@@ -702,6 +692,62 @@ class Member_settings extends Member
         $content = str_replace(LD . 'custom_profile_fields' . RD, '', $content);
 
         return $content;
+    }
+
+    /**
+     * Build the values available to public profile templates.
+     *
+     * @param \ExpressionEngine\Model\Member\Member $member
+     * @param iterable $member_fields
+     * @return array
+     */
+    protected function getPublicProfileData($member, $member_fields)
+    {
+        $fields = array(
+            'accept_messages',
+            'accept_user_email',
+            'avatar_filename',
+            'avatar_height',
+            'avatar_width',
+            'email',
+            'group_id',
+            'join_date',
+            'language',
+            'last_activity',
+            'last_comment_date',
+            'last_entry_date',
+            'last_forum_post_date',
+            'last_visit',
+            'member_id',
+            'photo_filename',
+            'photo_height',
+            'photo_width',
+            'role_id',
+            'screen_name',
+            'signature',
+            'sig_img_filename',
+            'sig_img_height',
+            'sig_img_width',
+            'timezone',
+            'total_comments',
+            'total_entries',
+            'total_forum_posts',
+            'total_forum_topics',
+            'username',
+        );
+        $member_values = $member->getValues();
+        $row = array_intersect_key($member_values, array_flip($fields));
+        $row['group_title'] = $member->PrimaryRole->name;
+        $row['primary_role_name'] = $member->PrimaryRole->name;
+
+        foreach ($member_fields as $member_field) {
+            $key = 'm_field_id_' . $member_field->m_field_id;
+            $value = array_key_exists($key, $member_values) ? $member_values[$key] : '';
+            $row[$key] = $value;
+            $row[$member_field->m_field_name] = $value;
+        }
+
+        return $row;
     }
 
     /** ----------------------------------------
