@@ -1002,7 +1002,7 @@ class Pro_search_mcp
 
             foreach ($cf as $id => $name) {
                 $channel_fields[] = array(
-                    'title' => $name,
+                    'title' => htmlentities($name, ENT_QUOTES, 'UTF-8'),
                     'fields' => array(array(
                         'type'  => 'slider',
                         'name'  => "settings[{$channel->channel_id}][{$id}]",
