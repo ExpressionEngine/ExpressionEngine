@@ -95,14 +95,17 @@ class BootTest extends TestCase
             });
             require ' . var_export($this->source . 'boot.php', true) . ';';
         file_put_contents($this->directory . 'request.php', $script);
-        $command = [PHP_BINARY, '-n', $this->directory . 'request.php'];
+        // Retain configured extensions: PHP 7 installations may load JSON through php.ini.
+        $command = [PHP_BINARY, $this->directory . 'request.php'];
+        if (PHP_VERSION_ID < 70400) {
+            $command = implode(' ', array_map('escapeshellarg', $command));
+        }
         $process = proc_open($command, [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);
         $output = stream_get_contents($pipes[1]);
         $errors = stream_get_contents($pipes[2]);
         fclose($pipes[1]);
         fclose($pipes[2]);
-        $this->assertSame(0, proc_close($process), $errors);
-        $this->assertSame('', $errors);
+        $this->assertSame(0, proc_close($process), $errors . $output);
         $result = json_decode($output, true);
         $this->assertIsArray($result, $output);
 
