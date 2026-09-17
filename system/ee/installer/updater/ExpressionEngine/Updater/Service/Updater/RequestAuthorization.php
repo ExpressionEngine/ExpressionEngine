@@ -130,6 +130,21 @@ class RequestAuthorization
     }
 
     /**
+     * The rollback button on existing clients must resume recovery without repeating completed steps.
+     */
+    public function getRecoveryStep()
+    {
+        $state = $this->readState();
+        $step = $state['running_step'] ?? $state['next_step'] ?? null;
+        if (($state['recovering'] ?? false) === true
+            && in_array($step, ['rollback', 'restoreDatabase', 'selfDestruct[rollback]'], true)) {
+            return $step;
+        }
+
+        return 'rollback';
+    }
+
+    /**
      * Check the expected continuation before bootstrapping update services.
      */
     public function assertStep($step)
@@ -145,6 +160,10 @@ class RequestAuthorization
             && ($state['recovering'] ?? null) === false && ($state['next_step'] ?? null) !== false) {
             return;
         }
+        // The request lock excludes an active attempt; only unfinished recovery work may be retried.
+        if ($recovery && ($state['recovering'] ?? false) === true && ($state['running_step'] ?? null) === $step) {
+            return;
+        }
         if (($state['next_step'] ?? null) !== $step || ($state['running_step'] ?? null) !== null
             || ($recovery && ($state['recovering'] ?? false) !== true)
             || (! $recovery && ($state['recovering'] ?? null) !== false)) {
@@ -153,7 +172,7 @@ class RequestAuthorization
     }
 
     /**
-     * Consume the step under the request lock before any side effects. A crash cannot replay it.
+     * Record the attempted step under the request lock before any side effects.
      */
     public function beginStep($step)
     {

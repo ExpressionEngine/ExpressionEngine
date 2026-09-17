@@ -311,16 +311,115 @@ class ControllerTest extends TestCase
         $this->startUpdate();
         $_GET['step'] = 'rollback';
         $this->controller->run();
-        $this->assertRejectedStep('rollback');
         $this->assertRejectedStep('selfDestruct[rollback]');
         $this->assertRejectedStep('addLegacyFiles');
         $_GET['step'] = 'restoreDatabase';
         $this->controller->run();
         $this->assertRejectedStep('restoreDatabase');
-        $this->assertRejectedStep('rollback');
         $_GET['step'] = 'selfDestruct[rollback]';
         $this->controller->run();
         $this->assertFalse($this->authorization->isAuthorized(true));
+    }
+
+    /** @dataProvider recoveryRetryProvider */
+    public function testFailedRecoveryCanBeRetriedWithoutRepeatingCompletedSteps($priorSteps, $step, $request)
+    {
+        $this->startUpdate();
+        foreach ($priorSteps as $prior) {
+            $_GET['step'] = $prior;
+            $this->controller->run();
+        }
+        $this->controller->failOnStep = $step;
+        $_GET['step'] = $step;
+        try {
+            $this->controller->run();
+            $this->fail('Expected the fixture step to fail.');
+        } catch (\RuntimeException $e) {
+            $this->assertSame('Fixture step failed', $e->getMessage());
+        }
+        $this->assertRejectedStep('addLegacyFiles');
+        foreach (['restoreDatabase', 'selfDestruct[rollback]'] as $otherStep) {
+            if ($otherStep !== $step) {
+                $this->assertRejectedStep($otherStep);
+            }
+        }
+        $expected = array_merge(['updateFiles'], $priorSteps, [$step, $step]);
+        $this->controller->failOnStep = null;
+        $_GET['step'] = $request;
+        $this->assertSame($step !== 'rollback', $this->controller->requiresFullBootstrap());
+        $result = json_decode($this->controller->run(), true);
+        $this->assertSame($expected, $this->controller->steps);
+        $this->assertSame($this->controller->nextSteps[$step], $result['nextStep']);
+    }
+
+    /** @dataProvider recoveryRetryProvider */
+    public function testInterruptedRecoveryCanBeRetried($priorSteps, $step, $request)
+    {
+        $this->startUpdate();
+        foreach ($priorSteps as $prior) {
+            $_GET['step'] = $prior;
+            $this->controller->run();
+        }
+        // A terminated request leaves the same persisted state, without an exception handler running.
+        $this->authorization->beginStep($step);
+        $this->authorization = new ControllerAuthorization($this->path);
+        $this->controller = new TestableUpdaterController($this->authorization, $this->cp);
+        $_GET['step'] = $request;
+        $this->controller->run();
+        $this->assertSame([$step], $this->controller->steps);
+    }
+
+    public function recoveryRetryProvider()
+    {
+        return [
+            'file rollback' => [[], 'rollback', 'rollback'],
+            'database restore' => [['rollback'], 'restoreDatabase', 'restoreDatabase'],
+            'database restore from rollback button' => [['rollback'], 'restoreDatabase', 'rollback'],
+            'cleanup' => [['rollback', 'restoreDatabase'], 'selfDestruct[rollback]', 'selfDestruct[rollback]'],
+            'cleanup from rollback button' => [['rollback', 'restoreDatabase'], 'selfDestruct[rollback]', 'rollback'],
+        ];
+    }
+
+    public function testRollbackButtonResumesAfterALostSuccessfulResponse()
+    {
+        $this->startUpdate();
+        foreach (['rollback', 'restoreDatabase', 'selfDestruct[rollback]'] as $step) {
+            $_GET['step'] = 'rollback';
+            $this->assertSame($step !== 'rollback', $this->controller->requiresFullBootstrap());
+            $this->controller->run();
+        }
+        $this->assertSame(
+            ['updateFiles', 'rollback', 'restoreDatabase', 'selfDestruct[rollback]'], $this->controller->steps
+        );
+        $this->assertFalse($this->authorization->isAuthorized(true));
+    }
+
+    /** @dataProvider recoveryRetryCredentialsProvider */
+    public function testRecoveryRetriesStillRequireValidCredentials($request, $invalidCredential)
+    {
+        $this->startUpdate();
+        $_GET['step'] = 'rollback';
+        $this->controller->run();
+        $this->authorization->beginStep('restoreDatabase');
+        if ($invalidCredential === 'cookie') {
+            $_COOKIE = [];
+        } elseif ($invalidCredential === 'csrf') {
+            $_SERVER['HTTP_X_CSRF_TOKEN'] = 'different-csrf-token';
+        } else {
+            $this->expireAuthorization(true);
+        }
+        $_GET['step'] = $request;
+        $this->expectException(UpdaterException::class);
+        $this->expectExceptionCode(403);
+        $this->controller->requiresFullBootstrap();
+    }
+
+    public function recoveryRetryCredentialsProvider()
+    {
+        return [
+            ['rollback', 'cookie'], ['rollback', 'csrf'], ['rollback', 'expired'],
+            ['restoreDatabase', 'cookie'], ['restoreDatabase', 'csrf'], ['restoreDatabase', 'expired'],
+        ];
     }
 
     public function testAnInterruptedStepCannotBeRepeatedButCanBeRolledBack()

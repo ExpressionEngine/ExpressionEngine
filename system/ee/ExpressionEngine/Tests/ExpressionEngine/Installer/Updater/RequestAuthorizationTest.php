@@ -305,6 +305,7 @@ class RequestAuthorizationTest extends TestCase
             $this->assertSame(409, $e->getCode());
         }
         $authorization->beginStep('rollback');
+        $authorization->beginStep('rollback');
         $pending = $this->readState();
         $this->assertSame($state['expires'], $pending['expires']);
         $this->assertSame($state['recovery_expires'], $pending['recovery_expires']);

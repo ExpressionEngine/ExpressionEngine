@@ -113,7 +113,7 @@ class Updater
             'updateDatabase', 'updateAddons', 'rollback', 'restoreDatabase', 'selfDestruct',
         ];
         if (in_array($step, $plainSteps, true) || $step === 'selfDestruct[rollback]') {
-            return $step;
+            return $step === 'rollback' ? $this->authorization->getRecoveryStep() : $step;
         }
 
         // Continuations are produced by the runner; only their documented arguments are accepted.
