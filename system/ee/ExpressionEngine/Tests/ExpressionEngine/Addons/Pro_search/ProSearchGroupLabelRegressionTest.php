@@ -17,6 +17,11 @@ class ProSearchGroupLabelRegressionTest extends TestCase
     private $mcp;
     private $groups;
 
+    /**
+     * Load the rendering helpers and isolate group requests from persistence.
+     *
+     * @return void
+     */
     protected function setUp(): void
     {
         ee()->resetMocks();
@@ -36,6 +41,7 @@ class ProSearchGroupLabelRegressionTest extends TestCase
             }
         }
         require_once BASEPATH . 'helpers/form_helper.php';
+        require_once BASEPATH . 'helpers/string_helper.php';
         require_once PATH_ADDONS . 'pro_search/mcp.pro_search.php';
 
         $this->mcp = $this->getMockBuilder(Pro_search_mcp::class)
@@ -98,6 +104,27 @@ class ProSearchGroupLabelRegressionTest extends TestCase
         $this->assertNotNull($heading);
         $this->assertSame(0, $heading->getElementsByTagName('*')->length);
         $this->assertSame($label, $heading->textContent);
+    }
+
+    /**
+     * Retain readable heading text when a stored label contains invalid UTF-8.
+     *
+     * @return void
+     */
+    public function testShortcutHeadingReplacesMalformedUtf8(): void
+    {
+        $this->groups->method('get_one')->willReturn([
+            'group_id' => 7,
+            'group_label' => "Editorial \xC3( <em>label</em>",
+        ]);
+        $data = $this->pageData('shortcuts', 7);
+        unset($data['remove_url']);
+        $document = $this->parse($this->render(PATH_ADDONS . 'pro_search/views/list.php', $data));
+        $heading = $document->getElementsByTagName('h1')->item(0);
+
+        $this->assertNotNull($heading);
+        $this->assertSame(0, $heading->getElementsByTagName('*')->length);
+        $this->assertSame("Editorial \u{FFFD}( <em>label</em>", $heading->textContent);
     }
 
     /**

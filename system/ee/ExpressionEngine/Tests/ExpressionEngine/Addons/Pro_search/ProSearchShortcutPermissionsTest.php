@@ -35,6 +35,7 @@ class ProSearchShortcutPermissionsTest extends TestCase
                 throw new ProSearchShortcutPermissionDenied($message);
             }
         }
+        require_once BASEPATH . 'helpers/string_helper.php';
         require_once PATH_ADDONS . 'pro_search/mcp.pro_search.php';
         require_once PATH_ADDONS . 'pro_search/helpers/pro_search_helper.php';
 

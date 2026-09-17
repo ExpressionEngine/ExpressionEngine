@@ -801,10 +801,10 @@ class Pro_search_mcp
     // --------------------------------------------------------------------
 
     /**
-     * Create new collection or edit existing one
+     * Display the new or existing collection form.
      *
-     * @access      public
-     * @return      string
+     * @param string|int $collection_id The collection ID or "new".
+     * @return array
      */
     public function edit_collection($collection_id = 'new')
     {
@@ -1002,7 +1002,7 @@ class Pro_search_mcp
 
             foreach ($cf as $id => $name) {
                 $channel_fields[] = array(
-                    'title' => htmlentities($name, ENT_QUOTES, 'UTF-8'),
+                    'title' => ee_html_escape($name),
                     'fields' => array(array(
                         'type'  => 'slider',
                         'name'  => "settings[{$channel->channel_id}][{$id}]",
@@ -1511,10 +1511,9 @@ class Pro_search_mcp
     // --------------------------------------------------------------------
 
     /**
-     * List Shortcut Groups
+     * Display the shortcut groups and their removal controls.
      *
-     * @access      public
-     * @return      string
+     * @return array
      */
     public function groups()
     {
@@ -1580,7 +1579,7 @@ class Pro_search_mcp
                 'name'  => 'group_id[]',
                 'value' => $id,
                 'data'  => array(
-                    'confirm' => '<span>' . htmlspecialchars($group['group_label'], ENT_QUOTES, 'UTF-8') . '</span>'
+                    'confirm' => '<span>' . ee_html_escape($group['group_label']) . '</span>'
                 )
             );
 
@@ -1757,9 +1756,8 @@ class Pro_search_mcp
     /**
      * List shortcuts for the given group.
      *
-     * @access      public
-     * @param       int $group_id
-     * @return      array
+     * @param int $group_id The group whose shortcuts should be listed.
+     * @return array
      */
     public function shortcuts($group_id)
     {
@@ -1831,7 +1829,7 @@ class Pro_search_mcp
                 'name'  => 'shortcut_id[]',
                 'value' => $id,
                 'data'  => array(
-                    'confirm' => '<span>' . htmlspecialchars($shortcut['shortcut_label'], ENT_QUOTES, 'UTF-8') . '</span>'
+                    'confirm' => '<span>' . ee_html_escape($shortcut['shortcut_label']) . '</span>'
                 )
             );
 
@@ -2020,7 +2018,7 @@ class Pro_search_mcp
         $this->_set_cp_var('cp_page_title', $title);
         $this->_set_cp_crumb($this->mcp_url(), lang('pro_search_module_name'));
         $this->_set_cp_crumb($this->mcp_url('groups'), lang('groups'));
-        $this->_set_cp_crumb($this->mcp_url('shortcuts/' . $group_id), htmlspecialchars($group_name, ENT_QUOTES, 'UTF-8'));
+        $this->_set_cp_crumb($this->mcp_url('shortcuts/' . $group_id), ee_html_escape($group_name));
 
         $this->active = 'groups';
 

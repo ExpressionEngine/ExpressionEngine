@@ -9,6 +9,11 @@ use PHPUnit\Framework\TestCase;
  */
 class ProSearchCollectionLabelTest extends TestCase
 {
+    /**
+     * Load the real helpers used by collection forms and isolate EE services.
+     *
+     * @return void
+     */
     protected function setUp(): void
     {
         ee()->resetMocks();
@@ -19,6 +24,7 @@ class ProSearchCollectionLabelTest extends TestCase
         require_once PATH_ADDONS . 'pro_search/helpers/pro_search_helper.php';
         require_once PATH_ADDONS . 'pro_search/mcp.pro_search.php';
         require_once BASEPATH . 'helpers/form_helper.php';
+        require_once BASEPATH . 'helpers/string_helper.php';
     }
 
     protected function tearDown(): void

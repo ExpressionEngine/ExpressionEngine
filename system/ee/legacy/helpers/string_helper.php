@@ -95,6 +95,22 @@ if (! function_exists('quotes_to_entities')) {
     }
 }
 
+if (! function_exists('ee_html_escape')) {
+    /**
+     * Escape literal text for HTML content and ordinary quoted attributes.
+     *
+     * Existing entities are double encoded and invalid UTF-8 is replaced.
+     * JavaScript, CSS, URL validation, and allowed HTML need separate handling.
+     *
+     * @param string|int|float|bool|object|null $value Text or a stringable object.
+     * @return string
+     */
+    function ee_html_escape($value): string
+    {
+        return htmlspecialchars($value ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', true);
+    }
+}
+
 /**
  * Reduce Double Slashes
  *
