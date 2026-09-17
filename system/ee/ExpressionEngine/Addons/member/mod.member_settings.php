@@ -637,9 +637,13 @@ class Member_settings extends Member
             'avatar_filename',
             'avatar_height',
             'avatar_width',
+            'date_format',
+            'display_signatures',
             'email',
+            'forum_theme',
             'group_id',
             'in_authorlist',
+            'include_seconds',
             'join_date',
             'language',
             'last_activity',
@@ -648,21 +652,25 @@ class Member_settings extends Member
             'last_forum_post_date',
             'last_visit',
             'member_id',
+            'parse_smileys',
             'photo_filename',
             'photo_height',
             'photo_width',
+            'profile_theme',
             'role_id',
             'screen_name',
             'signature',
             'sig_img_filename',
             'sig_img_height',
             'sig_img_width',
+            'time_format',
             'timezone',
             'total_comments',
             'total_entries',
             'total_forum_posts',
             'total_forum_topics',
             'username',
+            'week_start',
         );
         $member_values = $member->getValues();
         $row = array_intersect_key($member_values, array_flip($fields));
@@ -670,8 +678,14 @@ class Member_settings extends Member
         $row['primary_role_name'] = $member->PrimaryRole->name;
         $row['short_name'] = $member->PrimaryRole->short_name;
         $row['highlight'] = $member->PrimaryRole->highlight;
+        $row['name'] = $member->PrimaryRole->name;
+        $row['description'] = $member->PrimaryRole->description;
+        $row['total_members'] = $member->PrimaryRole->total_members;
+        $row['is_locked'] = $member->PrimaryRole->is_locked;
 
         foreach ($member_fields as $member_field) {
+            $columns = array_flip($member_field->getColumnNames());
+            $row = array_merge($row, array_intersect_key($member_values, $columns));
             $key = 'm_field_id_' . $member_field->m_field_id;
             $value = array_key_exists($key, $member_values) ? $member_values[$key] : '';
             $row[$key] = $value;
