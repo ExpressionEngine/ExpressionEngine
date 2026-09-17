@@ -7,6 +7,8 @@ use ExpressionEngine\Updater\Service\Updater\RequestAuthorization;
 use ExpressionEngine\Updater\Service\Updater\UpdaterException;
 use PHPUnit\Framework\TestCase;
 
+require_once SYSPATH . 'ee/ExpressionEngine/Boot/boot.common.php';
+
 class ControllerTest extends TestCase
 {
     private $globals;
@@ -53,6 +55,56 @@ class ControllerTest extends TestCase
 
     public function testDeniedControlPanelAuthorizationDoesNotCreateCapability()
     {
+        $this->cp->allowed = false;
+        try {
+            $this->controller->run();
+            $this->fail('Expected CP authorization failure.');
+        } catch (UpdaterException $e) {
+            $this->assertSame(403, $e->getCode());
+            $this->assertFileDoesNotExist($this->path);
+            $this->assertSame([], $this->controller->steps);
+        }
+    }
+
+    public function testCsrfDisabledSessionWithoutATokenCanStartAndRecover()
+    {
+        $config = $this->getMockBuilder(\stdClass::class)->addMethods(['item'])->getMock();
+        $config->method('item')->with('disable_csrf_protection')->willReturn('y');
+        ee()->setMock('config', $config);
+
+        require_once APPPATH . 'libraries/Csrf.php';
+        $csrf = (new \ReflectionClass(\Csrf::class))->newInstanceWithoutConstructor();
+        $backend = $this->getMockBuilder(\stdClass::class)->addMethods(['fetch_token'])->getMock();
+        $backend->method('fetch_token')->willReturn(null);
+        $property = new \ReflectionProperty(\Csrf::class, 'backend');
+        $property->setAccessible(true);
+        $property->setValue($csrf, $backend);
+        $_SERVER['HTTP_X_CSRF_TOKEN'] = $csrf->get_user_token();
+        $_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
+        $this->assertSame('', $_SERVER['HTTP_X_CSRF_TOKEN']);
+
+        $result = json_decode($this->controller->run(), true);
+        $this->assertSame('updateFiles', $result['nextStep']);
+        $this->assertSame([], $this->controller->steps);
+        $_COOKIE = $this->authorization->cookie;
+
+        // Later requests must use the persisted binding without consulting the replaced application.
+        ee()->resetMocks();
+        $this->cp->allowed = false;
+        $this->controller->run();
+        $_GET['step'] = 'rollback';
+        $this->controller->run();
+        $this->assertSame(['updateFiles', 'rollback'], $this->controller->steps);
+        $this->assertSame(1, $this->cp->calls);
+    }
+
+    public function testCsrfDisabledHandoffStillRequiresControlPanelAuthorization()
+    {
+        $_SERVER['HTTP_X_CSRF_TOKEN'] = '';
+        $_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
+        $config = $this->getMockBuilder(\stdClass::class)->addMethods(['item'])->getMock();
+        $config->method('item')->willReturn(true);
+        ee()->setMock('config', $config);
         $this->cp->allowed = false;
         try {
             $this->controller->run();

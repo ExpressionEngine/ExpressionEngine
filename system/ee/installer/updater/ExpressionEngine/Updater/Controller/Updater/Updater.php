@@ -79,7 +79,8 @@ class Updater
         }
 
         if (! $this->isAuthorizedForStep($step)) {
-            $this->authorization->prepare();
+            // The installed application's setting is trusted only after CP authorization above.
+            $this->authorization->prepare(bool_config_item('disable_csrf_protection'));
 
             // The existing client repeats this step, acknowledging the cookie first.
             return $this->response('updateFiles', 'Updating files');

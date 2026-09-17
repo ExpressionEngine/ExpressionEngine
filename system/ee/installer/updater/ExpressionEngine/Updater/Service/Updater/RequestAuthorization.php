@@ -45,16 +45,21 @@ class RequestAuthorization
     /**
      * Prepare authorization during the authenticated Control Panel request.
      *
+     * @param bool $csrfDisabled Whether the authenticated application has disabled CSRF protection.
      * @return void
      * @throws UpdaterException
      */
-    public function prepare()
+    public function prepare($csrfDisabled = false)
     {
         if ($this->hasStarted()) {
             throw new UpdaterException('The update has already started. Use rollback to recover.', 409);
         }
 
         $csrf = $this->getCsrfToken();
+        $ajaxBinding = $csrf === null && $csrfDisabled === true;
+        if ($ajaxBinding) {
+            $csrf = $this->getAjaxBinding();
+        }
         if ($csrf === null) {
             throw new UpdaterException('Unable to prepare updater authorization.', 403);
         }
@@ -75,6 +80,7 @@ class RequestAuthorization
         $this->writeState(array(
             'token_hash' => hash('sha256', $token),
             'csrf_hash' => hash('sha256', $csrf),
+            'ajax_binding' => $ajaxBinding,
             'expires' => $now + self::LIFETIME,
             'recovery_expires' => $now + self::RECOVERY_LIFETIME,
             'started' => false,
@@ -219,7 +225,7 @@ class RequestAuthorization
     {
         $state = $this->readState();
         $token = $_COOKIE[$this->getCookieName()] ?? null;
-        $csrf = $this->getCsrfToken();
+        $csrf = ($state['ajax_binding'] ?? false) === true ? $this->getAjaxBinding() : $this->getCsrfToken();
         $deadline = $recovery && ($state['started'] ?? false) === true ? 'recovery_expires' : 'expires';
 
         return strtoupper($_SERVER['REQUEST_METHOD'] ?? '') === 'POST'
@@ -288,6 +294,17 @@ class RequestAuthorization
         $csrf = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
 
         return is_string($csrf) && $csrf !== '' ? $csrf : null;
+    }
+
+    /**
+     * Existing jQuery clients send this custom header, which a cross-origin HTML form cannot supply.
+     * The random capability cookie remains required; this header replaces only the absent CSRF binding.
+     *
+     * @return string|null
+     */
+    private function getAjaxBinding()
+    {
+        return ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? null) === 'XMLHttpRequest' ? 'XMLHttpRequest' : null;
     }
 
     /**

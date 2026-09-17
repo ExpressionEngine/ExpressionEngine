@@ -116,6 +116,89 @@ class RequestAuthorizationTest extends TestCase
         (new TestableRequestAuthorization($this->statePath, $this->lockPath))->prepare();
     }
 
+    /** @dataProvider emptyCsrfProvider */
+    public function testCsrfDisabledRequestsRequireTheCookieAndAjaxHeader($csrf)
+    {
+        $_SERVER['HTTP_X_CSRF_TOKEN'] = $csrf;
+        $_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
+        $authorization = new TestableRequestAuthorization($this->statePath, $this->lockPath);
+        $authorization->prepare(true);
+        $this->assertFalse($authorization->isAuthorized());
+        $_COOKIE[$authorization->cookie['name']] = $authorization->cookie['value'];
+
+        // A fresh request has no application configuration loaded.
+        $authorization = new TestableRequestAuthorization($this->statePath, $this->lockPath);
+        $this->assertTrue($authorization->isAuthorized());
+        unset($_SERVER['HTTP_X_REQUESTED_WITH']);
+        $this->assertFalse($authorization->isAuthorized());
+        $_SERVER['HTTP_X_REQUESTED_WITH'] = 'invalid';
+        $this->assertFalse($authorization->isAuthorized());
+        $_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
+        $this->assertTrue($authorization->isAuthorized());
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        $this->assertFalse($authorization->isAuthorized());
+    }
+
+    public function emptyCsrfProvider()
+    {
+        return [[''], [null]];
+    }
+
+    /** @dataProvider rejectedAjaxPreparationProvider */
+    public function testAjaxFallbackMustBeEnabledAndHaveTheExpectedHeader($csrfDisabled, $ajaxHeader)
+    {
+        $_SERVER['HTTP_X_CSRF_TOKEN'] = '';
+        $_SERVER['HTTP_X_REQUESTED_WITH'] = $ajaxHeader;
+        $this->expectException(UpdaterException::class);
+        $this->expectExceptionCode(403);
+        (new TestableRequestAuthorization($this->statePath, $this->lockPath))->prepare($csrfDisabled);
+    }
+
+    public function rejectedAjaxPreparationProvider()
+    {
+        return [[false, 'XMLHttpRequest'], [true, null], [true, ''], [true, 'invalid'], [true, []]];
+    }
+
+    public function testExistingCsrfBindingCannotBeReplacedByTheAjaxHeader()
+    {
+        $_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
+        $authorization = new TestableRequestAuthorization($this->statePath, $this->lockPath);
+        $authorization->prepare(true);
+        $_COOKIE[$authorization->cookie['name']] = $authorization->cookie['value'];
+        $this->assertTrue($authorization->isAuthorized());
+        $_SERVER['HTTP_X_CSRF_TOKEN'] = '';
+        $this->assertFalse($authorization->isAuthorized());
+    }
+
+    public function testAjaxBindingPreservesBoundedRecoveryAndCookieAcknowledgement()
+    {
+        $_SERVER['HTTP_X_CSRF_TOKEN'] = '';
+        $_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
+        $authorization = new TestableRequestAuthorization($this->statePath, $this->lockPath);
+        $authorization->prepare(true);
+        $original = file_get_contents($this->statePath);
+        try {
+            $authorization->prepare(true);
+            $this->fail('Expected missing cookie acknowledgement.');
+        } catch (UpdaterException $e) {
+            $this->assertStringContainsString('cookie was not returned', $e->getMessage());
+            $this->assertSame($original, file_get_contents($this->statePath));
+        }
+        $_COOKIE[$authorization->cookie['name']] = $authorization->cookie['value'];
+        $authorization->beginStep('updateFiles');
+        $state = $this->readState();
+        $state['expires'] = time() - 1;
+        $this->writeState($state);
+        $this->assertFalse($authorization->isAuthorized());
+        $this->assertTrue($authorization->isAuthorized(true));
+        unset($_SERVER['HTTP_X_REQUESTED_WITH']);
+        $this->assertFalse($authorization->isAuthorized(true));
+        $_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
+        $state['recovery_expires'] = time() - 1;
+        $this->writeState($state);
+        $this->assertFalse($authorization->isAuthorized(true));
+    }
+
     /**
      * Stop before file replacement when the browser does not return its cookie.
      *
