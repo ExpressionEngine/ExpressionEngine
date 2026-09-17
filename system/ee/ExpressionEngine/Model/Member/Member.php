@@ -716,9 +716,13 @@ class Member extends ContentModel
     }
 
     /**
-     * Ensures the group ID exists and the member has permission to add to the group
+     * Ensure every assigned role exists and may be assigned by the current member.
+     *
+     * @param string $key The field being validated.
+     * @param mixed $roleId The primary role ID when validating role_id.
+     * @return bool|string
      */
-    public function validateRoles($key, $role_id)
+    public function validateRoles($key, $roleId)
     {
         $roles = $this->getModelFacade()->get('Role');
 
@@ -726,18 +730,29 @@ class Member extends ContentModel
             $roles->filter('is_locked', 'n');
         }
 
-        //we're not checking additional roles when checking primary role
-        //however, for additional roles we'll need both
-        if ($key == 'role_id') {
-            if (! in_array($role_id, $roles->all()->pluck('role_id'))) {
-                return lang('invalid_role_id');
-            }
+        $assignedRoleIds = [];
 
-            return true;
+        // New members have no stored assignments; only inspect explicitly populated relationships.
+        if (! $this->isNew() || $this->getAssociation('Roles')->isLoaded()) {
+            $assignedRoleIds = $this->Roles->pluck('role_id');
         }
 
-        $additional_roles = $this->Roles->pluck('role_id');
-        if (count(array_intersect($additional_roles, $roles->all()->pluck('role_id'))) != count($additional_roles)) {
+        if ($key == 'role_id') {
+            $assignedRoleIds[] = $roleId;
+        }
+
+        if (! $this->isNew() || $this->getAssociation('RoleGroups')->isLoaded()) {
+            foreach ($this->RoleGroups as $roleGroup) {
+                if (! $roleGroup->getId()) {
+                    continue;
+                }
+
+                $groupRoleIds = array_filter($roleGroup->Roles->pluck('role_id'));
+                $assignedRoleIds = array_merge($assignedRoleIds, $groupRoleIds);
+            }
+        }
+
+        if (! empty(array_diff($assignedRoleIds, $roles->all()->pluck('role_id')))) {
             return lang('invalid_role_id');
         }
 

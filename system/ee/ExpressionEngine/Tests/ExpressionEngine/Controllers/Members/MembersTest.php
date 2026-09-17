@@ -11,6 +11,7 @@
 namespace ExpressionEngine\Tests\Controllers\Members;
 
 use ExpressionEngine\Controller\Members\Members;
+use ExpressionEngine\Service\Model\Collection;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use ReflectionMethod;
@@ -60,6 +61,75 @@ class MembersTest extends TestCase
 
         $this->assertStringNotContainsString($instructions, $rendered);
         $this->assertStringContainsString($encodedInstructions, $rendered);
+    }
+
+    /**
+     * Empty role groups remain available on the member creation form.
+     *
+     * @return void
+     */
+    public function testRenderRolesTabIncludesEmptyGroups()
+    {
+        $roles = new Collection(array((object) array('role_id' => 5, 'name' => 'Members')));
+        $roleGroups = new Collection(array((object) array(
+            'group_id' => 3,
+            'name' => 'Empty group',
+            'Roles' => new Collection(array((object) array('role_id' => 0))),
+        )));
+
+        $roleQuery = $this->makeQueryMock(array('fields', 'order', 'filter', 'all'), $roles);
+        $roleGroupQuery = $this->makeQueryMock(array('with', 'fields', 'order', 'all'), $roleGroups);
+        $model = $this->getMockBuilder(\stdClass::class)->addMethods(array('get'))->getMock();
+        $model->method('get')->willReturnMap(array(
+            array('Role', $roleQuery),
+            array('RoleGroup', $roleGroupQuery),
+        ));
+
+        $permission = $this->getMockBuilder(\stdClass::class)->addMethods(array('isSuperAdmin'))->getMock();
+        $permission->method('isSuperAdmin')->willReturn(false);
+
+        $view = $this->getMockBuilder(\stdClass::class)->addMethods(array('render'))->getMock();
+        $view->method('render')->willReturnCallback(function ($vars) {
+            return json_encode($vars['settings']);
+        });
+        $viewFactory = $this->getMockBuilder(\stdClass::class)->addMethods(array('make'))->getMock();
+        $viewFactory->method('make')->willReturn($view);
+
+        $url = $this->getMockBuilder(\stdClass::class)->addMethods(array('compile'))->getMock();
+        $url->method('compile')->willReturn('members/roles/groups/create');
+        $urlFactory = $this->getMockBuilder(\stdClass::class)->addMethods(array('make'))->getMock();
+        $urlFactory->method('make')->willReturn($url);
+
+        ee()->setMock('Model', $model);
+        ee()->setMock('Permission', $permission);
+        ee()->setMock('View', $viewFactory);
+        ee()->setMock('CP/URL', $urlFactory);
+
+        $controller = (new ReflectionClass(Members::class))->newInstanceWithoutConstructor();
+        $method = new ReflectionMethod(Members::class, 'renderRolesTab');
+        \TestReflectionHelper::makeMethodAccessible($method);
+
+        $this->assertStringContainsString('Empty group', $method->invoke($controller, null));
+    }
+
+    /**
+     * Create a fluent model query mock.
+     *
+     * @param string[] $methods
+     * @param Collection $result
+     * @return object
+     */
+    private function makeQueryMock(array $methods, Collection $result)
+    {
+        $query = $this->getMockBuilder(\stdClass::class)->addMethods($methods)->getMock();
+
+        foreach (array_diff($methods, array('all')) as $method) {
+            $query->method($method)->willReturnSelf();
+        }
+
+        $query->method('all')->willReturn($result);
+
+        return $query;
     }
 }
 

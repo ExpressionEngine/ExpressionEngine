@@ -1081,7 +1081,7 @@ class Structure_ext
         // current page global vars
         ee()->config->_global_vars['structure:page:entry_id'] = $this->entry_id !== false ? $this->entry_id : false; // {page:entry_id}
         ee()->config->_global_vars['structure:page:template_id'] = $this->entry_id !== false ? $this->site_pages['templates'][$this->entry_id] : false; // {page:template_id}
-        ee()->config->_global_vars['structure:page:title'] = $this->page_title; // {page:title}
+        ee()->config->_global_vars['structure:page:title'] = $this->encodeTitleForTemplate($this->page_title); // {page:title}
         ee()->config->_global_vars['structure:page:slug'] = $isLivePreviewRequest || $this->entry_id !== false ? ee()->uri->segment(ee()->uri->total_segments()) : false;
         ee()->config->_global_vars['structure:page:uri'] = $isLivePreviewRequest || $this->entry_id !== false ? $this->uri : false;
         ee()->config->_global_vars['structure:page:url'] = $isLivePreviewRequest || $this->entry_id !== false ? Structure_Helper::remove_double_slashes($this->site_pages['url'] . ee()->config->_global_vars['structure:page:uri']) : false; // {page:url}
@@ -1091,7 +1091,7 @@ class Structure_ext
 
         // parent page global vars
         ee()->config->_global_vars['structure:parent:entry_id'] = $this->parent_id !== false ? $this->parent_id : false; // {page:entry_id}
-        ee()->config->_global_vars['structure:parent:title'] = $this->parent_id !== false ? $this->sql->get_page_title($this->parent_id) : false; // {page:title}
+        ee()->config->_global_vars['structure:parent:title'] = $this->parent_id !== false ? $this->encodeTitleForTemplate($this->sql->get_page_title($this->parent_id)) : false; // {page:title}
         ee()->config->_global_vars['structure:parent:slug'] = $this->parent_id !== false ? ee()->uri->segment(ee()->uri->total_segments() - 1) : false; // {parent:slug}
         ee()->config->_global_vars['structure:parent:uri'] = $this->parent_id !== false && isset($this->site_pages['uris'][$this->parent_id]) ? $this->site_pages['uris'][$this->parent_id] : false; // {parent:relative_url}
         ee()->config->_global_vars['structure:parent:url'] = $this->parent_id !== false && ee()->config->_global_vars['structure:parent:uri'] !== false ? Structure_Helper::remove_double_slashes($this->site_pages['url'] . ee()->config->_global_vars['structure:parent:uri']) : false; // {parent:url}
@@ -1101,7 +1101,7 @@ class Structure_ext
 
         // top page global vars
         ee()->config->_global_vars['structure:top:entry_id'] = $this->segment_1 !== false ? $this->top_id : false; // {top:entry_id}
-        ee()->config->_global_vars['structure:top:title'] = $this->segment_1 !== false ? $this->sql->get_page_title($this->top_id) : false; // {top:title}
+        ee()->config->_global_vars['structure:top:title'] = $this->segment_1 !== false ? $this->encodeTitleForTemplate($this->sql->get_page_title($this->top_id)) : false; // {top:title}
         ee()->config->_global_vars['structure:top:slug'] = $this->segment_1 !== false ? ee()->uri->segment(1) : false; // {top:slug}
         ee()->config->_global_vars['structure:top:uri'] = $this->segment_1 !== false ? '/' . ee()->uri->segment(1) . $trailing_slash : false; // {top:relative_url}
         ee()->config->_global_vars['structure:top:url'] = $this->segment_1 !== false ? Structure_Helper::remove_double_slashes($this->site_pages['url'] . ee()->uri->segment(1) . $trailing_slash) : false; // {top:url}
@@ -1130,6 +1130,25 @@ class Structure_ext
         $segment_count = ee()->uri->total_segments();
         $last_segment = ee()->uri->segment($segment_count);
         ee()->config->_global_vars['structure_last_segment'] = $last_segment; // {structure_last_segment}
+    }
+
+    /**
+     * Encode template delimiters while preserving supported title markup.
+     *
+     * @param string|false $title Structure page title
+     * @return string|false
+     */
+    private function encodeTitleForTemplate($title)
+    {
+        if (! is_string($title)) {
+            return $title;
+        }
+
+        return str_replace(
+            array('{', '}', '<?', '?>'),
+            array('&#123;', '&#125;', '&lt;?', '?&gt;'),
+            $title
+        );
     }
 
     public function _parse_tag_url_for($m)

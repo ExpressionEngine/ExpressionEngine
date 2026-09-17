@@ -107,7 +107,7 @@ class Member_settings extends Member
         }
 
         $member = ee('Model')->get('Member', (int) $this->cur_id)
-            ->with(['PrimaryRole' => 'RoleSettings'])
+            ->with('PrimaryRole')
             ->filter('role_id', 'NOT IN', $not_in)
             ->first();
 
@@ -115,21 +115,17 @@ class Member_settings extends Member
             return ee()->output->show_user_error('general', array(ee()->lang->line('profile_not_available')));
         }
 
-        // Fetch the row
-        $row = array_merge(
-            $member->getValues(),
-            $member->PrimaryRole->getValues(),
-            $member->PrimaryRole->RoleSettings->getValues()
-        );
-
         // Use member field names
         $member_fields = ee('Model')->get('MemberField')
             ->all();
 
-        foreach ($member_fields as $member_field) {
-            $key = 'm_field_id_' . $member_field->m_field_id;
-            $row[$member_field->m_field_name] = array_key_exists($key, $row) ? $row[$key] : '';
+        if (! ee('Permission')->isSuperAdmin()) {
+            $member_fields = $member_fields->filter(function ($field) {
+                return $field->m_field_public == 'y';
+            });
         }
+
+        $row = $this->getPublicProfileData($member, $member_fields);
 
         /** ----------------------------------------
         /**  Fetch the template
@@ -339,29 +335,9 @@ class Member_settings extends Member
         /** ----------------------------------------
         /**  Parse conditional pairs
         /** ----------------------------------------*/
+        $content = ee()->functions->prep_conditionals($content, $row);
+
         foreach ($this->var_cond as $val) {
-            /** ----------------------------------------
-            /**  Conditional statements
-            /** ----------------------------------------*/
-            $cond = ee()->functions->prep_conditional($val['0']);
-
-            $lcond = substr($cond, 0, strpos($cond, ' '));
-            $rcond = substr($cond, strpos($cond, ' '));
-
-            if (array_key_exists($val['3'], $row)) {
-                $lcond = str_replace($val['3'], "\$row['" . $val['3'] . "']", $lcond);
-                $cond = $lcond . ' ' . $rcond;
-                $cond = str_replace("\|", "|", $cond);
-
-                eval("\$result = " . $cond . ";");
-
-                if ($result) {
-                    $content = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "\\1", $content);
-                } else {
-                    $content = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "", $content);
-                }
-            }
-
             /** ----------------------------------------
             /**  {if accept_email}
             /** ----------------------------------------*/
@@ -530,12 +506,6 @@ class Member_settings extends Member
         // Grab the data for the particular member
 
         if ($member_fields) {
-            if (! ee('Permission')->isSuperAdmin()) {
-                $member_fields = $member_fields->filter(function ($field) {
-                    return $field->m_field_public == 'y';
-                });
-            }
-
             $fnames = array();
 
             $member_field_ids = array();
@@ -551,36 +521,6 @@ class Member_settings extends Member
 
             ee()->load->library('api');
             ee()->legacy_api->instantiate('channel_fields');
-
-            /** ----------------------------------------
-            /**  Parse conditionals for custom fields
-            /** ----------------------------------------*/
-            foreach ($this->var_cond as $val) {
-                // Prep the conditional
-                $cond = ee()->functions->prep_conditional($val['0']);
-
-                $lcond = substr($cond, 0, strpos($cond, ' '));
-                $rcond = substr($cond, strpos($cond, ' '));
-
-                if (array_key_exists($val['3'], $fnames)) {
-                    $m_field_id_name = 'm_field_id_' . $fnames[$val['3']]['0'];
-
-                    $lcond = str_replace($val['3'], "\$row['" . $m_field_id_name . "']", $lcond);
-
-                    $cond = $lcond . ' ' . $rcond;
-
-                    $cond = str_replace("\|", "|", $cond);
-
-                    eval("\$rez = " . $cond . ";");
-
-                    if ($rez) {
-                        $content = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "\\1", $content);
-                    } else {
-                        $content = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "", $content);
-                    }
-                }
-            }
-            // END CONDITIONALS
 
             /** ----------------------------------------
             /**  Parse single variables
@@ -623,7 +563,6 @@ class Member_settings extends Member
                 $content = str_replace("/{custom_profile_fields}/s", '', $content);
             } else {
                 $str = '';
-                $var_conds = ee()->functions->assign_conditional_variables($field_chunk);
                 $member_field = '';
 
                 foreach ($member_fields as $member_field) {
@@ -665,28 +604,7 @@ class Member_settings extends Member
                     $temp = str_replace('{field_description}', $member_field->m_field_description, $temp);
                     $temp = str_replace('{field_data}', $field_data, $temp);
 
-                    foreach ($var_conds as $val) {
-                        // Prep the conditional
-
-                        $cond = ee()->functions->prep_conditional($val['0']);
-
-                        $lcond = substr($cond, 0, strpos($cond, ' '));
-                        $rcond = substr($cond, strpos($cond, ' '));
-
-                        if (array_key_exists($val['3'], $field_row)) {
-                            $lcond = str_replace($val['3'], "\$field_row['" . $val['3'] . "']", $lcond);
-                            $cond = $lcond . ' ' . $rcond;
-                            $cond = str_replace("\|", "|", $cond);
-
-                            eval("\$result = " . $cond . ";");
-
-                            if ($result) {
-                                $temp = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "\\1", $temp);
-                            } else {
-                                $temp = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "", $temp);
-                            }
-                        }
-                    }
+                    $temp = ee()->functions->prep_conditionals($temp, $field_row);
 
                     $str .= $temp;
                 }
@@ -702,6 +620,79 @@ class Member_settings extends Member
         $content = str_replace(LD . 'custom_profile_fields' . RD, '', $content);
 
         return $content;
+    }
+
+    /**
+     * Build the values available to public profile templates.
+     *
+     * @param \ExpressionEngine\Model\Member\Member $member
+     * @param iterable $member_fields
+     * @return array
+     */
+    protected function getPublicProfileData($member, $member_fields)
+    {
+        $fields = array(
+            'accept_messages',
+            'accept_user_email',
+            'avatar_filename',
+            'avatar_height',
+            'avatar_width',
+            'date_format',
+            'display_signatures',
+            'email',
+            'forum_theme',
+            'group_id',
+            'in_authorlist',
+            'include_seconds',
+            'join_date',
+            'language',
+            'last_activity',
+            'last_comment_date',
+            'last_entry_date',
+            'last_forum_post_date',
+            'last_visit',
+            'member_id',
+            'parse_smileys',
+            'photo_filename',
+            'photo_height',
+            'photo_width',
+            'profile_theme',
+            'role_id',
+            'screen_name',
+            'signature',
+            'sig_img_filename',
+            'sig_img_height',
+            'sig_img_width',
+            'time_format',
+            'timezone',
+            'total_comments',
+            'total_entries',
+            'total_forum_posts',
+            'total_forum_topics',
+            'username',
+            'week_start',
+        );
+        $member_values = $member->getValues();
+        $row = array_intersect_key($member_values, array_flip($fields));
+        $row['group_title'] = $member->PrimaryRole->name;
+        $row['primary_role_name'] = $member->PrimaryRole->name;
+        $row['short_name'] = $member->PrimaryRole->short_name;
+        $row['highlight'] = $member->PrimaryRole->highlight;
+        $row['name'] = $member->PrimaryRole->name;
+        $row['description'] = $member->PrimaryRole->description;
+        $row['total_members'] = $member->PrimaryRole->total_members;
+        $row['is_locked'] = $member->PrimaryRole->is_locked;
+
+        foreach ($member_fields as $member_field) {
+            $columns = array_flip($member_field->getColumnNames());
+            $row = array_merge($row, array_intersect_key($member_values, $columns));
+            $key = 'm_field_id_' . $member_field->m_field_id;
+            $value = array_key_exists($key, $member_values) ? $member_values[$key] : '';
+            $row[$key] = $value;
+            $row[$member_field->m_field_name] = $value;
+        }
+
+        return $row;
     }
 
     /** ----------------------------------------

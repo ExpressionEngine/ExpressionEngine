@@ -114,7 +114,9 @@ $lang = array(
 
     'member_fields' => 'Member Fields',
 
-    'member_id_warning' => 'WARNING: If you have &lt;member_id&gt; tags in your XML, existing members with the same member_id will be OVERWRITTEN! Proceed with caution!',
+    'member_id_in_use' => 'Member ID "%x" is already in use. Omit the &lt;member_id&gt; tag to let ExpressionEngine choose a new ID.',
+
+    'member_id_warning' => 'Member IDs already in use cannot be imported. Omit the &lt;member_id&gt; tag to let ExpressionEngine choose a new ID.',
 
     'member_import_utility' => 'Member Import Utility',
 

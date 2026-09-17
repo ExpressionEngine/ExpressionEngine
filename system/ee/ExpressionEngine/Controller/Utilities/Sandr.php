@@ -23,7 +23,7 @@ class Sandr extends Utilities
      */
     public function index()
     {
-        if (! ee('Permission')->can('access_data')) {
+        if (! ee('Permission')->isSuperAdmin()) {
             show_error(lang('unauthorized_access'), 403);
         }
 

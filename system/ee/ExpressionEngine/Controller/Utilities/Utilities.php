@@ -109,10 +109,12 @@ class Utilities extends CP_Controller
             $db_list = $sidebar->addHeader(lang('database'))->addBasicList();
             $db_list->addItem(lang('backup_database'), ee('CP/URL')->make('utilities/db-backup'));
             $db_list->addItem(lang('sql_manager_abbr'), ee('CP/URL')->make('utilities/sql'));
-            $url = ee('CP/URL')->make('utilities/query');
-            $item = $db_list->addItem(lang('query_form'), $url);
-            if ($url->matchesTheRequestedURI()) {
-                $item->isActive();
+            if (ee('Permission')->isSuperAdmin()) {
+                $url = ee('CP/URL')->make('utilities/query');
+                $item = $db_list->addItem(lang('query_form'), $url);
+                if ($url->matchesTheRequestedURI()) {
+                    $item->isActive();
+                }
             }
         }
 
@@ -131,7 +133,9 @@ class Utilities extends CP_Controller
             }
             $data_list->addItem(lang('update_file_usage'), ee('CP/URL')->make('utilities/file-usage'));
             $data_list->addItem(lang('statistics'), ee('CP/URL')->make('utilities/stats'));
-            $data_list->addItem(lang('search_and_replace'), ee('CP/URL')->make('utilities/sandr'));
+            if (ee('Permission')->isSuperAdmin()) {
+                $data_list->addItem(lang('search_and_replace'), ee('CP/URL')->make('utilities/sandr'));
+            }
         }
     }
 
