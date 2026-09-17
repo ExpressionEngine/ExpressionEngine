@@ -9,6 +9,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use ExpressionEngine\Model\Role\Role;
 use ExpressionEngine\Service\Model\Collection;
 use ExpressionEngine\Service\Template\Variables\LegacyParser;
 use PHPUnit\Framework\TestCase;
@@ -55,7 +56,12 @@ class MemberPublicProfileMemberMock
     public function __construct(array $values, $role_name = 'Members')
     {
         $this->values = $values;
-        $this->PrimaryRole = (object) array('name' => $role_name);
+        $this->PrimaryRole = new Role(array(
+            'name' => $role_name,
+            'short_name' => 'members',
+            'highlight' => '0066cc',
+            'description' => 'Internal role description',
+        ));
     }
 
     /**
@@ -93,6 +99,7 @@ class MemberPublicProfileTest extends TestCase
             'member_id' => 42,
             'username' => 'sample-member',
             'screen_name' => 'Sample Member',
+            'in_authorlist' => 'y',
             'sig_img_filename' => 'signature.png',
             'sig_img_width' => 240,
             'sig_img_height' => 80,
@@ -109,7 +116,26 @@ class MemberPublicProfileTest extends TestCase
         $this->assertSame(80, $profile['sig_img_height']);
         $this->assertSame('Members', $profile['group_title']);
         $this->assertSame('Members', $profile['primary_role_name']);
+        $this->assertSame('members', $profile['short_name']);
+        $this->assertSame('0066cc', $profile['highlight']);
+        $this->assertSame('y', $profile['in_authorlist']);
+        $this->assertArrayNotHasKey('description', $profile);
         $this->assertArrayNotHasKey('notepad', $profile);
+    }
+
+    /** @dataProvider defaultHighlightProvider */
+    public function testProfileDataPreservesDefaultRoleHighlights($highlight)
+    {
+        $member = new MemberPublicProfileMemberMock(array('member_id' => 42));
+        $member->PrimaryRole->setRawProperty('highlight', $highlight);
+        $profile = (new MemberPublicProfileHarness())->getPublicProfileDataForTest($member, array());
+
+        $this->assertSame('5D63F1', $profile['highlight']);
+    }
+
+    public function defaultHighlightProvider()
+    {
+        return array([null], ['']);
     }
 
     /**
@@ -140,15 +166,20 @@ class MemberPublicProfileTest extends TestCase
         $tagdata = '<h1>{screen_name}</h1>'
             . '<img src="{sig_img_filename}" width="{sig_img_width}" height="{sig_img_height}">'
             . '<p>{group_title}/{primary_role_name}</p>'
+            . '<p>role:{short_name}|{highlight}|{in_authorlist}</p>'
+            . '{if short_name == "members"}<p>member role</p>{/if}'
+            . '{if highlight == "0066cc"}<p>highlighted role</p>{/if}'
+            . '{if in_authorlist == "y"}<p>listed author</p>{/if}'
             . '<p>public:{biography}|{m_field_id_7}</p>'
             . '<p>private:{private_notes}|{m_field_id_8}</p>'
             . '{if member_id > 0}<p>has member</p>{/if}'
             . '{if biography != ""}<p>has biography</p>{/if}'
-            . '{custom_profile_fields}{notepad}';
+            . '{custom_profile_fields}{notepad}{description}';
         $member = new MemberPublicProfileMemberMock(array(
             'member_id' => 42,
             'username' => 'sample-member',
             'screen_name' => 'Sample Member',
+            'in_authorlist' => 'y',
             'avatar_filename' => '',
             'timezone' => 'UTC',
             'sig_img_filename' => 'signature.png',
@@ -175,11 +206,16 @@ class MemberPublicProfileTest extends TestCase
         $this->assertStringContainsString('<h1>Sample Member</h1>', $content);
         $this->assertStringContainsString('<img src="signature.png" width="240" height="80">', $content);
         $this->assertStringContainsString('<p>Members/Members</p>', $content);
+        $this->assertStringContainsString('<p>role:members|0066cc|y</p>', $content);
+        $this->assertStringContainsString('<p>member role</p>', $content);
+        $this->assertStringContainsString('<p>highlighted role</p>', $content);
+        $this->assertStringContainsString('<p>listed author</p>', $content);
         $this->assertStringContainsString('<p>public:Public profile text|Public profile text</p>', $content);
         $this->assertStringContainsString('<p>has member</p>', $content);
         $this->assertStringContainsString('<p>has biography</p>', $content);
         $this->assertStringContainsString('<p>biography:Public profile text</p>', $content);
         $this->assertStringNotContainsString('Private preference', $content);
+        $this->assertStringNotContainsString('Internal role description', $content);
         if ($super_admin) {
             $this->assertStringContainsString('<p>private:Private profile text|Private profile text</p>', $content);
             $this->assertStringContainsString('<p>private_notes:Private profile text</p>', $content);

@@ -639,6 +639,7 @@ class Member_settings extends Member
             'avatar_width',
             'email',
             'group_id',
+            'in_authorlist',
             'join_date',
             'language',
             'last_activity',
@@ -667,6 +668,8 @@ class Member_settings extends Member
         $row = array_intersect_key($member_values, array_flip($fields));
         $row['group_title'] = $member->PrimaryRole->name;
         $row['primary_role_name'] = $member->PrimaryRole->name;
+        $row['short_name'] = $member->PrimaryRole->short_name;
+        $row['highlight'] = $member->PrimaryRole->highlight;
 
         foreach ($member_fields as $member_field) {
             $key = 'm_field_id_' . $member_field->m_field_id;
