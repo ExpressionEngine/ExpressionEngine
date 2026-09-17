@@ -32,7 +32,7 @@ class ProSearchShortcutPermissionsTest extends TestCase
         if (!function_exists('show_error')) {
             function show_error($message, $status = 500, $heading = 'Error')
             {
-                throw new ProSearchShortcutPermissionDenied($message);
+                throw new ProSearchShortcutPermissionDenied($message, $status);
             }
         }
         require_once BASEPATH . 'helpers/string_helper.php';
@@ -83,6 +83,19 @@ class ProSearchShortcutPermissionsTest extends TestCase
             'allowed' => [5, [5], true],
             'super admin' => [1, [], true],
         ];
+    }
+
+    /**
+     * Reject group saves before reading input when permission is denied.
+     *
+     * @return void
+     */
+    public function testSaveGroupRequiresPermission(): void
+    {
+        $this->setPermission(5, [], false);
+        $this->input->expects($this->never())->method('post');
+
+        $this->mcp->save_group();
     }
 
     /**
@@ -292,7 +305,8 @@ class ProSearchShortcutPermissionsTest extends TestCase
         ee()->setMock('pro_search_settings', $settings);
         if (!$allowed) {
             $this->expectException(ProSearchShortcutPermissionDenied::class);
-            $this->expectExceptionMessage('Operation not permitted');
+            $this->expectExceptionMessage(lang('unauthorized_access'));
+            $this->expectExceptionCode(403);
         }
     }
 
