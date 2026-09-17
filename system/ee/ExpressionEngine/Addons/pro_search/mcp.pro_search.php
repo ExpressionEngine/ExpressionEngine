@@ -1673,15 +1673,14 @@ class Pro_search_mcp
     }
 
     /**
-     * Save short group
+     * Save a shortcut group when the current user has permission.
      *
-     * @access      public
-     * @return      string
+     * @return void
      */
     public function save_group()
     {
         if (! $this->can_manage_shortcuts()) {
-            show_error('Operation not permitted');
+            show_error(lang('unauthorized_access'), 403);
         }
 
         // --------------------------------------
@@ -1728,7 +1727,7 @@ class Pro_search_mcp
     public function delete_group()
     {
         if (! $this->can_manage_shortcuts()) {
-            show_error('Operation not permitted');
+            show_error(lang('unauthorized_access'), 403);
         }
 
         // Make sure an ID is posted
@@ -1875,7 +1874,7 @@ class Pro_search_mcp
     public function edit_shortcut($shortcut_id = 'new')
     {
         if (! $this->can_manage_shortcuts()) {
-            show_error('Operation not permitted');
+            show_error(lang('unauthorized_access'), 403);
         }
 
         // --------------------------------------
@@ -2033,7 +2032,7 @@ class Pro_search_mcp
     public function save_shortcut()
     {
         if (! $this->can_manage_shortcuts()) {
-            show_error('Operation not permitted');
+            show_error(lang('unauthorized_access'), 403);
         }
 
         // --------------------------------------
@@ -2103,7 +2102,7 @@ class Pro_search_mcp
     public function delete_shortcut()
     {
         if (! $this->can_manage_shortcuts()) {
-            show_error('Operation not permitted');
+            show_error(lang('unauthorized_access'), 403);
         }
 
         // Make sure an ID is posted
@@ -2135,7 +2134,7 @@ class Pro_search_mcp
     public function order_shortcuts()
     {
         if (! $this->can_manage_shortcuts()) {
-            show_error('Operation not permitted');
+            show_error(lang('unauthorized_access'), 403);
         }
 
         // Get order from POST
