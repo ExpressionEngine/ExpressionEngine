@@ -65,6 +65,12 @@ class Updater
         ], true);
     }
 
+    /**
+     * Authorize and execute the requested updater step.
+     *
+     * @return string
+     * @throws UpdaterException
+     */
     public function run()
     {
         if ($this->requiresControlPanel()) {
@@ -79,10 +85,11 @@ class Updater
         }
 
         if (! $this->isAuthorizedForStep($step)) {
-            // The installed application's setting is trusted only after CP authorization above.
-            $this->authorization->prepare(bool_config_item('disable_csrf_protection'));
+            // Trust the installed application's settings and session only after CP authorization above.
+            $sessionId = ee()->session->validation === 's' ? ee()->session->userdata('session_id') : null;
+            $this->authorization->prepare(bool_config_item('disable_csrf_protection'), $sessionId);
 
-            // The existing client repeats this step, acknowledging the cookie first.
+            // The existing client repeats this step with the prepared credentials.
             return $this->response('updateFiles', 'Updating files');
         }
 
