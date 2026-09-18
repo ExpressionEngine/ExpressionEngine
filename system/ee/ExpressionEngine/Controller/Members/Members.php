@@ -962,10 +962,21 @@ class Members extends CP_Controller
             ->getDictionary('role_id', 'name');
 
         $role_groups = ee('Model')->get('RoleGroup')
+            ->with('Roles')
             ->fields('group_id', 'name')
             ->order('name')
-            ->all()
-            ->getDictionary('group_id', 'name');
+            ->all();
+
+        if (! ee('Permission')->isSuperAdmin()) {
+            $allowedRoleIds = array_keys($roles);
+            $role_groups = $role_groups->filter(function ($roleGroup) use ($allowedRoleIds) {
+                $roleIds = array_filter($roleGroup->Roles->pluck('role_id'));
+
+                return empty(array_diff($roleIds, $allowedRoleIds));
+            });
+        }
+
+        $role_groups = $role_groups->getDictionary('group_id', 'name');
 
         $sections = [
             [

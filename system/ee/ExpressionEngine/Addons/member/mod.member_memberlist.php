@@ -217,6 +217,27 @@ class Member_memberlist extends Member
         return $this->memberlist(true);
     }
 
+    /**
+     * Parse conditionals in a member-list row.
+     *
+     * @param string $template
+     * @param array $row
+     * @param array $fields
+     * @return string
+     */
+    protected function parseMemberListConditionals($template, array $row, array $fields)
+    {
+        foreach ($fields as $name => $id) {
+            $key = 'm_field_id_' . $id;
+
+            if (! array_key_exists($name, $row) && array_key_exists($key, $row)) {
+                $row[$name] = $row[$key];
+            }
+        }
+
+        return ee()->functions->prep_conditionals($template, $row);
+    }
+
     /** ----------------------------------------
     /**  Member List
     /** ----------------------------------------*/
@@ -544,54 +565,9 @@ class Member_memberlist extends Member
                 /** ----------------------------------------
                 /**  Parse conditional pairs
                 /** ----------------------------------------*/
+                $temp = $this->parseMemberListConditionals($temp, $row, $fields);
+
                 foreach ($this->var_cond as $val) {
-                    /** ----------------------------------------
-                    /**  Conditional statements
-                    /** ----------------------------------------*/
-                    $cond = ee()->functions->prep_conditional($val['0']);
-
-                    $lcond = substr($cond, 0, strpos($cond, ' '));
-                    $rcond = substr($cond, strpos($cond, ' '));
-
-                    /** ----------------------------------------
-                    /**  Parse conditions in standard fields
-                    /** ----------------------------------------*/
-
-                    // array_key_exists instead of isset since columns can be NULL
-                    if (array_key_exists($val['3'], $row)) {
-                        $lcond = str_replace($val['3'], "\$row['" . $val['3'] . "']", $lcond);
-                        $cond = $lcond . ' ' . $rcond;
-                        $cond = str_replace("\|", "|", $cond);
-
-                        eval("\$result = " . $cond . ";");
-
-                        if ($result) {
-                            $temp = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "\\1", $temp);
-                        } else {
-                            $temp = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "", $temp);
-                        }
-                    }
-                    /** ------------------------------------------
-                    /**  Parse conditions in custom member fields
-                    /** ------------------------------------------*/
-                    elseif (isset($fields[$val['3']])) {
-                        if (array_key_exists('m_field_id_' . $fields[$val['3']], $row)) {
-                            $v = $row['m_field_id_' . $fields[$val['3']]];
-
-                            $lcond = str_replace($val['3'], "\$v", $lcond);
-                            $cond = $lcond . ' ' . $rcond;
-                            $cond = str_replace("\|", "|", $cond);
-
-                            eval("\$result = " . $cond . ";");
-
-                            if ($result) {
-                                $temp = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "\\1", $temp);
-                            } else {
-                                $temp = preg_replace("/" . LD . $val['0'] . RD . "(.*?)" . LD . '\/if' . RD . "/s", "", $temp);
-                            }
-                        }
-                    }
-
                     /** ----------------------------------------
                     /**  {if accept_email}
                     /** ----------------------------------------*/

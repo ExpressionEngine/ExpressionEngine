@@ -35,6 +35,13 @@ module.exports = defineConfig({
             const Updater = require('./cypress/plugins/updater');
             const updater = new Updater;
 
+            on('task', {
+                'updater:configure_handoff': options => updater.configure_handoff(options),
+                'updater:install_handoff': () => updater.install_handoff(),
+                'updater:restore_handoff': () => updater.restore_handoff()
+            });
+            on('after:run', () => updater.restore_handoff());
+
             const baseUrl = config.env.CYPRESS_BASE_URL || null;
             if (baseUrl) {
                 config.baseUrl = baseUrl;

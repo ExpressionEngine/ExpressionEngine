@@ -1,25 +1,16 @@
 <?php
 
-namespace ExpressionEngine\Controller\Utilities {
-    class DbBackupPermissionDenied extends \RuntimeException
-    {
-    }
-
-    function show_error($message, $status = 500)
-    {
-        throw new DbBackupPermissionDenied($message, $status);
-    }
-}
-
 namespace ExpressionEngine\Tests\Controllers\Utilities {
 
 use ExpressionEngine\Controller\Utilities\DbBackup;
-use ExpressionEngine\Controller\Utilities\DbBackupPermissionDenied;
+use ExpressionEngine\Controller\Utilities\UtilitiesShowErrorException;
 use ExpressionEngine\Controller\Utilities\SyncConditionalFields;
 use ExpressionEngine\Library\Filesystem\Filesystem;
 use ExpressionEngine\Service\Database\Backup\Backup;
 use ExpressionEngine\Service\Database\Backup\Query;
 use PHPUnit\Framework\TestCase;
+
+require_once __DIR__ . '/UtilitiesTestHelper.php';
 
 class DbBackupTest extends TestCase
 {
@@ -103,14 +94,24 @@ class DbBackupTest extends TestCase
         ee()->resetMocks();
     }
 
-    /** @dataProvider deniedRequests */
+    /**
+     * Ensure denied requests stop before any backup side effects.
+     *
+     * @param array $permissions
+     * @param string $action
+     * @param string $method
+     * @param array $post
+     * @return void
+     *
+     * @dataProvider deniedRequests
+     */
     public function testDeniedRequestsHaveNoBackupSideEffects($permissions, $action, $method, $post)
     {
         $this->permissions($permissions);
         $status = null;
         try {
             $this->invoke($action, $method, $post);
-        } catch (DbBackupPermissionDenied $error) {
+        } catch (UtilitiesShowErrorException $error) {
             $status = $error->getCode();
         }
 
