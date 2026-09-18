@@ -530,8 +530,17 @@ class MenuManager extends Settings
         return ee('View')->make('_shared/form')->render($vars);
     }
 
+    /**
+     * Remove a menu item and return the updated menu list.
+     *
+     * @return void
+     */
     public function removeItem()
     {
+        if (! ee('Request')->isPost()) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
         $item_id = ee('Request')->post('content_id');
 
         $item = ee('Model')->get('MenuItem', $item_id)->first();

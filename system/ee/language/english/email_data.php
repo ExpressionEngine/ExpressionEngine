@@ -934,7 +934,7 @@ if (! function_exists('post_install_message_template')) {
 			</div>
 			<section class="bar">
 				<p style="float: left;"><a href="https://expressionengine.com/" rel="external"><b>ExpressionEngine</b></a></p>
-				<p style="float: right;">&copy;2023 <a href="https://packettide.com/" rel="external">Packet Tide</a>, LLC</p>
+				<p style="float: right;">&copy;{current_time format="%Y"} <a href="https://packettide.com/" rel="external">Packet Tide</a>, LLC</p>
 			</section>
 		</section>
 

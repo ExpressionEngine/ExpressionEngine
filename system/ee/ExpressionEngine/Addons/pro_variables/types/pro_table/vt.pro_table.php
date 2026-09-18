@@ -97,7 +97,15 @@ class Pro_table extends Pro_variables_type
 
             // Overwrite data if there are rows present
             if ($rows) {
-                $data = '<!--' . $this->encode($rows) . '-->';
+                $encoded = $this->encode($rows);
+
+                if ($encoded === false) {
+                    $this->error_msg = 'invalid_value';
+
+                    return false;
+                }
+
+                $data = '<!--' . $encoded . '-->';
             }
         }
 
@@ -174,18 +182,71 @@ class Pro_table extends Pro_variables_type
     }
 
     /**
-     * Encode an array
+     * Encode table rows for storage.
+     *
+     * @param array $val
+     * @return string|false
      */
     private function encode($val)
     {
-        return is_array($val) ? base64_encode(serialize($val)) : $val;
+        $payload = json_encode(array_values($val));
+
+        return $payload === false ? false : base64_encode($payload);
     }
 
     /**
-     * Decode an array
+     * Decode table rows from current or legacy storage.
+     *
+     * @param mixed $val
+     * @return array
      */
     private function decode($val)
     {
-        return is_array($val) ? $val : unserialize(base64_decode($val));
+        if (is_array($val)) {
+            return $this->validateRows($val);
+        }
+
+        $decoded = base64_decode($val, true);
+
+        if ($decoded === false) {
+            return array();
+        }
+
+        $rows = json_decode($decoded, true);
+
+        if (json_last_error() === JSON_ERROR_NONE) {
+            return $this->validateRows($rows);
+        }
+
+        $rows = @unserialize($decoded, array('allowed_classes' => false));
+
+        return $this->validateRows($rows);
+    }
+
+    /**
+     * Return rows whose cells contain supported values.
+     *
+     * @param mixed $rows
+     * @return array
+     */
+    private function validateRows($rows)
+    {
+        if (! is_array($rows)) {
+            return array();
+        }
+
+        foreach ($rows as $row) {
+            if (! is_array($row)) {
+                return array();
+            }
+
+            foreach ($row as $cell) {
+                if (! is_scalar($cell) && $cell !== null) {
+                    return array();
+                }
+            }
+        }
+
+        return $rows;
     }
 }
