@@ -371,6 +371,34 @@ class RequestAuthorizationTest extends TestCase
         }
     }
 
+    /**
+     * Prepare missing state without emitting warnings that EE would log.
+     *
+     * @return void
+     */
+    public function testMissingStateDoesNotEmitWarningsDuringPreparation()
+    {
+        $authorization = new TestableRequestAuthorization($this->statePath, $this->lockPath);
+        $warnings = [];
+        set_error_handler(function ($severity, $message) use (&$warnings) {
+            $warnings[] = $message;
+
+            return true;
+        }, E_WARNING);
+
+        try {
+            $this->assertFalse($authorization->isAuthorized());
+            $this->assertFalse($authorization->hasStarted());
+            $authorization->prepare();
+            $this->assertFileExists($this->statePath);
+            $this->assertFalse($authorization->isAuthorized());
+        } finally {
+            restore_error_handler();
+        }
+
+        $this->assertSame([], $warnings);
+    }
+
     public function testUnreadableStateDoesNotPermitASecondHandoff()
     {
         file_put_contents($this->statePath, 'incomplete-state');

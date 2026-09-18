@@ -375,6 +375,10 @@ class RequestAuthorization
      */
     private function readState()
     {
+        if (! is_file($this->statePath)) {
+            return array();
+        }
+
         $contents = @file_get_contents($this->statePath);
         if (! is_string($contents) || strpos($contents, self::STATE_PREFIX) !== 0) {
             return array();
