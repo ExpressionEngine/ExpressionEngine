@@ -37,15 +37,26 @@ class ControllerTest extends TestCase
         ee()->resetMocks();
     }
 
-    public function testHandoffRequiresControlPanelAndCookieBeforeRunningFiles()
+    /**
+     * Select credentials from the authenticated CP session type before replacing files.
+     *
+     * @param string $sessionType
+     * @return void
+     * @dataProvider sessionTypeProvider
+     */
+    public function testHandoffUsesTheAuthenticatedSessionTypeBeforeRunningFiles($sessionType)
     {
+        $this->mockSession($sessionType);
         $this->assertTrue($this->controller->requiresControlPanel());
         $result = json_decode($this->controller->run(), true);
         $this->assertSame(1, $this->cp->calls);
         $this->assertSame('updateFiles', $result['nextStep']);
         $this->assertSame([], $this->controller->steps);
+        $this->assertSame($sessionType !== 's', is_array($this->authorization->cookie));
 
-        $_COOKIE = $this->authorization->cookie;
+        $_COOKIE = $this->authorization->cookie ?? [];
+        ee()->resetMocks();
+        $this->cp->allowed = false;
         $this->assertFalse($this->controller->requiresControlPanel());
         $this->controller->run();
         $this->assertSame(['updateFiles'], $this->controller->steps);
@@ -53,8 +64,17 @@ class ControllerTest extends TestCase
         $this->assertSame(1, $this->cp->calls);
     }
 
-    public function testDeniedControlPanelAuthorizationDoesNotCreateCapability()
+    /**
+     * Never bind a session credential before CP authorization succeeds.
+     *
+     * @param string $sessionType
+     * @return void
+     * @dataProvider sessionTypeProvider
+     */
+    public function testDeniedControlPanelAuthorizationDoesNotCreateCapability($sessionType)
     {
+        $session = $this->mockSession($sessionType);
+        $session->expects($this->never())->method('userdata');
         $this->cp->allowed = false;
         try {
             $this->controller->run();
@@ -66,8 +86,16 @@ class ControllerTest extends TestCase
         }
     }
 
-    public function testCsrfDisabledSessionWithoutATokenCanStartAndRecover()
+    /**
+     * Preserve the AJAX binding for each session type when CSRF is disabled.
+     *
+     * @param string $sessionType
+     * @return void
+     * @dataProvider sessionTypeProvider
+     */
+    public function testCsrfDisabledSessionWithoutATokenCanStartAndRecover($sessionType)
     {
+        $this->mockSession($sessionType);
         $config = $this->getMockBuilder(\stdClass::class)->addMethods(['item'])->getMock();
         $config->method('item')->with('disable_csrf_protection')->willReturn('y');
         ee()->setMock('config', $config);
@@ -86,7 +114,7 @@ class ControllerTest extends TestCase
         $result = json_decode($this->controller->run(), true);
         $this->assertSame('updateFiles', $result['nextStep']);
         $this->assertSame([], $this->controller->steps);
-        $_COOKIE = $this->authorization->cookie;
+        $_COOKIE = $this->authorization->cookie ?? [];
 
         // Later requests must use the persisted binding without consulting the replaced application.
         ee()->resetMocks();
@@ -116,8 +144,16 @@ class ControllerTest extends TestCase
         }
     }
 
-    public function testFailedHandoffCanBeCancelledThroughControlPanel()
+    /**
+     * Authorize cancellation through the CP before any files have moved.
+     *
+     * @param string $sessionType
+     * @return void
+     * @dataProvider sessionTypeProvider
+     */
+    public function testFailedHandoffCanBeCancelledThroughControlPanel($sessionType)
     {
+        $this->mockSession($sessionType);
         $this->controller->run();
         $_GET['step'] = 'rollback';
         $this->assertTrue($this->controller->requiresControlPanel());
@@ -204,8 +240,16 @@ class ControllerTest extends TestCase
         ];
     }
 
-    public function testExpiredAuthorizationCanCompleteRollbackWithTheOriginalCredentials()
+    /**
+     * Retain bounded rollback access for the initiating credentials in every session mode.
+     *
+     * @param string $sessionType
+     * @return void
+     * @dataProvider sessionTypeProvider
+     */
+    public function testExpiredAuthorizationCanCompleteRollbackWithTheOriginalCredentials($sessionType)
     {
+        $this->mockSession($sessionType);
         $this->startUpdate();
         $this->expireAuthorization();
         $this->cp->allowed = false;
@@ -296,8 +340,16 @@ class ControllerTest extends TestCase
         $this->controller->requiresControlPanel();
     }
 
-    public function testExistingContinuationProtocolFollowsTheReturnedNextStep()
+    /**
+     * Complete every forward step with the existing client protocol in each session mode.
+     *
+     * @param string $sessionType
+     * @return void
+     * @dataProvider sessionTypeProvider
+     */
+    public function testExistingContinuationProtocolFollowsTheReturnedNextStep($sessionType)
     {
+        $this->mockSession($sessionType);
         $this->startUpdate();
         $next = 'addLegacyFiles';
         while ($next !== false) {
@@ -544,10 +596,42 @@ class ControllerTest extends TestCase
         ];
     }
 
+    /**
+     * Provide the three supported CP session types.
+     *
+     * @return array
+     */
+    public function sessionTypeProvider()
+    {
+        return [['c'], ['cs'], ['s']];
+    }
+
+    /**
+     * Model the validated CP session and the value sent by the existing client.
+     *
+     * @param string $sessionType
+     * @return \PHPUnit\Framework\MockObject\MockObject
+     */
+    private function mockSession($sessionType)
+    {
+        $session = $this->getMockBuilder(\stdClass::class)->addMethods(['userdata'])->getMock();
+        $session->validation = $sessionType;
+        $session->method('userdata')->with('session_id')->willReturn(str_repeat('a', 40));
+        ee()->setMock('session', $session);
+        $_GET['S'] = $sessionType === 's' ? str_repeat('a', 40) : 'fingerprint';
+
+        return $session;
+    }
+
+    /**
+     * Acknowledge the handoff using whichever credentials the session type requires.
+     *
+     * @return void
+     */
     private function startUpdate()
     {
         $this->controller->run();
-        $_COOKIE = $this->authorization->cookie;
+        $_COOKIE = $this->authorization->cookie ?? [];
         $this->controller->run();
     }
 }

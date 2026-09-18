@@ -37,6 +37,7 @@ class RequestAuthorizationTest extends TestCase
      * @var array
      */
     private $cookies;
+    private $get;
 
     /**
      * Prepare isolated request state.
@@ -49,10 +50,12 @@ class RequestAuthorizationTest extends TestCase
         $this->lockPath = $this->statePath . '.lock';
         $this->server = $_SERVER;
         $this->cookies = $_COOKIE;
+        $this->get = $_GET;
 
         $_SERVER['REQUEST_METHOD'] = 'POST';
         $_SERVER['HTTP_X_CSRF_TOKEN'] = 'test-csrf-token';
         $_COOKIE = array();
+        $_GET = array();
     }
 
     /**
@@ -68,7 +71,132 @@ class RequestAuthorizationTest extends TestCase
 
         $_SERVER = $this->server;
         $_COOKIE = $this->cookies;
+        $_GET = $this->get;
         @unlink($this->lockPath);
+    }
+
+    /**
+     * Bind cookie-free requests to the authenticated session and CSRF credentials.
+     *
+     * @param bool $csrfDisabled
+     * @return void
+     * @dataProvider csrfModeProvider
+     */
+    public function testSessionOnlyRequestsDoNotRequireCookies($csrfDisabled)
+    {
+        $_GET['S'] = str_repeat('a', 40);
+        if ($csrfDisabled) {
+            $_SERVER['HTTP_X_CSRF_TOKEN'] = '';
+            $_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
+        }
+        $authorization = new TestableRequestAuthorization($this->statePath, $this->lockPath);
+        $authorization->prepare($csrfDisabled, $_GET['S']);
+        $this->assertNull($authorization->cookie);
+        $this->assertTrue($authorization->isAuthorized());
+        $this->assertStringNotContainsString($_GET['S'], file_get_contents($this->statePath));
+
+        $authorization = new TestableRequestAuthorization($this->statePath, $this->lockPath);
+        foreach ([null, '', [], 0, str_repeat('b', 40)] as $invalidSession) {
+            $_GET['S'] = $invalidSession;
+            $this->assertFalse($authorization->isAuthorized());
+        }
+        $_GET['S'] = str_repeat('a', 40);
+        $this->assertTrue($authorization->isAuthorized());
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        $this->assertFalse($authorization->isAuthorized());
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        unset($_SERVER['HTTP_X_CSRF_TOKEN'], $_SERVER['HTTP_X_REQUESTED_WITH']);
+        $this->assertFalse($authorization->isAuthorized());
+    }
+
+    /**
+     * Exercise both supported CSRF configurations.
+     *
+     * @return array
+     */
+    public function csrfModeProvider()
+    {
+        return [[false], [true]];
+    }
+
+    /**
+     * Refuse session preparation unless the authenticated credential is returned in S.
+     *
+     * @param mixed $sessionId
+     * @param mixed $requestSession
+     * @return void
+     * @dataProvider invalidSessionPreparationProvider
+     */
+    public function testSessionPreparationRequiresTheAuthenticatedSession($sessionId, $requestSession)
+    {
+        $_GET['S'] = $requestSession;
+        try {
+            (new TestableRequestAuthorization($this->statePath, $this->lockPath))->prepare(false, $sessionId);
+            $this->fail('Expected invalid session credentials to be rejected.');
+        } catch (UpdaterException $e) {
+            $this->assertSame(403, $e->getCode());
+            $this->assertFileDoesNotExist($this->statePath);
+        }
+    }
+
+    /**
+     * Include malformed credentials and a request belonging to a different session.
+     *
+     * @return array
+     */
+    public function invalidSessionPreparationProvider()
+    {
+        $sessionId = str_repeat('a', 40);
+
+        return [
+            [false, $sessionId], [[], $sessionId], ['', ''], [0, '0'],
+            [$sessionId, null], [$sessionId, []], [$sessionId, str_repeat('b', 40)],
+        ];
+    }
+
+    /**
+     * Keep the persisted transport authoritative even when the other carries the same token.
+     *
+     * @return void
+     */
+    public function testCredentialsCannotSwitchBetweenCookiesAndSessions()
+    {
+        $authorization = new TestableRequestAuthorization($this->statePath, $this->lockPath);
+        $authorization->prepare();
+        $token = $authorization->cookie['value'];
+        $_GET['S'] = $token;
+        $this->assertFalse($authorization->isAuthorized());
+        $_COOKIE[$authorization->cookie['name']] = $token;
+        $this->assertTrue($authorization->isAuthorized());
+
+        unlink($this->statePath);
+        $authorization->prepare(false, $token);
+        unset($_GET['S']);
+        $this->assertFalse($authorization->isAuthorized());
+        $_GET['S'] = $token;
+        $this->assertTrue($authorization->isAuthorized());
+    }
+
+    /**
+     * Preserve older cookie state while rejecting malformed authorization modes.
+     *
+     * @return void
+     */
+    public function testLegacyStateDefaultsToCookiesAndInvalidModesFailClosed()
+    {
+        $authorization = new TestableRequestAuthorization($this->statePath, $this->lockPath);
+        $authorization->prepare();
+        $_COOKIE[$authorization->cookie['name']] = $authorization->cookie['value'];
+        $state = $this->readState();
+        unset($state['session_only']);
+        $this->writeState($state);
+        $this->assertTrue($authorization->isAuthorized());
+
+        foreach ([null, '', 's', 0, 1, []] as $invalidMode) {
+            $state['session_only'] = $invalidMode;
+            $this->writeState($state);
+            $this->assertFalse($authorization->isAuthorized());
+        }
     }
 
     /**

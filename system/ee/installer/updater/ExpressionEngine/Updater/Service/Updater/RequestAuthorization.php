@@ -46,10 +46,11 @@ class RequestAuthorization
      * Prepare authorization during the authenticated Control Panel request.
      *
      * @param bool $csrfDisabled Whether the authenticated application has disabled CSRF protection.
+     * @param string|null $sessionId The authenticated session ID for session-only CP authorization.
      * @return void
      * @throws UpdaterException
      */
-    public function prepare($csrfDisabled = false)
+    public function prepare($csrfDisabled = false, $sessionId = null)
     {
         if ($this->hasStarted()) {
             throw new UpdaterException('The update has already started. Use rollback to recover.', 409);
@@ -60,7 +61,8 @@ class RequestAuthorization
         if ($ajaxBinding) {
             $csrf = $this->getAjaxBinding();
         }
-        if ($csrf === null) {
+        if ($csrf === null || ($sessionId !== null
+            && (! is_string($sessionId) || $sessionId === '' || $sessionId !== ($_GET['S'] ?? null)))) {
             throw new UpdaterException('Unable to prepare updater authorization.', 403);
         }
 
@@ -74,11 +76,12 @@ class RequestAuthorization
             throw new UpdaterException('Another browser has already prepared this update.', 409);
         }
 
-        $token = bin2hex(random_bytes(32));
+        $token = $sessionId ?? bin2hex(random_bytes(32));
         $now = time();
 
         $this->writeState(array(
             'token_hash' => hash('sha256', $token),
+            'session_only' => $sessionId !== null,
             'csrf_hash' => hash('sha256', $csrf),
             'ajax_binding' => $ajaxBinding,
             'expires' => $now + self::LIFETIME,
@@ -88,6 +91,10 @@ class RequestAuthorization
             'next_step' => 'updateFiles',
             'running_step' => null,
         ));
+
+        if ($sessionId !== null) {
+            return;
+        }
 
         if (! $this->sendCookie($this->getCookieName(), $token, array(
             // The server expires normal operations; retain the cookie for authenticated recovery.
@@ -224,13 +231,16 @@ class RequestAuthorization
     public function isAuthorized($recovery = false)
     {
         $state = $this->readState();
-        $token = $_COOKIE[$this->getCookieName()] ?? null;
+        $sessionOnly = array_key_exists('session_only', $state) ? $state['session_only'] : false;
+        $token = $sessionOnly === true ? ($_GET['S'] ?? null) : ($_COOKIE[$this->getCookieName()] ?? null);
         $csrf = ($state['ajax_binding'] ?? false) === true ? $this->getAjaxBinding() : $this->getCsrfToken();
         $deadline = $recovery && ($state['started'] ?? false) === true ? 'recovery_expires' : 'expires';
 
         return strtoupper($_SERVER['REQUEST_METHOD'] ?? '') === 'POST'
+            && is_bool($sessionOnly)
             && is_string($token)
-            && preg_match('/^[a-f0-9]{64}$/D', $token) === 1
+            && $token !== ''
+            && ($sessionOnly || preg_match('/^[a-f0-9]{64}$/D', $token) === 1)
             && $csrf !== null
             && isset($state[$deadline], $state['token_hash'], $state['csrf_hash'])
             && is_int($state[$deadline])
@@ -298,7 +308,7 @@ class RequestAuthorization
 
     /**
      * Existing jQuery clients send this custom header, which a cross-origin HTML form cannot supply.
-     * The random capability cookie remains required; this header replaces only the absent CSRF binding.
+     * The bound credential remains required; this header replaces only the absent CSRF binding.
      *
      * @return string|null
      */
@@ -316,7 +326,8 @@ class RequestAuthorization
      */
     private function stateWasNotAcknowledged(array $state, $csrf)
     {
-        return isset($state['expires'], $state['csrf_hash'])
+        return ($state['session_only'] ?? false) === false
+            && isset($state['expires'], $state['csrf_hash'])
             && is_int($state['expires'])
             && $state['expires'] > time()
             && is_string($state['csrf_hash'])
