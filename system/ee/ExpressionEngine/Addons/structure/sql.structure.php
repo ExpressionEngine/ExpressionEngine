@@ -278,7 +278,6 @@ class Sql_structure
 
         // check the flash-data cache
         $results = @ee()->session->cache['structure'][$cache_name];
-        $results = '';
         if (! is_array($results)) {
             $where_exclude = '';
 
