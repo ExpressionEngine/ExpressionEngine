@@ -58,12 +58,12 @@ context('Member Roles / Utilities Permissions', () => {
 
        cy.get('.box').contains('Back Up Database')
        cy.get('.box').contains('SQL Manager')
-       cy.get('.box').contains('Query Form')
+       cy.get('.box').should('not.contain', 'Query Form')
 
        cy.get('.box').contains('Cache Manager')
        cy.get('.box').contains('Content Reindex')
        cy.get('.box').contains('Statistics')
-       cy.get('.box').contains('Search and Replace')
+       cy.get('.box').should('not.contain', 'Search and Replace')
 
     })
 
@@ -101,12 +101,12 @@ context('Member Roles / Utilities Permissions', () => {
 
         cy.get('.box').contains('Back Up Database')
         cy.get('.box').contains('SQL Manager')
-        cy.get('.box').contains('Query Form')
+        cy.get('.box').should('not.contain', 'Query Form')
 
         cy.get('.box').contains('Cache Manager')
         cy.get('.box').contains('Content Reindex')
         cy.get('.box').contains('Statistics')
-        cy.get('.box').contains('Search and Replace')
+        cy.get('.box').should('not.contain', 'Search and Replace')
 
         cy.get('.box').should('not.contain','Send Email')
         cy.get('.box').should('not.contain','Sent')
@@ -144,12 +144,12 @@ context('Member Roles / Utilities Permissions', () => {
 
         cy.get('.box').contains('Back Up Database')
         cy.get('.box').contains('SQL Manager')
-        cy.get('.box').contains('Query Form')
+        cy.get('.box').should('not.contain', 'Query Form')
 
         cy.get('.box').contains('Cache Manager')
         cy.get('.box').contains('Content Reindex')
         cy.get('.box').contains('Statistics')
-        cy.get('.box').contains('Search and Replace')
+        cy.get('.box').should('not.contain', 'Search and Replace')
 
         cy.get('.box').should('not.contain','Send Email')
         cy.get('.box').should('not.contain','Sent')
@@ -188,12 +188,12 @@ context('Member Roles / Utilities Permissions', () => {
 
         cy.get('.box').contains('Back Up Database')
         cy.get('.box').contains('SQL Manager')
-        cy.get('.box').contains('Query Form')
+        cy.get('.box').should('not.contain', 'Query Form')
 
         cy.get('.box').contains('Cache Manager')
         cy.get('.box').contains('Content Reindex')
         cy.get('.box').contains('Statistics')
-        cy.get('.box').contains('Search and Replace')
+        cy.get('.box').should('not.contain', 'Search and Replace')
 
         cy.get('.box').should('not.contain','Send Email')
         cy.get('.box').should('not.contain','Sent')
@@ -236,7 +236,7 @@ context('Member Roles / Utilities Permissions', () => {
         cy.get('.box').contains('Cache Manager')
         cy.get('.box').contains('Content Reindex')
         cy.get('.box').contains('Statistics')
-        cy.get('.box').contains('Search and Replace')
+        cy.get('.box').should('not.contain', 'Search and Replace')
 
         cy.get('.box').should('not.contain','Send Email')
         cy.get('.box').should('not.contain','Sent')

@@ -12,29 +12,85 @@ class EE_TemplateExitPathCoverageTest extends TestCase
     private const SCENARIO_SUB_TEMPLATES_LOOP = 'sub_templates_loop_exit';
     private const SCENARIO_PARSE_TEMPLATE_URI = 'parse_template_uri_exit';
 
+    /**
+     * Cover the exit for a layout declared after an opening tag.
+     *
+     * @return void
+     */
     public function testExitLineCoverageForFindLayoutTooLate()
     {
-        $this->runScenarioAndAppendCoverage(self::SCENARIO_FIND_LAYOUT_TOO_LATE, [885]);
+        $this->runScenarioAndAppendCoverage(self::SCENARIO_FIND_LAYOUT_TOO_LATE, [$this->exitLine('_find_layout')]);
     }
 
+    /**
+     * Cover the exit for multiple layout declarations.
+     *
+     * @return void
+     */
     public function testExitLineCoverageForFindLayoutMultiple()
     {
-        $this->runScenarioAndAppendCoverage(self::SCENARIO_FIND_LAYOUT_MULTIPLE, [899]);
+        $this->runScenarioAndAppendCoverage(self::SCENARIO_FIND_LAYOUT_MULTIPLE, [$this->exitLine('_find_layout', 1)]);
     }
 
+    /**
+     * Cover the exit after rendering a configured 404 template.
+     *
+     * @return void
+     */
     public function testExitLineCoverageForShow404()
     {
-        $this->runScenarioAndAppendCoverage(self::SCENARIO_SHOW_404, [2429]);
+        $this->runScenarioAndAppendCoverage(self::SCENARIO_SHOW_404, [$this->exitLine('show_404')]);
     }
 
+    /**
+     * Cover the exit that prevents recursive embedded templates.
+     *
+     * @return void
+     */
     public function testExitLineCoverageForProcessSubTemplatesLoopPrevention()
     {
-        $this->runScenarioAndAppendCoverage(self::SCENARIO_SUB_TEMPLATES_LOOP, [1167]);
+        $this->runScenarioAndAppendCoverage(self::SCENARIO_SUB_TEMPLATES_LOOP, [$this->exitLine('process_sub_templates')]);
     }
 
+    /**
+     * Cover the exit after rendering the post-install message.
+     *
+     * @return void
+     */
     public function testExitLineCoverageForParseTemplateUriPostInstallMessageBranch()
     {
-        $this->runScenarioAndAppendCoverage(self::SCENARIO_PARSE_TEMPLATE_URI, [2223]);
+        $this->runScenarioAndAppendCoverage(self::SCENARIO_PARSE_TEMPLATE_URI, [$this->exitLine('parse_template_uri')]);
+    }
+
+    /**
+     * Find an exit statement without relying on fixed source line numbers.
+     *
+     * @param string $methodName Template method containing the exit.
+     * @param int $exitIndex Zero-based exit statement index within the method.
+     * @return int
+     * @throws \ReflectionException
+     */
+    private function exitLine(string $methodName, int $exitIndex = 0): int
+    {
+        require_once BASEPATH . 'libraries/Template.php';
+
+        $method = new \ReflectionMethod(\EE_Template::class, $methodName);
+        $source = array_slice(
+            file($method->getFileName()),
+            $method->getStartLine() - 1,
+            $method->getEndLine() - $method->getStartLine() + 1
+        );
+        $exitLines = [];
+
+        foreach (token_get_all('<?php ' . implode('', $source)) as $token) {
+            if (is_array($token) && $token[0] === T_EXIT) {
+                $exitLines[] = $method->getStartLine() + $token[2] - 1;
+            }
+        }
+
+        $this->assertArrayHasKey($exitIndex, $exitLines, "Missing exit statement in {$methodName}().");
+
+        return $exitLines[$exitIndex];
     }
 
     private function runScenarioAndAppendCoverage(string $scenario, array $expectedLines): void

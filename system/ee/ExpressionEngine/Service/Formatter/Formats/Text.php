@@ -370,6 +370,72 @@ class Text extends Formatter
     }
 
     /**
+     * Escape text for HTML while allowing b, strong, i, em, u, and br formatting.
+     *
+     * Attributes are discarded and formatting tags are balanced so they cannot
+     * extend beyond the element containing this text.
+     *
+     * @return self
+     */
+    public function inlineHtml()
+    {
+        $parts = preg_split(
+            '/(<\/?(?:b|strong|i|em|u|br)(?=[\s\/>])(?:[^<>"\']++|"[^"]*"|\'[^\']*\')*>)/i',
+            $this->content,
+            -1,
+            PREG_SPLIT_DELIM_CAPTURE
+        );
+
+        if ($parts === false) {
+            $parts = [$this->content];
+        }
+
+        $output = '';
+        $open_tags = [];
+
+        foreach ($parts as $index => $part) {
+            if ($index % 2 === 0) {
+                $output .= htmlentities($part, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+                continue;
+            }
+
+            // Emit only the recognized tag name; never reuse incoming attributes.
+            preg_match('/^<(\/?)([a-z]+)/i', $part, $matches);
+            $tag = strtolower($matches[2]);
+
+            // The CP styles em as an instruction container rather than inline italics.
+            if ($tag === 'em') {
+                $tag = 'i';
+            }
+
+            if ($matches[1] === '/') {
+                if (in_array($tag, $open_tags, true)) {
+                    do {
+                        $open_tag = array_pop($open_tags);
+                        $output .= '</' . $open_tag . '>';
+                    } while ($open_tag !== $tag);
+                }
+
+                continue;
+            }
+
+            $output .= '<' . $tag . '>';
+
+            if ($tag !== 'br') {
+                $open_tags[] = $tag;
+            }
+        }
+
+        foreach (array_reverse($open_tags) as $tag) {
+            $output .= '</' . $tag . '>';
+        }
+
+        $this->content = $output;
+
+        return $this;
+    }
+
+    /**
      * JSON encoding
      *
      * @param  array  $options Options: (bool) double_encode, (bool) enclose_with_quotes, (string) options, pipe-delimited list of PHP JSON bitmask constants

@@ -1059,10 +1059,9 @@ class Comment
     }
 
     /**
-     * Preview
+     * Render a preview of the submitted comment.
      *
-     * @access	public
-     * @return	void
+     * @return string|false|null
      */
     public function preview()
     {
@@ -1160,6 +1159,8 @@ class Comment
         if ($url != '') {
             ee()->load->helper('url');
             $url = ee('Format')->make('Text', $url)->url();
+            $escaped_url = htmlspecialchars($url, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8', false);
+            $escaped_name = htmlspecialchars($name, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8', false);
         }
 
         /** ----------------------------------------
@@ -1185,7 +1186,7 @@ class Comment
             //  {url_or_email_as_author}
             elseif ($key == "url_or_email_as_author") {
                 if ($url != '') {
-                    $tagdata = ee()->TMPL->swap_var_single($val, "<a href=\"" . $url . "\">" . $name . "</a>", $tagdata);
+                    $tagdata = ee()->TMPL->swap_var_single($val, '<a href="' . $escaped_url . '">' . $escaped_name . '</a>', $tagdata);
                 } else {
                     if ($email != '') {
                         $tagdata = ee()->TMPL->swap_var_single($val, ee()->typography->encode_email($email, $name), $tagdata);
@@ -1198,7 +1199,7 @@ class Comment
             //  {url_or_email_as_link}
             elseif ($key == "url_or_email_as_link") {
                 if ($url != '') {
-                    $tagdata = ee()->TMPL->swap_var_single($val, "<a href=\"" . $url . "\">" . $url . "</a>", $tagdata);
+                    $tagdata = ee()->TMPL->swap_var_single($val, '<a href="' . $escaped_url . '">' . $escaped_url . '</a>', $tagdata);
                 } else {
                     if ($email != '') {
                         $tagdata = ee()->TMPL->swap_var_single($val, ee()->typography->encode_email($email), $tagdata);
@@ -1212,7 +1213,7 @@ class Comment
 
             elseif ($key == 'url_as_author') {
                 if ($url != '') {
-                    $tagdata = ee()->TMPL->swap_var_single($val, '<a href="' . $url . '">' . $name . '</a>', $tagdata);
+                    $tagdata = ee()->TMPL->swap_var_single($val, '<a href="' . $escaped_url . '">' . $escaped_name . '</a>', $tagdata);
                 } else {
                     $tagdata = ee()->TMPL->swap_var_single($val, $name, $tagdata);
                 }
@@ -1992,12 +1993,10 @@ class Comment
     }
 
     /**
-     * Frontend comment editing
+     * Update or moderate a frontend comment and send the AJAX response.
      *
-     *
-     * @access	public
-     * @param	string
-     * @return	string
+     * @param bool $ajax_request Unused legacy AJAX request flag.
+     * @return void
      */
     public function edit_comment($ajax_request = true)
     {
@@ -2044,7 +2043,10 @@ class Comment
         }
 
         if ($edited_comment && $comment_vars->getVariable('editable')) {
-            $comment->comment = $edited_comment;
+            // POST comments and globally filtered GET comments are already sanitized.
+            $comment->comment = isset($_POST['comment']) || ee()->input->_enable_xss === true
+                ? $edited_comment
+                : ee('Security/XSS')->clean($edited_comment);
         }
 
         // save if we changed something

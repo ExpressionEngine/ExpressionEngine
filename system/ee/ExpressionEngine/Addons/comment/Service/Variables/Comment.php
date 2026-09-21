@@ -268,6 +268,8 @@ class Comment extends Variables
     {
         if ($url) {
             $label = ($use_name_in_link) ? $this->comment->name : $url;
+            $url = htmlspecialchars($url, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8', false);
+            $label = htmlspecialchars($label, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8', false);
 
             return '<a href="' . $url . '">' . $label . '</a>';
         } elseif ($fallback_to_email && $this->comment->email) {

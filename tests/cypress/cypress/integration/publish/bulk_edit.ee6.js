@@ -87,7 +87,7 @@ context('Bulk Edit', () => {
     cy.wait('@ajax')
     //bulk_edit.get('add_field').click()
     bulk_edit.get('field_options').should('exist')
-    bulk_edit.get('field_options').then(function($li) {
+    bulk_edit.get('field_options').should(function($li) {
       let field_options = Cypress._.map($li, function(el) {
           return Cypress.$(el).text().replace('Add ', '').trim();
       })
