@@ -818,10 +818,11 @@ class FluidFieldFtTest extends FluidFieldTestBase
         $this->assertSame(2, $count);
     }
 
-    public function testValidateReturnsAjaxCallbackUsingFallbackFieldLookupAndArrayCasting()
+    public function testValidateReturnsAjaxResultUsingFallbackFieldLookupAndArrayCasting()
     {
         $field = new FluidFieldFacadeStub(1);
         $field->nativeField = (object) ['has_array_data' => true];
+        $field->validateResult = 'invalid_field';
         $channelField = new FluidFieldChannelFieldStub(1, 'title', $field);
 
         $this->setModelGetCallback(function ($model, $id = null) use ($channelField) {
@@ -837,14 +838,6 @@ class FluidFieldFtTest extends FluidFieldTestBase
         });
 
         $fieldName = 'fluid_content[fields][new_field_1][field_group_id_3][field_id_1]';
-        $rule = new FluidFieldRuleStub('callback');
-
-        $validation = new FluidFieldValidationServiceStub();
-        $validation->validator = new FluidFieldValidatorStub(
-            new FluidFieldValidationResultStub(false, [$fieldName => [$rule]])
-        );
-        ee()->setMock('Validation', $validation);
-
         $this->fieldtype->settings['field_channel_fields'] = [1];
         $this->input->ajax = true;
         $this->input->postData['ee_fv_field'] = $fieldName;
@@ -859,7 +852,7 @@ class FluidFieldFtTest extends FluidFieldTestBase
             ]
         ];
 
-        $this->assertSame('', $this->fieldtype->validate($data));
+        $this->assertSame('invalid_field', $this->fieldtype->validate($data));
         $this->assertSame([], $field->getData());
     }
 

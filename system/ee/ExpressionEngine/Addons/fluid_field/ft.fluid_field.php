@@ -131,6 +131,13 @@ class Fluid_field_ft extends EE_Fieldtype
                     $f->setName($field_name);
                     $f = $this->setupFieldInstance($f, $datum, !is_null($fluid_field_data_id) ? $fluid_field_data_id : $key);
 
+                    // Preserve custom AJAX validation results from fieldtypes like Grid.
+                    // Don't let Fluid's aggregate result overwrite them here. 
+                    // Full form submits will still use the aggregate result.
+                    if (ee()->input->is_ajax_request()) {
+                        return $f->validate($f->getData());
+                    }
+
                     $validator = ee('Validation')->make();
                     $validator->defineRule('validateField', function ($key, $value, $parameters, $rule) use ($f) {
                         return $f->validate($value);
@@ -151,16 +158,6 @@ class Fluid_field_ft extends EE_Fieldtype
                     }
                 }
             }
-        }
-
-        if (ee()->input->is_ajax_request()) {
-            if ($this->errors->hasErrors($field_name)) {
-                $errors = $this->errors->getErrors($field_name);
-
-                return $errors['callback'];
-            }
-
-            return true;
         }
 
         return ($this->errors->isValid()) ? true : 'form_validation_error';
