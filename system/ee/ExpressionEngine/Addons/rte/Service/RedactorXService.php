@@ -12,7 +12,7 @@ namespace ExpressionEngine\Addons\Rte\Service;
 
 use ExpressionEngine\Library\Rte\RteFilebrowserInterface;
 
-class RedactorXService extends RedactorService implements RteService {
+class RedactorXService extends RedactorClassicService implements RteService {
 
     protected static $type = 'redactorX';
     protected static $_includedFieldResources = false;
@@ -280,6 +280,9 @@ class RedactorXService extends RedactorService implements RteService {
         }
         if (empty($config->toolset_id)) {
             $selection = ($toolbar != 'hide') ? static::defaultToolbars()['RedactorX Full'][$toolbar] : [];
+        }
+        if (is_null($selection)) {
+            $selection = [];
         }
         $fullToolbar = array_merge($selection, $allButtons);//merge to get the right order
         $fullToolset = [];
