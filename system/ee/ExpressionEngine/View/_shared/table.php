@@ -21,7 +21,7 @@
                 <td>
                     <?=lang($no_results['text'])?>
                     <?php if (! empty($no_results['action_text'])): ?>
-                        <a <?=$no_results['external'] ? 'rel="external"' : '' ?> href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>>
+                        <a <?=$no_results['external'] ? 'rel="external"' : '' ?> href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>
                     <?php endif ?>
                 </td>
             </tr>
@@ -214,7 +214,7 @@
     				<tr class="tbl-action">
     					<td colspan="<?=$colspan?>" class="solo">
     						<?php foreach ($action_buttons as $button): ?>
-    							<a class="<?=$button['class']?>" href="<?=$button['url']?>"><?=$button['text']?></a></td>
+    							<a class="<?=$button['class']?>" href="<?=$button['url']?>"><?=$button['text']?></a>
     						<?php endforeach; ?>
     						<?=$action_content?>
     					</td>
@@ -232,36 +232,47 @@
 
 <?php /* End table */
 
-else: ?>
+else:
+    $has_vertical_layout = isset($vertical_layout);
+    $is_vertical_layout = $has_vertical_layout && $vertical_layout === 'y';
+    $is_horizontal_layout = $has_vertical_layout && $vertical_layout === 'horizontal';
+    $has_row_counter = isset($row_counter) && $row_counter;
+    $show_tools_first = isset($tools_position) && $tools_position && ! $is_vertical_layout;
+    $show_item_fieldset_col = REQ == 'CP' && $has_vertical_layout && ! $is_horizontal_layout;
+?>
     <div
-        class="grid-field <?php if (isset($vertical_layout)) {
-                if ($vertical_layout == 'y') : echo ' vertical-layout';
-                elseif ($vertical_layout == 'horizontal') : echo ' horizontal-layout';
+        class="grid-field <?php if ($has_vertical_layout) {
+                if ($is_vertical_layout) : echo ' vertical-layout';
+                elseif ($is_horizontal_layout) : echo ' horizontal-layout';
                 else : echo 'entry-grid';
                 endif;
             }; ?>"
         id="<?=$grid_field_name?>">
 
-    <div class="table-responsive">
-    <table class="grid-field__table"<?php foreach ($table_attrs as $key => $value):?> <?=$key?>='<?=$value?>'<?php endforeach; ?>>
-    <?php if (empty($columns) && empty($data)): ?>
-        <p class="no-results">
+	    <div class="table-responsive">
+	    <table class="grid-field__table"<?php foreach ($table_attrs as $key => $value):?> <?=$key?>='<?=$value?>'<?php endforeach; ?>>
+	    <?php $has_tools_header_col = ! empty($data); ?>
+	    <?php if (empty($columns) && empty($data)): ?>
+	        <p class="no-results">
             <?=lang($no_results['text'])?>
             <?php if (! empty($no_results['action_text'])): ?>
-                <a <?=$no_results['external'] ? 'rel="external"' : '' ?> href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>>
+                <a <?=$no_results['external'] ? 'rel="external"' : '' ?> href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>
             <?php endif ?>
         </p>
     <?php else: ?>
         <thead>
                 <?php
-                // Don't do reordering logic if the table is empty
-                $reorder = $reorder && ! empty($data);
-                $colspan = ($reorder_header || $reorder) ? count($columns) + 1 : count($columns);
-                if(isset($row_counter) && $row_counter): ?>
+	                // Don't do reordering logic if the table is empty
+	                $reorder = $reorder && ! empty($data);
+	                $colspan = ($reorder_header || $reorder) ? count($columns) + 1 : count($columns);
+	                if ($has_row_counter): ?>
                     <th class="row-counter-column"></th>
                 <?php
                 endif;
-                if (isset($vertical_layout)): ?>
+                if ($show_tools_first && $has_tools_header_col): ?>
+                    <th class="grid-field__column-remove"></th>
+                <?php endif;
+                if ($has_vertical_layout): ?>
                     <th class="hidden"></th>
                 <?php endif;
 
@@ -324,14 +335,18 @@ else: ?>
                     <?php endif ?>
                 <?php endforeach ?>
 
-                <?php if (!empty($data)): ?>
+                <?php if ($has_tools_header_col && ! $show_tools_first): ?>
                     <th class="grid-field__column-remove"></th>
                 <?php endif ?>
         </thead>
     <?php endif ?>
-
+        <?php
+            $no_results_colspan = count($columns)
+                + ($has_row_counter ? 1 : 0)
+                + ($has_tools_header_col ? 1 : 0);
+        ?>
         <tbody>
-            <tr class="no-results<?php if (! empty($action_buttons) || ! empty($action_content)): ?> last<?php endif?> <?php if (!empty($data)): ?>hidden<?php endif?>"><td colspan="<?=(count($columns) + @intval($header_sorts))?>">
+            <tr class="no-results<?php if (! empty($action_buttons) || ! empty($action_content)): ?> last<?php endif?> <?php if (!empty($data)): ?>hidden<?php endif?>"><td colspan="<?=$no_results_colspan?>">
             <?php
             // Output this if Grid input so we can dynamically show it via JS
             ?>
@@ -345,7 +360,7 @@ else: ?>
             <?php $i = 1;
             $dataRowCounter = '';
             $rowCounterNumber = '';
-            if (isset($row_counter) && $row_counter){
+            if ($has_row_counter) {
                 $row_count = 0;
             }
             foreach ($data as $heading => $rows): ?>
@@ -355,6 +370,8 @@ else: ?>
 
                 foreach ($rows as $row):
                     $i++;
+                    $dataRowCounter = '';
+                    $rowCounterNumber = '';
 
                     $row_class = "";
 
@@ -363,7 +380,7 @@ else: ?>
                         unset($row['attrs']['class']);
                     }
 
-                    if (isset($row_counter) && $row_counter){
+                    if ($has_row_counter) {
                         if (empty($row_class)) {
                             $row_count++;
                             $dataRowCounter = 'data-row-counter="' . $row_count . '"';
@@ -373,7 +390,7 @@ else: ?>
 
                 ?>
                     <tr class="<?=$row_class?>" <?php foreach ($row['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?> <?=$dataRowCounter?>>
-                        <?php if (REQ == 'CP' && isset($vertical_layout) && ($vertical_layout !== 'horizontal')):?>
+                        <?php if ($show_item_fieldset_col): ?>
                         <td class="grid-field__item-fieldset" style="display: none;">
                             <div class="grid-field__item-tools grid-field__item-tools--item-open">
                                 <a href class="grid-field__item-tool js-toggle-grid-item">
@@ -403,8 +420,23 @@ else: ?>
                         </td>
                         <?php endif; ?>
 
-                        <?php if (isset($row_counter) && $row_counter): ?>
+                        <?php if ($has_row_counter): ?>
                             <td class="row-counter-column body-row-counter-column js-row-counter-column"><span><?=$rowCounterNumber?></span></td>
+                        <?php endif; ?>
+
+                        <?php if ($show_tools_first): ?>
+                        <td class="grid-field__column--tools">
+                            <div class="grid-field__column-tools">
+                                <?php if ($reorder): ?>
+                                <button type="button" class="button button--small button--default cursor-move js-grid-reorder-handle">
+                                    <span class="grid-field__column-tool"><i class="fal fa-fw fa-arrows-alt"></i></span>
+                                </button>
+                                <?php endif ?>
+                                <button type="button" rel="remove_row" class="button button--small button--default">
+                                    <span class="grid-field__column-tool danger-link" title="<?=lang('remove_row')?>"><i class="fal fa-fw fa-trash-alt"><span class="hidden"><?=lang('remove_row')?></span></i></span>
+                                </button>
+                            </div>
+                        </td>
                         <?php endif; ?>
 
                         <?php foreach ($row['columns'] as $key => $column):
@@ -497,6 +529,7 @@ else: ?>
                             <?php endif ?>
                         <?php endforeach ?>
 
+                        <?php if (! $show_tools_first): ?>
                         <td class="grid-field__column--tools">
                             <div class="grid-field__column-tools">
                                 <?php if ($reorder): ?>
@@ -509,6 +542,7 @@ else: ?>
                                 </button>
                             </div>
                         </td>
+                        <?php endif; ?>
                     </tr>
                 <?php endforeach ?>
             <?php endforeach ?>
@@ -521,7 +555,7 @@ else: ?>
             <?php if (! empty($action_buttons) || ! empty($action_content)): ?>
             <div class="tbl-action">
                 <?php foreach ($action_buttons as $button): ?>
-                    <a class="<?=$button['class']?>" href="<?=$button['url']?>"><?=$button['text']?></a></td>
+                    <a class="<?=$button['class']?>" href="<?=$button['url']?>"><?=$button['text']?></a>
                 <?php endforeach; ?>
                 <?=$action_content?>
             </div>

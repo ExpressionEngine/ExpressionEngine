@@ -27443,6 +27443,10 @@ input[type=button].btn-block {
   max-width: 550px;
 }
 
+.modal-wrap.must-interact .dialog__close {
+  display: none;
+}
+
 .modal {
   background-color: var(--ee-bg-0);
   margin-bottom: 40px;
@@ -32006,6 +32010,10 @@ fieldset .field-control #eye {
     transform: none !important;
   }
 }
+.grid-field__table tr td.grid-field__column--tools {
+  max-width: 80px;
+  min-width: 0;
+}
 .grid-field__table tr.ui-sortable-helper {
   box-shadow: var(--ee-shadow-dropdown);
   background: var(--ee-accent-light);
@@ -32071,7 +32079,6 @@ fieldset .field-control #eye {
 #routes .grid-field__table tr {
   background: inherit;
 }
-
 #routes .table-responsive {
   overflow-x: auto;
 }
@@ -32282,7 +32289,7 @@ fieldset .field-control #eye {
   top: 50%;
   transform: translateY(-50%);
 }
-.grid-field.vertical-layout .grid-field__column--tools {
+.grid-field.vertical-layout td.grid-field__column--tools {
   display: none !important;
 }
 .grid-field.vertical-layout .grid-field__column-label {
@@ -32325,16 +32332,14 @@ fieldset .field-control #eye {
   .grid-field:not(.horizontal-layout) .grid-field__table > tbody > tr {
     display: flex;
     flex-direction: column;
-  }
-  .grid-field:not(.horizontal-layout) .grid-field__table > tbody > tr.hidden {
-    display: none;
-  }
-  .grid-field:not(.horizontal-layout) .grid-field__table > tbody > tr {
     position: relative;
     border: 1px solid var(--ee-border);
     margin-bottom: 10px;
     padding-bottom: 15px;
     background-color: var(--ee-bg-blank);
+  }
+  .grid-field:not(.horizontal-layout) .grid-field__table > tbody > tr.hidden {
+    display: none;
   }
   .grid-field:not(.horizontal-layout) .grid-field__table > tbody > tr.no-results {
     padding: 0px;
@@ -32457,8 +32462,8 @@ fieldset .field-control #eye {
   color: var(--ee-text-secondary);
   font-weight: 500;
   white-space: normal;
-  margin-bottom: 10px;
   flex: 0 0 100%;
+  margin-bottom: 10px;
 }
 .live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-label label,
 .grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-label label {
@@ -32467,8 +32472,8 @@ fieldset .field-control #eye {
 }
 .live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-label em,
 .grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-label em {
-  font-style: normal;
   color: var(--ee-text-secondary);
+  font-style: normal;
   margin: 0;
 }
 .live-preview__form-content .grid-field .grid-field__table > tbody > tr:not(.hidden) > td:not(.hidden) .grid-field__column-tools,
@@ -32553,7 +32558,7 @@ fieldset .field-control #eye {
   border: none;
   box-shadow: none;
 }
-.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td.grid-field__column--tools {
+.grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) td.grid-field__column--tools {
   display: none !important;
 }
 .grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td.grid-field__item-fieldset {
