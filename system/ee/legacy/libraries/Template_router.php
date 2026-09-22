@@ -33,7 +33,8 @@ class EE_Template_Router extends CI_Router
      */
     public function match($uri)
     {
-        $request = $uri->uri_string;
+        // Make sure we have a trailing slash so segments parse correctly
+        $request = trim($uri->uri_string, '/ ') . '/';
 
         // First check if we have a bare match
         if (! empty($this->end_points[$request])) {
