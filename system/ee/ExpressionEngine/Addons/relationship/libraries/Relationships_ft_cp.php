@@ -301,10 +301,49 @@ class Relationships_ft_cp
      */
     public function all_order_options()
     {
-        return array(
+        $options = array(
             'title' => lang('rel_ft_order_title'),
             'entry_date' => lang('rel_ft_order_date')
         );
+
+        foreach ($this->getSortableCustomFields() as $field) {
+            $options['field_id_' . $field->getId()] = $field->field_label . ' ' . LD . $field->field_name . RD;
+        }
+
+        return $options;
+    }
+
+    /**
+     * Returns sortable custom fields for relationships order options
+     *
+     * @return \ExpressionEngine\Service\Model\Collection
+     */
+    protected function getSortableCustomFields()
+    {
+        $from_all_sites = (ee()->config->item('multiple_sites_enabled') == 'y');
+
+        $sortable_types = [
+            'date',
+            'text',
+            'textarea',
+            'rte',
+            'email_address',
+            'url',
+            'range_slider',
+            'slider',
+            'duration',
+            'number'
+        ];
+
+        $fields = ee('Model')->get('ChannelField')
+            ->filter('field_type', 'IN', $sortable_types)
+            ->order('field_label', 'asc');
+
+        if (! $from_all_sites) {
+            $fields->filter('site_id', ee()->config->item('site_id'));
+        }
+
+        return $fields->all();
     }
 
     /**

@@ -55,11 +55,22 @@ class EntryList
             $order_field = 'entry_date';
         }
 
+        $orderFieldModel = ee('Model')->get('ChannelField')
+            ->filter('field_name', str_replace('field_id_', '', $order_field))
+            ->first();
+        if (empty($orderFieldModel)) {
+            $order_field = 'title';
+        }
+
         $entries = ee('Model')->get('ChannelEntry')
             ->with('Channel')
-            ->fields('Channel.channel_title', 'title', 'status', 'entry_date')
+            ->fields('Channel.channel_title', 'title', 'status', 'entry_date', $order_field)
             ->order($order_field, $order_dir)
             ->order('entry_id', $order_dir);
+
+        if (! empty($custom_field_id)) {
+            $entries->fields('field_id_' . $custom_field_id);
+        }
 
         if ($related == 'related') {
             $entries->filter('entry_id', 'IN', $show_selected);
@@ -178,6 +189,7 @@ class EntryList
                 });
 
             $entries = $entries->sortBy($order_field);
+
         } else {
             // Don't query if we have this same query in the cache
             if (isset($this->entries[$cache_id])) {
