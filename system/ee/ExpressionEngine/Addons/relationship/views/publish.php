@@ -25,6 +25,7 @@ $component = [
     'display_status' => $display_status,
     'rel_min' => $rel_min,
     'rel_max' => $rel_max,
+    'disableReact' => isset($disableReact) ? $disableReact : false,
 ];
 
 if (isset($publishCreateUrl)) {
@@ -93,11 +94,13 @@ if ($deferred) {
         $placeholder .= '<ul class="list-group list-group--connected mb-s ui-sortable">' . implode("\n", $items) . '</ul>';
     }
 
-    $placeholder .= '
-        <button type="button" class="js-dropdown-toggle button button--default">
-            <i class="fas fa-edit icon-left"></i>' . lang('relate_entry_deferred') . '
-        </button>
-    ';
+    if (!$disableReact) {
+        $placeholder .= '
+            <button type="button" class="js-dropdown-toggle button button--default">
+                <i class="fas fa-edit icon-left"></i>' . lang('relate_entry_deferred') . '
+            </button>
+        ';
+    }
 }
 ?>
 <div data-relationship-react="<?=base64_encode(json_encode($component))?>" data-input-value="<?=$field_name?>" <?php echo ($deferred ? 'class="react-deferred-loading"' : '') ?>>
