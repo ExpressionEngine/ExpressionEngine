@@ -201,6 +201,14 @@
     &:last-child {
       margin-bottom: 0px;
     }
+
+		&:disabled {
+			cursor: not-allowed;
+
+			.grid-field__column-tool {
+				opacity: 0.45;
+			}
+		}
   }
 }
 
@@ -264,6 +272,12 @@
 				color: var(--ee-link);
 			}
 
+			&:disabled {
+				opacity: 0.45;
+				cursor: not-allowed;
+				color: var(--ee-text-tertiary);
+			}
+
 			.dropdown {
 				max-height: 90vh;
 				overflow-y: auto;
@@ -303,7 +317,7 @@
 		td.grid-field__item-fieldset {
 			border-bottom: none !important;
 
-			.grid-field__item-tool {
+			a.grid-field__item-tool {
 				transform: rotate(180deg);
 			}
 		}
@@ -383,7 +397,7 @@
 				td.grid-field__item-fieldset {
 					border-bottom: none !important;
 
-					.grid-field__item-tool {
+					a.grid-field__item-tool {
 						transform: rotate(180deg);
 					}
 				}
@@ -515,7 +529,7 @@
 				td.grid-field__item-fieldset {
 					border-bottom: none !important;
 
-					.grid-field__item-tool {
+					a.grid-field__item-tool {
 						transform: rotate(180deg);
 					}
 				}
@@ -668,7 +682,7 @@
 				td.grid-field__item-fieldset {
 					border-bottom: none !important;
 
-					.grid-field__item-tool {
+					a.grid-field__item-tool {
 						transform: rotate(180deg);
 					}
 				}
