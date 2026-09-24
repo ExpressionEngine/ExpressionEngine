@@ -1220,7 +1220,7 @@ class EE_Messages
         //$debug = debug_backtrace();
         //echo '<pre>';print_r($debug[1]);echo'</pre>';exit;
         if (empty($this->theme_path)) {
-            $theme = (ee()->config->item('member_theme') == '') ? 'default' : ee()->config->item('member_theme');
+            $theme = (ee()->session->userdata('profile_theme') != '') ? ee()->session->userdata('profile_theme') : 'default';
             $this->theme_path = ee('Theme')->getPath('member/' . $theme);
         }
 

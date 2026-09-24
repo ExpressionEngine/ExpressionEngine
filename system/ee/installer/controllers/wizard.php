@@ -1689,8 +1689,6 @@ class Wizard extends CI_Controller
             'mbr_notification_emails' => '',
             'require_terms_of_service' => 'y',
             'default_primary_role' => '5',
-            'profile_trigger' => 'member' . $this->now,
-            'member_theme' => 'default',
             'avatar_url' => '{base_url}' . $this->userdata['avatar_url'],
             'avatar_path' => $this->userdata['avatar_path'],
             'avatar_max_width' => '100',

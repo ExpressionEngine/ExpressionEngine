@@ -24,8 +24,6 @@ class ApiTemplateStructureErrorTest extends ApiTemplateStructureTestBase
         unset(ee()->config->items['forum_trigger']);
         unset(ee()->config->items['use_category_name']);
         unset(ee()->config->items['reserved_category_word']);
-        unset(ee()->config->items['profile_trigger']);
-
         // Create new instance to trigger _load_reserved_groups
         $newInstance = new Api_template_structure();
 
@@ -61,18 +59,6 @@ class ApiTemplateStructureErrorTest extends ApiTemplateStructureTestBase
     }
 
     /**
-     * Test _load_reserved_groups with profile trigger configured
-     */
-    public function testLoadReservedGroupsWithProfileTrigger()
-    {
-        ee()->config->items['profile_trigger'] = 'member';
-
-        $newInstance = new Api_template_structure();
-
-        $this->assertContains('member', $newInstance->reserved_names);
-    }
-
-    /**
      * Test _load_reserved_groups with duplicate configurations
      */
     public function testLoadReservedGroupsWithDuplicateConfigurations()
@@ -80,19 +66,17 @@ class ApiTemplateStructureErrorTest extends ApiTemplateStructureTestBase
         // Set up duplicate configurations
         ee()->config->items['forum_is_installed'] = 'y';
         ee()->config->items['forum_trigger'] = 'duplicate';
-        ee()->config->items['profile_trigger'] = 'duplicate';
 
         $newInstance = new Api_template_structure();
 
-        // Due to duplicate logic in _load_reserved_groups, there will be 3 instances
-        // (forum_trigger added twice + profile_trigger)
+        // Due to duplicate logic in _load_reserved_groups, forum_trigger is added twice.
         $duplicateCount = 0;
         foreach ($newInstance->reserved_names as $name) {
             if ($name === 'duplicate') {
                 $duplicateCount++;
             }
         }
-        $this->assertEquals(3, $duplicateCount); // Matches actual buggy behavior
+        $this->assertEquals(2, $duplicateCount); // Matches actual buggy behavior
     }
 
     /**

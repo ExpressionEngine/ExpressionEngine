@@ -38,13 +38,6 @@ class Members extends Settings
             ->all()
             ->getDictionary('role_id', 'name');
 
-        $themes = ee('Theme')->listThemes('member');
-
-        $member_themes = array();
-        foreach ($themes as $file => $name) {
-            $member_themes[$file] = $name;
-        }
-
         $vars['sections'] = array(
             array(
                 array(
@@ -145,16 +138,6 @@ class Members extends Settings
                         )
                     )
                 ),
-                array(
-                    'title' => 'member_theme',
-                    'desc' => 'member_theme_desc',
-                    'fields' => array(
-                        'member_theme' => array(
-                            'type' => 'radio',
-                            'choices' => $member_themes
-                        )
-                    )
-                )
             ),
             'member_listing_settings' => array(
                 array(

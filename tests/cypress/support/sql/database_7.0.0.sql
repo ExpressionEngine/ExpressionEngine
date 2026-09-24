@@ -291,8 +291,6 @@ INSERT INTO `exp_config` (`config_id`, `site_id`, `key`, `value`) VALUES
 	(20, 1, 'mbr_notification_emails', ''),
 	(21, 1, 'require_terms_of_service', 'y'),
 	(22, 1, 'default_primary_role', '5'),
-	(23, 1, 'profile_trigger', 'member'),
-	(24, 1, 'member_theme', 'default'),
 	(27, 1, 'avatar_url', '{base_url}/images/avatars/'),
 	(28, 1, 'avatar_path', '{base_path}/images/avatars/'),
 	(29, 1, 'avatar_max_width', '100'),

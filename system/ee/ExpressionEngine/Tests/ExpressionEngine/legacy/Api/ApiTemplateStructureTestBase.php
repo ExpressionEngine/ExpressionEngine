@@ -258,7 +258,6 @@ abstract class ApiTemplateStructureTestBase extends TestCase
             'forum_trigger' => 'forum',
             'use_category_name' => 'y',
             'reserved_category_word' => 'category',
-            'profile_trigger' => 'member',
             'default_template_engine' => 'twig',
             'cp_session_type' => 'c',
             'session_crypt_key' => 'test_key',

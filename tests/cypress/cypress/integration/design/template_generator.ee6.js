@@ -52,5 +52,19 @@ context('Template Generator', () => {
         cy.get('.CodeMirror-code').should('contain', '</body>')
     })
 
+    it('Generates member management templates for a normal member group', function() {
+        cy.get('select[name=generator]').select('member:management')
+        cy.get('input[name="member:management[template_group]"]').clear().type('member').blur()
+        cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+        page.hasAlert('success')
+        page.get('alert').contains("Templates were generated successfully")
+
+        cy.get('.sidebar__link.active').should('contain', 'member')
+        cy.get('.app-listing__row').should('contain', 'login')
+        cy.get('.app-listing__row').should('contain', 'profile')
+        cy.get('.app-listing__row').should('contain', 'reset-password')
+    })
+
 
 })

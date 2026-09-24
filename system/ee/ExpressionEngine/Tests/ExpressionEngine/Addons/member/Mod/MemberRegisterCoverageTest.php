@@ -333,18 +333,7 @@ class MemberRegisterCoverageTest extends MemberRegisterTestBase
 
     public function testRegistrationFormLegacyTemplateHandlesInlineErrorsAndForumHiddenField()
     {
-        ee()->setMock('Config', new class {
-            public function getFile()
-            {
-                return new class {
-                    public function getBoolean($key)
-                    {
-                        return true;
-                    }
-                };
-            }
-        });
-        ee()->TMPL->tagdata = '';
+        ee()->TMPL->tagdata = '{custom_fields}{required}<span>required</span>{/required}{if field_description}<em>{field_description}</em>{/if}{field_name}:{field}{/custom_fields}{if captcha}<div>CAPTCHA_BLOCK</div>{/if}';
         ee()->TMPL->setMap([
             'include_assets' => 'y',
             'error_handling' => 'inline',
@@ -353,7 +342,6 @@ class MemberRegisterCoverageTest extends MemberRegisterTestBase
         ee()->TMPL->form_class = '';
         $this->subject->in_forum = true;
         $this->subject->board_id = 42;
-        $this->subject->loadedElement = '{custom_fields}{required}<span>required</span>{/required}{if field_description}<em>{field_description}</em>{/if}{field_name}:{field}{/custom_fields}{if captcha}<div>CAPTCHA_BLOCK</div>{/if}';
 
         $this->db->memberFieldRows = [[
             'm_field_id' => 1,
@@ -407,23 +395,11 @@ class MemberRegisterCoverageTest extends MemberRegisterTestBase
 
     public function testRegistrationFormLegacyTemplateHandlesNonRecaptchaCaptchaAndFieldToken()
     {
-        ee()->setMock('Config', new class {
-            public function getFile()
-            {
-                return new class {
-                    public function getBoolean($key)
-                    {
-                        return true;
-                    }
-                };
-            }
-        });
-        ee()->TMPL->tagdata = '';
+        ee()->TMPL->tagdata = '{custom_fields}{required}<span>required</span>{/required}{if field_description}<em>{field_description}</em>{/if}{field_name}:{field}{/custom_fields}{field:nickname}{if captcha}<div>{captcha}{captcha_word}</div>{/if}';
         ee()->TMPL->setMap([
             'include_assets' => 'n',
             'error_handling' => '',
         ]);
-        $this->subject->loadedElement = '{custom_fields}{required}<span>required</span>{/required}{if field_description}<em>{field_description}</em>{/if}{field_name}:{field}{/custom_fields}{field:nickname}{if captcha}<div>{captcha}{captcha_word}</div>{/if}';
 
         $this->db->memberFieldRows = [[
             'm_field_id' => 1,

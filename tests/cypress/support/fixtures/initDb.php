@@ -293,8 +293,6 @@ function write_config_data($schema)
         'mbr_notification_emails' => '',
         'require_terms_of_service' => 'y',
         'default_primary_role' => '5',
-        'profile_trigger' => 'member' . $schema->now,
-        'member_theme' => 'default',
         'avatar_url' => '{base_url}' . $schema->userdata['avatar_url'],
         'avatar_path' => $schema->userdata['avatar_path'],
         'avatar_max_width' => '100',

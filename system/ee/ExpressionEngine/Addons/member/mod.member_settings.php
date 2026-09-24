@@ -138,8 +138,6 @@ class Member_settings extends Member
         $content = '';
         if (! empty($tagdata)) {
             $content = ee()->TMPL->tagdata;
-        } elseif (ee('Config')->getFile()->getBoolean('legacy_member_templates')) {
-            $content = $this->_load_element('public_profile');
         }
 
         /** ----------------------------------------
@@ -719,8 +717,6 @@ class Member_settings extends Member
         $template = '';
         if (! empty($tagdata)) {
             $template = ee()->TMPL->tagdata;
-        } elseif (ee('Config')->getFile()->getBoolean('legacy_member_templates')) {
-            $template = $this->_load_element('edit_profile_form');
         }
 
         // Find out if we have sub-tag data for our `custom_profile_fields` tag. If not, use the legacy speciality template.
@@ -734,7 +730,7 @@ class Member_settings extends Member
 
             $profile_fields_template = substr($template, $custom_profile_fields_start, $custom_profile_fields_diff);
         } else {
-            $profile_fields_template = $this->_load_element('custom_profile_fields');
+            $profile_fields_template = '';
         }
 
         /** ----------------------------------------
@@ -1294,8 +1290,6 @@ class Member_settings extends Member
         $template = '';
         if (! empty($tagdata)) {
             $template = ee()->TMPL->tagdata;
-        } elseif (ee('Config')->getFile()->getBoolean('legacy_member_templates')) {
-            $template = $this->_load_element('email_prefs_form');
         }
 
         return $this->_var_swap(
@@ -1411,8 +1405,6 @@ class Member_settings extends Member
         $template = '';
         if (! empty($tagdata)) {
             $template = ee()->TMPL->tagdata;
-        } elseif (ee('Config')->getFile()->getBoolean('legacy_member_templates')) {
-            $template = $this->_load_element('username_password_form');
         }
 
         return $this->_var_swap(
