@@ -519,6 +519,16 @@ class Edit extends AbstractPublishController
 
         $result = $this->validateEntry($entry, $vars['layout']);
 
+        $vars['channel_layout'] = $channel_layout;
+        $can_edit_this_channel_layout = ee('Permission')->has('can_edit_channels');
+        if ($can_edit_this_channel_layout) {
+            ee()->lang->loadfile('channel');
+            $vars['edit_layout_url'] = $channel_layout
+                ? ee('CP/URL')->make('channels/layouts/edit/' . $channel_layout->getId())
+                : ee('CP/URL')->make('channels/layouts/' . $entry->channel_id);
+            $vars['edit_layout_label'] = $channel_layout ? lang('edit_this_layout') : lang('edit_layout');
+        }
+
         if ($result instanceof ValidationResult) {
             $vars['errors'] = $result;
 

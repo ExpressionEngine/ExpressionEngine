@@ -126,6 +126,8 @@ $lang = array(
 
     'edit_layout' => 'Edit Layout',
 
+    'edit_this_layout' => 'Edit This Layout',
+
     'illegal_tab_name' => 'Tab names may not contain the following characters: *, >, :, +, (, ), [, ], =, |, ", \', ., #, or $',
 
     'import' => 'Import',
