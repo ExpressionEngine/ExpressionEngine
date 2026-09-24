@@ -382,6 +382,29 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
 
         $this->emit('afterAssociationsSave');
 
+        // Output the profiler output on channel entry save.
+        // In order to trigger this, add a hidden input field named 'profiler' with a truthy value to the edit entry form.
+        if (ee()->input->post('profiler') && $this->getMetaData('hook_id') === 'channel_entry') {
+            $performance = array(
+                'database' => number_format(ee('Database')->currentExecutionTime(), 4),
+                'benchmarks' => ee()->benchmark->getBenchmarkTimings()
+            );
+
+            $profiler = ee('Profiler')
+                ->addSection('performance', $performance)
+                ->addSection('variables', array(
+                    'server' => $_SERVER,
+                    'cookie' => $_COOKIE,
+                    'get' => $_GET,
+                    'post' => $_POST,
+                    'userdata' => ee()->session->all_userdata()
+                ))
+                ->addSection('database', array(ee('Database')));
+
+            echo $profiler->render();
+            die();
+        }
+
         return $this;
     }
 
