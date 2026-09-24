@@ -110,8 +110,11 @@ class StandardGlobals extends Variables
     {
         if (isset(ee()->session) && ee()->session->userdata('member_id') != 0) {
             $name = (ee()->session->userdata['screen_name'] == '') ? ee()->session->userdata['username'] : ee()->session->userdata['screen_name'];
+            $profile_trigger = ee('Config')->getFile()->getBoolean('legacy_member_templates')
+                ? ee()->config->item('profile_trigger')
+                : '';
 
-            $path = "<a href='" . ee()->functions->create_url(ee()->config->item('profile_trigger') . '/' . ee()->session->userdata('member_id')) . "'>" . $name . "</a>";
+            $path = "<a href='" . ee()->functions->create_url($profile_trigger . '/' . ee()->session->userdata('member_id')) . "'>" . $name . "</a>";
 
             return $path;
         }
