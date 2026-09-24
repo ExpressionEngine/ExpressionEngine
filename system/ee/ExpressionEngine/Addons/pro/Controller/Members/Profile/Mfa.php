@@ -204,6 +204,17 @@ class Mfa extends Profile\Pro
                     )
                 ),
                 array(
+                    'title' => 'mfa_secret_key',
+                    'desc' => 'mfa_secret_key_desc',
+                    'group' => 'qr_code',
+                    'fields' => array(
+                        'mfa_secret_key' => array(
+                            'type' => 'html',
+                            'content' => '<code>' . ee('pro:Mfa')->generateManualCode(ee()->session->userdata('unique_id') . md5(ee('Security/XSS')->clean(ee('pro:Mfa')->backupCode()))) . '</code>'
+                        )
+                    )
+                ),
+                array(
                     'title' => 'mfa_backup_code',
                     'desc' => 'mfa_backup_code_desc',
                     'group' => 'qr_code',
