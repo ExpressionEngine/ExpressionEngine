@@ -299,6 +299,15 @@ $setup = [
             );
         },
 
+        'Updater/Packer' => function ($ee) {
+            $filesystem = $ee->make('Filesystem');
+
+            return new Updater\Downloader\Packer(
+                $ee->make('Filesystem'),
+                new \ZipArchive()
+            );
+        },
+
         'Updater/Preflight' => function ($ee) {
             $theme_paths = $ee->make('Model')->get('Config')
                 ->filter('key', 'theme_folder_path')
