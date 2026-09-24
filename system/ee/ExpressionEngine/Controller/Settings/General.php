@@ -31,6 +31,13 @@ class General extends Settings
 
         $localization_fields = ee()->config->prep_view_vars('localization_cfg');
 
+        // Build CP theme choices to match Jumps/Themes controller
+        $themes = array('light', 'dark', 'slate');
+        $theme_choices = array();
+        foreach ($themes as $t) {
+            $theme_choices[$t] = lang($t);
+        }
+
         $vars['sections'] = array(
             array(
                 array(
@@ -122,7 +129,18 @@ class General extends Settings
                             'value' => ee()->config->item('deft_lang') ?: 'english'
                         )
                     )
-                )
+                ),
+                array(
+                    'title' => 'cp_theme',
+                    'desc' => 'cp_theme_desc',
+                    'fields' => array(
+                        'cp_theme' => array(
+                            'type' => 'select',
+                            'choices' => $theme_choices,
+                            'value' => ee()->config->item('cp_theme') ?: 'light'
+                        )
+                    )
+                ),
             ),
             'date_time_settings' => array(
                 array(
