@@ -644,13 +644,13 @@ class Grid_lib
             $fieldtype = $ft_api->setup_handler($field_short_name, true);
 
             // Check to see if the fieldtype accepts Grid as a content type;
-            // also, temporarily exlcude Relationships for content types
-            // other than channel
+            // also, temporarily exclude Relationships for content types
+            // other than channel and pro_variables
             if (
                 empty($fieldtype) ||
                 ! method_exists($fieldtype, 'accepts_content_type') ||
                 ! $fieldtype->accepts_content_type('grid') ||
-                ($this->content_type != 'channel' && $field_short_name == 'relationship')
+                ($this->content_type != 'channel' && $this->content_type != 'pro_variables' && $field_short_name == 'relationship')
             ) {
                 unset($fieldtypes[$field_short_name], $compatibility[$field_short_name]);
             }
