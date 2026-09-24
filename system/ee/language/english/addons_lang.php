@@ -61,6 +61,16 @@ $lang = array(
 
     'addons_not_installed' => 'Add-Ons Not Installed',
 
+    'addons_unpack_invalid_structure' => 'The unpacked add-on does not have a valid structure.',
+
+    'addons_unpack_complete' => '%s unpacked successfully',
+
+    'addons_unpack_failed' => 'Failed to unpack %s',
+
+    'addons_pack_copy_failed' => 'Failed to copy the add-on files.',
+
+    'addons_pack_complete' => '%s packed successfully',
+
     'addon_not_fully_functional' => '%s is not fully functional',
 
     'existing_consent_request' => 'The following add-on(s) could not be installed due to an existing Consent Request which the add-on(s) are trying to create:',
@@ -168,6 +178,7 @@ $lang = array(
     'license_invalid_license_key' => 'Invalid Key',
     'license_missing_license_key' => 'Missing Key',
     'license_update_available' => 'Update Available',
+    'license_update_available_message' => 'A new version of %s is available. Get <a href="https://expressionengine.com/store/licenses#update-available" target="_blank">more info</a> or <a href="%s">download the update</a>.',
     'unlicensed_addon' => 'Unlicensed Add-on',
     'unlicensed_addon_message' => '<b>%s</b> does not have a valid license. <a href="https://expressionengine.com/store/licenses" target="_blank">More Info</a>',
 
