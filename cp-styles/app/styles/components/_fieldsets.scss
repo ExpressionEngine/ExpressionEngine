@@ -100,7 +100,7 @@ fieldset {
 	}
 }
 
-.fieldset-required{
+.fieldset-required, .fluid__item-fieldset-required {
 	> .field-instruct {
 		label {
 			// @extend .fieldset-icon;

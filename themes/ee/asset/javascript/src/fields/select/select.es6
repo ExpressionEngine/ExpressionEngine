@@ -13,14 +13,18 @@ class SelectField extends React.Component {
   constructor (props) {
     super(props)
 
-    // This code is for the page channels->edit->Category
-    if (this.props.name == 'cat_group') {
-      props.selected = this.categorySelected(props.selected, props.items)
+    this.props.items = SelectList.formatItems(props.items)
+
+    let selected = SelectList.formatItems(props.selected, null, props.multi)
+
+    // Toggle-enabled select fields need full item metadata in "selected"
+    // so SelectList can synthesize hidden toggle inputs on initial render.
+    if (props.toggles && props.toggles.length) {
+      selected = this.normalizeSelectedForToggles(props.selected, selected, this.props.items)
     }
 
-    this.props.items = SelectList.formatItems(props.items)
     this.state = {
-      selected: SelectList.formatItems(props.selected, null, props.multi),
+      selected: selected,
       editing: props.editing || false
     }
   }
@@ -33,18 +37,67 @@ class SelectField extends React.Component {
     })
   }
 
-  // Check and update selected items to get toggles elements
-  // we are using toggles on the select_list.js
-  categorySelected(selected, items) {
-    var catArr = [];
-    items.filter(item => {
-      selected.map(el => {
-        if (el == item.value) {
-          catArr.push(item);
+  valuesMatch(value1, value2) {
+    return value1 == value2 || String(value1) === String(value2)
+  }
+
+  selectedValueFromRaw(item) {
+    if (item && typeof item === 'object' && item.value !== undefined) {
+      return item.value
+    }
+
+    return item
+  }
+
+  findItemByValue(items, value) {
+    for (let index = 0; index < items.length; index++) {
+      const item = items[index]
+
+      if (item.section) {
+        continue
+      }
+
+      if (this.valuesMatch(item.value, value)) {
+        return item
+      }
+
+      if (item.children && item.children.length) {
+        const child = this.findItemByValue(item.children, value)
+        if (child) {
+          return child
         }
-      })
+      }
+    }
+
+    return null
+  }
+
+  normalizeSelectedForToggles(rawSelected, formattedSelected, items) {
+    if (!Array.isArray(rawSelected) || rawSelected.length === 0) {
+      return formattedSelected
+    }
+
+    const normalized = []
+    const seen = {}
+
+    rawSelected.forEach(rawItem => {
+      const selectedValue = this.selectedValueFromRaw(rawItem)
+      let selectedItem = this.findItemByValue(items, selectedValue)
+
+      if (!selectedItem) {
+        selectedItem = formattedSelected.find(item => this.valuesMatch(item.value, selectedValue))
+      }
+
+      if (selectedItem) {
+        const key = String(selectedItem.value)
+        if (!seen[key]) {
+          normalized.push(selectedItem)
+          seen[key] = true
+        }
+      }
     })
-    return catArr;
+
+    return normalized.length ? normalized : formattedSelected
   }
 
   selectionChanged = (selected) => {
