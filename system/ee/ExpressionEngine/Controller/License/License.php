@@ -47,6 +47,7 @@ class License extends CP_Controller
             'licenseStatus' => preg_replace('/[^a-z0-9_]/i', '', $licenseResponse['messageType']),
             'site_id' => filter_var(ee()->input->post('site_id'), FILTER_VALIDATE_INT),
             'site_url' => filter_var(ee()->input->post('site_url'), FILTER_VALIDATE_URL),
+            'licensedAddons' => $licenseResponse['addons'],
             'addons' => []
         ];
 

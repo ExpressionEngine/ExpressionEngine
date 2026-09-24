@@ -61,6 +61,16 @@ $lang = array(
 
     'addons_not_installed' => 'Add-Ons Not Installed',
 
+    'addons_unpack_invalid_structure' => 'The unpacked add-on does not have a valid structure.',
+
+    'addons_unpack_complete' => '%s unpacked successfully',
+
+    'addons_unpack_failed' => 'Failed to unpack %s',
+
+    'addons_pack_copy_failed' => 'Failed to copy the add-on files.',
+
+    'addons_pack_complete' => '%s packed successfully',
+
     'addon_not_fully_functional' => '%s is not fully functional',
 
     'existing_consent_request' => 'The following add-on(s) could not be installed due to an existing Consent Request which the add-on(s) are trying to create:',
@@ -102,6 +112,8 @@ $lang = array(
     'uninstall' => 'Uninstall',
 
     'uninstalled' => 'Uninstalled',
+
+    'licensed' => 'Licensed',
 
     /* 2.x */
 
