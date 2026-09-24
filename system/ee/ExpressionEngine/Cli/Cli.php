@@ -74,6 +74,12 @@ class Cli
     public $commandOptions;
 
     /**
+     * whether command options are dynamic
+     * @var bool
+     */
+    public $dynamicCommandOptions = false;
+
+    /**
      * Summary of the command
      * @var string
      */
@@ -118,6 +124,48 @@ class Cli
 
         // Fieldtypes
         'fieldtypes:list' => Commands\CommandFieldtypesList::class,
+
+        // Sites
+        'sites:list' => Commands\CommandSitesList::class,
+        'sites:add' => Commands\CommandSitesAdd::class,
+        'sites:edit' => Commands\CommandSitesEdit::class,
+        'sites:delete' => Commands\CommandSitesDelete::class,
+
+        // Category Groups
+        'cgroups:list' => Commands\CommandCategoryGroupList::class,
+        'cgroups:add' => Commands\CommandCategoryGroupAdd::class,
+        'cgroups:edit' => Commands\CommandCategoryGroupEdit::class,
+        'cgroups:delete' => Commands\CommandCategoryGroupDelete::class,
+
+        // Categories
+        'categories:list' => Commands\CommandCategoriesList::class,
+        'categories:add' => Commands\CommandCategoriesAdd::class,
+        'categories:edit' => Commands\CommandCategoriesEdit::class,
+        'categories:delete' => Commands\CommandCategoriesDelete::class,
+
+        // Entries
+        'entries:list' => Commands\CommandEntriesList::class,
+        'entries:add' => Commands\CommandEntriesAdd::class,
+        'entries:edit' => Commands\CommandEntriesEdit::class,
+        'entries:delete' => Commands\CommandEntriesDelete::class,
+
+        // Members
+        'members:list' => Commands\CommandMembersList::class,
+        'members:delete' => Commands\CommandMembersDelete::class,
+        'members:add' => Commands\CommandMembersAdd::class,
+        'members:edit' => Commands\CommandMembersEdit::class,
+
+        // Upload Directories
+        'upload-directories:list' => Commands\CommandUploadDirectoriesList::class,
+        'upload-directories:add' => Commands\CommandUploadDirectoriesAdd::class,
+        'upload-directories:edit' => Commands\CommandUploadDirectoriesEdit::class,
+        'upload-directories:delete' => Commands\CommandUploadDirectoriesDelete::class,
+
+        // Files
+        'files:list' => Commands\CommandFilesList::class,
+        'files:add' => Commands\CommandFilesAdd::class,
+        'files:edit' => Commands\CommandFilesEdit::class,
+        'files:delete' => Commands\CommandFilesDelete::class,
 
         // Version
         'version' => Commands\CommandVersion::class,
@@ -488,7 +536,7 @@ class Cli
     {
         $defaultChoice = !empty($default) ? "<<white>>[<<yellow>>{$default}<<white>>]<<reset>>" : '';
 
-        $this->output->out(lang($question) . ' ' . $defaultChoice);
+        $this->output->out(strip_tags(lang($question)) . ' ' . $defaultChoice);
 
         $result = (string) $this->input->in();
 
@@ -703,7 +751,7 @@ class Cli
             $errors = $this->options->getErrors();
 
             foreach ($errors as $i => $error) {
-                if ($this->signature == 'generate:templates' && $error instanceof Exception\OptionNotDefined) {
+                if ($this->dynamicCommandOptions && $error instanceof Exception\OptionNotDefined) {
                     // a very specific exception that we make for command that's dynamically loading options
                     unset($errors[$i]);
                     continue;
@@ -715,6 +763,38 @@ class Cli
                 $this->fail();
             }
         };
+    }
+
+    /**
+     * Setup command options from generator options
+     *
+     * @param array $options
+     */
+    protected function setupCommandOptions($options)
+    {
+        $normalizedOptions = [];
+        foreach ($options as $option => $optionParams) {
+            $command = $option;
+            if (isset($optionParams['type']) && $optionParams['type'] == 'checkbox') {
+                $command .= '*';
+            }
+            if (isset($optionParams['required']) && $optionParams['required']) {
+                $command .= ':';
+            }
+            $normalizedOptions[$command] = isset($optionParams['desc']) ? $optionParams['desc'] : $option;
+        }
+
+        $this->commandOptions = array_merge($normalizedOptions, $this->commandOptions);
+        $this->loadOptions(); // need to have those re-loaded now
+    }
+
+    protected function removeCommandOption($option)
+    {
+        if (isset($this->commandOptions[$option])) {
+            unset($this->commandOptions[$option]);
+        }
+        dump($this->commandOptions);
+        $this->loadOptions(); // need to have those re-loaded now
     }
 
     /**
