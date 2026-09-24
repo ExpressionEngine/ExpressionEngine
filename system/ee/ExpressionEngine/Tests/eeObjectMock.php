@@ -445,6 +445,11 @@ class eeDbArMock
         return $this->last_query ?? '';
     }
 
+    public function word_boundary_regex($term)
+    {
+        return '([[:<:]]|^)' . preg_quote((string) $term) . '([[:>:]]|$)';
+    }
+
     public function count_all_results($table = '')
     {
         // Simple implementation - return count of filtered rows
@@ -866,6 +871,11 @@ class FakeDb
     public function escape_str($str)
     {
         return addslashes($str);
+    }
+
+    public function word_boundary_regex($term)
+    {
+        return '([[:<:]]|^)' . preg_quote((string) $term) . '([[:>:]]|$)';
     }
 
     public function get($table = null)

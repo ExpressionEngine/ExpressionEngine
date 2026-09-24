@@ -557,8 +557,7 @@ class Channel_model extends CI_Model
                 $search_sql .= $not ? ' AND ' : ' OR ';
                 $search_sql .= $col_name . str_replace('  ', ' ', ' IS ' . ($not ?: '') . ' NULL) ');
             } elseif (strpos($term, '\W') !== false) { // full word only, no partial matches
-                // Note: MySQL's nutty POSIX regex word boundary is [[:>:]]
-                $term = '([[:<:]]|^)' . preg_quote(str_replace('\W', '', $term)) . '([[:>:]]|$)';
+                $term = ee()->db->word_boundary_regex(str_replace('\W', '', $term));
 
                 $search_sql .= ' (' . $col_name . ' ' . $not . ' REGEXP "' . ee()->db->escape_str($term) . '") ';
             } else {
