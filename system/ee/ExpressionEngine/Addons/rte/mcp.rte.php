@@ -252,20 +252,26 @@ class Rte_mcp
 
             $config->toolset_name = $configName;
             $config->toolset_type = $toolsetType;
+            $defaultConfigSettings = ee('rte:' . ucfirst($toolsetType) . 'Service')->defaultConfigSettings();
+            $defaultToolbar = isset($defaultConfigSettings['toolbar']) ? $defaultConfigSettings['toolbar'] : [];
+            $postedToolbarKey = $toolsetType . '_toolbar';
             $jsonError = false;
             if ($settings['rte_advanced_config'] == 'y' && !empty($settings['rte_config_json'])) {
                 //override with JSON
                 $json = json_decode($settings['rte_config_json']);
                 if (empty($json)) {
                     $jsonError = true;
-                    $settings['toolbar'] = $settings[$toolsetType . '_toolbar'];
+                    $settings['toolbar'] = isset($settings[$postedToolbarKey]) ? $settings[$postedToolbarKey] : $defaultToolbar;
                 } elseif ($toolsetType == 'redactor' || $toolsetType == 'redactorX') {
                     $settings['toolbar'] = (array) $json;
                 } else {
                     $settings = array_merge($settings, (array) $json);
                 }
             } else {
-                $settings['toolbar'] = $settings[$toolsetType . '_toolbar'];
+                $settings['toolbar'] = isset($settings[$postedToolbarKey]) ? $settings[$postedToolbarKey] : $defaultToolbar;
+            }
+            if (!is_array($settings['toolbar']) && !is_object($settings['toolbar'])) {
+                $settings['toolbar'] = $defaultToolbar;
             }
             if ($toolsetType == 'redactor') {
                 if (!isset($settings['toolbar']['buttons'])) {
@@ -316,7 +322,11 @@ class Rte_mcp
             ($toolset_id = (int) ee('Request')->get('toolset_id'))
             && ($config = ee('Model')->get('rte:Toolset')->filter('toolset_id', '==', $toolset_id)->first())
         ) {
-            $config->settings = array_merge(ee('rte:' . ucfirst($config->toolset_type) . 'Service')->defaultConfigSettings(), $config->settings);
+            $defaultConfigSettings = ee('rte:' . ucfirst($config->toolset_type) . 'Service')->defaultConfigSettings();
+            $config->settings = array_merge($defaultConfigSettings, $config->settings);
+            if (!isset($config->settings['toolbar']) || (!is_array($config->settings['toolbar']) && !is_object($config->settings['toolbar']))) {
+                $config->settings['toolbar'] = isset($defaultConfigSettings['toolbar']) ? $defaultConfigSettings['toolbar'] : [];
+            }
 
             // Clone a config?
             if (ee('Request')->get('clone') == 'y') {
