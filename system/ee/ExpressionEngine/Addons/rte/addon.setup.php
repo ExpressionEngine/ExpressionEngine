@@ -3,7 +3,7 @@
 return array(
     'name' => "Rich Text Editor",
     'description' => "",
-    'version' => "2.2.0",
+    'version' => "2.3.0",
     'namespace' => 'ExpressionEngine\Addons\Rte',
     'author' => 'ExpressionEngine',
     'author_url' => 'https://expressionengine.com/',
@@ -12,7 +12,7 @@ return array(
     'services' => array(
         'CkeditorService' => 'Service\CkeditorService',
         'RedactorService' => 'Service\RedactorService',
-        'RedactorXService' => 'Service\RedactorXService',
+        'RedactorMigrationService' => 'Service\RedactorMigrationService',
     ),
     'models' => array(
         'Toolset' => 'Model\Toolset'

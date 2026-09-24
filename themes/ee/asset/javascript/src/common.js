@@ -221,7 +221,7 @@ $(document).ready(function(){
 			}
 		});
 
-		// Removed this code, to prevent bug with popup inside RedactorX
+		// Removed this code, to prevent bug with popup inside Redactor
 		// Moved code to remove Class 'open' inside dropdown-controller.js file hideAllDropdowns()
 
 		// listen for clicks to the document
