@@ -1142,6 +1142,11 @@ class Filesystem
     {
         $prefix = $this->getPathPrefix();
 
+        // If path is absolute but prefix is not shift the prefix
+        if (strpos($path, '/') === 0 && strpos($prefix, '/') !== 0) {
+            $prefix = "/$prefix";
+        }
+
         return (!empty($prefix) && strpos($path, $prefix) === 0) ? substr_replace($path, '', 0, strlen($prefix)) : $path;
     }
 
