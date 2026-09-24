@@ -160,11 +160,10 @@ abstract class AbstractPublish extends CP_Controller
 
         $data = array();
         $authors = array();
-        $i = $entry->Versions->count();
+        $count = $entry->Versions->count();
         $current_author_id = false;
-        $current_id = $i + 1;
 
-        foreach ($entry->Versions->sortBy('version_date')->reverse() as $version) {
+        foreach ($entry->Versions->sortBy('version_date')->reverse() as $index => $version) {
             if (! isset($authors[$version->author_id])) {
                 $authors[$version->author_id] = $version->getAuthorName();
             }
@@ -173,52 +172,44 @@ abstract class AbstractPublish extends CP_Controller
                 $current_author_id = $authors[$version->author_id];
             }
 
-            $toolbar = ee('View')->make('_shared/toolbar')->render(
-                array(
-                    'toolbar_items' => array(
-                        'txt-only' => array(
-                            'href' => ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id, array('version' => $version->version_id)),
-                            'title' => lang('load_revision'),
-                            'content' => lang('view')
-                        ),
-                    )
+            $toolbar_items = array(
+                'txt-only' => array(
+                    'href' => ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id, array('version' => $version->version_id)),
+                    'title' => lang('load_revision'),
+                    'content' => lang('view')
                 )
             );
 
-            $attrs = ($version->version_id == $version_id) ? array('class' => 'selected') : array();
+            // add the Current tag to the first revision
+            if ($index === 0) {
+                $toolbar_items['current-revision'] = array(
+                    'button' => false,
+                    'href' => ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id),
+                    'class' => 'st-open',
+                    'content' => lang('current'),
+                    'style' => 'margin-left: 4px',
+                );
+            }
+
+            $toolbar = ee('View')->make('_shared/toolbar')->render(
+                array(
+                    'toolbar_items' => $toolbar_items
+                )
+            );
+
+            $attrs = [];
+            if (($version_id === false && $index === 0) || $version->version_id == $version_id) {
+                $attrs['class'] = 'selected';
+            }
 
             $data[] = array(
                 'attrs' => $attrs,
                 'columns' => array(
-                    $i,
+                    $count - $index,
                     ee()->localize->human_time($version->version_date->format('U'), true, true),
                     $authors[$version->author_id],
                     $toolbar
                 )
-            );
-            $i--;
-        }
-
-        if (! $entry->isNew()) {
-            $attrs = (!$version_id) ? array('class' => 'selected') : array();
-
-            $current_author_id = (!$current_author_id) ? $entry->getAuthorName() : $current_author_id;
-
-            // Current
-            $edit_date = ($entry->edit_date)
-                ? ee()->localize->human_time($entry->edit_date->format('U'), true, true)
-                : null;
-
-            array_unshift(
-                $data,
-                array(
-                    'attrs' => $attrs,
-                    'columns' => array(
-                        $current_id,
-                        $edit_date,
-                        $current_author_id,
-                        '<a href="' . ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id) . '"><span class="st-open">' . lang('current') . '</span></a>'
-                    ))
             );
         }
 
