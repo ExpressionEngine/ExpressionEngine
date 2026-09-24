@@ -288,7 +288,7 @@ class Builder
             $word .= $char;
         }
 
-        if (strlen($word) > 2) {
+        if (strlen($word) > 0) {
             $words[] = $word;
         }
 
