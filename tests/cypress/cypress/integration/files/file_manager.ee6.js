@@ -113,6 +113,17 @@ context('File Manager', () => {
         page.get('files').should('have.length', 10)
     });
 
+    it('keeps rows sortable while excluding the file name cell from drag start', () => {
+        beforeEach_all_files();
+
+        page.get('files').first().should('have.class', 'ui-sortable-handle')
+        page.get('file_names').first().should('have.class', 'filemanager-filename-cell')
+
+        cy.get('.f_manager-wrapper tbody').then(($tbody) => {
+            expect($tbody.sortable('option', 'cancel')).to.include('.filemanager-filename-cell')
+        })
+    });
+
     // General Tests
 
     it('Change the page size using the menu', () => {

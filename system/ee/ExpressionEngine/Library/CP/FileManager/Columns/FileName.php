@@ -11,6 +11,7 @@
 namespace ExpressionEngine\Library\CP\FileManager\Columns;
 
 use ExpressionEngine\Library\CP\EntryManager;
+use function htmlentities;
 
 /**
  * FileName Column
@@ -22,8 +23,24 @@ class FileName extends EntryManager\Columns\Column
         return 'name';
     }
 
-    public function renderTableCell($data, $field_id, $file)
+    public function getTableColumnConfig()
     {
+        return [
+            'encode' => false,
+        ];
+    }
+
+    public function renderTableCell($data, $field_id, $file, $viewtype = 'list')
+    {
+        if ($viewtype == 'list') {
+            return [
+                'html' => htmlentities($file->file_name, ENT_QUOTES, 'UTF-8'),
+                'attrs' => [
+                    'class' => 'filemanager-filename-cell',
+                ],
+            ];
+        }
+
         return $file->file_name;
     }
 }
