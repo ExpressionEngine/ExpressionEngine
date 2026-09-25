@@ -1,6 +1,19 @@
 <?php
 
 require_once __DIR__ . '/MemberRegisterTestBase.php';
+require_once rtrim(PATH_ADDONS, '/') . '/member/mod.member_settings.php';
+
+class MemberEditProfileRouterFixture extends Member_settings
+{
+    public function __construct()
+    {
+    }
+
+    public function _load_element($which)
+    {
+        throw new RuntimeException('profile fields reached');
+    }
+}
 
 class MemberRegisterCoverageTest extends MemberRegisterTestBase
 {
@@ -270,6 +283,38 @@ class MemberRegisterCoverageTest extends MemberRegisterTestBase
         $this->assertStringNotContainsString('{custom_fields}', $result);
         $this->assertStringNotContainsString('<captcha>', $result);
         $this->assertStringContainsString('</form>', $result);
+    }
+
+    public function testRegistrationFormRestoresFrontendRouterAfterLoadingCpLibraries()
+    {
+        ee()->TMPL->tagdata = '<p>Registration</p>';
+        ee()->TMPL->setMap([
+            'include_assets' => 'n',
+            'error_handling' => '',
+        ]);
+
+        $this->subject->registration_form();
+
+        $this->assertSame('ee', $this->router->class);
+        $this->assertSame(['cp', 'ee'], $this->router->history);
+    }
+
+    public function testEditProfileRestoresFrontendRouterAfterLoadingCpLibraries()
+    {
+        ee()->TMPL->tagdata = '<p>Profile fields</p>';
+        $subject = (new ReflectionClass(MemberEditProfileRouterFixture::class))->newInstanceWithoutConstructor();
+
+        try {
+            $subject->edit_profile();
+            $this->fail('Expected the fixture to stop after router initialization.');
+        } catch (RuntimeException $exception) {
+            $this->assertSame('profile fields reached', $exception->getMessage());
+        }
+
+        $this->assertSame('ee', $this->router->class);
+        $this->assertSame(['cp', 'ee'], $this->router->history);
+        $this->assertSame(['form'], $this->load->helpers);
+        $this->assertSame(['cp', 'javascript'], $this->load->libraries);
     }
 
     public function testRegistrationFormAppendsAssetsWhenRequested()
