@@ -176,34 +176,8 @@ class CkeditorService extends AbstractRteService implements RteService
             'Rte.configs.' . $configHandle => $config
         ]);
 
-        // some config values are regular expressions, re-decleare those as such
-        $configRegex = [];
-        if (isset($config['htmlSupport']) && isset($config['htmlSupport']->allow)) {
-            foreach ($config['htmlSupport'] as $property => $htmlSupport) {
-                foreach ($htmlSupport as $i => $allowDisallow) {
-                    foreach ($allowDisallow as $key => $value) {
-                        if (is_string($value) && strpos($value, '/') === 0 && strrpos($value, '/') === strlen($value) - 1) {
-                            $configRegex[] = 'EE.Rte.configs.' . $configHandle . '.htmlSupport.' . $property . '[' . $i . '].' . $key . ' = new RegExp(' . $value . ');';
-                        } elseif (is_array($value)) {
-                            foreach ($value as $j => $v) {
-                                if (is_string($v) && strpos($v, '/') === 0 && strrpos($v, '/') === strlen($v) - 1) {
-                                    $configRegex[] = 'EE.Rte.configs.' . $configHandle . '.htmlSupport.' . $property . '[' . $i . '].' . $key . '[' . $j . '] = new RegExp(' . $v . ');';
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        if (isset($config['typing']) && isset($config['typing']->transformations) && isset($config['typing']->transformations->extra)) {
-            foreach ($config['typing']->transformations->extra as $i => $extra) {
-                foreach ($extra as $key => $value) {
-                    if (is_string($value) && strpos($value, '/') === 0 && strrpos($value, '/') === strlen($value) - 1) {
-                        $configRegex[] = 'EE.Rte.configs.typing.transformations.extra[' . $i . '].' . $key . ' = new RegExp(' . $value . ');';
-                    }
-                }
-            }
-        }
+        // some config values are regular expressions, re-declare those as such
+        $configRegex = $this->buildConfigRegex($config, $configHandle);
 
         if (!empty($configRegex)) {
             ee()->cp->add_to_foot('<script type="text/javascript">
@@ -228,6 +202,39 @@ class CkeditorService extends AbstractRteService implements RteService
         }
 
         return $configHandle;
+    }
+
+    protected function buildConfigRegex($config, $configHandle)
+    {
+        $configRegex = [];
+        if (isset($config['htmlSupport']) && isset($config['htmlSupport']->allow)) {
+            foreach ($config['htmlSupport'] as $property => $htmlSupport) {
+                foreach ($htmlSupport as $i => $allowDisallow) {
+                    foreach ($allowDisallow as $key => $value) {
+                        if (is_string($value) && strpos($value, '/') === 0 && strrpos($value, '/') === strlen($value) - 1) {
+                            $configRegex[] = 'EE.Rte.configs.' . $configHandle . '.htmlSupport.' . $property . '[' . $i . '].' . $key . ' = new RegExp(' . $value . ');';
+                        } elseif (is_array($value)) {
+                            foreach ($value as $j => $v) {
+                                if (is_string($v) && strpos($v, '/') === 0 && strrpos($v, '/') === strlen($v) - 1) {
+                                    $configRegex[] = 'EE.Rte.configs.' . $configHandle . '.htmlSupport.' . $property . '[' . $i . '].' . $key . '[' . $j . '] = new RegExp(' . $v . ');';
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (isset($config['typing']) && isset($config['typing']->transformations) && isset($config['typing']->transformations->extra)) {
+            foreach ($config['typing']->transformations->extra as $i => $extra) {
+                foreach ($extra as $key => $value) {
+                    if (is_string($value) && strpos($value, '/') === 0 && strrpos($value, '/') === strlen($value) - 1) {
+                        $configRegex[] = 'EE.Rte.configs.' . $configHandle . '.typing.transformations.extra[' . $i . '].' . $key . ' = new RegExp(' . $value . ');';
+                    }
+                }
+            }
+        }
+
+        return $configRegex;
     }
 
     public function buildToolbarConfig($config)
