@@ -355,6 +355,61 @@ class FileFtReplaceCropTest extends FileFtTestBase
     }
 
     /**
+     * Assert stale cached crop destinations are regenerated when tag-pair output needs dimensions.
+     *
+     * @return void
+     */
+    public function testReplaceCropRegeneratesWhenCachedDestinationCannotBeCopiedForTagPair()
+    {
+        $fieldtype = $this->makeFieldtype();
+        $filesystem = new FileFtProcessImageFilesystemStub();
+        $modelObject = new FileFtProcessImageModelObjectStub([
+            'filesystem' => $filesystem,
+        ]);
+        $params = [
+            'width' => '160',
+            'height' => '120',
+            'x' => '0',
+            'y' => '0',
+        ];
+        $hash = md5(serialize($params));
+        $destinationPath = '/srv/uploads/gallery/_crop' . DIRECTORY_SEPARATOR . 'hero_crop_' . $hash . '.jpg';
+        $destinationUrl = 'https://example.com/uploads/gallery/_crop/hero_crop_' . $hash . '.jpg';
+        $filesystem->directories['/srv/uploads/gallery/_crop' . DIRECTORY_SEPARATOR] = true;
+        $filesystem->existingPaths[$destinationPath] = true;
+        $filesystem->copyToTempFileExceptions[$destinationPath] = 'cached crop disappeared';
+        $data = [
+            'model_object' => $modelObject,
+            'fs_filename' => 'hero.jpg',
+            'filesystem' => $filesystem,
+            'source_image' => '/srv/uploads/gallery/hero.jpg',
+        ];
+        $tagdata = '{file}{url}:{width}x{height}{/file}';
+        $this->templateMock->parseVariablesReturn = 'cropped-template';
+
+        $result = $fieldtype->replace_crop($data, $params, $tagdata);
+
+        $this->assertSame('cropped-template', $result);
+        $this->assertSame([
+            $destinationPath,
+            '/srv/uploads/gallery/hero.jpg',
+        ], $filesystem->copyToTempFileCalls);
+        $this->assertCount(1, $filesystem->writeStreamCalls);
+        $this->assertSame($destinationPath, $filesystem->writeStreamCalls[0]['path']);
+        $this->assertSame(['crop'], $this->imageLibMock->actionCalls);
+        $this->assertSame([
+            [
+                'tagdata' => $tagdata,
+                'variables' => [[
+                    'url' => $destinationUrl,
+                    'width' => 200,
+                    'height' => 100,
+                ]],
+            ],
+        ], $this->templateMock->parseVariablesCalls);
+    }
+
+    /**
      * Assert crop processing centers the requested box and parses tag-pair variables.
      *
      * @return void
