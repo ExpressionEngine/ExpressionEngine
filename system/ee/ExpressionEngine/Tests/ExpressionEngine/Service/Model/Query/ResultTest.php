@@ -77,6 +77,37 @@ class ResultTest extends TestCase
         $this->assertSame(2, $association->fills[0][0]->getId());
     }
 
+    public function testAllDoesNotAttachNullPrimaryKeyRelatedRows()
+    {
+        $relation = m::mock();
+        $relation->shouldReceive('getName')->once()->andReturn('Children');
+
+        $rows = array(
+            array(
+                'root__id' => 1,
+                'root__title' => 'Root',
+                'child__id' => null,
+                'child__title' => null,
+            ),
+        );
+
+        $result = new Result(
+            $rows,
+            array('root' => 'RootModel', 'child' => 'ChildModel'),
+            array('child' => array('root' => $relation))
+        );
+
+        $result->setFacade(new ResultFacadeStub());
+        $collection = $result->all();
+
+        $this->assertCount(1, $collection);
+        $root = $collection->first();
+        $association = $root->getAssociation('Children');
+
+        $this->assertCount(1, $association->fills);
+        $this->assertCount(0, $association->fills[0]);
+    }
+
     public function testFirstReturnsFirstModelWhenRowsExist()
     {
         $rows = array(
