@@ -46,6 +46,8 @@ function flattenItemsForVirtualization(items, depth = 0) {
 
 // Helper function to calculate item height for virtualization
 function getVirtualItemHeight(item) {
+  if (!item) return 40
+
   let height = 40
 
   if (item.instructions) {
@@ -61,6 +63,25 @@ function getVirtualItemHeight(item) {
   }
 
   return height
+}
+
+function getVirtualItemMetrics(items) {
+  let totalHeight = 0
+
+  return items.reduce((metrics, item) => {
+    const height = getVirtualItemHeight(item)
+
+    metrics.offsets.push(totalHeight)
+    metrics.heights.push(height)
+    totalHeight += height
+    metrics.totalHeight = totalHeight
+
+    return metrics
+  }, {
+    heights: [],
+    offsets: [],
+    totalHeight: 0
+  })
 }
 
 class SelectList extends React.Component {
@@ -507,7 +528,7 @@ class SelectList extends React.Component {
           </div>
           </div>
         }
-        <FieldInputs nested={props.nested} tooMany={props.tooMany} splitForTwo={props.splitForTwo} list={props.items} selectedItems={props.selected} handle={this.handleSelect} useVirtualization={useVirtualization} flattenedItems={flattenedItems} virtualizationHeight={props.virtualizationHeight || 400}>
+        <FieldInputs nested={props.nested} tooMany={props.tooMany} splitForTwo={props.splitForTwo} list={props.items} selectedItems={props.selected} handle={this.handleSelect} useVirtualization={useVirtualization} flattenedItems={flattenedItems} virtualizationHeight={props.virtualizationHeight}>
           { ! props.loading && props.items.length == 0 &&
             <NoResults text={props.noResults} />
           }
@@ -551,6 +572,7 @@ class SelectList extends React.Component {
               toggles={props.toggles}
               state={this.state}
               toggleChanged={props.toggleChanged}
+              virtualizationHeight={props.virtualizationHeight}
             />
           }
         </FieldInputs>
@@ -631,10 +653,13 @@ function FieldInputs (props) {
 
   // Add scrolling styles when virtualization is active
   const virtualizationStyle = props.useVirtualization ? {
-    height: `${props.virtualizationHeight}px`,
     overflow: 'auto',
     position: 'relative'
   } : {}
+
+  if (props.useVirtualization && props.virtualizationHeight !== undefined && props.virtualizationHeight !== null) {
+    virtualizationStyle.height = `${props.virtualizationHeight}px`
+  }
 
   // If not nested and virtualization is active, wrap children in ul.field-nested for CSS compatibility
   if (props.useVirtualization) {
@@ -855,11 +880,14 @@ class VirtualizedItemList extends React.Component {
     super(props)
 
     this.state = {
-      scrollTop: 0
+      scrollTop: 0,
+      containerHeight: props.virtualizationHeight || null
     }
 
     this.containerRef = React.createRef()
     this.scrollHandler = null
+    this.itemMetrics = null
+    this.itemMetricsSource = null
   }
 
   componentDidMount() {
@@ -880,13 +908,35 @@ class VirtualizedItemList extends React.Component {
         }
 
         this.scrollContainer.addEventListener('scroll', this.scrollHandler)
+        this.updateContainerHeight()
+
+        if (window.ResizeObserver) {
+          this.resizeObserver = new window.ResizeObserver(() => {
+            this.updateContainerHeight()
+          })
+          this.resizeObserver.observe(this.scrollContainer)
+        } else {
+          window.addEventListener('resize', this.updateContainerHeight)
+        }
       }
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.virtualizationHeight !== this.props.virtualizationHeight) {
+      this.updateContainerHeight()
     }
   }
 
   componentWillUnmount() {
     if (this.scrollContainer && this.scrollHandler) {
       this.scrollContainer.removeEventListener('scroll', this.scrollHandler)
+    }
+
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect()
+    } else {
+      window.removeEventListener('resize', this.updateContainerHeight)
     }
 
     if (this.scrollTimeout) {
@@ -902,43 +952,90 @@ class VirtualizedItemList extends React.Component {
     })
   }
 
-  getVisibleRange() {
-    const scrollTop = this.state.scrollTop
-    const containerHeight = 400 // Default container height
-    const itemHeight = 40 // Base item height
-    const overscan = 10 // Render extra items above/below viewport
+  getContainerHeight = () => {
+    if (this.scrollContainer && this.scrollContainer.clientHeight) {
+      return this.scrollContainer.clientHeight
+    }
 
-    const startIndex = Math.max(0, Math.floor(scrollTop / itemHeight) - overscan)
-    const visibleCount = Math.ceil(containerHeight / itemHeight) + (overscan * 2)
-    const endIndex = Math.min(this.props.items.length - 1, startIndex + visibleCount)
+    return this.props.virtualizationHeight || 400
+  }
+
+  updateContainerHeight = () => {
+    const containerHeight = this.getContainerHeight()
+
+    if (containerHeight !== this.state.containerHeight) {
+      this.setState({
+        containerHeight: containerHeight
+      })
+    }
+  }
+
+  getItemMetrics() {
+    if (this.itemMetricsSource !== this.props.items) {
+      this.itemMetrics = getVirtualItemMetrics(this.props.items)
+      this.itemMetricsSource = this.props.items
+    }
+
+    return this.itemMetrics
+  }
+
+  findItemIndexAtOffset(offset, metrics) {
+    let low = 0
+    let high = metrics.heights.length - 1
+    let result = high
+
+    while (low <= high) {
+      const mid = Math.floor((low + high) / 2)
+      const itemBottom = metrics.offsets[mid] + metrics.heights[mid]
+
+      if (itemBottom > offset) {
+        result = mid
+        high = mid - 1
+      } else {
+        low = mid + 1
+      }
+    }
+
+    return result
+  }
+
+  getVisibleRange(metrics) {
+    const scrollTop = this.state.scrollTop
+    const containerHeight = this.state.containerHeight || this.getContainerHeight()
+    const overscan = 10 // Render extra items above/below viewport
+    const items = this.props.items
+
+    if (!items.length) {
+      return { startIndex: 0, endIndex: 0 }
+    }
+
+    const firstVisibleIndex = this.findItemIndexAtOffset(scrollTop, metrics)
+    const viewportBottom = scrollTop + containerHeight
+    let endIndex = firstVisibleIndex
+
+    while (endIndex < items.length && metrics.offsets[endIndex] < viewportBottom) {
+      endIndex++
+    }
+
+    let startIndex = Math.max(0, firstVisibleIndex - overscan)
+    endIndex = Math.min(items.length - 1, endIndex + overscan)
 
     return { startIndex, endIndex }
   }
 
-  getTotalHeight() {
-    let totalHeight = 0
-
-    for (let i = 0; i < this.props.items.length; i++) {
-      totalHeight += getVirtualItemHeight(this.props.items[i])
-    }
-
-    return totalHeight
+  getTotalHeight(metrics) {
+    return metrics.totalHeight
   }
 
-  getOffsetTop(startIndex) {
-    let offset = 0
-
-    for (let i = 0; i < startIndex; i++) {
-      offset += getVirtualItemHeight(this.props.items[i])
-    }
-
-    return offset
+  getOffsetTop(startIndex, metrics) {
+    return metrics.offsets[startIndex] || 0
   }
 
   render() {
-    const { startIndex, endIndex } = this.getVisibleRange()
-    const totalHeight = this.getTotalHeight()
-    const offsetTop = this.getOffsetTop(startIndex)
+    const metrics = this.getItemMetrics()
+    const { startIndex, endIndex } = this.getVisibleRange(metrics)
+    const totalHeight = this.getTotalHeight(metrics)
+    const offsetTop = this.getOffsetTop(startIndex, metrics)
     const visibleItems = this.props.items.slice(startIndex, endIndex + 1)
 
     // Return virtualization structure without wrapping <ul>
@@ -969,6 +1066,10 @@ class VirtualizedItemList extends React.Component {
                   className="nestable-item"
                   data-id={item.value}
                   data-depth={item.depth || 0}
+                  style={{
+                    minHeight: `${metrics.heights[globalIndex]}px`,
+                    boxSizing: 'border-box'
+                  }}
                 >
                   <SelectItem
                     item={item}
