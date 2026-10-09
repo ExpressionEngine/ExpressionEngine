@@ -1031,11 +1031,28 @@ class Fluid_field_ft extends EE_Fieldtype
      */
     public function delete($entry_ids)
     {
+        $content_id = $this->content_id;
+
         $fluid_field_data = ee('Model')->get('fluid_field:FluidField')
+            ->with('ChannelField')
             ->filter('fluid_field_id', $this->field_id)
             ->filter('entry_id', 'IN', $entry_ids)
-            ->all()
-            ->delete();
+            ->all();
+
+        // Clean up each item the same way as removing it from an entry does,
+        // so Grid rows and relationships stored for the item are removed too
+        foreach ($fluid_field_data as $fluid_field) {
+            if (! $fluid_field->ChannelField) {
+                $fluid_field->delete();
+
+                continue;
+            }
+
+            $this->content_id = $fluid_field->entry_id;
+            $this->removeField($fluid_field);
+        }
+
+        $this->content_id = $content_id;
     }
 
     /**
