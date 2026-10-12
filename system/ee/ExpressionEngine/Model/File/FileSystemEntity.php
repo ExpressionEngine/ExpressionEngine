@@ -382,18 +382,27 @@ class FileSystemEntity extends ContentModel
          $this->UploadDestination->deleteOriginalFiles($this->getAbsolutePath());
     }
 
-    public function deleteGeneratedFiles()
+    /**
+     * Delete generated derivatives, optionally retaining thumbnails and configured sizes.
+     *
+     * @param bool $dynamic_only Delete only hashed frontend manipulation caches.
+     * @return void
+     * @throws \ExpressionEngine\Library\Filesystem\FilesystemException
+     */
+    public function deleteGeneratedFiles($dynamic_only = false)
     {
         $filesystem = $this->UploadDestination->getFilesystem();
 
         $manipulations = ['thumbs', 'resize', 'crop', 'rotate', 'webp', 'avif'];
-        $manipulations = array_merge($manipulations, $this->UploadDestination->FileDimensions->pluck('short_name'));
+        if (! $dynamic_only) {
+            $manipulations = array_merge($manipulations, $this->UploadDestination->FileDimensions->pluck('short_name'));
+        }
 
         foreach ($manipulations as $manipulation) {
             $directory = $this->getBaseServerPath() . $this->getSubfoldersPath() . '_' . $manipulation;
             $manipulatedFilePath = "{$directory}/{$this->file_name}";
 
-            if ($filesystem->exists($manipulatedFilePath)) {
+            if (! $dynamic_only && $filesystem->exists($manipulatedFilePath)) {
                 $filesystem->delete($manipulatedFilePath);
             }
 

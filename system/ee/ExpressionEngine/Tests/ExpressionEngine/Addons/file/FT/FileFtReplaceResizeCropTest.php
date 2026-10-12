@@ -442,4 +442,81 @@ class FileFtReplaceResizeCropTest extends FileFtTestBase
         $this->assertCount(2, $filesystem->writeStreamCalls);
         $this->assertSame(['resize', 'crop'], $this->imageLibMock->actionCalls);
     }
+
+    /**
+     * Assert resize-crop retains its resize cache across requests and crop regeneration.
+     *
+     * @dataProvider provideCachedImageScenarios
+     * @param bool $deleteCrop Whether to remove the crop before the next request.
+     * @return void
+     * @throws \ExpressionEngine\Library\Filesystem\FilesystemException
+     */
+    public function testReplaceResizeCropReusesCachedImages($deleteCrop)
+    {
+        $fieldtype = $this->makeFieldtype();
+        $directory = sys_get_temp_dir() . '/file-ft-resize-crop-' . bin2hex(random_bytes(8));
+        $filesystem = new \ExpressionEngine\Library\Filesystem\Filesystem(
+            new \ExpressionEngine\Library\Filesystem\Adapter\Local(['path' => sys_get_temp_dir()])
+        );
+
+        try {
+            $filesystem->mkdir($directory);
+            $filesystem->write($directory . '/hero.jpg', 'source-image');
+            $modelObject = new FileFtProcessImageModelObjectStub([
+                'filesystem' => $filesystem,
+                'baseServerPath' => $directory,
+                'subfoldersPath' => '',
+                'absolutePath' => $directory . '/hero.jpg',
+            ]);
+            $data = ['model_object' => $modelObject];
+            $params = [
+                'resize:width' => '1600',
+                'crop:width' => '1600',
+                'crop:height' => '900',
+                'position' => 'center',
+            ];
+
+            $url = $fieldtype->replace_resize_crop($data, $params, false);
+
+            $this->assertStringContainsString('/_crop/', $url);
+            $this->assertSame(['resize', 'crop'], $this->imageLibMock->actionCalls);
+            $resizeFiles = glob($directory . '/_resize/*.jpg');
+            $cropFiles = glob($directory . '/_crop/*.jpg');
+            $this->assertCount(1, $resizeFiles);
+            $this->assertCount(1, $cropFiles);
+
+            if ($deleteCrop) {
+                $filesystem->delete($cropFiles[0]);
+            }
+
+            $expectedActions = $deleteCrop ? ['resize', 'crop', 'crop'] : ['resize', 'crop'];
+            for ($request = 0; $request < 2; $request++) {
+                $data['filesystem'] = new \ExpressionEngine\Library\Filesystem\Filesystem(
+                    new \ExpressionEngine\Library\Filesystem\Adapter\Local(['path' => sys_get_temp_dir()])
+                );
+
+                $this->assertSame($url, $fieldtype->replace_resize_crop($data, $params, false));
+                $this->assertSame($expectedActions, $this->imageLibMock->actionCalls);
+                $this->assertFileExists($resizeFiles[0]);
+                $this->assertFileExists($cropFiles[0]);
+            }
+        } finally {
+            if (is_dir($directory)) {
+                $filesystem->deleteDir($directory);
+            }
+        }
+    }
+
+    /**
+     * Provide complete-cache and missing-crop scenarios.
+     *
+     * @return array<string, array<int, bool>>
+     */
+    public static function provideCachedImageScenarios()
+    {
+        return [
+            'cached resize and crop' => [false],
+            'missing crop' => [true],
+        ];
+    }
 }

@@ -442,7 +442,7 @@ JSC;
     }
 
     /**
-     * Resize and then crop
+     * Resize and then crop an image using cached derivatives.
      *
      * Supported parameters:
      *  - resize:width
@@ -456,6 +456,12 @@ JSC;
      *  - crop:maintain_ratio (y / n)
      *  - crop:x
      *  - crop:y
+     *
+     * @param mixed $data File field data.
+     * @param array $params Modifier parameters.
+     * @param string|false|null $tagdata Tag-pair template or single/chained modifier marker.
+     * @return array|string|false
+     * @throws FilesystemException
      */
     public function replace_resize_crop($data, $params = array(), $tagdata = false)
     {
@@ -478,7 +484,7 @@ JSC;
 
         unset($params['wrap']);
 
-        $data['source_image'] = $resized = $this->process_image('resize', $data, $params, false, true);
+        $data['source_image'] = $this->process_image('resize', $data, $params, false, true);
 
         $params = $params_copy;
         foreach ($params as $key => $val) {
@@ -488,11 +494,7 @@ JSC;
             }
         }
 
-        $out = $this->process_image('crop', $data, $params, $tagdata);
-
-        @unlink($resized);
-
-        return $out;
+        return $this->process_image('crop', $data, $params, $tagdata);
     }
 
     /**
