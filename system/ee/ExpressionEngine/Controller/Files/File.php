@@ -162,6 +162,14 @@ class File extends AbstractFilesController
         ee()->cp->render('files/edit', $vars);
     }
 
+    /**
+     * Validate and apply an image edit, then regenerate its derivatives.
+     *
+     * @param FileModel $file The image being edited.
+     * @param string $action The crop, resize, or rotate action.
+     * @return void
+     * @throws \ExpressionEngine\Library\Filesystem\FilesystemException
+     */
     private function modify(FileModel $file, $action = '')
     {
         if (! in_array($action, ['resize', 'rotate', 'crop'])) {
@@ -277,6 +285,7 @@ class File extends AbstractFilesController
                     ->addToBody($response['errors'])
                     ->defer();
             } else {
+                $file->deleteGeneratedFiles(true);
                 $file->file_hw_original = $response['dimensions']['height'] . ' ' . $response['dimensions']['width'];
                 $file->file_size = $response['file_info']['size'];
                 $file->save();
