@@ -208,6 +208,10 @@ class EE_Cache_memcached extends CI_Driver
                 if (! empty($server['time'])) {
                     // Attempt to get previously-created namespaces and assign to class variable
                     $this->_namespaces = $this->get('namespaces', Cache::GLOBAL_SCOPE, false);
+					
+					if (! is_array($this->_namespaces)) {
+						$this->_namespaces = array();
+					}
 
                     return true;
                 }
