@@ -141,6 +141,17 @@ class FileFtReplaceResizeCropSpy extends File_ft
 
 class FileFtReplaceResizeCropTest extends FileFtTestBase
 {
+    private const CACHE_PARAMS = [
+        'resize:width' => '1600',
+        'crop:width' => '1600',
+        'crop:height' => '900',
+        'position' => 'center',
+    ];
+
+    // Existing 7.dev cache names for CACHE_PARAMS, including normalized stage parameters.
+    private const RESIZE_NAME = 'hero_resize_e37622790ef9cf209945a731c5d0caf0.jpg';
+    private const CROP_NAME = 'hero_crop_9790f66825d63e1923f465e534782612.jpg';
+
     /**
      * Assert empty payloads fall back to replace_tag() instead of attempting resize-crop processing.
      *
@@ -209,58 +220,22 @@ class FileFtReplaceResizeCropTest extends FileFtTestBase
         $this->assertSame([], $fieldtype->replaceTagCalls);
     }
 
-    /**
-     * Assert a model-backed call without resize or crop params still runs both stages with function metadata only.
-     *
-     * @return void
-     */
     public function testReplaceResizeCropRunsBothStagesWhenParamsAreEmpty()
     {
-        $fieldtype = $this->makeFieldtype([], 0, 'file_field', FileFtReplaceResizeCropSpy::class);
-        $fieldtype->replaceTagReturns = ['/tmp/resized-stage.jpg', 'final-crop-output'];
-        $modelObject = new FileFtReplaceResizeCropModelObjectStub(
-            'hero.jpg',
-            's3-assets',
-            '/srv/uploads/hero.jpg',
-            true,
-            false
-        );
+        $fieldtype = $this->makeFieldtype();
+        $filesystem = new FileFtProcessImageFilesystemStub();
 
-        $result = $fieldtype->replace_resize_crop(['model_object' => $modelObject], [], false);
+        $result = $fieldtype->replace_resize_crop($this->cacheData($filesystem), []);
 
-        $this->assertSame('final-crop-output', $result);
-        $this->assertCount(2, $fieldtype->replaceTagCalls);
-        $this->assertSame(['function' => 'resize_crop'], $fieldtype->replaceTagCalls[0]['params']);
-        $this->assertSame([
-            'model_object' => $modelObject,
-            'fs_filename' => 'hero.jpg',
-            'filesystem' => 's3-assets',
-            'source_image' => '/tmp/resized-stage.jpg',
-        ], $fieldtype->replaceTagCalls[1]['data']);
-        $this->assertSame(['function' => 'resize_crop'], $fieldtype->replaceTagCalls[1]['params']);
+        $this->assertStringContainsString('/_crop/hero_crop_', $result);
+        $this->assertSame(['resize', 'crop'], $this->imageLibMock->actionCalls);
+        $this->assertCount(2, $filesystem->writeStreamCalls);
     }
 
-    /**
-     * Assert replace_resize_crop() seeds missing fields, strips wrap from resize, and restores crop params.
-     *
-     * @return void
-     */
     public function testReplaceResizeCropSeedsDefaultsAndSplitsResizeThenCropParams()
     {
-        $fieldtype = $this->makeFieldtype([], 0, 'file_field', FileFtReplaceResizeCropSpy::class);
-        $fieldtype->replaceTagReturns = ['/tmp/resized-stage.jpg', 'final-crop-output'];
-        $modelObject = new FileFtReplaceResizeCropModelObjectStub(
-            'hero.jpg',
-            's3-assets',
-            '/srv/uploads/hero.jpg',
-            true,
-            false
-        );
-        $data = [
-            'file_id' => 22,
-            'model_object' => $modelObject,
-            'extra' => 'kept',
-        ];
+        $fieldtype = $this->makeFieldtype();
+        $filesystem = new FileFtProcessImageFilesystemStub();
         $params = [
             'resize:width' => '900',
             'resize:quality' => '80',
@@ -275,120 +250,81 @@ class FileFtReplaceResizeCropTest extends FileFtTestBase
             'wrap' => 'plain',
             'focus' => 'center',
         ];
+        $resizeParams = $params;
+        unset($resizeParams['wrap']);
+        $resizeParams += ['function' => 'resize_crop', 'width' => '900', 'quality' => '80', 'maintain_ratio' => 'n'];
+        $cropParams = $params + [
+            'function' => 'resize_crop', 'width' => '320', 'height' => '180', 'x' => '10', 'y' => '20', 'quality' => '55',
+        ];
+        $resizePath = '/srv/uploads/gallery/_resize/hero_resize_' . md5(serialize($resizeParams)) . '.jpg';
+        $cropPath = '/srv/uploads/gallery/_crop/hero_crop_' . md5(serialize($cropParams)) . '.jpg';
 
-        $result = $fieldtype->replace_resize_crop($data, $params, false);
+        $result = $fieldtype->replace_resize_crop($this->cacheData($filesystem), $params);
 
-        $this->assertSame('final-crop-output', $result);
-        $this->assertCount(2, $fieldtype->replaceTagCalls);
-        $this->assertSame([
-            'file_id' => 22,
-            'model_object' => $modelObject,
-            'extra' => 'kept',
-            'fs_filename' => 'hero.jpg',
-            'filesystem' => 's3-assets',
-            'source_image' => '/srv/uploads/hero.jpg',
-        ], $fieldtype->replaceTagCalls[0]['data']);
-        $this->assertSame([
-            'resize:width' => '900',
-            'resize:quality' => '80',
-            'resize:maintain_ratio' => 'n',
-            'resize' => 'ignored-resize-key',
-            'crop:width' => '320',
-            'crop:height' => '180',
-            'crop:x' => '10',
-            'crop:y' => '20',
-            'crop:quality' => '55',
-            'crop' => 'ignored-crop-key',
-            'focus' => 'center',
-            'function' => 'resize_crop',
-            'width' => '900',
-            'quality' => '80',
-            'maintain_ratio' => 'n',
-        ], $fieldtype->replaceTagCalls[0]['params']);
-        $this->assertFalse($fieldtype->replaceTagCalls[0]['tagdata']);
-        $this->assertSame([
-            'file_id' => 22,
-            'model_object' => $modelObject,
-            'extra' => 'kept',
-            'fs_filename' => 'hero.jpg',
-            'filesystem' => 's3-assets',
-            'source_image' => '/tmp/resized-stage.jpg',
-        ], $fieldtype->replaceTagCalls[1]['data']);
-        $this->assertSame([
-            'resize:width' => '900',
-            'resize:quality' => '80',
-            'resize:maintain_ratio' => 'n',
-            'resize' => 'ignored-resize-key',
-            'crop:width' => '320',
-            'crop:height' => '180',
-            'crop:x' => '10',
-            'crop:y' => '20',
-            'crop:quality' => '55',
-            'crop' => 'ignored-crop-key',
-            'wrap' => 'plain',
-            'focus' => 'center',
-            'function' => 'resize_crop',
-            'width' => '320',
-            'height' => '180',
-            'x' => '10',
-            'y' => '20',
-            'quality' => '55',
-        ], $fieldtype->replaceTagCalls[1]['params']);
-        $this->assertFalse($fieldtype->replaceTagCalls[1]['tagdata']);
-        $this->assertArrayNotHasKey('maintain_ratio', $fieldtype->replaceTagCalls[1]['params']);
+        $this->assertSame(['resize', 'crop'], $this->imageLibMock->actionCalls);
+        $this->assertSame([$resizePath, $cropPath], array_column($filesystem->writeStreamCalls, 'path'));
+        $this->assertSame(['/srv/uploads/gallery/hero.jpg', $resizePath], $filesystem->copyToTempFileCalls);
+        $this->assertSame('https://example.com/uploads/gallery/_crop/' . basename($cropPath), $result);
+        list($resizeConfig, $cropConfig) = $this->imageLibMock->initializeCalls;
+        $this->assertSame(900, $resizeConfig['width']);
+        $this->assertSame(80, $resizeConfig['quality']);
+        $this->assertFalse($resizeConfig['maintain_ratio']);
+        $this->assertSame(320, $cropConfig['width']);
+        $this->assertSame(180, $cropConfig['height']);
+        $this->assertSame(55, $cropConfig['quality']);
+        $this->assertSame(10, $cropConfig['x_axis']);
+        $this->assertSame(20, $cropConfig['y_axis']);
+        $this->assertTrue($cropConfig['maintain_ratio']);
     }
 
-    /**
-     * Assert caller-supplied processing fields survive both stages while source_image advances to the resized output.
-     *
-     * @return void
-     */
     public function testReplaceResizeCropPreservesExplicitProcessingFieldsAcrossBothStages()
     {
-        $fieldtype = $this->makeFieldtype([], 0, 'file_field', FileFtReplaceResizeCropSpy::class);
-        $fieldtype->replaceTagReturns = ['/tmp/generated-resize.jpg', 'crop-output'];
-        $modelObject = new FileFtReplaceResizeCropModelObjectStub(
-            'hero.jpg',
-            's3-assets',
-            '/srv/uploads/hero.jpg',
-            true,
-            false
-        );
-        $filesystem = (object) ['adapter' => 'local-cache'];
+        $fieldtype = $this->makeFieldtype();
+        $filesystem = new FileFtProcessImageFilesystemStub();
         $data = [
-            'model_object' => $modelObject,
+            'model_object' => new FileFtProcessImageModelObjectStub(),
             'fs_filename' => 'cached-name.jpg',
             'filesystem' => $filesystem,
             'source_image' => '/tmp/cached-name.jpg',
+            'extra' => 'kept',
         ];
+        $params = ['resize:height' => '600', 'crop:width' => '320'];
+        $resizeParams = $params + ['function' => 'resize_crop', 'height' => '600'];
+        $cropParams = $params + ['function' => 'resize_crop', 'width' => '320'];
+        $resizePath = '/srv/uploads/gallery/_resize/cached-name_resize_' . md5(serialize($resizeParams)) . '.jpg';
+        $cropPath = '/srv/uploads/gallery/_crop/cached-name_crop_' . md5(serialize($cropParams)) . '.jpg';
 
-        $result = $fieldtype->replace_resize_crop(
-            $data,
-            ['resize:height' => '600', 'crop:width' => '320'],
-            '{tagdata}'
-        );
+        $result = $fieldtype->replace_resize_crop($data, $params, null);
 
-        $this->assertSame('crop-output', $result);
-        $this->assertSame($data, $fieldtype->replaceTagCalls[0]['data']);
-        $this->assertSame([
-            'resize:height' => '600',
-            'crop:width' => '320',
-            'function' => 'resize_crop',
-            'height' => '600',
-        ], $fieldtype->replaceTagCalls[0]['params']);
-        $this->assertSame([
-            'model_object' => $modelObject,
-            'fs_filename' => 'cached-name.jpg',
-            'filesystem' => $filesystem,
-            'source_image' => '/tmp/generated-resize.jpg',
-        ], $fieldtype->replaceTagCalls[1]['data']);
-        $this->assertSame([
-            'resize:height' => '600',
-            'crop:width' => '320',
-            'function' => 'resize_crop',
-            'width' => '320',
-        ], $fieldtype->replaceTagCalls[1]['params']);
-        $this->assertSame('{tagdata}', $fieldtype->replaceTagCalls[1]['tagdata']);
+        $this->assertSame(['/tmp/cached-name.jpg', $resizePath], $filesystem->copyToTempFileCalls);
+        $this->assertSame([$resizePath, $cropPath], array_column($filesystem->writeStreamCalls, 'path'));
+        $this->assertSame($cropPath, $result['source_image']);
+        $this->assertSame('cached-name_crop.jpg', $result['fs_filename']);
+        $this->assertSame($filesystem, $result['filesystem']);
+        $this->assertSame($data['model_object'], $result['model_object']);
+        $this->assertSame('kept', $result['extra']);
+        $this->assertSame('hero.jpg', $data['model_object']->file_name);
+    }
+
+    public function testReplaceResizeCropFallsBackForNonEditableImages()
+    {
+        $fieldtype = $this->makeFieldtype();
+        $filesystem = new FileFtProcessImageFilesystemStub();
+        $data = [
+            'model_object' => new FileFtProcessImageModelObjectStub([
+                'filesystem' => $filesystem,
+                'isEditableImage' => false,
+            ]),
+            'url' => 'https://example.com/hero.svg',
+        ];
+        $this->fileFieldMock->parseStringReturn = $data['url'];
+
+        $result = $fieldtype->replace_resize_crop($data, self::CACHE_PARAMS);
+
+        $this->assertSame($data['url'], $result);
+        $this->assertSame([], $this->imageLibMock->actionCalls);
+        $this->assertSame([], $filesystem->existsCalls);
+        $this->assertSame([], $filesystem->copyToTempFileCalls);
     }
 
     /**
@@ -441,5 +377,208 @@ class FileFtReplaceResizeCropTest extends FileFtTestBase
         ], $filesystem->copyToTempFileCalls);
         $this->assertCount(2, $filesystem->writeStreamCalls);
         $this->assertSame(['resize', 'crop'], $this->imageLibMock->actionCalls);
+    }
+
+    /** @dataProvider cacheStates */
+    public function testReplaceResizeCropReusesCachedStages($hasResize, $hasCrop, $expectedActions)
+    {
+        $fieldtype = $this->makeFieldtype();
+        $filesystem = new FileFtProcessImageFilesystemStub();
+        $data = $this->cacheData($filesystem);
+        $resizePath = '/srv/uploads/gallery/_resize/' . self::RESIZE_NAME;
+        $cropPath = '/srv/uploads/gallery/_crop/' . self::CROP_NAME;
+        $filesystem->existingPaths = [$resizePath => $hasResize, $cropPath => $hasCrop];
+
+        $result = $fieldtype->replace_resize_crop($data, self::CACHE_PARAMS);
+
+        $this->assertSame('https://example.com/uploads/gallery/_crop/' . self::CROP_NAME, $result);
+        $this->assertSame($expectedActions, $this->imageLibMock->actionCalls);
+        $this->assertCount(count($expectedActions), $filesystem->writeStreamCalls);
+        $this->assertSame('hero.jpg', $data['model_object']->file_name);
+        if ($hasCrop) {
+            $this->assertSame([$cropPath], $filesystem->existsCalls);
+            $this->assertSame([$cropPath], $filesystem->copyToTempFileCalls);
+            $this->assertSame(['crop'], $data['model_object']->manipulationUrlCalls);
+            $this->assertNotContains('/srv/uploads/gallery/_resize/', $filesystem->isDirCalls);
+        } elseif ($hasResize) {
+            $this->assertSame([$cropPath, $resizePath], $filesystem->existsCalls);
+            $this->assertSame([$resizePath, $resizePath], $filesystem->copyToTempFileCalls);
+            $this->assertSame($cropPath, $filesystem->writeStreamCalls[0]['path']);
+        } else {
+            $this->assertSame([$cropPath, $resizePath], $filesystem->existsCalls);
+            $this->assertSame(['/srv/uploads/gallery/hero.jpg', $resizePath], $filesystem->copyToTempFileCalls);
+            $this->assertSame([$resizePath, $cropPath], array_column($filesystem->writeStreamCalls, 'path'));
+        }
+    }
+
+    public function cacheStates()
+    {
+        return [
+            'cold cache' => [false, false, ['resize', 'crop']],
+            'crop only' => [false, true, []],
+            'both cached' => [true, true, []],
+            'resize only' => [true, false, ['crop']],
+        ];
+    }
+
+    public function testReplaceResizeCropRetainsResizedFileOnDisk()
+    {
+        $fieldtype = $this->makeFieldtype();
+        $filesystem = new FileFtProcessImageFilesystemStub();
+        $directory = sys_get_temp_dir() . '/file-ft-resize-crop-' . uniqid();
+        $resizePath = $directory . '/_resize/' . self::RESIZE_NAME;
+        mkdir($directory . '/_resize', 0700, true);
+        file_put_contents($resizePath, 'cached resized image');
+        $filesystem->existingPaths[$resizePath] = true;
+        $data = ['model_object' => new FileFtProcessImageModelObjectStub([
+            'filesystem' => $filesystem,
+            'baseServerPath' => $directory,
+            'subfoldersPath' => '',
+        ])];
+
+        try {
+            $fieldtype->replace_resize_crop($data, self::CACHE_PARAMS);
+
+            clearstatcache(true, $resizePath);
+            $this->assertFileExists($resizePath);
+            $this->assertSame('cached resized image', file_get_contents($resizePath));
+            $this->assertSame(['crop'], $this->imageLibMock->actionCalls);
+        } finally {
+            if (is_file($resizePath)) {
+                unlink($resizePath);
+            }
+            rmdir($directory . '/_resize');
+            rmdir($directory);
+        }
+    }
+
+    public function testReplaceResizeCropSkipsResizeOnRepeatedCall()
+    {
+        $fieldtype = $this->makeFieldtype();
+        $filesystem = new FileFtProcessImageFilesystemStub();
+        $data = $this->cacheData($filesystem);
+        $first = $fieldtype->replace_resize_crop($data, self::CACHE_PARAMS);
+        $filesystem->existsCalls = [];
+        $filesystem->copyToTempFileCalls = [];
+
+        $second = $fieldtype->replace_resize_crop($data, self::CACHE_PARAMS);
+
+        $this->assertSame($first, $second);
+        $this->assertSame(['resize', 'crop'], $this->imageLibMock->actionCalls);
+        $this->assertCount(2, $filesystem->writeStreamCalls);
+        $cropPath = '/srv/uploads/gallery/_crop/' . self::CROP_NAME;
+        $this->assertSame([$cropPath], $filesystem->existsCalls);
+        $this->assertSame([$cropPath], $filesystem->copyToTempFileCalls);
+    }
+
+    public function testReplaceResizeCropCentersCropUsingResizedDimensions()
+    {
+        $imageLib = new class extends FileFtImageLibStub {
+            public function get_image_properties($path, $cached)
+            {
+                parent::get_image_properties($path, $cached);
+
+                return ['width' => 1600, 'height' => count($this->getImagePropertiesCalls) < 3 ? 1200 : 900];
+            }
+        };
+        $this->setImageLib($imageLib);
+        $filesystem = new FileFtProcessImageFilesystemStub();
+
+        $result = $this->makeFieldtype()->replace_resize_crop($this->cacheData($filesystem), self::CACHE_PARAMS, null);
+
+        $this->assertSame(['resize', 'crop'], $imageLib->actionCalls);
+        $this->assertEquals(0, $imageLib->initializeCalls[1]['x_axis']);
+        $this->assertEquals(150, $imageLib->initializeCalls[1]['y_axis']);
+        $this->assertSame(1600, $result['width']);
+        $this->assertSame(900, $result['height']);
+        $this->assertSame('/srv/uploads/gallery/_resize/' . self::RESIZE_NAME, $filesystem->copyToTempFileCalls[1]);
+    }
+
+    /** @dataProvider changedDimensions */
+    public function testReplaceResizeCropDoesNotReuseDifferentParameters($parameter, $value)
+    {
+        $fieldtype = $this->makeFieldtype();
+        $filesystem = new FileFtProcessImageFilesystemStub();
+        $data = $this->cacheData($filesystem);
+        $filesystem->existingPaths = [
+            '/srv/uploads/gallery/_resize/' . self::RESIZE_NAME => true,
+            '/srv/uploads/gallery/_crop/' . self::CROP_NAME => true,
+        ];
+        $params = self::CACHE_PARAMS;
+        $params[$parameter] = $value;
+
+        $result = $fieldtype->replace_resize_crop($data, $params);
+
+        $this->assertNotSame('https://example.com/uploads/gallery/_crop/' . self::CROP_NAME, $result);
+        $this->assertSame(['resize', 'crop'], $this->imageLibMock->actionCalls);
+        $this->assertCount(2, $filesystem->writeStreamCalls);
+    }
+
+    public function changedDimensions()
+    {
+        return [
+            'resize width' => ['resize:width', '1800'],
+            'crop height' => ['crop:height', '800'],
+        ];
+    }
+
+    /** @dataProvider cachedOutputModes */
+    public function testReplaceResizeCropPreservesCachedOutput($tagdata, $wrap, $cropName)
+    {
+        $fieldtype = $this->makeFieldtype();
+        $filesystem = new FileFtProcessImageFilesystemStub();
+        $data = $this->cacheData($filesystem) + [
+            'filename' => 'hero',
+            'image_pre_format' => '<figure>',
+            'image_post_format' => '</figure>',
+            'image_properties' => 'class="hero"',
+        ];
+        $params = self::CACHE_PARAMS;
+        if ($wrap !== null) {
+            $params['wrap'] = $wrap;
+        }
+        $cropPath = '/srv/uploads/gallery/_crop/' . $cropName;
+        $cropUrl = 'https://example.com/uploads/gallery/_crop/' . $cropName;
+        $filesystem->existingPaths[$cropPath] = true;
+
+        $result = $fieldtype->replace_resize_crop($data, $params, $tagdata);
+
+        $this->assertSame([], $this->imageLibMock->actionCalls);
+        $this->assertSame([], $filesystem->writeStreamCalls);
+        $this->assertSame([$cropPath], $filesystem->copyToTempFileCalls);
+        if ($tagdata === null) {
+            $this->assertSame($cropUrl, $result['url']);
+            $this->assertSame($cropPath, $result['source_image']);
+            $this->assertSame('hero_crop.jpg', $result['fs_filename']);
+            $this->assertSame($filesystem, $result['filesystem']);
+            $this->assertSame($data['model_object'], $result['model_object']);
+            $this->assertSame(200, $result['width']);
+            $this->assertSame(100, $result['height']);
+        } elseif ($tagdata !== false) {
+            $this->assertSame('parsed-template', $result);
+            $this->assertSame([[
+                'tagdata' => $tagdata,
+                'variables' => [['url' => $cropUrl, 'width' => 200, 'height' => 100]],
+            ]], $this->templateMock->parseVariablesCalls);
+        } elseif ($wrap === 'image') {
+            $this->assertSame('<figure><img src="' . $cropUrl . '" class="hero" alt="hero" /></figure>', $result);
+        } else {
+            $this->assertSame($cropUrl, $result);
+        }
+    }
+
+    public function cachedOutputModes()
+    {
+        return [
+            'URL' => [false, null, self::CROP_NAME],
+            'tag pair' => ['{url}:{width}x{height}', null, self::CROP_NAME],
+            'chaining' => [null, null, self::CROP_NAME],
+            'image wrap' => [false, 'image', 'hero_crop_6d19344cfccf9118784ddd627431ac45.jpg'],
+        ];
+    }
+
+    private function cacheData($filesystem)
+    {
+        return ['model_object' => new FileFtProcessImageModelObjectStub(['filesystem' => $filesystem])];
     }
 }

@@ -478,7 +478,9 @@ JSC;
 
         unset($params['wrap']);
 
-        $data['source_image'] = $resized = $this->process_image('resize', $data, $params, false, true);
+        $source_image_callback = function () use ($data, $params) {
+            return $this->process_image('resize', $data, $params, false, true);
+        };
 
         $params = $params_copy;
         foreach ($params as $key => $val) {
@@ -488,11 +490,7 @@ JSC;
             }
         }
 
-        $out = $this->process_image('crop', $data, $params, $tagdata);
-
-        @unlink($resized);
-
-        return $out;
+        return $this->process_image('crop', $data, $params, $tagdata, false, $source_image_callback);
     }
 
     /**
@@ -549,9 +547,22 @@ JSC;
 
     /**
      * Generic image processing
+     *
+     * @param string $function Image operation: resize, crop, rotate, webp, or avif.
+     * @param array $data File field data, including the model, filesystem, source path, and filename.
+     * @param array $params Image processing and output parameters, also used to generate the cache key.
+     * @param string|false|null $tagdata Tag-pair template, false for single tags, or null for modifier chaining.
+     * @param bool $return_as_path Return the filesystem path instead of the URL for an unwrapped single tag.
+     * @param callable|null $source_image_callback Called without arguments on a cache miss to resolve the source path.
      */
-    private function process_image($function = 'resize', $data = [], $params = array(), $tagdata = false, $return_as_path = false)
-    {
+    private function process_image(
+        $function = 'resize',
+        $data = [],
+        $params = array(),
+        $tagdata = false,
+        $return_as_path = false,
+        $source_image_callback = null
+    ) {
         if (!in_array($function, ['resize', 'crop', 'rotate', 'webp', 'avif'])) {
             return false;
         }
@@ -588,6 +599,10 @@ JSC;
         $props = null;
 
         if (!$data['filesystem']->exists($destination_path)) {
+            if ($source_image_callback !== null) {
+                $data['source_image'] = $source_image_callback();
+            }
+
             // We need to get a temporary local copy of the file in case it's stored
             // on another filesystem.
             try {
