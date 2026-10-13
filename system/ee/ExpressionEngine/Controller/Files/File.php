@@ -277,6 +277,7 @@ class File extends AbstractFilesController
                     ->addToBody($response['errors'])
                     ->defer();
             } else {
+                $file->deleteDynamicGeneratedFiles();
                 $file->file_hw_original = $response['dimensions']['height'] . ' ' . $response['dimensions']['width'];
                 $file->file_size = $response['file_info']['size'];
                 $file->save();

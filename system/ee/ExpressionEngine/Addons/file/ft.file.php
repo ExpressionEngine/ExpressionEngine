@@ -12,6 +12,7 @@ use ExpressionEngine\Addons\FilePicker\FilePicker;
 use ExpressionEngine\Library\CP\EntryManager\ColumnInterface;
 use ExpressionEngine\Library\CP\Table;
 use ExpressionEngine\Library\Filesystem\FilesystemException;
+use ExpressionEngine\Service\File\ManipulationFilename;
 
 /**
  * File Fieldtype
@@ -579,13 +580,9 @@ JSC;
         }
 
         ee()->load->library('image_lib');
-        $filename = ee()->image_lib->explode_name($data['fs_filename']);
-        if ($function == 'webp' || $function == 'avif') {
-            $filename['name'] = $filename['name'] . '_' . $filename['ext'];
-            $filename['ext'] = '.' . $function;
-        }
-        $new_image = substr($filename['name'], 0, 150) . '_' . $function . '_' . md5(serialize($params)) . $filename['ext'];
-        $data['fs_filename'] = $filename['name'] . '_' . $function . $filename['ext'];
+        $filename = new ManipulationFilename($data['fs_filename'], $function);
+        $new_image = $filename->getFilename($params);
+        $data['fs_filename'] = $filename->getUnhashedFilename();
 
         $new_image_dir = rtrim($data['model_object']->getBaseServerPath() . $data['model_object']->getSubfoldersPath(), '/') . '/_' . $function . DIRECTORY_SEPARATOR;
         if (! $data['filesystem']->isDir($new_image_dir)) {
