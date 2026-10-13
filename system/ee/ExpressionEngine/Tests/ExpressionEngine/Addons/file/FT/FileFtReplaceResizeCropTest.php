@@ -151,6 +151,8 @@ class FileFtReplaceResizeCropTest extends FileFtTestBase
     // Existing 7.dev cache names for CACHE_PARAMS, including normalized stage parameters.
     private const RESIZE_NAME = 'hero_resize_e37622790ef9cf209945a731c5d0caf0.jpg';
     private const CROP_NAME = 'hero_crop_9790f66825d63e1923f465e534782612.jpg';
+    private const RESIZE_DIRECTORY = '/srv/uploads/gallery/_resize' . DIRECTORY_SEPARATOR;
+    private const CROP_DIRECTORY = '/srv/uploads/gallery/_crop' . DIRECTORY_SEPARATOR;
 
     /**
      * Assert empty payloads fall back to replace_tag() instead of attempting resize-crop processing.
@@ -256,8 +258,8 @@ class FileFtReplaceResizeCropTest extends FileFtTestBase
         $cropParams = $params + [
             'function' => 'resize_crop', 'width' => '320', 'height' => '180', 'x' => '10', 'y' => '20', 'quality' => '55',
         ];
-        $resizePath = '/srv/uploads/gallery/_resize/hero_resize_' . md5(serialize($resizeParams)) . '.jpg';
-        $cropPath = '/srv/uploads/gallery/_crop/hero_crop_' . md5(serialize($cropParams)) . '.jpg';
+        $resizePath = self::RESIZE_DIRECTORY . 'hero_resize_' . md5(serialize($resizeParams)) . '.jpg';
+        $cropPath = self::CROP_DIRECTORY . 'hero_crop_' . md5(serialize($cropParams)) . '.jpg';
 
         $result = $fieldtype->replace_resize_crop($this->cacheData($filesystem), $params);
 
@@ -291,8 +293,8 @@ class FileFtReplaceResizeCropTest extends FileFtTestBase
         $params = ['resize:height' => '600', 'crop:width' => '320'];
         $resizeParams = $params + ['function' => 'resize_crop', 'height' => '600'];
         $cropParams = $params + ['function' => 'resize_crop', 'width' => '320'];
-        $resizePath = '/srv/uploads/gallery/_resize/cached-name_resize_' . md5(serialize($resizeParams)) . '.jpg';
-        $cropPath = '/srv/uploads/gallery/_crop/cached-name_crop_' . md5(serialize($cropParams)) . '.jpg';
+        $resizePath = self::RESIZE_DIRECTORY . 'cached-name_resize_' . md5(serialize($resizeParams)) . '.jpg';
+        $cropPath = self::CROP_DIRECTORY . 'cached-name_crop_' . md5(serialize($cropParams)) . '.jpg';
 
         $result = $fieldtype->replace_resize_crop($data, $params, null);
 
@@ -359,7 +361,7 @@ class FileFtReplaceResizeCropTest extends FileFtTestBase
             'width' => '150',
             'height' => '60',
         ];
-        $resizePath = '/srv/uploads/gallery/_resize' . DIRECTORY_SEPARATOR . 'hero_resize_' . md5(serialize($resizeParams)) . '.jpg';
+        $resizePath = self::RESIZE_DIRECTORY . 'hero_resize_' . md5(serialize($resizeParams)) . '.jpg';
         $cropUrl = 'https://example.com/uploads/gallery/_crop/hero_crop_' . md5(serialize($cropParams)) . '.jpg';
         $data = [
             'model_object' => $modelObject,
@@ -385,8 +387,8 @@ class FileFtReplaceResizeCropTest extends FileFtTestBase
         $fieldtype = $this->makeFieldtype();
         $filesystem = new FileFtProcessImageFilesystemStub();
         $data = $this->cacheData($filesystem);
-        $resizePath = '/srv/uploads/gallery/_resize/' . self::RESIZE_NAME;
-        $cropPath = '/srv/uploads/gallery/_crop/' . self::CROP_NAME;
+        $resizePath = self::RESIZE_DIRECTORY . self::RESIZE_NAME;
+        $cropPath = self::CROP_DIRECTORY . self::CROP_NAME;
         $filesystem->existingPaths = [$resizePath => $hasResize, $cropPath => $hasCrop];
 
         $result = $fieldtype->replace_resize_crop($data, self::CACHE_PARAMS);
@@ -399,7 +401,7 @@ class FileFtReplaceResizeCropTest extends FileFtTestBase
             $this->assertSame([$cropPath], $filesystem->existsCalls);
             $this->assertSame([$cropPath], $filesystem->copyToTempFileCalls);
             $this->assertSame(['crop'], $data['model_object']->manipulationUrlCalls);
-            $this->assertNotContains('/srv/uploads/gallery/_resize/', $filesystem->isDirCalls);
+            $this->assertNotContains(self::RESIZE_DIRECTORY, $filesystem->isDirCalls);
         } elseif ($hasResize) {
             $this->assertSame([$cropPath, $resizePath], $filesystem->existsCalls);
             $this->assertSame([$resizePath, $resizePath], $filesystem->copyToTempFileCalls);
@@ -426,7 +428,7 @@ class FileFtReplaceResizeCropTest extends FileFtTestBase
         $fieldtype = $this->makeFieldtype();
         $filesystem = new FileFtProcessImageFilesystemStub();
         $directory = sys_get_temp_dir() . '/file-ft-resize-crop-' . uniqid();
-        $resizePath = $directory . '/_resize/' . self::RESIZE_NAME;
+        $resizePath = $directory . '/_resize' . DIRECTORY_SEPARATOR . self::RESIZE_NAME;
         mkdir($directory . '/_resize', 0700, true);
         file_put_contents($resizePath, 'cached resized image');
         $filesystem->existingPaths[$resizePath] = true;
@@ -466,7 +468,7 @@ class FileFtReplaceResizeCropTest extends FileFtTestBase
         $this->assertSame($first, $second);
         $this->assertSame(['resize', 'crop'], $this->imageLibMock->actionCalls);
         $this->assertCount(2, $filesystem->writeStreamCalls);
-        $cropPath = '/srv/uploads/gallery/_crop/' . self::CROP_NAME;
+        $cropPath = self::CROP_DIRECTORY . self::CROP_NAME;
         $this->assertSame([$cropPath], $filesystem->existsCalls);
         $this->assertSame([$cropPath], $filesystem->copyToTempFileCalls);
     }
@@ -491,7 +493,7 @@ class FileFtReplaceResizeCropTest extends FileFtTestBase
         $this->assertEquals(150, $imageLib->initializeCalls[1]['y_axis']);
         $this->assertSame(1600, $result['width']);
         $this->assertSame(900, $result['height']);
-        $this->assertSame('/srv/uploads/gallery/_resize/' . self::RESIZE_NAME, $filesystem->copyToTempFileCalls[1]);
+        $this->assertSame(self::RESIZE_DIRECTORY . self::RESIZE_NAME, $filesystem->copyToTempFileCalls[1]);
     }
 
     /** @dataProvider changedDimensions */
@@ -501,8 +503,8 @@ class FileFtReplaceResizeCropTest extends FileFtTestBase
         $filesystem = new FileFtProcessImageFilesystemStub();
         $data = $this->cacheData($filesystem);
         $filesystem->existingPaths = [
-            '/srv/uploads/gallery/_resize/' . self::RESIZE_NAME => true,
-            '/srv/uploads/gallery/_crop/' . self::CROP_NAME => true,
+            self::RESIZE_DIRECTORY . self::RESIZE_NAME => true,
+            self::CROP_DIRECTORY . self::CROP_NAME => true,
         ];
         $params = self::CACHE_PARAMS;
         $params[$parameter] = $value;
@@ -537,7 +539,7 @@ class FileFtReplaceResizeCropTest extends FileFtTestBase
         if ($wrap !== null) {
             $params['wrap'] = $wrap;
         }
-        $cropPath = '/srv/uploads/gallery/_crop/' . $cropName;
+        $cropPath = self::CROP_DIRECTORY . $cropName;
         $cropUrl = 'https://example.com/uploads/gallery/_crop/' . $cropName;
         $filesystem->existingPaths[$cropPath] = true;
 

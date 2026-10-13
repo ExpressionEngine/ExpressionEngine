@@ -19,7 +19,7 @@ class FileFtProcessImageTest extends FileFtTestBase
         $filesystem = new FileFtProcessImageFilesystemStub();
         $params = ['width' => '1600', 'height' => '900'];
         $filename = 'hero_crop_' . md5(serialize($params)) . '.jpg';
-        $destination = '/srv/uploads/gallery/_crop/' . $filename;
+        $destination = '/srv/uploads/gallery/_crop' . DIRECTORY_SEPARATOR . $filename;
         $source = '/srv/uploads/gallery/prepared-source.jpg';
         $filesystem->existingPaths[$destination] = $cached;
         $data = [

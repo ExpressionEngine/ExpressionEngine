@@ -55,7 +55,7 @@ class FileFtImageCacheInvalidationTest extends FileFtTestBase
         $modifier = 'replace_' . $format;
         $params = ['width' => '320'];
         $cacheName = $expectedStem . '_' . $format . '_' . md5(serialize($params)) . '.' . $format;
-        $cachePath = $directory . '/nested/_' . $format . '/' . $cacheName;
+        $cachePath = $directory . '/nested/_' . $format . DIRECTORY_SEPARATOR . $cacheName;
 
         try {
             $filesystem->mkdir($directory . '/nested');
