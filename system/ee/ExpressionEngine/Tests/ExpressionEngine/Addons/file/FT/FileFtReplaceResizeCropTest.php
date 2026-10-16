@@ -399,12 +399,12 @@ class FileFtReplaceResizeCropTest extends FileFtTestBase
         $this->assertSame('hero.jpg', $data['model_object']->file_name);
         if ($hasCrop) {
             $this->assertSame([$cropPath], $filesystem->existsCalls);
-            $this->assertSame([$cropPath], $filesystem->copyToTempFileCalls);
+            $this->assertSame([], $filesystem->copyToTempFileCalls);
             $this->assertSame(['crop'], $data['model_object']->manipulationUrlCalls);
             $this->assertNotContains(self::RESIZE_DIRECTORY, $filesystem->isDirCalls);
         } elseif ($hasResize) {
             $this->assertSame([$cropPath, $resizePath], $filesystem->existsCalls);
-            $this->assertSame([$resizePath, $resizePath], $filesystem->copyToTempFileCalls);
+            $this->assertSame([$resizePath], $filesystem->copyToTempFileCalls);
             $this->assertSame($cropPath, $filesystem->writeStreamCalls[0]['path']);
         } else {
             $this->assertSame([$cropPath, $resizePath], $filesystem->existsCalls);
@@ -470,7 +470,7 @@ class FileFtReplaceResizeCropTest extends FileFtTestBase
         $this->assertCount(2, $filesystem->writeStreamCalls);
         $cropPath = self::CROP_DIRECTORY . self::CROP_NAME;
         $this->assertSame([$cropPath], $filesystem->existsCalls);
-        $this->assertSame([$cropPath], $filesystem->copyToTempFileCalls);
+        $this->assertSame([], $filesystem->copyToTempFileCalls);
     }
 
     public function testReplaceResizeCropCentersCropUsingResizedDimensions()
@@ -480,7 +480,10 @@ class FileFtReplaceResizeCropTest extends FileFtTestBase
             {
                 parent::get_image_properties($path, $cached);
 
-                return ['width' => 1600, 'height' => count($this->getImagePropertiesCalls) < 3 ? 1200 : 900];
+                // Distinguish the resized source from the final cropped output.
+                $cropConfig = $this->initializeCalls[1] ?? [];
+
+                return ['width' => 1600, 'height' => $path === ($cropConfig['new_image'] ?? null) ? 900 : 1200];
             }
         };
         $this->setImageLib($imageLib);
@@ -547,7 +550,7 @@ class FileFtReplaceResizeCropTest extends FileFtTestBase
 
         $this->assertSame([], $this->imageLibMock->actionCalls);
         $this->assertSame([], $filesystem->writeStreamCalls);
-        $this->assertSame([$cropPath], $filesystem->copyToTempFileCalls);
+        $this->assertSame($tagdata === false ? [] : [$cropPath], $filesystem->copyToTempFileCalls);
         if ($tagdata === null) {
             $this->assertSame($cropUrl, $result['url']);
             $this->assertSame($cropPath, $result['source_image']);

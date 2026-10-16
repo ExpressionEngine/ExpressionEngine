@@ -9,6 +9,7 @@
  */
 
 use ExpressionEngine\Addons\FilePicker\FilePicker;
+use ExpressionEngine\Dependency\League\Flysystem\FileExistsException;
 use ExpressionEngine\Library\CP\EntryManager\ColumnInterface;
 use ExpressionEngine\Library\CP\Table;
 use ExpressionEngine\Library\Filesystem\FilesystemException;
@@ -594,8 +595,25 @@ JSC;
 
         $destination_path = $new_image_dir . $new_image;
         $props = null;
+        $needs_props = $tagdata !== false;
+        $destination_exists = $data['filesystem']->exists($destination_path);
 
-        if (!$data['filesystem']->exists($destination_path)) {
+        if ($destination_exists && $needs_props) {
+            try {
+                $props = $data['filesystem']->actLocally($destination_path, function ($path) {
+                    return ee()->image_lib->get_image_properties($path, true);
+                });
+            } catch (FilesystemException $e) {
+                log_message('debug', $e->getMessage());
+            }
+
+            // The file may have disappeared after the existence check. Do not trust stale metadata to regenerate it.
+            if (!$props) {
+                return $data['model_object']->getAbsoluteURL();
+            }
+        }
+
+        if (!$destination_exists) {
             if ($source_image_callback !== null) {
                 $data['source_image'] = $source_image_callback();
             }
@@ -610,98 +628,113 @@ JSC;
                 log_message('debug', $e->getMessage());
                 return $data['model_object']->getAbsoluteURL();
             }
-            $new = $data['filesystem']->createTempFile();
+            $new = null;
+            $stream = null;
+            try {
+                $new = $data['filesystem']->createTempFile();
 
-            // If no per-tag quality is provided, use the configured default
-            // while preserving the historical 75 fallback.
-            $imageQuality = 75;
-            if (is_int(ee()->config->item('image_manipulation_quality')) && 0 < ee()->config->item('image_manipulation_quality') && ee()->config->item('image_manipulation_quality') <= 100) {
-                $imageQuality = ee()->config->item('image_manipulation_quality');
-            }
+                // If no per-tag quality is provided, use the configured default
+                // while preserving the historical 75 fallback.
+                $imageQuality = 75;
+                if (is_int(ee()->config->item('image_manipulation_quality')) && 0 < ee()->config->item('image_manipulation_quality') && ee()->config->item('image_manipulation_quality') <= 100) {
+                    $imageQuality = ee()->config->item('image_manipulation_quality');
+                }
 
-            $imageLibConfig = array(
-                'image_library' => ee()->config->item('image_resize_protocol'),
-                'library_path' => ee()->config->item('image_library_path'),
-                'source_image' => $source['path'],
-                'new_image' => $new['path'],
-                'maintain_ratio' => isset($params['maintain_ratio']) ? get_bool_from_string($params['maintain_ratio']) : true,
-                'master_dim' => (isset($params['master_dim']) && in_array($params['master_dim'], ['auto', 'width', 'height'])) ? $params['master_dim'] : 'auto',
+                $imageLibConfig = array(
+                    'image_library' => ee()->config->item('image_resize_protocol'),
+                    'library_path' => ee()->config->item('image_library_path'),
+                    'source_image' => $source['path'],
+                    'new_image' => $new['path'],
+                    'maintain_ratio' => isset($params['maintain_ratio']) ? get_bool_from_string($params['maintain_ratio']) : true,
+                    'master_dim' => (isset($params['master_dim']) && in_array($params['master_dim'], ['auto', 'width', 'height'])) ? $params['master_dim'] : 'auto',
 
-                'quality' => isset($params['quality']) ? (int) $params['quality'] : $imageQuality,
-                'x_axis' => isset($params['x']) ? (int) $params['x'] : 0,
-                'y_axis' => isset($params['y']) ? (int) $params['y'] : 0,
-                'rotation_angle' => (isset($params['angle']) && in_array($params['angle'], ['90', '180', '270', 'vrt', 'hor'])) ? $params['angle'] : null,
-            );
-            //technically, both dimensions are always required, so we'll set defaults
-            if ($imageLibConfig['master_dim'] != 'auto') {
-                $imageLibConfig['width'] = 100;
-                $imageLibConfig['height'] = 100;
-            }
-            if (isset($params['width'])) {
-                $imageLibConfig['width'] = (int) $params['width'];
-                if ($imageLibConfig['master_dim'] == 'auto' && !isset($params['height'])) {
-                    $imageLibConfig['master_dim'] = 'width';
+                    'quality' => isset($params['quality']) ? (int) $params['quality'] : $imageQuality,
+                    'x_axis' => isset($params['x']) ? (int) $params['x'] : 0,
+                    'y_axis' => isset($params['y']) ? (int) $params['y'] : 0,
+                    'rotation_angle' => (isset($params['angle']) && in_array($params['angle'], ['90', '180', '270', 'vrt', 'hor'])) ? $params['angle'] : null,
+                );
+                //technically, both dimensions are always required, so we'll set defaults
+                if ($imageLibConfig['master_dim'] != 'auto') {
+                    $imageLibConfig['width'] = 100;
                     $imageLibConfig['height'] = 100;
                 }
-            }
-            if (isset($params['height'])) {
-                $imageLibConfig['height'] = (int) $params['height'];
-                if ($imageLibConfig['master_dim'] == 'auto' && !isset($params['width'])) {
-                    $imageLibConfig['master_dim'] = 'height';
-                    $imageLibConfig['width'] = 100;
-                }
-            }
-
-            // if position parameter is provided, use it to calculate x and y
-            if ($function == 'crop' && isset($params['position'])) {
-                $props = ee()->image_lib->get_image_properties($source['path'], true);
                 if (isset($params['width'])) {
-                    $imageLibConfig['x_axis'] += floor(($props['width'] - (int) $params['width']) / 2);
+                    $imageLibConfig['width'] = (int) $params['width'];
+                    if ($imageLibConfig['master_dim'] == 'auto' && !isset($params['height'])) {
+                        $imageLibConfig['master_dim'] = 'width';
+                        $imageLibConfig['height'] = 100;
+                    }
                 }
                 if (isset($params['height'])) {
-                    $imageLibConfig['y_axis'] += floor(($props['height'] - (int) $params['height']) / 2);
-                }
-            }
-
-            ee()->image_lib->clear();
-            if (!isset($imageLibConfig['width'])) {
-                ee()->image_lib->width = '';
-            }
-            if (!isset($imageLibConfig['height'])) {
-                ee()->image_lib->height = '';
-            }
-            ee()->image_lib->initialize($imageLibConfig);
-
-            if (!ee()->image_lib->$function()) {
-                if (ee()->config->item('debug') == 2 or (ee()->config->item('debug') == 1 and ee('Permission')->isSuperAdmin())) {
-                    return ee()->image_lib->display_errors();
+                    $imageLibConfig['height'] = (int) $params['height'];
+                    if ($imageLibConfig['master_dim'] == 'auto' && !isset($params['width'])) {
+                        $imageLibConfig['master_dim'] = 'height';
+                        $imageLibConfig['width'] = 100;
+                    }
                 }
 
-                return ee()->TMPL->no_results();
+                // if position parameter is provided, use it to calculate x and y
+                if ($function == 'crop' && isset($params['position'])) {
+                    $props = ee()->image_lib->get_image_properties($source['path'], true);
+                    if (isset($params['width'])) {
+                        $imageLibConfig['x_axis'] += floor(($props['width'] - (int) $params['width']) / 2);
+                    }
+                    if (isset($params['height'])) {
+                        $imageLibConfig['y_axis'] += floor(($props['height'] - (int) $params['height']) / 2);
+                    }
+                }
+
+                ee()->image_lib->clear();
+                if (!isset($imageLibConfig['width'])) {
+                    ee()->image_lib->width = '';
+                }
+                if (!isset($imageLibConfig['height'])) {
+                    ee()->image_lib->height = '';
+                }
+                ee()->image_lib->initialize($imageLibConfig);
+
+                if (!ee()->image_lib->$function()) {
+                    if (ee()->config->item('debug') == 2 or (ee()->config->item('debug') == 1 and ee('Permission')->isSuperAdmin())) {
+                        return ee()->image_lib->display_errors();
+                    }
+
+                    return ee()->TMPL->no_results();
+                }
+
+                // Another request may have generated the same destination while we were processing.
+                $stream = fopen($new['path'], 'r+');
+                $wrote_destination = false;
+                try {
+                    $data['filesystem']->writeStream($destination_path, $stream);
+                    $wrote_destination = true;
+                } catch (FileExistsException $e) {
+                    if (!$data['filesystem']->exists($destination_path)) {
+                        throw $e;
+                    }
+                }
+
+                if ($wrote_destination) {
+                    $data['filesystem']->ensureCorrectAccessMode($destination_path);
+                }
+
+                if ($needs_props) {
+                    $props = ee()->image_lib->get_image_properties($new['path'], true);
+                }
+            } finally {
+                if (is_resource($stream)) {
+                    fclose($stream);
+                }
+                if ($new !== null && is_resource($new['file'])) {
+                    fclose($new['file']);
+                }
+                fclose($source['file']);
             }
-
-            // Write transformed file into correct location
-            $data['filesystem']->writeStream($destination_path, fopen($new['path'], 'r+'));
-            $data['filesystem']->ensureCorrectAccessMode($destination_path);
-
-            // Get image properties before we destroy local file
-            $props = ee()->image_lib->get_image_properties($new['path'], true);
-
-            // Clean up temporary files
-            fclose($new['file']);
-            fclose($source['file']);
         }
 
         $fileNameOnModel = $data['model_object']->file_name;
         $data['model_object']->file_name = $new_image;
         $destination_url = $data['model_object']->getAbsoluteManipulationURL($function);
         $data['model_object']->file_name = $fileNameOnModel;
-
-        if (!$props) {
-            $tmp = $data['filesystem']->copyToTempFile($destination_path);
-            $props = ee()->image_lib->get_image_properties($tmp['path'], true);
-            fclose($tmp['file']);
-        }
 
         if ($tagdata === null) {
             // called when chaining modifiers
