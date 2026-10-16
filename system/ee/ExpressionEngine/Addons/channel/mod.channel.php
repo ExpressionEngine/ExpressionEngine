@@ -4219,6 +4219,8 @@ class Channel
         }
 
         $parent_only = (ee()->TMPL->fetch_param('parent_only') == 'yes');
+        $channel = ee()->TMPL->fetch_param('channel');
+        $category_group = ee()->TMPL->fetch_param('category_group');
 
         // Is the category being specified by name?
         if (
@@ -4230,68 +4232,75 @@ class Channel
                 )
                 or ee()->TMPL->fetch_param('category_url_title')
             )
-            && ee()->TMPL->fetch_param('channel')
+            && ($channel || $category_group)
         ) {
             $qstring = preg_replace("/(.*?)\/" . preg_quote($this->reserved_cat_segment) . "\//i", '', '/' . $qstring);
 
-            $sql = "SELECT exp_channel_category_groups.channel_id, exp_channel_category_groups.group_id FROM exp_channel_category_groups LEFT JOIN exp_channels ON exp_channel_category_groups.channel_id=exp_channels.channel_id WHERE site_id IN ('" . implode("','", ee()->TMPL->site_ids) . "')  AND ";
+            $valid = 'n';
+            $valid_cats = [];
 
-            $xsql = ee()->functions->sql_andor_string(ee()->TMPL->fetch_param('channel'), 'channel_name');
+            if ($channel) {
+                $sql = "SELECT exp_channel_category_groups.channel_id, exp_channel_category_groups.group_id FROM exp_channel_category_groups LEFT JOIN exp_channels ON exp_channel_category_groups.channel_id=exp_channels.channel_id WHERE site_id IN ('" . implode("','", ee()->TMPL->site_ids) . "')  AND ";
 
-            if (substr($xsql, 0, 3) == 'AND') {
-                $xsql = substr($xsql, 3);
-            }
+                $xsql = ee()->functions->sql_andor_string($channel, 'channel_name');
 
-            $sql .= ' ' . $xsql;
+                if (substr($xsql, 0, 3) == 'AND') {
+                    $xsql = substr($xsql, 3);
+                }
 
-            $query = ee()->db->query($sql);
+                $sql .= ' ' . $xsql;
 
-            if ($query->num_rows() > 0) {
-                $valid = 'y';
-                $valid_cats = [];
+                $query = ee()->db->query($sql);
 
-                if (ee()->TMPL->fetch_param('relaxed_categories') == 'yes') {
-                    foreach ($query->result_array() as $row) {
-                        $valid_cats[] = $row['group_id'];
-                    }
-                } else {
-                    $channel_cat_groups = [];
-                    foreach ($query->result_array() as $row) {
-                        if (!isset($channel_cat_groups[$row['channel_id']])) {
-                            $channel_cat_groups[$row['channel_id']] = [];
+                if ($query->num_rows() > 0) {
+                    $valid = 'y';
+
+                    if (ee()->TMPL->fetch_param('relaxed_categories') == 'yes') {
+                        foreach ($query->result_array() as $row) {
+                            $valid_cats[] = $row['group_id'];
                         }
-                        $channel_cat_groups[$row['channel_id']][] = $row['group_id'];
-                    }
-                    // if there's just one channel specified, use it's categories group;
-                    // if multiple channels, only use the =categories groups that they share
-                    if (count($channel_cat_groups) == 1) {
-                        $valid_cats = $channel_cat_groups[array_keys($channel_cat_groups)[0]];
                     } else {
-                        $valid_cats = call_user_func_array('array_intersect', $channel_cat_groups);
+                        $channel_cat_groups = [];
+                        foreach ($query->result_array() as $row) {
+                            if (!isset($channel_cat_groups[$row['channel_id']])) {
+                                $channel_cat_groups[$row['channel_id']] = [];
+                            }
+                            $channel_cat_groups[$row['channel_id']][] = $row['group_id'];
+                        }
+                        // if there's just one channel specified, use it's categories group;
+                        // if multiple channels, only use the =categories groups that they share
+                        if (count($channel_cat_groups) == 1) {
+                            $valid_cats = $channel_cat_groups[array_keys($channel_cat_groups)[0]];
+                        } else {
+                            $valid_cats = call_user_func_array('array_intersect', $channel_cat_groups);
+                        }
+                    }
+
+                    $valid_cats = array_unique($valid_cats);
+
+                    if ($category_group) {
+                        if (substr($category_group, 0, 4) == 'not ') {
+                            $category_group_ids = explode('|', substr($category_group, 4));
+                            $valid_cats = array_diff($valid_cats, $category_group_ids);
+                        }
+
+                        if (substr($category_group, 0, 4) != 'not ') {
+                            $category_group_ids = explode('|', $category_group);
+                            $valid_cats = array_intersect($valid_cats, $category_group_ids);
+                        }
+
+                        $valid_cats = array_filter($valid_cats, 'is_numeric');
+                    }
+
+                    if (count($valid_cats) == 0) {
+                        $valid = 'n';
                     }
                 }
-
-                $valid_cats = array_unique($valid_cats);
-
-                if ($category_group = ee()->TMPL->fetch_param('category_group')) {
-                    if (substr($category_group, 0, 4) == 'not ') {
-                        $category_group_ids = explode('|', substr($category_group, 4));
-                        $valid_cats = array_diff($valid_cats, $category_group_ids);
-                    }
-
-                    if (substr($category_group, 0, 4) != 'not ') {
-                        $category_group_ids = explode('|', $category_group);
-                        $valid_cats = array_intersect($valid_cats, $category_group_ids);
-                    }
-
-                    $valid_cats = array_filter($valid_cats, 'is_numeric');
-                }
-
-                if (count($valid_cats) == 0) {
-                    $valid = 'n';
-                }
-            } else {
-                $valid = 'n';
+            } elseif (substr($category_group, 0, 4) != 'not ') {
+                // Without a channel, an inclusive category group provides the
+                // scope required to resolve a category URL title unambiguously.
+                $valid_cats = array_values(array_unique(array_filter(explode('|', $category_group), 'is_numeric')));
+                $valid = count($valid_cats) > 0 ? 'y' : 'n';
             }
 
             if ($valid == 'y') {
@@ -4312,6 +4321,9 @@ class Channel
                 ee()->db->select('cat_id');
                 ee()->db->where('cat_url_title', $cut_qstring);
                 ee()->db->where_in('group_id', $valid_cats);
+                if (!$channel) {
+                    ee()->db->where_in('site_id', ee()->TMPL->site_ids);
+                }
                 ee()->db->order_by('cat_id', 'ASC');
                 ee()->db->limit(1);
 
@@ -4330,6 +4342,9 @@ class Channel
                     ee()->db->select('cat_id');
                     ee()->db->where('cat_url_title', $qstring);
                     ee()->db->where_in('group_id', $valid_cats);
+                    if (!$channel) {
+                        ee()->db->where_in('site_id', ee()->TMPL->site_ids);
+                    }
                     ee()->db->order_by('cat_id', 'ASC');
                     ee()->db->limit(1);
 
