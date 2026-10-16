@@ -490,8 +490,6 @@ JSC;
 
         $out = $this->process_image('crop', $data, $params, $tagdata);
 
-        @unlink($resized);
-
         return $out;
     }
 
