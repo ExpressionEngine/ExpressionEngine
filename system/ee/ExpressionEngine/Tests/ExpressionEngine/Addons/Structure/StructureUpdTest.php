@@ -649,10 +649,10 @@ class StructureUpdTest extends TestCase
                 $this->captured->insertRows[] = [$table, $data];
                 return 'INSERT INTO exp_' . $table;
             }
-            public function query($sql)
+            public function query($sql, $binds = [])
             {
-                if (preg_match("/node\\.entry_id = '([0-9]+)'/", $sql, $match)) {
-                    $entryId = (int) $match[1];
+                if (strpos($sql, 'node.entry_id = ?') !== false) {
+                    $entryId = (int) ($binds[0] ?? 0);
 
                     if ($entryId === 50) {
                         return new class {

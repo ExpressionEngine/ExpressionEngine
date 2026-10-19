@@ -25,7 +25,7 @@ class StructureChildIdsTest extends StructureTestBase
         ]);
 
         $this->setTemplateParams([
-            'entry_id' => 10,
+            'entry_id' => '10',
             'delimiter' => ',',
         ]);
 
@@ -148,6 +148,56 @@ class StructureChildIdsTest extends StructureTestBase
         $this->assertSame([], $captured->queries);
     }
 
+    public function testChildIdsRejectsMalformedParentWithoutQuery()
+    {
+        $this->structure->sql = new class {
+            public function get_site_pages() { return ['uris' => [10 => '/parent/']]; }
+        };
+
+        $captured = (object) ['queries' => []];
+        ee()->setMock('db', new class($captured) {
+            private $captured;
+            public function __construct($captured) { $this->captured = $captured; }
+            public function query($sql, $binds = false)
+            {
+                $this->captured->queries[] = [$sql, $binds];
+
+                return new eeDbResultMock([]);
+            }
+        });
+
+        foreach (["10'", '10abc', '1e2', '-1', '000', [10]] as $entryId) {
+            $this->setTemplateParams(['entry_id' => $entryId]);
+            $this->assertNull($this->structure->child_ids());
+        }
+
+        $this->assertSame([], $captured->queries);
+    }
+
+    public function testChildIdsPreservesLargeDecimalParentInQueryBinds()
+    {
+        $this->structure->sql = new class {
+            public function get_site_pages() { return ['uris' => []]; }
+        };
+
+        $captured = (object) ['binds' => null];
+        ee()->setMock('db', new class($captured) {
+            private $captured;
+            public function __construct($captured) { $this->captured = $captured; }
+            public function query($sql, $binds = false)
+            {
+                $this->captured->binds = $binds;
+
+                return new eeDbResultMock([]);
+            }
+        });
+
+        $this->setTemplateParams(['entry_id' => '4294967295']);
+
+        $this->assertSame('0', $this->structure->child_ids());
+        $this->assertSame(['4294967295', 1], $captured->binds);
+    }
+
     public function testChildIdsTrimsStartFromAndUsesConfiguredSiteIdInQuery()
     {
         $sitePages = ['uris' => [10 => '/parent/']];
@@ -161,9 +211,9 @@ class StructureChildIdsTest extends StructureTestBase
         ee()->setMock('db', new class($captured) {
             private $captured;
             public function __construct($captured) { $this->captured = $captured; }
-            public function query($sql)
+            public function query($sql, $binds = false)
             {
-                $this->captured->queries[] = $sql;
+                $this->captured->queries[] = [$sql, $binds];
 
                 return new eeDbResultMock([
                     ['entry_id' => 61, 'parent_id' => 10],
@@ -181,9 +231,11 @@ class StructureChildIdsTest extends StructureTestBase
 
         $this->assertSame('61', $result);
         $this->assertCount(1, $captured->queries);
-        $this->assertStringContainsString("parent_id = '10'", $captured->queries[0]);
-        $this->assertStringContainsString("entry_id != '0'", $captured->queries[0]);
-        $this->assertStringContainsString("site_id = 7", $captured->queries[0]);
+        $this->assertSame(
+            "SELECT entry_id FROM exp_structure WHERE parent_id = ? AND entry_id != '0' AND site_id = ? ORDER BY lft ASC",
+            $captured->queries[0][0]
+        );
+        $this->assertSame(['10', 7], $captured->queries[0][1]);
     }
 }
 

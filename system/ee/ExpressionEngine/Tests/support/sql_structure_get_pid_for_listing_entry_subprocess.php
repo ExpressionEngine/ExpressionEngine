@@ -94,9 +94,9 @@ class SqlStructureGetPidForListingEntrySubprocessDb
      * @param string $sql
      * @return object
      */
-    public function query($sql): object
+    public function query($sql, $binds = []): object
     {
-        $this->captured->queries[] = preg_replace('/\s+/', ' ', trim($sql));
+        $this->captured->queries[] = [preg_replace('/\s+/', ' ', trim($sql)), $binds];
 
         if (! array_key_exists($this->calls, $this->results)) {
             throw new RuntimeException('Unexpected extra database query.');
@@ -154,6 +154,7 @@ $sql->cache = [];
 $happyPathResult = $sql->get_pid_for_listing_entry(10);
 $arrayChannelResult = $sql->get_pid_for_listing_entry(11);
 $missingParentResult = $sql->get_pid_for_listing_entry(12);
+$malformedEntryResult = $sql->get_pid_for_listing_entry("10'");
 
 $coverage = [];
 
@@ -206,6 +207,7 @@ file_put_contents($outputFile, json_encode([
     'happy_path_result' => $happyPathResult,
     'array_channel_result' => $arrayChannelResult,
     'missing_parent_result' => $missingParentResult,
+    'malformed_entry_result' => $malformedEntryResult,
     'missing_parent_row_calls' => $missingParentRowCalls,
     'queries' => $captured->queries,
     'xdebug_available' => $xdebugAvailable,

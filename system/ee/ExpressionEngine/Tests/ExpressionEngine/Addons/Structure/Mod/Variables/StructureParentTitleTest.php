@@ -71,9 +71,11 @@ class StructureParentTitleTest extends StructureTestBase
 
         $db = new class extends FakeDb {
             public $queries = [];
+            public $binds = [];
 
-            public function query($sql) {
+            public function query($sql, $binds = []) {
                 $this->queries[] = $sql;
+                $this->binds[] = $binds;
 
                 if (strpos($sql, 'INNER JOIN exp_channel_titles AS expt') !== false) {
                     return new eeDbResultMock([['entry_id' => 5, 'title' => 'Parent Title']]);
@@ -83,7 +85,7 @@ class StructureParentTitleTest extends StructureTestBase
                     return new eeDbResultMock([['channel_id' => 77]]);
                 }
 
-                if (strpos($sql, 'WHERE listing_cid = 77') !== false) {
+                if (strpos($sql, 'WHERE listing_cid = ?') !== false) {
                     return new eeDbResultMock([['entry_id' => 5]]);
                 }
 
@@ -95,8 +97,10 @@ class StructureParentTitleTest extends StructureTestBase
         $title = $this->structure->parent_title(9);
 
         $this->assertSame('Parent Title', $title);
-        $this->assertStringContainsString('WHERE entry_id = 9', $db->queries[0]);
-        $this->assertStringContainsString('WHERE listing_cid = 77', $db->queries[1]);
+        $this->assertStringContainsString('WHERE entry_id = ?', $db->queries[0]);
+        $this->assertSame(['9'], $db->binds[0]);
+        $this->assertStringContainsString('WHERE listing_cid = ?', $db->queries[1]);
+        $this->assertSame(['77'], $db->binds[1]);
         $this->assertStringContainsString('AND node.rgt >= 20', $db->queries[2]);
     }
 }

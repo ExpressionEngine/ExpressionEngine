@@ -6,6 +6,20 @@ if (! defined('BASEPATH')) {
 
 class Structure_Helper
 {
+    public static function normalize_entry_id($value, $allow_zero = false)
+    {
+        if (! is_int($value) && ! is_string($value)) {
+            return null;
+        }
+
+        $value = (string) $value;
+        if (! ctype_digit($value) || (! $allow_zero && ltrim($value, '0') === '')) {
+            return null;
+        }
+
+        return $value;
+    }
+
     public static function remove_double_slashes($str)
     {
         return preg_replace("#(^|[^:])//+#", "\\1/", $str);

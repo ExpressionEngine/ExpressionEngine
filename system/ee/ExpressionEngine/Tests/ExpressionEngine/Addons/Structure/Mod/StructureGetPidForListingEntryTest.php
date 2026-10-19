@@ -13,9 +13,10 @@ class StructureGetPidForListingEntryTest extends StructureTestBase
 
 		$this->assertSame(123, $pid);
 		$this->assertSame([
-			'SELECT channel_id FROM exp_channel_titles WHERE entry_id = 777 LIMIT 1',
-			'SELECT entry_id FROM exp_structure WHERE listing_cid = 9 LIMIT 1',
-		], array_map([$this, 'normalizeSql'], $dbLog->queries));
+			'SELECT channel_id FROM exp_channel_titles WHERE entry_id = ? LIMIT 1',
+			'SELECT entry_id FROM exp_structure WHERE listing_cid = ? LIMIT 1',
+		], array_map([$this, 'normalizeSql'], array_column($dbLog->queries, 0)));
+		$this->assertSame([['777'], ['9']], array_column($dbLog->queries, 1));
 	}
 
 	public function testReturnsFalseWhenChannelIdRowReturnsArray()
@@ -25,8 +26,9 @@ class StructureGetPidForListingEntryTest extends StructureTestBase
 
 		$this->assertFalse($this->structure->get_pid_for_listing_entry(1));
 		$this->assertSame([
-			'SELECT channel_id FROM exp_channel_titles WHERE entry_id = 1 LIMIT 1',
-		], array_map([$this, 'normalizeSql'], $dbLog->queries));
+			'SELECT channel_id FROM exp_channel_titles WHERE entry_id = ? LIMIT 1',
+		], array_map([$this, 'normalizeSql'], array_column($dbLog->queries, 0)));
+		$this->assertSame([['1']], array_column($dbLog->queries, 1));
 	}
 
 	public function testReturnsNullWhenParentEntryNotFound()
@@ -36,9 +38,37 @@ class StructureGetPidForListingEntryTest extends StructureTestBase
 
 		$this->assertNull($this->structure->get_pid_for_listing_entry(1));
 		$this->assertSame(
-			'SELECT entry_id FROM exp_structure WHERE listing_cid = 9 LIMIT 1',
-			$this->normalizeSql($dbLog->queries[1])
+			'SELECT entry_id FROM exp_structure WHERE listing_cid = ? LIMIT 1',
+			$this->normalizeSql($dbLog->queries[1][0])
 		);
+		$this->assertSame([['1'], ['9']], array_column($dbLog->queries, 1));
+	}
+
+	public function testReturnsFalseBeforeQueryForMalformedEntryId()
+	{
+		$dbLog = (object) ['queries' => []];
+		ee()->setMock('db', $this->makeQueryMock([], $dbLog));
+
+		$this->assertFalse($this->structure->get_pid_for_listing_entry("10'"));
+		$this->assertSame([], $dbLog->queries);
+	}
+
+	public function testReturnsFalseWithoutParentQueryWhenChannelIsMissing()
+	{
+		$dbLog = (object) ['queries' => []];
+		ee()->setMock('db', $this->makeQueryMock([null], $dbLog));
+
+		$this->assertFalse($this->structure->get_pid_for_listing_entry(1));
+		$this->assertCount(1, $dbLog->queries);
+	}
+
+	public function testKeepsLargeDecimalEntryIdIntactInBinding()
+	{
+		$dbLog = (object) ['queries' => []];
+		ee()->setMock('db', $this->makeQueryMock([9, 123], $dbLog));
+
+		$this->assertSame(123, $this->structure->get_pid_for_listing_entry('18446744073709551616'));
+		$this->assertSame(['18446744073709551616'], $dbLog->queries[0][1]);
 	}
 
 	private function makeQueryMock(array $rowValues, object $dbLog)
@@ -54,9 +84,9 @@ class StructureGetPidForListingEntryTest extends StructureTestBase
 				$this->dbLog = $dbLog;
 			}
 
-			public function query($sql)
+			public function query($sql, $binds = [])
 			{
-				$this->dbLog->queries[] = $sql;
+				$this->dbLog->queries[] = [$sql, $binds];
 
 				if (!array_key_exists($this->calls, $this->rowValues)) {
 					throw new RuntimeException('Unexpected extra database query.');

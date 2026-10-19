@@ -101,6 +101,26 @@ class StructureTitleTrailTest extends StructureTestBase
         $this->assertEquals('Team | About', $result);
     }
 
+    public function testTitleTrailRejectsMalformedEntryIdBeforeNodeOrDatabaseLookup()
+    {
+        $this->setSqlStub(['uris' => []], '/missing');
+        $this->setTemplateParams(['entry_id' => "10'"]);
+        $this->structure->nset = new class {
+            public function getNode($id)
+            {
+                throw new RuntimeException('Malformed entry ID must not reach nested set lookup.');
+            }
+        };
+        ee()->setMock('db', new class extends FakeDb {
+            public function query($sql, $binds = [])
+            {
+                throw new RuntimeException('Malformed entry ID must not reach a database query.');
+            }
+        });
+
+        $this->assertSame('Test Site', $this->structure->titletrail());
+    }
+
     public function testTitleTrailWithCustomSeparator()
     {
         $sitePages = [ 'uris' => [ 1 => '/', 2 => '/about' ] ];
