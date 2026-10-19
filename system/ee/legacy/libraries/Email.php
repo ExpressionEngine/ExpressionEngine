@@ -576,7 +576,8 @@ class EE_Email
 
                 if (preg_match('/^(.*?)(=\?[^?]+\?[BQ]\?.*)$/is', $name, $match)
                     && preg_match('~[()<>@,;:\\\\".\[\]]~', $match[1])) {
-                    $name = '"' . addcslashes(rtrim($match[1]), "\0..\37\177'\"\\") . '" ' . $match[2];
+                    // Preserve the encoder's CR/LF folding inside the quoted prefix.
+                    $name = '"' . addcslashes(rtrim($match[1]), "\0..\11\13..\14\16..\37\177'\"\\") . '" ' . $match[2];
                 }
             } else {
                 // Base64 avoids the literal address delimiters left by iconv's Q encoding.

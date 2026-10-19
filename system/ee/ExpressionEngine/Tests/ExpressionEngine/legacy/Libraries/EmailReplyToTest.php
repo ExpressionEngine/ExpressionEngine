@@ -66,6 +66,46 @@ class EmailReplyToTest extends TestCase
     }
 
     /**
+     * Preserve generated folding when quoting a long ASCII display-name prefix.
+     *
+     * @dataProvider foldingLineEndingProvider
+     * @param string $crlf Line ending used by the MIME encoder.
+     * @return void
+     */
+    public function testPreservesFoldedAsciiPrefix(string $crlf): void
+    {
+        $prefix = 'Bureau, ' . str_repeat('Support ', 15);
+        $email = (new \ReflectionClass(\EE_Email::class))->newInstanceWithoutConstructor();
+        $email->charset = 'UTF-8';
+        $email->crlf = $crlf;
+        $email->reply_to('billetterie@example.com', $prefix . 'Été');
+
+        $headers = new \ReflectionProperty(\EE_Email::class, '_headers');
+        \TestReflectionHelper::makePropertyAccessible($headers);
+        $header = $headers->getValue($email)['Reply-To'];
+
+        $this->assertStringContainsString($crlf . ' ', $header);
+        $this->assertSame(
+            '"' . rtrim($prefix) . '" Été <billetterie@example.com>',
+            mb_decode_mimeheader($header)
+        );
+    }
+
+    /**
+     * Provide the line endings supported by the email library.
+     *
+     * @return array
+     */
+    public static function foldingLineEndingProvider(): array
+    {
+        return [
+            'LF' => ["\n"],
+            'CRLF' => ["\r\n"],
+            'CR' => ["\r"],
+        ];
+    }
+
+    /**
      * Preserve names that the existing MIME encoder cannot safely encode.
      *
      * @dataProvider preservedNameProvider
