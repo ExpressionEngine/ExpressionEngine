@@ -459,6 +459,11 @@ EE.cp.formValidation = {
 				container.removeClass('fieldset-invalid');
 				container.removeClass('invalid');
 
+				var fluidField = field.closest('.fluid__item-field');
+				if (fluidField.find('td.invalid').length == 0) {
+					fluidField.children(errorClass).remove();
+				}
+
 				// For Grid, only remove the invalid class from the label if no
 				// more errors exist in the Grid
 				if (fieldset.parent().find('td.invalid').length == 0) {
