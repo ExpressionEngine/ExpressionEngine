@@ -1078,6 +1078,18 @@ namespace {
 
     class FileFtProcessImageFilesystemStub
     {
+        /** @var bool */
+        public $local = false;
+
+        /** @var array<int, string> */
+        public $actLocallyCalls = [];
+
+        /** @var callable|null */
+        public $writeStreamCallback;
+
+        /** @var array<int, array<string, mixed>> */
+        public $temporaryFiles = [];
+
         /** @var array<string, bool> */
         public $directories = [];
 
@@ -1122,6 +1134,28 @@ namespace {
 
         /** @var array<int, string> */
         private $temporaryPaths = [];
+
+        /**
+         * Run a callback against a local path or a tracked remote copy.
+         *
+         * @param  string  $path
+         * @param  callable  $callback
+         * @return mixed
+         */
+        public function actLocally($path, callable $callback)
+        {
+            $this->actLocallyCalls[] = $path;
+            if ($this->local) {
+                return $callback($path);
+            }
+
+            $tmp = $this->copyToTempFile($path);
+            try {
+                return $callback($tmp['path']);
+            } finally {
+                fclose($tmp['file']);
+            }
+        }
 
         /**
          * Return whether the target path is a known directory.
@@ -1237,6 +1271,9 @@ namespace {
                 'path' => $path,
                 'stream_uri' => $metadata['uri'] ?? null,
             ];
+            if ($this->writeStreamCallback !== null) {
+                ($this->writeStreamCallback)($path, $stream);
+            }
             $this->existingPaths[$path] = true;
         }
 
@@ -1277,6 +1314,7 @@ namespace {
             file_put_contents($path, $contents);
             $file = fopen($path, 'r+');
             $this->temporaryPaths[] = $path;
+            $this->temporaryFiles[] = ['path' => $path, 'file' => $file];
 
             return [
                 'path' => $path,

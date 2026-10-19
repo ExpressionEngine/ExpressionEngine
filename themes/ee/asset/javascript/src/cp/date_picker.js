@@ -423,7 +423,7 @@ EE.cp.datePicker = {
 
 				if (timeHours == "PM" && parseInt(pickedHours) < 12) {
 					pickedHours = parseInt(pickedHours) + 12;
-					pickedHours = pickedHours.toString();
+					pickedHours = String(pickedHours);
 				}
 
 				if (timeHours == "AM") {
@@ -432,7 +432,7 @@ EE.cp.datePicker = {
 					}
 
 					pickedHours = this.addZero(pickedHours);
-					pickedHours = pickedHours.toString();
+					pickedHours = String(pickedHours);
 				}
 
 				var pickedMinutes, pickedSeconds;

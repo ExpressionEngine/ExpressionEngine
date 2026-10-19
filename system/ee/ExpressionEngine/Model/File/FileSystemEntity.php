@@ -10,7 +10,9 @@
 
 namespace ExpressionEngine\Model\File;
 
+use ExpressionEngine\Dependency\League\Flysystem\FileNotFoundException;
 use ExpressionEngine\Model\Content\ContentModel;
+use ExpressionEngine\Service\File\ManipulationFilename;
 
 /**
  * FileSystemEntity Model
@@ -25,6 +27,13 @@ use ExpressionEngine\Model\Content\ContentModel;
  */
 class FileSystemEntity extends ContentModel
 {
+    /**
+     * The built-in manipulation directories included in generated-file cleanup.
+     *
+     * @var string[]
+     */
+    private const BUILT_IN_MANIPULATIONS = ['thumbs', 'resize', 'crop', 'rotate', 'webp', 'avif'];
+
     protected static $_primary_key = 'file_id';
     protected static $_table_name = 'files';
     //protected static $_gateway_names = array('FileGateway', 'FileFieldDataGateway');
@@ -382,12 +391,20 @@ class FileSystemEntity extends ContentModel
          $this->UploadDestination->deleteOriginalFiles($this->getAbsolutePath());
     }
 
+    /**
+     * Delete generated derivatives, including thumbnails and configured sizes.
+     *
+     * @return void
+     *
+     * @throws \ExpressionEngine\Library\Filesystem\FilesystemException
+     */
     public function deleteGeneratedFiles()
     {
         $filesystem = $this->UploadDestination->getFilesystem();
-
-        $manipulations = ['thumbs', 'resize', 'crop', 'rotate', 'webp', 'avif'];
-        $manipulations = array_merge($manipulations, $this->UploadDestination->FileDimensions->pluck('short_name'));
+        $manipulations = array_merge(
+            self::BUILT_IN_MANIPULATIONS,
+            $this->UploadDestination->FileDimensions->pluck('short_name')
+        );
 
         foreach ($manipulations as $manipulation) {
             $directory = $this->getBaseServerPath() . $this->getSubfoldersPath() . '_' . $manipulation;
@@ -396,16 +413,48 @@ class FileSystemEntity extends ContentModel
             if ($filesystem->exists($manipulatedFilePath)) {
                 $filesystem->delete($manipulatedFilePath);
             }
+        }
 
-            // Manipulations that are generated on-the-fly have unique hashes after the prefix.
-            // The md5 hash that is appended is always 32 characters long so we will filter
-            // filename based on length to avoid removing other files that share a prefix
-            $dynamicFilePrefix = "{$filesystem->filename($this->file_name)}_{$manipulation}_";
-            $dynamicFilenameLength = strlen("{$dynamicFilePrefix}.{$filesystem->extension($this->file_name)}") + 32;
+        $this->deleteDynamicFilesForManipulations($manipulations);
+    }
 
-            foreach($filesystem->filesMatchingPrefix("{$directory}/{$dynamicFilePrefix}") as $file) {
-                if(strlen("{$file['filename']}.{$file['extension']}") == $dynamicFilenameLength) {
-                    $filesystem->delete($file['path']);
+    /**
+     * Delete dynamic manipulation caches while retaining thumbnails and configured sizes.
+     *
+     * @return void
+     *
+     * @throws \ExpressionEngine\Library\Filesystem\FilesystemException
+     */
+    public function deleteDynamicGeneratedFiles()
+    {
+        $this->deleteDynamicFilesForManipulations(self::BUILT_IN_MANIPULATIONS);
+    }
+
+    /**
+     * Delete hashed dynamic files from the supplied manipulation directories.
+     *
+     * @param  string[]  $manipulations  Manipulation names without their directory prefixes.
+     * @return void
+     *
+     * @throws \ExpressionEngine\Library\Filesystem\FilesystemException
+     */
+    private function deleteDynamicFilesForManipulations(array $manipulations)
+    {
+        $filesystem = $this->UploadDestination->getFilesystem();
+
+        foreach ($manipulations as $manipulation) {
+            $directory = $this->getBaseServerPath() . $this->getSubfoldersPath() . '_' . $manipulation;
+            $filename = new ManipulationFilename($this->file_name, $manipulation);
+            $prefix = $filename->getPrefix();
+
+            // Prefix lookup can return other filenames; validate the full cache name before deleting.
+            foreach ($filesystem->filesMatchingPrefix("{$directory}/{$prefix}") as $file) {
+                if ($filename->matches(basename($file['path']))) {
+                    try {
+                        $filesystem->delete($file['path']);
+                    } catch (FileNotFoundException $e) {
+                        // Another request already deleted this cache; continue cleaning up the remaining files.
+                    }
                 }
             }
         }
