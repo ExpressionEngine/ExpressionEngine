@@ -88,7 +88,7 @@ class FileModelTest extends TestCase
      */
     public function testGeneratedFileCleanupModes($dynamicOnly, $cacheDisappears)
     {
-        $directory = sys_get_temp_dir() . '/file-cleanup-' . bin2hex(random_bytes(8));
+        $directory = str_replace('\\', '/', sys_get_temp_dir()) . '/file-cleanup-' . bin2hex(random_bytes(8));
         $filesystem = \Mockery::mock(\ExpressionEngine\Library\Filesystem\Filesystem::class, [
             new \ExpressionEngine\Library\Filesystem\Adapter\Local(['path' => sys_get_temp_dir()]),
         ])->makePartial();

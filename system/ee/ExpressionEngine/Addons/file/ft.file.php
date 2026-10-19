@@ -608,7 +608,7 @@ JSC;
 
             // The file may have disappeared after the existence check. Do not trust stale metadata to regenerate it.
             if (!$props) {
-                $data['url'] = $data['model_object']->getAbsoluteURL();
+                $data['url'] = $data['url'] ?? $data['model_object']->getAbsoluteURL();
 
                 return $tagdata === null ? $data : $data['url'];
             }

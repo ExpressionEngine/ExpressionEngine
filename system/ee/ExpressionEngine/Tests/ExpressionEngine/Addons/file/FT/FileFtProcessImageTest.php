@@ -153,6 +153,57 @@ class FileFtProcessImageTest extends FileFtTestBase
     }
 
     /**
+     * Preserve the last successful image when a later cached manipulation cannot be read.
+     *
+     * @dataProvider cachedDimensionModes
+     * @param  bool  $local  Whether the cache is stored locally.
+     * @param  string|null  $tagdata  The tag pair or modifier-chain output mode.
+     * @return void
+     */
+    public function testUnreadableCropPreservesPreviousResize($local, $tagdata)
+    {
+        $fieldtype = $this->makeFieldtype();
+        $filesystem = new FileFtProcessImageFilesystemStub();
+        $filesystem->local = $local;
+        $resizeParams = ['width' => '320'];
+        $resizeFilename = 'hero_resize_' . md5(serialize($resizeParams)) . '.jpg';
+        $resizeDestination = '/srv/uploads/gallery/_resize' . DIRECTORY_SEPARATOR . $resizeFilename;
+        $filesystem->existingPaths[$resizeDestination] = true;
+        $resized = $fieldtype->replace_resize($this->imageData($filesystem), $resizeParams, null);
+        $url = 'https://example.com/uploads/gallery/_resize/' . $resizeFilename;
+        $this->assertSame($url, $resized['url']);
+
+        $cropParams = ['width' => '160'];
+        $cropDestination = '/srv/uploads/gallery/_crop' . DIRECTORY_SEPARATOR
+            . 'hero_resize_crop_' . md5(serialize($cropParams)) . '.jpg';
+        $filesystem->existingPaths[$cropDestination] = true;
+        if ($local) {
+            $this->imageLibMock->imagePropertiesByPath[$cropDestination] = false;
+        } else {
+            $filesystem->copyToTempFileExceptions[$cropDestination] = 'cached image disappeared';
+        }
+
+        $result = $fieldtype->replace_crop($resized, $cropParams, $tagdata);
+
+        if ($tagdata === null) {
+            $this->assertSame($resized, $result);
+
+            $formatter = \Mockery::mock();
+            $formatter->shouldReceive('attributeSafe')->with([])->once()->andReturn($url);
+            $format = \Mockery::mock(\ExpressionEngine\Service\Formatter\FormatterFactory::class);
+            $format->shouldReceive('make')->with('Text', $url)->once()->andReturn($formatter);
+            ee()->setMock('Format', $format);
+            $this->assertSame($url, $fieldtype->replace_attr_safe($result));
+        } else {
+            $this->assertSame($url, $result);
+        }
+        $this->assertSame([$resizeDestination, $cropDestination], $filesystem->actLocallyCalls);
+        $this->assertSame([], $this->imageLibMock->actionCalls);
+        $this->assertSame([], $filesystem->writeStreamCalls);
+        $this->assertTemporaryFilesClosed($filesystem);
+    }
+
+    /**
      * Keep a fallback resize separate from the cache for a successful crop-resize chain.
      *
      * @return void
