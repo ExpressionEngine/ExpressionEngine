@@ -174,6 +174,41 @@ context('Publish Entry with Fluid', () => {
         cy.get('.meta__total_fields').contains('4')
     })
 
+    ;[false, true].forEach(nestedFirst => {
+      it(`clears nested Fluid fieldsets when the nested child is corrected ${nestedFirst ? 'first' : 'last'}`, () => {
+        fluid_field.get('actions_menu.fields').eq(available_fields.indexOf('Home Page')).click()
+        fluid_field.get('actions_menu.fields').eq(available_fields.indexOf('Home Page')).click()
+
+        fluid_field.get('items').eq(0).find('input[type=text]').as('nestedUrl').then($input => {
+          // Custom fieldtypes can render their own fieldsets inside Fluid.
+          $input.wrap('<fieldset><div class="field-control"></div></fieldset>')
+        })
+        fluid_field.get('items').eq(1).find('input[type=text]').as('siblingUrl')
+
+        ;['nestedUrl', 'siblingUrl'].forEach(alias => {
+          cy.get(`@${alias}`).type('invalid-url').blur()
+          cy.get(`@${alias}`).closest('.fluid__item-field')
+            .find('em.ee-form-error-message').should('exist')
+        })
+        page.get('save').should('be.disabled')
+
+        const correctionOrder = nestedFirst ? ['nestedUrl', 'siblingUrl'] : ['siblingUrl', 'nestedUrl']
+        correctionOrder.forEach((alias, index) => {
+          cy.get(`@${alias}`).clear().type('https://example.com/').blur()
+          cy.get(`@${alias}`).closest('.fluid__item-field')
+            .find('em.ee-form-error-message').should('not.exist')
+          if (alias === 'nestedUrl') {
+            cy.get('@nestedUrl').closest('fieldset').should('not.have.class', 'fieldset-invalid')
+          }
+          page.get('save').should(index === 0 ? 'be.disabled' : 'be.enabled')
+        })
+
+        cy.get('.fluid .fieldset-invalid, .fluid em.ee-form-error-message').should('not.exist')
+        page.get('save').click()
+        page.get('alert').contains('Entry Created')
+      })
+    })
+
     it('adds a field to Fluid', () => {
 
         available_fields.forEach(function (field, index) {

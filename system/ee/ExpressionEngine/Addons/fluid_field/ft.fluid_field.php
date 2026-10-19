@@ -46,6 +46,12 @@ class Fluid_field_ft extends EE_Fieldtype
         $this->errors = new \ExpressionEngine\Service\Validation\Result();
     }
 
+    /**
+     * Validate Fluid children and return the current child's AJAX result.
+     *
+     * @param array $data The submitted Fluid field data.
+     * @return bool|string TRUE when valid, or the validation error.
+     */
     public function validate($data)
     {
         $this->errors = new \ExpressionEngine\Service\Validation\Result();
@@ -142,6 +148,10 @@ class Fluid_field_ft extends EE_Fieldtype
 
                     $result = $validator->validate(array($f->getName() => $f->getData()));
 
+                    if (ee()->input->is_ajax_request()) {
+                        return $result->isNotValid() ? $result->getFailedRules($f->getName())[0]->getLanguageKey() : true;
+                    }
+
                     if ($result->isNotValid()) {
                         foreach ($result->getFailed() as $field_name => $rules) {
                             foreach ($rules as $rule) {
@@ -151,16 +161,6 @@ class Fluid_field_ft extends EE_Fieldtype
                     }
                 }
             }
-        }
-
-        if (ee()->input->is_ajax_request()) {
-            if ($this->errors->hasErrors($field_name)) {
-                $errors = $this->errors->getErrors($field_name);
-
-                return $errors['callback'];
-            }
-
-            return true;
         }
 
         return ($this->errors->isValid()) ? true : 'form_validation_error';
