@@ -134,7 +134,6 @@ class FileFtProcessImageTest extends FileFtTestBase
         );
 
         if ($tagdata === null) {
-            $data['fs_filename'] = 'hero_crop.jpg';
             $data['url'] = $url;
             $this->assertSame($data, $result);
 
@@ -150,6 +149,50 @@ class FileFtProcessImageTest extends FileFtTestBase
         $this->assertSame([], $this->imageLibMock->actionCalls);
         $this->assertSame([], $filesystem->writeStreamCalls);
         $this->assertSame($local ? [] : [$destination], $filesystem->copyToTempFileCalls);
+        $this->assertTemporaryFilesClosed($filesystem);
+    }
+
+    /**
+     * Keep a fallback resize separate from the cache for a successful crop-resize chain.
+     *
+     * @return void
+     */
+    public function testUnreadableCropDoesNotPopulateTheSuccessfulChainCache()
+    {
+        $fieldtype = $this->makeFieldtype();
+        $filesystem = new FileFtProcessImageFilesystemStub();
+        $filesystem->local = true;
+        $data = $this->imageData($filesystem);
+        $cropParams = ['width' => '160'];
+        $resizeParams = ['width' => '80'];
+        $cropDestination = $this->cropDestination();
+        $resizeDirectory = '/srv/uploads/gallery/_resize' . DIRECTORY_SEPARATOR;
+        $resizeHash = md5(serialize($resizeParams));
+        $originalResize = $resizeDirectory . 'hero_resize_' . $resizeHash . '.jpg';
+        $croppedResize = $resizeDirectory . 'hero_crop_resize_' . $resizeHash . '.jpg';
+        $filesystem->existingPaths[$cropDestination] = true;
+        $this->imageLibMock->imagePropertiesByPath[$cropDestination] = false;
+
+        $fallback = $fieldtype->replace_crop($data, $cropParams, null);
+        $fallbackUrl = $fieldtype->replace_resize($fallback, $resizeParams);
+
+        $this->assertSame([$data['source_image']], $filesystem->copyToTempFileCalls);
+        $this->assertSame([$originalResize], array_column($filesystem->writeStreamCalls, 'path'));
+        $this->assertFalse($filesystem->existingPaths[$croppedResize] ?? false);
+
+        unset($this->imageLibMock->imagePropertiesByPath[$cropDestination]);
+        $crop = $fieldtype->replace_crop($data, $cropParams, null);
+        $croppedUrl = $fieldtype->replace_resize($crop, $resizeParams);
+
+        $this->assertSame([$data['source_image'], $cropDestination], $filesystem->copyToTempFileCalls);
+        $this->assertSame([$originalResize, $croppedResize], array_column($filesystem->writeStreamCalls, 'path'));
+        $this->assertNotSame($fallbackUrl, $croppedUrl);
+
+        $cachedCrop = $fieldtype->replace_crop($data, $cropParams, null);
+        $this->assertSame($croppedUrl, $fieldtype->replace_resize($cachedCrop, $resizeParams));
+        $this->assertSame(['resize', 'resize'], $this->imageLibMock->actionCalls);
+        $this->assertCount(2, $filesystem->writeStreamCalls);
+        $this->assertCount(2, $filesystem->copyToTempFileCalls);
         $this->assertTemporaryFilesClosed($filesystem);
     }
 
@@ -181,6 +224,7 @@ class FileFtProcessImageTest extends FileFtTestBase
             $this->assertIsArray($result);
             $this->assertSame($model->getAbsoluteURL(), $result['url']);
             $this->assertSame($source, $result['source_image']);
+            $this->assertSame('hero.jpg', $result['fs_filename']);
             $this->assertSame([[$destination, true]], $this->imageLibMock->getImagePropertiesCalls);
             $this->assertSame([], $this->imageLibMock->actionCalls);
         } finally {

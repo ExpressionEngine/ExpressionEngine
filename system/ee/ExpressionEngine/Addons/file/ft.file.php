@@ -583,7 +583,6 @@ JSC;
         ee()->load->library('image_lib');
         $filename = new ManipulationFilename($data['fs_filename'], $function);
         $new_image = $filename->getFilename($params);
-        $data['fs_filename'] = $filename->getUnhashedFilename();
 
         $new_image_dir = rtrim($data['model_object']->getBaseServerPath() . $data['model_object']->getSubfoldersPath(), '/') . '/_' . $function . DIRECTORY_SEPARATOR;
         if (! $data['filesystem']->isDir($new_image_dir)) {
@@ -733,6 +732,7 @@ JSC;
             }
         }
 
+        $data['fs_filename'] = $filename->getUnhashedFilename();
         $fileNameOnModel = $data['model_object']->file_name;
         $data['model_object']->file_name = $new_image;
         $destination_url = $data['model_object']->getAbsoluteManipulationURL($function);
