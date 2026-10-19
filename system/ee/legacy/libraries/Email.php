@@ -542,11 +542,11 @@ class EE_Email
     }
 
     /**
-     * Set Reply-to
+     * Set the Reply-To header, encoding supported UTF-8 display names.
      *
-     * @param string
-     * @param string
-     * @return CI_Email
+     * @param string $replyto Reply-to email address.
+     * @param string $name Optional display name.
+     * @return EE_Email
      */
     public function reply_to($replyto, $name = '')
     {
@@ -562,8 +562,42 @@ class EE_Email
             $name = $replyto;
         }
 
-        if (strpos($name, '"') !== 0) {
-            $name = '"' . $name . '"';
+        // Only the native UTF-8 encoders preserve multibyte character boundaries.
+        if (strtoupper($this->charset) === 'UTF-8'
+            && (MB_ENABLED === true || extension_loaded('iconv'))
+            && preg_match('/[^\x00-\x7F]/u', $name)
+            && ($name[0] !== '"' || preg_match('/^"((?:[^"\\\\]|\\\\.)*)"$/usD', $name, $match))) {
+            if ($name[0] === '"') {
+                $name = preg_replace('/\\\\(.)/us', '$1', $match[1]);
+            }
+
+            if (MB_ENABLED === true) {
+                $name = $this->_prep_q_encoding($name);
+
+                if (preg_match('/^(.*?)(=\?[^?]+\?[BQ]\?.*)$/is', $name, $match)
+                    && preg_match('~[()<>@,;:\\\\".\[\]]~', $match[1])) {
+                    // Preserve the encoder's CR/LF folding inside the quoted prefix.
+                    $name = '"' . addcslashes(rtrim($match[1]), "\0..\11\13..\14\16..\37\177'\"\\") . '" ' . $match[2];
+                }
+            } else {
+                // Base64 avoids the literal address delimiters left by iconv's Q encoding.
+                $name = str_replace(array("\r", "\n"), '', $name);
+                $encodedName = @iconv_mime_encode('', $name, array(
+                    'scheme' => 'B',
+                    'line-length' => 76,
+                    'input-charset' => $this->charset,
+                    'output-charset' => $this->charset,
+                    'line-break-chars' => $this->crlf
+                ));
+
+                $name = $encodedName === false
+                    ? '"' . addcslashes($name, "\0..\37\177'\"\\") . '"'
+                    : substr($encodedName, 2);
+            }
+        } else {
+            if (strpos($name, '"') !== 0) {
+                $name = '"' . $name . '"';
+            }
         }
 
         $this->set_header('Reply-To', $name . ' <' . $replyto . '>');
