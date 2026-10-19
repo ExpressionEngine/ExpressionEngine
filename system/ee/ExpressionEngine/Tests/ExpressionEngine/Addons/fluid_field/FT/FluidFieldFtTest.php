@@ -818,12 +818,24 @@ class FluidFieldFtTest extends FluidFieldTestBase
         $this->assertSame(2, $count);
     }
 
-    public function testValidateReturnsAjaxResultUsingFallbackFieldLookupAndArrayCasting()
+    /**
+     * Validate AJAX children with the same optional-value rules as full submissions.
+     *
+     * @dataProvider provideAjaxValidationData
+     * @param mixed $value The submitted child value.
+     * @param bool $hasArrayData Whether the child expects array data.
+     * @param mixed $expectedData The normalized child value.
+     * @param bool|string $expectedResult The expected validation result.
+     * @return void
+     */
+    public function testValidateReturnsAjaxResultUsingFallbackFieldLookupAndArrayCasting($value, $hasArrayData, $expectedData, $expectedResult)
     {
         $field = new FluidFieldFacadeStub(1);
-        $field->nativeField = (object) ['has_array_data' => true];
-        $field->validateResult = 'invalid_field';
+        $field->nativeField = (object) ['has_array_data' => $hasArrayData];
+        $field->validateResult = is_string($expectedResult) ? $expectedResult : 'invalid_field';
         $channelField = new FluidFieldChannelFieldStub(1, 'title', $field);
+
+        ee()->setMock('Validation', new \ExpressionEngine\Service\Validation\Factory());
 
         $this->setModelGetCallback(function ($model, $id = null) use ($channelField) {
             if ($model === 'ChannelField' && $id === null) {
@@ -846,14 +858,39 @@ class FluidFieldFtTest extends FluidFieldTestBase
             'fields' => [
                 'new_field_1' => [
                     'field_group_id_3' => [
-                        'field_id_1' => 'scalar-value'
+                        'field_id_1' => $value
                     ]
                 ]
             ]
         ];
 
-        $this->assertSame('invalid_field', $this->fieldtype->validate($data));
-        $this->assertSame([], $field->getData());
+        $this->assertSame($expectedResult, $this->fieldtype->validate($data));
+        $this->assertSame($expectedData, $field->getData());
+
+        $this->input->ajax = false;
+        $this->assertSame($expectedResult === true ? true : 'form_validation_error', $this->fieldtype->validate($data));
+    }
+
+    /**
+     * Provide empty optional values and invalid nonempty child values.
+     *
+     * @return array
+     */
+    public function provideAjaxValidationData()
+    {
+        $gridData = ['rows' => ['new_row_1' => ['col_id_1' => 'value']]];
+
+        return [
+            'array casting' => ['scalar-value', true, [], true],
+            'empty array' => [[], true, [], true],
+            'empty string' => ['', false, '', true],
+            'whitespace' => ['   ', false, '   ', true],
+            'invalid text' => ['value', false, 'value', 'invalid_field'],
+            'literal percent in error' => ['value', false, 'value', 'Use 100%% accuracy.'],
+            'zero' => [0, false, 0, 'invalid_field'],
+            'string zero' => ['0', false, '0', 'invalid_field'],
+            'nonempty array' => [$gridData, true, $gridData, 'invalid_field'],
+        ];
     }
 
     public function testValidateSkipsAjaxFieldsThatDoNotMatchCurrentValidationTarget()

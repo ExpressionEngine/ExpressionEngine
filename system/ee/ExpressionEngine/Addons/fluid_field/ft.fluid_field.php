@@ -46,6 +46,12 @@ class Fluid_field_ft extends EE_Fieldtype
         $this->errors = new \ExpressionEngine\Service\Validation\Result();
     }
 
+    /**
+     * Validate Fluid children and return the current child's AJAX result.
+     *
+     * @param array $data The submitted Fluid field data.
+     * @return bool|string TRUE when valid, or the validation error.
+     */
     public function validate($data)
     {
         $this->errors = new \ExpressionEngine\Service\Validation\Result();
@@ -131,13 +137,6 @@ class Fluid_field_ft extends EE_Fieldtype
                     $f->setName($field_name);
                     $f = $this->setupFieldInstance($f, $datum, !is_null($fluid_field_data_id) ? $fluid_field_data_id : $key);
 
-                    // Preserve custom AJAX validation results from fieldtypes like Grid.
-                    // Don't let Fluid's aggregate result overwrite them here. 
-                    // Full form submits will still use the aggregate result.
-                    if (ee()->input->is_ajax_request()) {
-                        return $f->validate($f->getData());
-                    }
-
                     $validator = ee('Validation')->make();
                     $validator->defineRule('validateField', function ($key, $value, $parameters, $rule) use ($f) {
                         return $f->validate($value);
@@ -148,6 +147,10 @@ class Fluid_field_ft extends EE_Fieldtype
                     ));
 
                     $result = $validator->validate(array($f->getName() => $f->getData()));
+
+                    if (ee()->input->is_ajax_request()) {
+                        return $result->isNotValid() ? $result->getFailedRules($f->getName())[0]->getLanguageKey() : true;
+                    }
 
                     if ($result->isNotValid()) {
                         foreach ($result->getFailed() as $field_name => $rules) {

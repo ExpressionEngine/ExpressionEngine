@@ -476,11 +476,12 @@ EE.cp.formValidation = {
 				}
 
 			} else if (fluid) {
-				container.removeClass('invalid');
+				container.removeClass('invalid').children(errorClass).remove();
 
 				// Keep the parent Fluid field marked until every child error is fixed.
-				if (fieldset.find('.fluid__item-field.invalid').length == 0) {
+				if (fieldset.find('.fluid .invalid, .fluid ' + errorClass).length == 0) {
 					fieldset.removeClass('fieldset-invalid');
+					fieldset.children('.field-control').children(errorClass).remove();
 				}
 			} else {
 				fieldset.removeClass('fieldset-invalid');
