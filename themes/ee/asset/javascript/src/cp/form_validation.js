@@ -482,6 +482,7 @@ EE.cp.formValidation = {
 
 			} else if (fluid) {
 				container.removeClass('invalid').children(errorClass).remove();
+				container.find('fieldset').removeClass('fieldset-invalid');
 
 				// Keep the parent Fluid field marked until every child error is fixed.
 				if (fieldset.find('.fluid .invalid, .fluid ' + errorClass).length == 0) {
