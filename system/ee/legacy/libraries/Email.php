@@ -571,11 +571,27 @@ class EE_Email
                 $name = preg_replace('/\\\\(.)/us', '$1', $match[1]);
             }
 
-            $name = $this->_prep_q_encoding($name);
+            if (MB_ENABLED === true) {
+                $name = $this->_prep_q_encoding($name);
 
-            if (preg_match('/^(.*?)(=\?[^?]+\?[BQ]\?.*)$/is', $name, $match)
-                && preg_match('~[()<>@,;:\\\\".\[\]]~', $match[1])) {
-                $name = '"' . addcslashes(rtrim($match[1]), "\0..\37\177'\"\\") . '" ' . $match[2];
+                if (preg_match('/^(.*?)(=\?[^?]+\?[BQ]\?.*)$/is', $name, $match)
+                    && preg_match('~[()<>@,;:\\\\".\[\]]~', $match[1])) {
+                    $name = '"' . addcslashes(rtrim($match[1]), "\0..\37\177'\"\\") . '" ' . $match[2];
+                }
+            } else {
+                // Base64 avoids the literal address delimiters left by iconv's Q encoding.
+                $name = str_replace(array("\r", "\n"), '', $name);
+                $encodedName = @iconv_mime_encode('', $name, array(
+                    'scheme' => 'B',
+                    'line-length' => 76,
+                    'input-charset' => $this->charset,
+                    'output-charset' => $this->charset,
+                    'line-break-chars' => $this->crlf
+                ));
+
+                $name = $encodedName === false
+                    ? '"' . addcslashes($name, "\0..\37\177'\"\\") . '"'
+                    : substr($encodedName, 2);
             }
         } else {
             if (strpos($name, '"') !== 0) {
