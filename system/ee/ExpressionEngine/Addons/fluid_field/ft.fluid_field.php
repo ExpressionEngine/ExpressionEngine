@@ -467,7 +467,7 @@ class Fluid_field_ft extends EE_Fieldtype
                 ee()->load->library('grid_lib');
                 ee()->grid_lib->field_id = $fluid_field->field_id;
                 ee()->grid_lib->content_type = $this->content_type;
-                ee()->grid_lib->entry_id = $this->content_id;
+                ee()->grid_lib->entry_id = $fluid_field->entry_id;
                 ee()->grid_lib->fluid_field_data_id = $fluid_field->id;
                 ee()->grid_lib->save([]);
                 ee()->load->remove_package_path(PATH_ADDONS . 'grid');
@@ -475,7 +475,7 @@ class Fluid_field_ft extends EE_Fieldtype
                 break;
             case 'relationship':
                 ee('db')
-                    ->where('parent_id', $this->content_id)
+                    ->where('parent_id', $fluid_field->entry_id)
                     ->where('field_id', $fluid_field->field_id)
                     ->where('fluid_field_data_id', $fluid_field->id)
                     ->where('grid_field_id', 0)
@@ -1031,8 +1031,6 @@ class Fluid_field_ft extends EE_Fieldtype
      */
     public function delete($entry_ids)
     {
-        $content_id = $this->content_id;
-
         $fluid_field_data = ee('Model')->get('fluid_field:FluidField')
             ->with('ChannelField')
             ->filter('fluid_field_id', $this->field_id)
@@ -1048,11 +1046,8 @@ class Fluid_field_ft extends EE_Fieldtype
                 continue;
             }
 
-            $this->content_id = $fluid_field->entry_id;
             $this->removeField($fluid_field);
         }
-
-        $this->content_id = $content_id;
     }
 
     /**
