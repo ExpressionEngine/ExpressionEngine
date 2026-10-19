@@ -96,6 +96,14 @@ class ChannelEntryTitleInstructionsTest extends TestCase
                 '<strong>Title</strong><br><u>Required</u> <em>Short</em>',
                 '<strong>Title</strong><br><u>Required</u> <i>Short</i>',
             ],
+            'documentation links preserve bold and italic text' => [
+                'For help, see <a href="https://example.com/docs?one=1&amp;two=2"><b>Documentation</b> <em>here</em></a>',
+                'For help, see <a href="https://example.com/docs?one=1&amp;two=2"><b>Documentation</b> <i>here</i></a>',
+            ],
+            'unsafe link destinations and attributes are removed' => [
+                '<a href="&#106;avascript:alert(1)" onclick="alert(2)"><strong>Help</strong></a>',
+                '<a><strong>Help</strong></a>',
+            ],
             'formatting attributes are removed' => [
                 '<b class="example" onclick="">Title</b>',
                 '<b>Title</b>',
