@@ -17,6 +17,8 @@ require_once __DIR__ . '/FileFtTestBase.php';
 
 class FileFtProcessImageTest extends FileFtTestBase
 {
+    use \Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+
     /** @dataProvider sourceCallbackCacheStates */
     public function testProcessImageResolvesSourceOnlyOnCacheMiss($cached)
     {
@@ -97,7 +99,14 @@ class FileFtProcessImageTest extends FileFtTestBase
         ];
     }
 
-    /** @dataProvider cachedDimensionModes */
+    /**
+     * Preserve chainable data when cached dimensions cannot be read.
+     *
+     * @dataProvider cachedDimensionModes
+     * @param bool $local Whether the cache is stored locally.
+     * @param string|null $tagdata The tag pair or modifier-chain output mode.
+     * @return void
+     */
     public function testDisappearingCacheFallsBackWithoutResolvingSource($local, $tagdata)
     {
         $filesystem = new FileFtProcessImageFilesystemStub();
@@ -115,12 +124,29 @@ class FileFtProcessImageTest extends FileFtTestBase
         $method = new ReflectionMethod(File_ft::class, 'process_image');
         $method->setAccessible(true);
 
+        $fieldtype = $this->makeFieldtype();
+        $data = $this->imageData($filesystem);
+        $data['width'] = 640;
+        $data['height'] = 480;
+        $url = $data['model_object']->getAbsoluteURL();
         $result = $method->invoke(
-            $this->makeFieldtype(), 'crop', $this->imageData($filesystem), ['width' => '160'],
-            $tagdata, false, $resolveSource
+            $fieldtype, 'crop', $data, ['width' => '160'], $tagdata, false, $resolveSource
         );
 
-        $this->assertSame('https://example.com/uploads/gallery/hero.jpg', $result);
+        if ($tagdata === null) {
+            $data['fs_filename'] = 'hero_crop.jpg';
+            $data['url'] = $url;
+            $this->assertSame($data, $result);
+
+            $formatter = \Mockery::mock();
+            $formatter->shouldReceive('attributeSafe')->with([])->once()->andReturn($url);
+            $format = \Mockery::mock(\ExpressionEngine\Service\Formatter\FormatterFactory::class);
+            $format->shouldReceive('make')->with('Text', $url)->once()->andReturn($formatter);
+            ee()->setMock('Format', $format);
+            $this->assertSame($url, $fieldtype->replace_attr_safe($result));
+        } else {
+            $this->assertSame($url, $result);
+        }
         $this->assertSame([], $this->imageLibMock->actionCalls);
         $this->assertSame([], $filesystem->writeStreamCalls);
         $this->assertSame($local ? [] : [$destination], $filesystem->copyToTempFileCalls);
@@ -152,7 +178,9 @@ class FileFtProcessImageTest extends FileFtTestBase
 
             $result = $this->makeFieldtype()->replace_crop(['model_object' => $model], ['width' => '160'], null);
 
-            $this->assertSame($model->getAbsoluteURL(), $result);
+            $this->assertIsArray($result);
+            $this->assertSame($model->getAbsoluteURL(), $result['url']);
+            $this->assertSame($source, $result['source_image']);
             $this->assertSame([[$destination, true]], $this->imageLibMock->getImagePropertiesCalls);
             $this->assertSame([], $this->imageLibMock->actionCalls);
         } finally {

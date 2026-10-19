@@ -10,6 +10,7 @@
 
 namespace ExpressionEngine\Model\File;
 
+use ExpressionEngine\Dependency\League\Flysystem\FileNotFoundException;
 use ExpressionEngine\Model\Content\ContentModel;
 use ExpressionEngine\Service\File\ManipulationFilename;
 
@@ -449,7 +450,11 @@ class FileSystemEntity extends ContentModel
             // Prefix lookup can return other filenames; validate the full cache name before deleting.
             foreach ($filesystem->filesMatchingPrefix("{$directory}/{$prefix}") as $file) {
                 if ($filename->matches(basename($file['path']))) {
-                    $filesystem->delete($file['path']);
+                    try {
+                        $filesystem->delete($file['path']);
+                    } catch (FileNotFoundException $e) {
+                        // Another request already deleted this cache; continue cleaning up the remaining files.
+                    }
                 }
             }
         }

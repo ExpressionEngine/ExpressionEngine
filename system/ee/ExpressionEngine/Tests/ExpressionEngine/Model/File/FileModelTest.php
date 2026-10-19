@@ -10,6 +10,7 @@
 
 namespace ExpressionEngine\Tests\Model\File;
 
+use ExpressionEngine\Dependency\League\Flysystem\FileNotFoundException;
 use ExpressionEngine\Model\File\File as FileModel;
 use PHPUnit\Framework\TestCase;
 
@@ -81,10 +82,11 @@ class FileModelTest extends TestCase
      *
      * @dataProvider generatedFileCleanupModesProvider
      * @param bool $dynamicOnly Whether to keep thumbnails and configured sizes.
+     * @param bool $cacheDisappears Whether another request deletes an enumerated cache first.
      * @return void
      * @throws \ExpressionEngine\Library\Filesystem\FilesystemException
      */
-    public function testGeneratedFileCleanupModes($dynamicOnly)
+    public function testGeneratedFileCleanupModes($dynamicOnly, $cacheDisappears)
     {
         $directory = sys_get_temp_dir() . '/file-cleanup-' . bin2hex(random_bytes(8));
         $filesystem = \Mockery::mock(\ExpressionEngine\Library\Filesystem\Filesystem::class, [
@@ -125,6 +127,14 @@ class FileModelTest extends TestCase
                     $filesystem->mkdir(dirname($path));
                 }
                 $filesystem->write($path, $image);
+            }
+
+            if ($cacheDisappears) {
+                $filesystem->shouldReceive('delete')->with($directory . '/' . $dynamicFiles[0])
+                    ->once()->andReturnUsing(function ($path) {
+                        unlink($path);
+                        throw new FileNotFoundException($path);
+                    });
             }
 
             $destination = \Mockery::mock();
@@ -203,8 +213,10 @@ class FileModelTest extends TestCase
     public static function generatedFileCleanupModesProvider()
     {
         return [
-            'dynamic caches only' => [true],
-            'full cleanup default' => [false],
+            'dynamic caches only' => [true, false],
+            'full cleanup default' => [false, false],
+            'dynamic cache disappears during edit cleanup' => [true, true],
+            'dynamic cache disappears during full cleanup' => [false, true],
         ];
     }
 }
