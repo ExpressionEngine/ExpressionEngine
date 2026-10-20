@@ -99,13 +99,35 @@ abstract class FileSyncedModel extends Model
         }
 
         $mtime = ee('Filesystem')->mtime($path);
+        $editDate = (int) $this->getModificationTime();
 
-        if ($mtime > $this->getModificationTime()) {
-            $this->unserializeFileData(ee('Filesystem')->read($path));
+        if ($mtime > $editDate) {
+            $fileData = ee('Filesystem')->read($path);
+
+            // An empty newer file is how a deploy mid-write blanks a saved
+            // partial. Leave edit_date alone so a later non-empty read of
+            // that same file can still win.
+            if (trim($fileData) === '' && trim($this->serializeFileData()) !== '') {
+                return;
+            }
+
+            $this->unserializeFileData($fileData);
             $this->setModificationTime($mtime);
 
             $this->_skip_next_write = true;
             $this->save();
+        } elseif ($mtime === $editDate) {
+            $fileData = ee('Filesystem')->read($path);
+
+            // Heal the case where the empty read already won the timestamp
+            // and the real bytes landed in that same second.
+            if (trim($this->serializeFileData()) === '' && trim($fileData) !== '') {
+                $this->unserializeFileData($fileData);
+                $this->setModificationTime($mtime);
+
+                $this->_skip_next_write = true;
+                $this->save();
+            }
         }
     }
 
