@@ -865,16 +865,37 @@ class Addons extends CP_Controller
             }
         }
 
-        // Module
-        $module = $this->getModule($addon);
-        if (! empty($module) && $module['installed'] === true) {
-            $data = $this->getModuleSettings($addon, $method, array_slice(func_get_args(), 2));
+        // Prefer module dispatch, then modern routes for installed components.
+        $parameters = array_slice(func_get_args(), 2);
+        $settingsAddon = $this->getModule($addon);
+        $fieldtype = null;
+        $extension = null;
 
+        if (!empty($settingsAddon) && $settingsAddon['installed'] === true) {
+            $data = $this->getModuleSettings($addon, $method, $parameters);
+        } elseif ($info->hasControlPanel()) {
+            $fieldtype = $this->getFieldtype($addon);
+            $settingsAddon = $fieldtype;
+
+            if (empty($settingsAddon) || $settingsAddon['installed'] !== true) {
+                $extension = $this->getExtension($addon);
+                $settingsAddon = $extension;
+            }
+
+            if (!empty($settingsAddon) && $settingsAddon['installed'] === true) {
+                $data = $this->getControlPanelSettings($addon, $method, $parameters, true);
+                if ($data === null) {
+                    $settingsAddon = null;
+                }
+            }
+        }
+
+        if (!empty($settingsAddon) && $settingsAddon['installed'] === true) {
             $addon_header = (isset(ee()->cp->header)) ? ee()->cp->header : (isset(ee()->view->header) ? ee()->view->header : []);
-            $header = array_merge($addon_header, array('title' => $module['name'] . ' ' . $licenseStatusBadge));
+            $header = array_merge($addon_header, array('title' => $settingsAddon['name'] . ' ' . $licenseStatusBadge));
 
             ee()->view->header = $header;
-            ee()->view->cp_heading = $module['name'] . ' ' . lang('configuration');
+            ee()->view->cp_heading = $settingsAddon['name'] . ' ' . lang('configuration');
 
             if (is_array($data)) {
                 if (isset($data['ajax']) && $data['ajax']) {
@@ -890,19 +911,19 @@ class Addons extends CP_Controller
                 $self_link = ee('CP/URL')->make('addons/settings/' . $addon)->compile();
                 if (isset($data['breadcrumb'])) {
                     if (!isset($data['breadcrumb'][$self_link])) {
-                        $breadcrumb[$self_link] = $module['name'];
+                        $breadcrumb[$self_link] = $settingsAddon['name'];
                     }
                     $breadcrumb = array_merge($breadcrumb, $data['breadcrumb']);
                 } else {
-                    $breadcrumb[$self_link] = $module['name'];
+                    $breadcrumb[$self_link] = $settingsAddon['name'];
                 }
             } else {
                 $vars['_module_cp_body'] = $data;
-                $breadcrumb[ee('CP/URL')->make('addons/settings/' . $addon)->compile()] = $module['name'];
+                $breadcrumb[ee('CP/URL')->make('addons/settings/' . $addon)->compile()] = $settingsAddon['name'];
             }
         } else {
             // Fieldtype
-            $fieldtype = $this->getFieldtype($addon);
+            $fieldtype = $fieldtype ?? $this->getFieldtype($addon);
             if (! empty($fieldtype) && $fieldtype['installed'] === true) {
                 if ($method == 'save') {
                     $this->saveFieldtypeSettings($fieldtype);
@@ -914,7 +935,7 @@ class Addons extends CP_Controller
                 ee()->view->cp_heading = $fieldtype['name'] . ' ' . lang('configuration');
             } else {
                 // Extension
-                $extension = $this->getExtension($addon);
+                $extension = $extension ?? $this->getExtension($addon);
                 if (! empty($extension) && $extension['installed'] === true) {
                     if ($method == 'save') {
                         $this->saveExtensionSettings($addon);
@@ -1527,13 +1548,7 @@ class Addons extends CP_Controller
      */
     private function getModuleSettings($name, $method, $parameters)
     {
-        if (empty($method)) {
-            $method = 'index';
-        }
-
         $addon = ee()->security->sanitize_filename(strtolower($name));
-
-        $info = ee('Addon')->get($name);
 
         $module = ee('Model')->get('Module')
             ->filter('module_name', $name)
@@ -1552,47 +1567,92 @@ class Addons extends CP_Controller
             }
         }
 
+        return $this->getControlPanelSettings($name, $method, $parameters);
+    }
+
+    /**
+     * Dispatch a control panel method, or try modern routes before legacy settings.
+     *
+     * The caller must verify that the component is installed and accessible.
+     * Routes-only dispatch also requires the caller to verify a control panel exists.
+     *
+     * @param string $name
+     * @param string $method
+     * @param array $parameters
+     * @param bool $routesOnly
+     * @return array|string|null
+     */
+    private function getControlPanelSettings($name, $method, $parameters, $routesOnly = false)
+    {
+        if (empty($method)) {
+            $method = 'index';
+        }
+
+        $addon = ee()->security->sanitize_filename(strtolower($name));
+        $info = ee('Addon')->get($name);
+
+        if ($routesOnly) {
+            $class = $info->getControlPanelClass();
+            if (!is_subclass_of($class, Mcp::class)) {
+                return null;
+            }
+        }
+
         $view_folder = 'views';
 
         // set the view path
-        define('MODULE_VIEWS', $info->getPath() . '/' . $view_folder . '/');
+        if (!defined('MODULE_VIEWS')) {
+            define('MODULE_VIEWS', $info->getPath() . '/' . $view_folder . '/');
+        }
 
         // Add the helper/library load path and temporarily
         // switch the view path to the module's view folder
         ee()->load->add_package_path($info->getPath());
 
-        // instantiate the module cp class
-        $class = $info->getControlPanelClass();
+        ee()->lang->loadfile($addon, '', false);
+
+        // Instantiate the add-on control panel class.
+        $class = $class ?? $info->getControlPanelClass();
         $mod = new $class();
 
         // add validation callback support to the mcp class (see EE_form_validation for more info)
         ee()->set('_mcp_reference', $mod);
 
-        // make a copy of the original method name for method controller
-        $originalMethod = $method;
+        if ($routesOnly) {
+            $_module_cp_body = $mod->setAddonName($addon)->tryRoute($method, $parameters);
+        } else {
+            // make a copy of the original method name for method controller
+            $originalMethod = $method;
 
-        // its possible that a module will try to call a method that does not exist
-        // either by accident (ie: a missed function) or by deliberate user url hacking
-        if (! method_exists($mod, $method)) {
-            // 3.0 introduced camel-cased method names that are translated from a URL
-            // segment separated by dashes or underscores
-            $method = str_replace('-', '_', $method);
-            $words = explode('_', $method);
-            $method = strtolower(array_shift($words));
-            $words = array_map('ucfirst', $words);
-            $method .= implode('', $words);
-
+            // its possible that a module will try to call a method that does not exist
+            // either by accident (ie: a missed function) or by deliberate user url hacking
             if (! method_exists($mod, $method)) {
-                if (! $mod instanceof Mcp) {
-                    show_404();
+                // 3.0 introduced camel-cased method names that are translated from a URL
+                // segment separated by dashes or underscores
+                $method = str_replace('-', '_', $method);
+                $words = explode('_', $method);
+                $method = strtolower(array_shift($words));
+                $words = array_map('ucfirst', $words);
+                $method .= implode('', $words);
+
+                if (! method_exists($mod, $method)) {
+                    if (! $mod instanceof Mcp) {
+                        show_404();
+                    }
                 }
             }
-        }
 
-        if ($mod instanceof Mcp && ! method_exists($mod, $method)) {
-            $_module_cp_body = $mod->setAddonName($addon)->route($originalMethod, $parameters);
-        } else {
-            $_module_cp_body = call_user_func_array(array($mod, $method), $parameters);
+            // The inherited helper must not shadow a TryRoute route class.
+            // Methods declared by an add-on still take precedence.
+            $isRouteHelper = $mod instanceof Mcp
+                && strcasecmp($method, 'tryRoute') === 0
+                && (new \ReflectionMethod($mod, $method))->getDeclaringClass()->getName() === Mcp::class;
+
+            if ($mod instanceof Mcp && (! method_exists($mod, $method) || $isRouteHelper)) {
+                $_module_cp_body = $mod->setAddonName($addon)->route($originalMethod, $parameters);
+            } else {
+                $_module_cp_body = call_user_func_array(array($mod, $method), $parameters);
+            }
         }
 
         // unset reference
