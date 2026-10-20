@@ -56,13 +56,31 @@ class Mcp extends Controller
      */
     public function route($domain, array $params = [])
     {
+        $result = $this->tryRoute($domain, $params);
+        if ($result !== null) {
+            return $result;
+        }
+
+        show_404();
+    }
+
+    /**
+     * Dispatch a route when present, allowing component settings as a fallback.
+     *
+     * @param string $domain
+     * @param array $params
+     * @return array|null
+     * @throws ControllerException
+     */
+    public function tryRoute($domain, array $params = [])
+    {
         $this->parseParams($params);
         $route = $this->process($domain);
         if ($route instanceof Controllers\Mcp\AbstractRoute) {
             return $route->toArray();
         }
 
-        show_404();
+        return null;
     }
 
     /**
