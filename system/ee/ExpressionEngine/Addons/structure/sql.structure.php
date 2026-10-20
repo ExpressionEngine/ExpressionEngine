@@ -504,9 +504,17 @@ class Sql_structure
      */
     public function get_single_path($entry_id)
     {
+        $entry_id = Structure_Helper::normalize_entry_id($entry_id, true);
+        if ($entry_id === null) {
+            return array();
+        }
+
         $listing_ids = $this->get_listing_entry_ids();
         if (is_array($listing_ids) && array_key_exists($entry_id, $listing_ids)) {
-            $entry_id = $this->get_parent_id($entry_id);
+            $entry_id = Structure_Helper::normalize_entry_id($this->get_parent_id($entry_id), true);
+            if ($entry_id === null) {
+                return array();
+            }
         }
 
         $sql = "SELECT parent.lft, parent.rgt,expt.title, expt.entry_id
@@ -514,11 +522,11 @@ class Sql_structure
                     exp_structure AS parent
                 INNER JOIN exp_channel_titles AS expt ON parent.entry_id = expt.entry_id
                 WHERE node.lft BETWEEN parent.lft AND parent.rgt
-                    AND node.entry_id = '$entry_id'
-                    AND expt.site_id = '$this->site_id'
+                    AND node.entry_id = ?
+                    AND expt.site_id = ?
                 ORDER BY parent.lft";
 
-        $result = ee()->db->query($sql);
+        $result = ee()->db->query($sql, [$entry_id, (int) $this->site_id]);
 
         $data = array();
         $pages = $this->get_site_pages();
@@ -2043,25 +2051,29 @@ class Sql_structure
 
     public function get_pid_for_listing_entry($entry_id)
     {
+        $entry_id = Structure_Helper::normalize_entry_id($entry_id);
+        if ($entry_id === null) {
+            return false;
+        }
+
         // get entry's channel id
         $sql = "SELECT channel_id
                 FROM exp_channel_titles
-                WHERE entry_id = $entry_id
+                WHERE entry_id = ?
                 LIMIT 1";
-        $result = ee()->db->query($sql);
+        $result = ee()->db->query($sql, [$entry_id]);
 
-        $lcid = $result->row('channel_id');
-
-        if (is_array($lcid)) {
+        $lcid = Structure_Helper::normalize_entry_id($result->row('channel_id'));
+        if ($lcid === null) {
             return false;
         }
 
         // get entry's parent id
         $sql = "SELECT entry_id
                 FROM exp_structure
-                WHERE listing_cid = $lcid
+                WHERE listing_cid = ?
                 LIMIT 1";
-        $result = ee()->db->query($sql);
+        $result = ee()->db->query($sql, [$lcid]);
         if (!$result->num_rows) {
             return false;
         }

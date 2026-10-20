@@ -1074,11 +1074,11 @@ class Filesystem
         }
 
         $tmp = $this->copyToTempFile($path);
-        $result = $callback($tmp['path']);
-
-        fclose($tmp['file']);
-
-        return $result;
+        try {
+            return $callback($tmp['path']);
+        } finally {
+            fclose($tmp['file']);
+        }
     }
 
     /**

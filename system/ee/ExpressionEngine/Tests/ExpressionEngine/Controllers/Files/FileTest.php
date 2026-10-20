@@ -630,6 +630,62 @@ class FileTest extends TestCase
     }
 
     /**
+     * Assert successful image edits invalidate derivatives while failed edits retain them.
+     *
+     * @dataProvider provideImageModificationResults
+     * @param string $action The image-editing action.
+     * @param bool $succeeded Whether the filemanager reports success.
+     * @return void
+     */
+    public function testViewInvalidatesDynamicGeneratedFilesOnlyAfterSuccessfulImageEdit($action, $succeeded)
+    {
+        $this->setModifyRequest($action, [
+            'crop_width' => 100,
+            'crop_height' => 50,
+            'crop_x' => 0,
+            'crop_y' => 0,
+            'rotate' => '180',
+            'resize_width' => 100,
+            'resize_height' => 50,
+        ]);
+        $this->formValidation->runResult = true;
+        $filemanager = new FileManagerRecorder();
+        $responseProperty = $action . 'Response';
+        $filemanager->$responseProperty = $succeeded ? [
+            'dimensions' => ['height' => 50, 'width' => 100],
+            'file_info' => ['size' => 4096],
+        ] : ['errors' => 'image edit failed'];
+        ee()->setMock('filemanager', $filemanager);
+        $file = new TestFileModel();
+        $this->bindFileToModel($file);
+
+        $this->controller->view(31);
+
+        $expectedCalls = $succeeded ? 1 : 0;
+        $this->assertSame(0, $file->deleteGeneratedFilesCalls);
+        $this->assertSame($expectedCalls, $file->deleteDynamicGeneratedFilesCalls);
+        $this->assertSame($expectedCalls, $file->saveCalls);
+        $this->assertCount($expectedCalls, $filemanager->createThumbCalls);
+    }
+
+    /**
+     * Provide successful and failed crop, rotate, and resize operations.
+     *
+     * @return array<string, array<int, string|bool>>
+     */
+    public static function provideImageModificationResults()
+    {
+        return [
+            'crop succeeds' => ['crop', true],
+            'crop fails' => ['crop', false],
+            'rotate succeeds' => ['rotate', true],
+            'rotate fails' => ['rotate', false],
+            'resize succeeds' => ['resize', true],
+            'resize fails' => ['resize', false],
+        ];
+    }
+
+    /**
      * Assert resize fills a missing width, saves metadata, and regenerates thumbs.
      *
      * @return void
@@ -3015,6 +3071,12 @@ class TestFileModel extends FileModel
     /** @var int */
     public $saveCalls = 0;
 
+    /** @var int */
+    public $deleteGeneratedFilesCalls = 0;
+
+    /** @var int */
+    public $deleteDynamicGeneratedFilesCalls = 0;
+
     /**
      * Seed the file double with behavior flags.
      *
@@ -3131,6 +3193,26 @@ class TestFileModel extends FileModel
     public function getFilesystem()
     {
         return $this->filesystem;
+    }
+
+    /**
+     * Record derivative cleanup without touching the filesystem.
+     *
+     * @return void
+     */
+    public function deleteGeneratedFiles()
+    {
+        $this->deleteGeneratedFilesCalls++;
+    }
+
+    /**
+     * Record dynamic cache cleanup without touching the filesystem.
+     *
+     * @return void
+     */
+    public function deleteDynamicGeneratedFiles()
+    {
+        $this->deleteDynamicGeneratedFilesCalls++;
     }
 
     /**

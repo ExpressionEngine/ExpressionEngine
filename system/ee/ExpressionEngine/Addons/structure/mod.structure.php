@@ -549,6 +549,10 @@ class Structure extends Channel
         }
 
         $entry_id = ee()->TMPL->fetch_param('entry_id', $entry_id);
+        $entry_id = Structure_Helper::normalize_entry_id($entry_id);
+        if ($entry_id === null) {
+            return false;
+        }
 
         // get node of the current entry
         $node = $entry_id ? $this->nset->getNode($entry_id) : false;
@@ -565,6 +569,10 @@ class Structure extends Channel
 
             // get node of parent entry
             $node = $this->nset->getNode($pid);
+        }
+
+        if ($node === false) {
+            return false;
         }
 
         $right = $node['right'];
@@ -670,6 +678,10 @@ class Structure extends Channel
 
         // get current entry id
         $entry_id = ee()->TMPL->fetch_param('entry_id', array_search($uri, $site_pages['uris']));
+        $entry_id = Structure_Helper::normalize_entry_id($entry_id);
+        if ($entry_id === null) {
+            return stripslashes(ee()->config->item('site_name'));
+        }
 
         // get node of the current entry
         $node = $entry_id ? $this->nset->getNode($entry_id) : false;
@@ -686,6 +698,10 @@ class Structure extends Channel
 
             // get node of parent entry because we will be showing nav sub from its view point
             $node = $this->nset->getNode($pid);
+        }
+
+        if ($node === false) {
+            return stripslashes(ee()->config->item('site_name'));
         }
 
         $separator = ee()->TMPL->fetch_param('separator', '|');
@@ -815,6 +831,10 @@ class Structure extends Channel
             $node = $this->nset->getNode($pid);
         }
 
+        if ($node === false) {
+            return stripslashes(ee()->config->item('site_name'));
+        }
+
         $right = $node['right'];
         $inc_current = isset($pid) ? '=' : '';
 
@@ -930,11 +950,19 @@ class Structure extends Channel
             return;
         }
 
+        $parent = Structure_Helper::normalize_entry_id($parent);
+        if ($parent === null) {
+            return;
+        }
+
         // Grab the delimiter, or default to a pipe
         $delimiter = ee()->TMPL->fetch_param('delimiter');
         $delimiter = $delimiter ? $delimiter : '|';
         $site_id = ee()->config->item('site_id');
-        $results = ee()->db->query("SELECT entry_id FROM exp_structure WHERE parent_id = '{$parent}' AND entry_id != '0' AND site_id = $site_id ORDER BY lft ASC");
+        $results = ee()->db->query(
+            "SELECT entry_id FROM exp_structure WHERE parent_id = ? AND entry_id != '0' AND site_id = ? ORDER BY lft ASC",
+            [$parent, (int) $site_id]
+        );
 
         $entries = array();
         if ($results->num_rows() > 0) {
@@ -1085,6 +1113,10 @@ class Structure extends Channel
 
             // get node of parent entry
             $node = $this->nset->getNode($pid);
+        }
+
+        if ($node === false) {
+            return '';
         }
 
         $channel_id = $node['listing_cid'];
@@ -2025,25 +2057,29 @@ class Structure extends Channel
 
     public function get_pid_for_listing_entry($entry_id)
     {
+        $entry_id = Structure_Helper::normalize_entry_id($entry_id);
+        if ($entry_id === null) {
+            return false;
+        }
+
         // get entry's channel id
         $sql = "SELECT channel_id
                 FROM exp_channel_titles
-                WHERE entry_id = $entry_id
+                WHERE entry_id = ?
                 LIMIT 1";
-        $result = ee()->db->query($sql);
+        $result = ee()->db->query($sql, [$entry_id]);
 
-        $lcid = $result->row('channel_id');
-
-        if (is_array($lcid)) {
+        $lcid = Structure_Helper::normalize_entry_id($result->row('channel_id'));
+        if ($lcid === null) {
             return false;
         }
 
         // get entry's parent id
         $sql = "SELECT entry_id
                 FROM exp_structure
-                WHERE listing_cid = $lcid
+                WHERE listing_cid = ?
                 LIMIT 1";
-        $result = ee()->db->query($sql);
+        $result = ee()->db->query($sql, [$lcid]);
         $pid = $result->row('entry_id');
 
         // cache pid for later use // Uh, why? This causes issues.

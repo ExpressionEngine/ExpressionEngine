@@ -2567,9 +2567,9 @@ class SqlStructureDataMethodsTest extends TestCase
                 $this->test = $test;
                 $this->captured = $captured;
             }
-            public function query($sql)
+            public function query($sql, $binds = [])
             {
-                $this->captured->queries[] = $sql;
+                $this->captured->queries[] = [$sql, $binds];
 
                 return $this->test->result([
                     ['entry_id' => 10, 'title' => 'Parent', 'lft' => 2, 'rgt' => 5]
@@ -2599,10 +2599,33 @@ class SqlStructureDataMethodsTest extends TestCase
 
         $path = $sql->get_single_path(99);
 
-        $this->assertStringContainsString("node.entry_id = '10'", $captured->queries[0]);
+        $this->assertStringContainsString('node.entry_id = ?', $captured->queries[0][0]);
+        $this->assertSame(['10', 1], $captured->queries[0][1]);
         $this->assertSame(['https://example.test/parent/'], $captured->hookUrls);
         $this->assertSame('https://fr.example.test/parent/', $path[10]['uri']);
         $this->assertSame('Parent', $path[10]['title']);
+    }
+
+    public function testGetSinglePathRejectsMalformedEntryIdBeforeDatabaseLookup()
+    {
+        ee()->setMock('db', new class {
+            public function query($sql, $binds = [])
+            {
+                throw new RuntimeException('Malformed entry ID must not reach the database.');
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_listing_entry_ids()
+            {
+                throw new RuntimeException('Malformed entry ID must be rejected before listing lookup.');
+            }
+        };
+
+        $this->assertSame([], $sql->get_single_path("10'"));
     }
 
     public function testGetSinglePathSkipsRowsMissingFromSitePages()

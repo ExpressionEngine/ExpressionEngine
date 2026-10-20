@@ -327,6 +327,64 @@ And if you made it to this &#x1F573;&#xFE0F; you did pretty good.']
                 '<i><u>Title</u></i> text',
             ],
             'nested formatting' => ['<b><u>Title</u></b>', '<b><u>Title</u></b>'],
+            'HTTPS link with bold text' => [
+                'For help, see <a href="https://google.com/"><b>Google</b></a>',
+                'For help, see <a href="https://google.com/"><b>Google</b></a>',
+            ],
+            'HTTP link with italic text' => [
+                "<a href='http://example.com/help'><em>Help</em></a>",
+                '<a href="http://example.com/help"><i>Help</i></a>',
+            ],
+            'unquoted link and uppercase scheme' => [
+                '<A HREF=HTTPS://example.com/help>Help</A>',
+                '<a href="HTTPS://example.com/help">Help</a>',
+            ],
+            'link entities are decoded once and escaped for output' => [
+                '<a href="https://example.com/?one=1&amp;two=&quot;quoted&quot;">Help</a>',
+                '<a href="https://example.com/?one=1&amp;two=&quot;quoted&quot;">Help</a>',
+            ],
+            'percent encoding is preserved' => [
+                '<a href="https://example.com/report%2523part.txt">Download</a>',
+                '<a href="https://example.com/report%2523part.txt">Download</a>',
+            ],
+            'only the link destination is retained' => [
+                '<a id="help" class="example" style="color:red" onclick="alert(1)" target="_blank" ping="https://example.com/track" href="https://example.com/">Help</a>',
+                '<a href="https://example.com/">Help</a>',
+            ],
+            'href inside another attribute is ignored' => [
+                '<a title="href=\'https://example.com/wrong\'" href="https://example.com/right">Help</a>',
+                '<a href="https://example.com/right">Help</a>',
+            ],
+            'data attribute is not a destination' => [
+                '<a data-href="https://example.com/" title=" href=\'https://example.com/\'">Help</a>',
+                '<a>Help</a>',
+            ],
+            'duplicate destinations use the first attribute' => [
+                '<a href="https://example.com/" href="javascript:alert(1)">Help</a>',
+                '<a href="https://example.com/">Help</a>',
+            ],
+            'unsafe first destination is not replaced by a duplicate' => [
+                '<a href="javascript:alert(1)" href="https://example.com/">Help</a>',
+                '<a>Help</a>',
+            ],
+            'JavaScript destination' => ['<a href="javascript:alert(1)">Help</a>', '<a>Help</a>'],
+            'encoded JavaScript destination' => ['<a href="&#106;avascript&#58;alert(1)">Help</a>', '<a>Help</a>'],
+            'mixed case JavaScript destination' => ['<a href="JaVaScRiPt:alert(1)">Help</a>', '<a>Help</a>'],
+            'control characters in a destination' => ["<a href=\"java\nscript:alert(1)\">Help</a>", '<a>Help</a>'],
+            'encoded control characters in a destination' => ['<a href="java&Tab;script:alert(1)">Help</a>', '<a>Help</a>'],
+            'control characters in an HTTP destination' => ["<a href=\"https://example.com/\nhelp\">Help</a>", '<a>Help</a>'],
+            'data destination' => ['<a href="data:text/html,test">Help</a>', '<a>Help</a>'],
+            'relative destination' => ['<a href="/help">Help</a>', '<a>Help</a>'],
+            'protocol relative destination' => ['<a href="//example.com/help">Help</a>', '<a>Help</a>'],
+            'missing host' => ['<a href="https:///help">Help</a>', '<a>Help</a>'],
+            'missing destination' => ['<a title="Help">Help</a>', '<a>Help</a>'],
+            'empty destination' => ['<a href="">Help</a>', '<a>Help</a>'],
+            'boolean destination' => ['<a href>Help</a>', '<a>Help</a>'],
+            'unclosed link' => ['<a href="https://example.com/">Help', '<a href="https://example.com/">Help</a>'],
+            'nested links are separated' => [
+                '<a href="https://example.com/"><a href="https://example.org/">Help</a></a>',
+                '<a href="https://example.com/"></a><a href="https://example.org/">Help</a>',
+            ],
             'case and whitespace' => ["<STRONG\n>Title</STRONG >", '<strong>Title</strong>'],
             'line break variants' => ['One<BR />Two<br/>Three<br>Four', 'One<br>Two<br>Three<br>Four'],
             'attributes are discarded' => [
@@ -389,17 +447,35 @@ And if you made it to this &#x1F573;&#xFE0F; you did pretty good.']
     /**
      * Keep malformed formatting inside the element containing the instructions.
      *
+     * @param string $content The malformed inline formatting or links.
      * @return void
+     *
+     * @dataProvider containedInlineHtmlProvider
      */
-    public function testInlineHtmlDoesNotAffectFollowingElements()
+    public function testInlineHtmlDoesNotAffectFollowingElements($content)
     {
-        $text = $this->format('</em><b><u>Title')->inlineHtml()->compile();
+        $text = $this->format($content)->inlineHtml()->compile();
         $document = new \DOMDocument();
         $document->loadHTML('<div><em id="instructions">' . $text . '</em><span id="following">Next field</span></div>');
 
         $this->assertSame('Title', $document->getElementById('instructions')->textContent);
         $this->assertSame('div', $document->getElementById('following')->parentNode->nodeName);
         $this->assertSame(0, $document->getElementById('following')->getElementsByTagName('*')->length);
+    }
+
+    /**
+     * Provide malformed formatting and links that must stay inside the instructions.
+     *
+     * @return array
+     */
+    public static function containedInlineHtmlProvider(): array
+    {
+        return [
+            'unclosed formatting' => ['</em><b><u>Title'],
+            'unclosed link' => ['</em><a href="https://example.com/">Title'],
+            'misnested link and bold' => ['<b><a href="https://example.com/">Title</b>'],
+            'nested links' => ['<a href="https://example.com/"><a href="https://example.org/">Title'],
+        ];
     }
 
     public function testJson()

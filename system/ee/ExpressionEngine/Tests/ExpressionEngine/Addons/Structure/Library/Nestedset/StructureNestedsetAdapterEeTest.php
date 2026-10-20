@@ -71,6 +71,31 @@ class StructureNestedsetAdapterEeTest extends TestCase
         $this->assertStringContainsString("SET SESSION sql_mode = ''", implode("\n", $db->queries));
     }
 
+    public function testGetNodeByIdRejectsMalformedIdsAndBindsRootAndLargeDecimals()
+    {
+        $db = new class {
+            public $queries = [];
+            public function query($sql, $binds = [])
+            {
+                $this->queries[] = [$sql, $binds];
+                return (object) ['num_rows' => 0];
+            }
+        };
+        ee()->setMock('db', $db);
+
+        $adapter = new Structure_Nestedset_Adapter_Ee('exp_structure', 'lft', 'rgt', 'entry_id');
+
+        $this->assertFalse($adapter->getNodeById("10'"));
+        $this->assertSame([], $db->queries);
+
+        $this->assertFalse($adapter->getNodeById(0));
+        $this->assertFalse($adapter->getNodeById('18446744073709551616'));
+        $this->assertCount(2, $db->queries);
+        $this->assertStringContainsString('node.entry_id = ?', $db->queries[0][0]);
+        $this->assertSame(['0', 1], $db->queries[0][1]);
+        $this->assertSame(['18446744073709551616', 1], $db->queries[1][1]);
+    }
+
     public function testGetTreeGetDepthAndWriteOperations()
     {
         $db = new class {

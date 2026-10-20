@@ -423,10 +423,9 @@ class StructureTabTest extends TestCase
         $this->assertTrue($tab->validate_publish([['channel_id' => 4, 'entry_id' => 12, 'parent_id' => 0]]));
 
         ee()->setMock('db', new class {
-            public function query($sql)
+            public function query($sql, $binds = [])
             {
-                preg_match("/node\\.entry_id = '([^']+)'/", $sql, $m);
-                $entryId = isset($m[1]) ? (int) $m[1] : 0;
+                $entryId = (int) ($binds[0] ?? 0);
 
                 if ($entryId === 12) {
                     return new class {

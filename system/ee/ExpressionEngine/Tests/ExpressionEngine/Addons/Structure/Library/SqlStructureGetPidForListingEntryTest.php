@@ -89,9 +89,9 @@ class SqlStructureGetPidForListingEntryDb
      * @param string $sql
      * @return object
      */
-    public function query($sql): object
+    public function query($sql, $binds = []): object
     {
-        $this->captured->queries[] = $sql;
+        $this->captured->queries[] = [$sql, $binds];
 
         if (! array_key_exists($this->calls, $this->results)) {
             throw new RuntimeException('Unexpected extra database query.');
@@ -152,9 +152,10 @@ class SqlStructureGetPidForListingEntryTest extends TestCase
         $this->assertSame(['channel_id'], $channelRowCalls);
         $this->assertSame(['entry_id'], $parentRowCalls);
         $this->assertSame([
-            'SELECT channel_id FROM exp_channel_titles WHERE entry_id = 123 LIMIT 1',
-            'SELECT entry_id FROM exp_structure WHERE listing_cid = 9 LIMIT 1',
-        ], array_map([$this, 'normalizeSql'], $captured->queries));
+            'SELECT channel_id FROM exp_channel_titles WHERE entry_id = ? LIMIT 1',
+            'SELECT entry_id FROM exp_structure WHERE listing_cid = ? LIMIT 1',
+        ], array_map([$this, 'normalizeSql'], array_column($captured->queries, 0)));
+        $this->assertSame([['123'], ['9']], array_column($captured->queries, 1));
     }
 
     /**
@@ -178,8 +179,9 @@ class SqlStructureGetPidForListingEntryTest extends TestCase
         $this->assertFalse($sql->get_pid_for_listing_entry(456));
         $this->assertSame(['channel_id'], $channelRowCalls);
         $this->assertSame([
-            'SELECT channel_id FROM exp_channel_titles WHERE entry_id = 456 LIMIT 1',
-        ], array_map([$this, 'normalizeSql'], $captured->queries));
+            'SELECT channel_id FROM exp_channel_titles WHERE entry_id = ? LIMIT 1',
+        ], array_map([$this, 'normalizeSql'], array_column($captured->queries, 0)));
+        $this->assertSame([['456']], array_column($captured->queries, 1));
     }
 
     /**
@@ -206,9 +208,10 @@ class SqlStructureGetPidForListingEntryTest extends TestCase
         $this->assertSame(['channel_id'], $channelRowCalls);
         $this->assertSame([], $parentRowCalls);
         $this->assertSame([
-            'SELECT channel_id FROM exp_channel_titles WHERE entry_id = 789 LIMIT 1',
-            'SELECT entry_id FROM exp_structure WHERE listing_cid = 12 LIMIT 1',
-        ], array_map([$this, 'normalizeSql'], $captured->queries));
+            'SELECT channel_id FROM exp_channel_titles WHERE entry_id = ? LIMIT 1',
+            'SELECT entry_id FROM exp_structure WHERE listing_cid = ? LIMIT 1',
+        ], array_map([$this, 'normalizeSql'], array_column($captured->queries, 0)));
+        $this->assertSame([['789'], ['12']], array_column($captured->queries, 1));
     }
 
     /**
@@ -216,32 +219,35 @@ class SqlStructureGetPidForListingEntryTest extends TestCase
      *
      * @return void
      */
-    public function testGetPidForListingEntryFallsThroughWhenChannelLookupReturnsNoRows(): void
+    public function testGetPidForListingEntryStopsWhenChannelLookupReturnsNoRows(): void
     {
         $captured = (object) [
             'queries' => [],
         ];
         $channelRowCalls = [];
-        $parentRowCalls = [];
-
         ee()->setMock('db', new SqlStructureGetPidForListingEntryDb([
             new SqlStructureGetPidForListingEntryResult([], 0, $channelRowCalls),
-            new SqlStructureGetPidForListingEntryResult(['entry_id' => 999], 0, $parentRowCalls, true),
         ], $captured));
 
         $sql = $this->makeSql();
 
         $this->assertFalse($sql->get_pid_for_listing_entry(987));
         $this->assertSame(['channel_id'], $channelRowCalls);
-        $this->assertSame([], $parentRowCalls);
         $this->assertSame(
-            'SELECT channel_id FROM exp_channel_titles WHERE entry_id = 987 LIMIT 1',
-            $this->normalizeSql($captured->queries[0])
+            'SELECT channel_id FROM exp_channel_titles WHERE entry_id = ? LIMIT 1',
+            $this->normalizeSql($captured->queries[0][0])
         );
-        $this->assertSame(
-            'SELECT entry_id FROM exp_structure WHERE listing_cid = LIMIT 1',
-            $this->normalizeSql($captured->queries[1])
-        );
+        $this->assertSame([['987']], array_column($captured->queries, 1));
+        $this->assertCount(1, $captured->queries);
+    }
+
+    public function testGetPidForListingEntryRejectsMalformedIdBeforeQuery(): void
+    {
+        $captured = (object) ['queries' => []];
+        ee()->setMock('db', new SqlStructureGetPidForListingEntryDb([], $captured));
+
+        $this->assertFalse($this->makeSql()->get_pid_for_listing_entry("10'"));
+        $this->assertSame([], $captured->queries);
     }
 
     /**
@@ -271,13 +277,14 @@ class SqlStructureGetPidForListingEntryTest extends TestCase
         $this->assertSame(55, $result['happy_path_result']);
         $this->assertFalse($result['array_channel_result']);
         $this->assertFalse($result['missing_parent_result']);
+        $this->assertFalse($result['malformed_entry_result']);
         $this->assertSame([], $result['missing_parent_row_calls']);
         $this->assertSame([
-            'SELECT channel_id FROM exp_channel_titles WHERE entry_id = 10 LIMIT 1',
-            'SELECT entry_id FROM exp_structure WHERE listing_cid = 7 LIMIT 1',
-            'SELECT channel_id FROM exp_channel_titles WHERE entry_id = 11 LIMIT 1',
-            'SELECT channel_id FROM exp_channel_titles WHERE entry_id = 12 LIMIT 1',
-            'SELECT entry_id FROM exp_structure WHERE listing_cid = 8 LIMIT 1',
+            ['SELECT channel_id FROM exp_channel_titles WHERE entry_id = ? LIMIT 1', ['10']],
+            ['SELECT entry_id FROM exp_structure WHERE listing_cid = ? LIMIT 1', ['7']],
+            ['SELECT channel_id FROM exp_channel_titles WHERE entry_id = ? LIMIT 1', ['11']],
+            ['SELECT channel_id FROM exp_channel_titles WHERE entry_id = ? LIMIT 1', ['12']],
+            ['SELECT entry_id FROM exp_structure WHERE listing_cid = ? LIMIT 1', ['8']],
         ], $result['queries']);
 
         if ($result['xdebug_available'] ?? false) {

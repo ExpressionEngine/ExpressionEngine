@@ -180,6 +180,26 @@ class StructureBreadcrumbTest extends StructureTestBase
         $this->assertFalse($html);
     }
 
+    public function testBreadcrumbRejectsMalformedEntryIdBeforeNodeOrDatabaseLookup()
+    {
+        $this->setSqlStub(['uris' => []], '/missing');
+        $this->setTemplateParams(['entry_id' => "10'"]);
+        $this->structure->nset = new class {
+            public function getNode($id)
+            {
+                throw new RuntimeException('Malformed entry ID must not reach nested set lookup.');
+            }
+        };
+        ee()->setMock('db', new class extends FakeDb {
+            public function query($sql, $binds = [])
+            {
+                throw new RuntimeException('Malformed entry ID must not reach a database query.');
+            }
+        });
+
+        $this->assertFalse($this->structure->breadcrumb());
+    }
+
     public function testBreadcrumbWithWrappingElements()
     {
         $sitePages = [ 'uris' => [ 1 => '/', 2 => '/about' ] ];

@@ -413,7 +413,8 @@ EE.cp.formValidation = {
 			container = field.parents('.field-control'),
 			fieldset = (container.parents('fieldset').length > 0) ? container.parents('fieldset') : container.parent(),
 			errorClass = 'em.ee-form-error-message',
-			grid = false;
+			grid = false,
+			fluid = false;
 
 		// Tabs
 		var tab_container = field.parents('.tab'),
@@ -434,7 +435,7 @@ EE.cp.formValidation = {
 			grid = true;
 		}
 
-		if (fieldset.find('.grid-field').length > 0)
+		if (field.closest('.grid-field').length > 0)
 		{
 			container = field.parents('td');
 			grid = true;
@@ -445,6 +446,11 @@ EE.cp.formValidation = {
 			container = field.parents('.condition-rule-field-wrap')
 		}
 
+		if (! grid && field.closest('.fluid__item-field').length > 0) {
+			container = field.closest('.fluid__item-field');
+			fluid = true;
+		}
+
 		// Validation success, return the form to its original, submittable state
 		if (message == 'success') {
 			// For Grid, we also need to remove the class on the cell and do some
@@ -452,6 +458,11 @@ EE.cp.formValidation = {
 			if (grid) {
 				container.removeClass('fieldset-invalid');
 				container.removeClass('invalid');
+
+				var fluidField = field.closest('.fluid__item-field');
+				if (fluidField.find('td.invalid').length == 0) {
+					fluidField.children(errorClass).remove();
+				}
 
 				// For Grid, only remove the invalid class from the label if no
 				// more errors exist in the Grid
@@ -463,9 +474,21 @@ EE.cp.formValidation = {
 				}
 
 				if (fieldset.find('.fluid').length > 0 && !this._errorsExist(container)) {
-					fieldset.parent().find(errorClass).remove();
+					// A Grid row in Fluid used to share Fluid's single error target.
+					// Child errors now live on individual Fluid items, so only clear a
+					// legacy error attached directly to the outer field wrapper.
+					fieldset.parent().children(errorClass).remove();
 				}
 
+			} else if (fluid) {
+				container.removeClass('invalid').children(errorClass).remove();
+				container.find('fieldset').removeClass('fieldset-invalid');
+
+				// Keep the parent Fluid field marked until every child error is fixed.
+				if (fieldset.find('.fluid .invalid, .fluid ' + errorClass).length == 0) {
+					fieldset.removeClass('fieldset-invalid');
+					fieldset.children('.field-control').children(errorClass).remove();
+				}
 			} else {
 				fieldset.removeClass('fieldset-invalid');
 			}
@@ -524,6 +547,10 @@ EE.cp.formValidation = {
 						$(el).removeClass('fieldset-invalid');
 					}
 				});
+			}
+
+			if (fluid) {
+				container.addClass('invalid');
 			}
 
 			// We'll get HTML back from the validator, create an element

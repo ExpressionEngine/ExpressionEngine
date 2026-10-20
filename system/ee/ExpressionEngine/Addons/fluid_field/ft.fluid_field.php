@@ -46,6 +46,12 @@ class Fluid_field_ft extends EE_Fieldtype
         $this->errors = new \ExpressionEngine\Service\Validation\Result();
     }
 
+    /**
+     * Validate Fluid children and return the current child's AJAX result.
+     *
+     * @param array $data The submitted Fluid field data.
+     * @return bool|string TRUE when valid, or the validation error.
+     */
     public function validate($data)
     {
         $this->errors = new \ExpressionEngine\Service\Validation\Result();
@@ -142,6 +148,10 @@ class Fluid_field_ft extends EE_Fieldtype
 
                     $result = $validator->validate(array($f->getName() => $f->getData()));
 
+                    if (ee()->input->is_ajax_request()) {
+                        return $result->isNotValid() ? $result->getFailedRules($f->getName())[0]->getLanguageKey() : true;
+                    }
+
                     if ($result->isNotValid()) {
                         foreach ($result->getFailed() as $field_name => $rules) {
                             foreach ($rules as $rule) {
@@ -151,16 +161,6 @@ class Fluid_field_ft extends EE_Fieldtype
                     }
                 }
             }
-        }
-
-        if (ee()->input->is_ajax_request()) {
-            if ($this->errors->hasErrors($field_name)) {
-                $errors = $this->errors->getErrors($field_name);
-
-                return $errors['callback'];
-            }
-
-            return true;
         }
 
         return ($this->errors->isValid()) ? true : 'form_validation_error';
@@ -467,7 +467,7 @@ class Fluid_field_ft extends EE_Fieldtype
                 ee()->load->library('grid_lib');
                 ee()->grid_lib->field_id = $fluid_field->field_id;
                 ee()->grid_lib->content_type = $this->content_type;
-                ee()->grid_lib->entry_id = $this->content_id;
+                ee()->grid_lib->entry_id = $fluid_field->entry_id;
                 ee()->grid_lib->fluid_field_data_id = $fluid_field->id;
                 ee()->grid_lib->save([]);
                 ee()->load->remove_package_path(PATH_ADDONS . 'grid');
@@ -475,7 +475,7 @@ class Fluid_field_ft extends EE_Fieldtype
                 break;
             case 'relationship':
                 ee('db')
-                    ->where('parent_id', $this->content_id)
+                    ->where('parent_id', $fluid_field->entry_id)
                     ->where('field_id', $fluid_field->field_id)
                     ->where('fluid_field_data_id', $fluid_field->id)
                     ->where('grid_field_id', 0)
@@ -1032,10 +1032,22 @@ class Fluid_field_ft extends EE_Fieldtype
     public function delete($entry_ids)
     {
         $fluid_field_data = ee('Model')->get('fluid_field:FluidField')
+            ->with('ChannelField')
             ->filter('fluid_field_id', $this->field_id)
             ->filter('entry_id', 'IN', $entry_ids)
-            ->all()
-            ->delete();
+            ->all();
+
+        // Clean up each item the same way as removing it from an entry does,
+        // so Grid rows and relationships stored for the item are removed too
+        foreach ($fluid_field_data as $fluid_field) {
+            if (! $fluid_field->ChannelField) {
+                $fluid_field->delete();
+
+                continue;
+            }
+
+            $this->removeField($fluid_field);
+        }
     }
 
     /**
