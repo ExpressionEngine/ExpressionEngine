@@ -94,6 +94,10 @@ class Result
                 $pkey = $this->primary_keys[$alias];
                 $value = $row[$pkey];
 
+                if ($value === null) {
+                    continue;
+                }
+
                 if (isset($this->objects[$alias][$value])) {
                     $object = $this->objects[$alias][$value];
                     $row_object_ids[$alias] = $object->getId();
@@ -122,15 +126,20 @@ class Result
             $object->emit('beforeLoad'); // do not add 'afterLoad' to this method, it must happen *after* relationships are matched
             $object->fill($model_data);
 
-            // store for results and reuse
-            $this->objects[$alias][$object->getId()] = $object;
-
             // on the first pass, memoize primary key names
             if (! isset($this->primary_keys[$alias])) {
                 $this->primary_keys[$alias] = $alias . '__' . $object->getPrimaryKey();
             }
 
-            $row_object_ids[$alias] = $object->getId();
+            $id = $object->getId();
+            if ($id === null) {
+                continue;
+            }
+
+            // store for results and reuse
+            $this->objects[$alias][$id] = $object;
+
+            $row_object_ids[$alias] = $id;
         }
 
         // connect ids
