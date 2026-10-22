@@ -453,6 +453,7 @@ $(document).ready(function () {
 		makeDirectoryDroppable();
 		$('.f_manager-wrapper tbody').sortable({
 			axis: "y",
+			cancel: '.filemanager-filename-cell, .filemanager-filename-cell *',
 			sort: function( event, ui ) {
 				$('#preview').remove();
 			}

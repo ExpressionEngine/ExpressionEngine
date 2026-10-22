@@ -140,8 +140,9 @@ context('Publish Entry', () => {
             page.get('chosen_files').should('have.length', 2)
             page.get('file_fields').each(function(field, i) {
                 var fileNameLabel = field.parents('.field-control').find('.fields-upload-chosen-name');
+                const fileName = selectedFiles[i].trim();
                 cy.get(fileNameLabel).should('be.visible')
-                cy.get(fileNameLabel).should('contain', selectedFiles[i])
+                cy.get(fileNameLabel).should('contain', fileName)
 
                 var fileInputHidded = field.parents('.field-control').find('input[class="js-file-input"]');
                 cy.get(fileInputHidded).invoke('val').then((value) => {
@@ -157,8 +158,9 @@ context('Publish Entry', () => {
             page.get('chosen_files').should('have.length', 2)
             page.get('file_fields').each(function(field, i) {
                 var fileNameLabel = field.parents('.field-control').find('.fields-upload-chosen-name');
+                const fileName = selectedFiles[i].trim();
                 cy.get(fileNameLabel).should('be.visible')
-                cy.get(fileNameLabel).should('contain', selectedFiles[i])
+                cy.get(fileNameLabel).should('contain', fileName)
 
                 var fileInputHidded = field.parents('.field-control').find('input[class="js-file-input"]');
                 cy.get(fileInputHidded).invoke('val').then((value) => {

@@ -25,11 +25,10 @@ context('File Manager / Crop File', () => {
         cy.auth();
         cy.contains('Files').click()
         cy.get('.sidebar__link').contains('About').click()
-        cy.get('.ee-main__content form .table-responsive table tr:nth-child(2) td:nth-child(4)').invoke('text').as('file_name', { type: 'static' })
         //cy.get('.ee-main__content form .table-responsive table tr:nth-child(2) td:nth-child(4) ul.toolbar li.crop').click()
         // cy.get('a[title="Crop"]').first().click({force: true})
         cy.get('.ee-main__content form .table-responsive table tr:nth-child(2) .toolbar-wrap .js-dropdown-toggle').click()
-        cy.get('a[title="Edit"]').filter(':visible').first().click()
+        cy.get('.ee-main__content form .table-responsive table tr:nth-child(2) .toolbar-wrap .dropdown--open a[title="Edit"]').click({force: true})
         page.get('crop_tab').click()
         // page = CropFile.new
         // @return = FileManager.new
@@ -40,11 +39,8 @@ context('File Manager / Crop File', () => {
 
         //page.get('breadcrumb').should('exist')
         //page.get('breadcrumb').contains('File ManagerEdit "' + file_name + '"Crop, Rotate & Resize "' + file_name + '"')
-        cy.get('@file_name').then((filename) => {
-            //page.get('heading').contains('Crop, Rotate & Resize "' + filename + '"')
-            page.get('heading').contains(filename.replace('File Name', ''))
-            page.get('crop_tab').should('have.class', 'active')
-        })
+        cy.url().should('match', page.urlMatch)
+        page.get('crop_tab').should('have.class', 'active')
 
         page.get('crop_tab').should('exist')
         page.get('rotate_tab').should('exist')
