@@ -57,6 +57,11 @@ class Alert
     protected $type = 'alert';
 
     /**
+     * @var boolean $hidden Flag to determine whether or not the alert is visible
+     */
+    protected $hidden = false;
+
+    /**
      * @var AlertCollection $collection A collection of alerts for use with
      *  deferring or immediately displaying alerts
      */
@@ -344,6 +349,18 @@ class Alert
         if (! $this->isEmpty()) {
             $this->collection->save($this);
         }
+
+        return $this;
+    }
+
+    /**
+     * Toggle the display status of the alert to hidden
+     *
+     * @return self
+     */
+    public function hide()
+    {
+        $this->hidden = true;
 
         return $this;
     }

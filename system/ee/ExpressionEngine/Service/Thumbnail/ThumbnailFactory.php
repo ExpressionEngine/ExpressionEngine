@@ -19,19 +19,7 @@ class ThumbnailFactory
 {
     public function get(?File\FileSystemEntity $file = null)
     {
-        $thumb = new Thumbnail($file);
-
-        // If the thumbnail is missing, and this is an image file generate
-        // the thumbnail now
-        if (! $thumb->exists()
-            && $file
-            && $file->isFile()
-            && $file->exists()
-            && $file->isImage()) {
-            $thumb = $this->make($file);
-        }
-
-        return $thumb;
+        return new Thumbnail($file);
     }
 
     public function make(File\FileSystemEntity $file)

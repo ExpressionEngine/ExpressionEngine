@@ -14,6 +14,10 @@
 "use strict";
 
 (function ($) {
+	var getModalBox = function(modal) {
+		return $(modal).find('> .modal > .col-group > .col > .box').first();
+	};
+
 	var bind_modal = function(url, options) {
 		window.globalDropzone = options.input_value;
 		var modal = $("." + options.rel),
@@ -27,6 +31,21 @@
 				};
 				options.callback(data, picker);
 				window.document.dispatchEvent(new CustomEvent('filepicker:pick', { detail: data }));
+			},
+			initializeFileManagerContent = function(container) {
+				var $container = $(container);
+
+				// function that is responsible for the correct working of
+				// the search inside filter-search-bar__item
+				$.fuzzyFilter()
+
+				if (EE.cp.fileManager && EE.cp.fileManager.checkForMissingFiles) {
+					EE.cp.fileManager.checkForMissingFiles($container);
+				}
+
+				if (typeof FileField != 'undefined' && $('div[data-file-field-react]').length) {
+					FileField.renderFields();
+				}
 			};
 
 		if (options.iframe) {
@@ -34,11 +53,9 @@
 		}
 
 		$.get(url, function(data) {
-			modal.find('div.box').html(data);
+			var $box = getModalBox(modal);
 
-			// function that is responsible for the correct working of 
-			// the search inside filter-search-bar__item 
-			$.fuzzyFilter()
+			$box.html(data);
 
 			if (typeof options.selected != 'undefined') {
 				var selected = modal.find('tbody *[data-id="' + options.selected + '"]');
@@ -51,9 +68,7 @@
 				}
 			}
 
-			if ($('div[data-file-field-react]').length) {
-				FileField.renderFields();
-			}
+			initializeFileManagerContent($box);
 		});
 
 		$('.modal-file').off('click', '.filepicker-item, tbody > tr:not(.tbl-action)');
@@ -99,8 +114,11 @@
 		$('.modal-file').on('click', '.filters a:not([href=""]), .filter-bar a:not([href=""]), .paginate a:not([href=""], .pagination a:not([href=""]), thead a:not([href=""])', function(e) {
 			e.preventDefault();
 			var new_url = $(this).attr('href');
+			var $box = getModalBox($(this).closest('.modal-file'));
 
-			$(this).parents('div.box').load(new_url);
+			$box.load(new_url, function() {
+				initializeFileManagerContent($box);
+			});
 			if ($(options.source).hasClass('markItUpButton') || $(options.source).hasClass('rte-upload')) {
 				$('.publish .toolbar.rte li.m-link[rel="modal-file"], .publish .toolbar.html-btns li.m-link[rel="modal-file"]').attr('href', new_url);
 			}
@@ -117,7 +135,11 @@
 
 			e.preventDefault();
 
-			$(this).parents('div.box').load(url+'&'+payload_elements.serialize());
+			var $box = getModalBox($(this).closest('.modal-file'));
+
+			$box.load(url+'&'+payload_elements.serialize(), function() {
+				initializeFileManagerContent($box);
+			});
 		});
 		$('.modal-file').on('click', '.tbl-action .action, .tbl-action a.button, .panel-footer a.button', function(e) {
 			e.preventDefault()
@@ -125,7 +147,7 @@
 		});
 
 		function openInIframe(url) {
-			$('div.box', modal).html("<iframe></iframe>");
+			getModalBox(modal).html("<iframe></iframe>");
 
 			var theme = $('body').data('theme');
 			var frame = $('iframe', modal);
@@ -137,7 +159,7 @@
 			var bindFrameUnload = function() {
 				$(frame[0].contentWindow).on('unload', function() {
 					frame.hide();
-					$('.box', modal).height('auto');
+					getModalBox(modal).height('auto');
 					$(modal).height('auto');
 				});
 			};
@@ -184,7 +206,7 @@
 					}
 
 					var height = this.contentWindow.document.body.scrollHeight;
-					$('.box', modal).height(height);
+					getModalBox(modal).height(height);
 					$(this).height(height + 2);
 				}
 			});
@@ -300,7 +322,7 @@
 })(jQuery);
 
 function loadSettingsModal(modal, data) {
-	$('div.box', modal).html(data);
+	modal.find('> .modal > .col-group > .col > .box').first().html(data);
 
 	// Bind validation
 	EE.cp.formValidation.init(modal);
