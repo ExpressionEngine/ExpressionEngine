@@ -421,16 +421,32 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
 
             if (! isset($children_cache[$entry_id])) {
                 // Cache children for this entry
-                $children_cache[$entry_id] = ee('Model')->get('ChannelEntry', $entry_id)
+                $entry = ee('Model')->get('ChannelEntry', $entry_id)
                     ->with('Children', 'Channel')
                     ->fields('Channel.channel_title', 'Children.entry_id', 'Children.title', 'Children.channel_id', 'Children.status')
-                    ->first()
-                    ->Children;
+                    ->first();
+
+                // Handle case where entry doesn't exist (e.g., Pro Variables, Grid rows)
+                // Pre-populate with empty collection to prevent null errors
+                if ($entry && $entry->Children) {
+                    $children_cache[$entry_id] = $entry->Children;
+                } else {
+                    // Create empty collection by getting an empty result set
+                    // This prevents "Call to a member function indexBy() on null" errors
+                    $children_cache[$entry_id] = ee('Model')->get('ChannelEntry')
+                        ->filter('entry_id', 0) // Non-existent entry ID
+                        ->all();
+                }
 
                 ee()->session->set_cache(__CLASS__, 'children', $children_cache);
             }
 
-            $children = $children_cache[$entry_id]->indexBy('entry_id');
+            // Ensure we have a valid collection before calling indexBy
+            if (isset($children_cache[$entry_id]) && is_object($children_cache[$entry_id]) && method_exists($children_cache[$entry_id], 'indexBy')) {
+                $children = $children_cache[$entry_id]->indexBy('entry_id');
+            } else {
+                $children = array();
+            }
         } else {
             $children = array();
         }
