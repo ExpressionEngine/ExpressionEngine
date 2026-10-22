@@ -71,7 +71,8 @@ class Structure_core_nav_parser
         $variables = $this->parse_ul($ul);
 
         if ($add_entry_vars) {
-            $this->add_entry_vars_start();
+            $select_fields = ee()->TMPL->fetch_param('select_fields', '');
+            $this->add_entry_vars_start($select_fields);
         }
 
         return $variables;
@@ -184,21 +185,121 @@ class Structure_core_nav_parser
         }
     }
 
-    protected function add_entry_vars_ee4()
+    protected function add_entry_vars_ee4($select_fields = '')
     {
-        if (ee()->extensions->active_hook('structure_get_custom_variables') === true) {
-            $channelEntries = ee()->extensions->call('structure_get_custom_variables', $this->entry_ids);
-        } else {
-            // Get the Channel Entries using models
-            $channelEntries = ee('Model')->get('ChannelEntry')
-                ->filter('entry_id', 'IN', $this->entry_ids)
-                ->with('Channel')
-                ->all();
+        if (empty($this->entry_ids)) {
+            return;
         }
 
-        // Structure Extra Data
-        $structure_query = ee()->db->where_in('entry_id', $this->entry_ids)->get('structure');
+        if (ee()->extensions->active_hook('structure_get_custom_variables') === true) {
+            $channelEntries = ee()->extensions->call('structure_get_custom_variables', $this->entry_ids);
+            $this->apply_entry_vars_from_extension($channelEntries);
+        } elseif ($select_fields !== '') {
+            $this->add_entry_vars_selective($select_fields);
+        } else {
+            $this->add_entry_vars_full_models();
+        }
+    }
 
+    /**
+     * Lightweight path: fetch only requested fields via Model Query Builder.
+     * Uses fields() to limit loaded data; handles both legacy and modern field storage.
+     */
+    protected function add_entry_vars_selective($select_fields)
+    {
+        $requested_fields = array_filter(array_map('trim', preg_split('/[|,]/', $select_fields)));
+        $select_field_ids = $this->get_field_ids_for_names($requested_fields);
+        $field_ids = array_keys($select_field_ids);
+
+        // Build fields array for Model query – core + requested custom fields + Channel
+        $model_fields = array(
+            'entry_id',
+            'title',
+            'url_title',
+            'channel_id',
+            'entry_date',
+            'status',
+            'author_id',
+            'sticky',
+            'expiration_date',
+            'edit_date',
+            'view_count',
+            'comment_total',
+            'Channel.channel_title',
+            'Channel.channel_name',
+        );
+        foreach ($field_ids as $fid) {
+            $model_fields[] = 'field_id_' . $fid;
+        }
+
+        // Model Query Builder handles legacy vs modern storage automatically
+        $channelEntries = ee('Model')->get('ChannelEntry', $this->entry_ids)
+            ->with('Channel')
+            ->fields(...$model_fields)
+            ->all();
+
+        // Structure data
+        $structure_query = ee()->db->where_in('entry_id', $this->entry_ids)->get('structure');
+        $structure_data = array();
+        foreach ($structure_query->result_array() as $row) {
+            $structure_data[$row['entry_id']] = $row;
+        }
+
+        // Build $fields (channel_id => requested ChannelField objects) for populate_variable_row_from_model
+        $channel_ids = $channelEntries->Channel->getIds();
+        $channels = ee('Model')->get('Channel', $channel_ids)
+            ->with('CustomFields')
+            ->with('FieldGroups')
+            ->all();
+
+        $fields = array();
+        foreach ($channels as $channel) {
+            $all_custom = $channel->getAllCustomFields();
+            $filtered = array();
+            foreach ($all_custom as $field) {
+                if (in_array($field->getId(), $field_ids)) {
+                    $filtered[] = $field;
+                }
+            }
+            $fields[$channel->getId()] = $filtered;
+        }
+
+        $requested_field_names = array_values($select_field_ids);
+
+        foreach ($channelEntries as $channelEntry) {
+            if (isset($this->rows_by_entry[$channelEntry->entry_id])) {
+                $this->populate_variable_row_from_model($channelEntry, $fields, $structure_data, $requested_field_names);
+            }
+        }
+    }
+
+    /**
+     * Resolve field names to field IDs. Returns associative array field_id => field_name.
+     */
+    protected function get_field_ids_for_names($field_names)
+    {
+        if (empty($field_names)) {
+            return array();
+        }
+
+        $query = ee()->db->select('field_id, field_name')
+            ->where_in('field_name', $field_names)
+            ->get('channel_fields');
+
+        $result = array();
+        foreach ($query->result_array() as $row) {
+            $result[$row['field_id']] = $row['field_name'];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Apply entry vars when structure_get_custom_variables extension returns model objects.
+     */
+    protected function apply_entry_vars_from_extension($channelEntries)
+    {
+        $structure_query = ee()->db->where_in('entry_id', $this->entry_ids)->get('structure');
         $structure_data = array();
         foreach ($structure_query->result_array() as $row) {
             $structure_data[$row['entry_id']] = $row;
@@ -217,72 +318,109 @@ class Structure_core_nav_parser
 
         foreach ($channelEntries as $channelEntry) {
             if (isset($this->rows_by_entry[$channelEntry->entry_id])) {
-                $variable_row = &$this->rows_by_entry[$channelEntry->entry_id];
-
-                $prefix = $variable_row['__prefix'];
-
-                unset($variable_row['__prefix']);
-
-                // echo 'Prefix: ', $prefix, '<br />';
-
-                // Assign the value of each regular field
-                foreach ($channelEntry->getFields() as $field_name) {
-                    // echo 'FN: ', $prefix.$field_name, '<br />';
-                    $variable_row[$prefix . $field_name] = $channelEntry->$field_name;
-                }
-
-                // edit date is special in getModChannelResultsArray, so also special here
-                // not sure why is that though...
-                if (isset($variable_row[$prefix . 'edit_date'])) {
-                    $variable_row[$prefix . 'edit_date'] = $variable_row[$prefix . 'edit_date']->format('U');
-                }
-
-                foreach ($fields[$channelEntry->Channel->getId()] as $field) {
-                    // echo 'CFN: ', $prefix.$field->field_name, '<br />', "\n";
-                    $property = 'field_id_' . $field->getId();
-                    $variable_row[$prefix . $field->field_name] = $channelEntry->$property;
-
-                    // Custom processing if the field is a file
-                    if ($field->field_type === 'file') {
-                        if (! isset(ee()->file_field)) {
-                            ee()->load->library('file_field');
-                        }
-
-                        // Parse the file URL
-                        $fileUrl = ee()->file_field->parse_string($channelEntry->$property);
-                        $variable_row[$prefix . $field->field_name] = $fileUrl;
-                    }
-                }
-
-                if (!empty($structure_data[$channelEntry->entry_id])) {
-                    $variable_row[$prefix . 'channel_short_name'] = $channelEntry->Channel->channel_name;
-                    $variable_row[$prefix . 'channel'] = $channelEntry->Channel->channel_title;
-                    $variable_row[$prefix . 'structure__parent_id'] = array($structure_data[$channelEntry->entry_id]['parent_id']);
-                    $variable_row[$prefix . 'structure__uri'] = $structure_data[$channelEntry->entry_id]['structure_url_title'];
-                    $variable_row[$prefix . 'structure__template_id'] = array($structure_data[$channelEntry->entry_id]['template_id']);
-                    $variable_row[$prefix . 'structure__hidden'] = $structure_data[$channelEntry->entry_id]['hidden'];
-                    $variable_row[$prefix . 'structure__listing_channel'] = (empty($structure_data[$channelEntry->entry_id]['listing_cid']) ? null : $structure_data[$channelEntry->entry_id]['listing_cid']);
-                } else {
-                    $variable_row[$prefix . 'structure__parent_id'] = array(0);
-                    $variable_row[$prefix . 'structure__uri'] = '';
-                    $variable_row[$prefix . 'structure__template_id'] = array(0);
-                    $variable_row[$prefix . 'structure__hidden'] = 'n';
-                    $variable_row[$prefix . 'structure__listing_channel'] = null;
-                }
-
-                $variable_row['channel'] = $channelEntry->Channel->channel_title;
-                $variable_row['channel_short_name'] = $channelEntry->Channel->channel_name;
-                $variable_row['entry_id_path'] = array($channelEntry->entry_id, array('path_variable' => true));
-                $variable_row['url_title_path'] = array($channelEntry->url_title, array('path_variable' => true));
-                $variable_row['title_permalink'] = array($channelEntry->url_title, array('path_variable' => true));
+                $this->populate_variable_row_from_model($channelEntry, $fields, $structure_data);
             }
         }
     }
 
-    protected function add_entry_vars_start()
+    /**
+     * Full models path (original behavior).
+     */
+    protected function add_entry_vars_full_models()
+    {
+        $channelEntries = ee('Model')->get('ChannelEntry')
+            ->filter('entry_id', 'IN', $this->entry_ids)
+            ->with('Channel')
+            ->all();
+
+        $structure_query = ee()->db->where_in('entry_id', $this->entry_ids)->get('structure');
+        $structure_data = array();
+        foreach ($structure_query->result_array() as $row) {
+            $structure_data[$row['entry_id']] = $row;
+        }
+
+        $channel_ids = $channelEntries->Channel->getIds();
+        $channels = ee('Model')->get('Channel', $channel_ids)
+            ->with('CustomFields')
+            ->with('FieldGroups')
+            ->all();
+
+        $fields = array();
+        foreach ($channels as $channel) {
+            $fields[$channel->getId()] = $channel->getAllCustomFields();
+        }
+
+        foreach ($channelEntries as $channelEntry) {
+            if (isset($this->rows_by_entry[$channelEntry->entry_id])) {
+                $this->populate_variable_row_from_model($channelEntry, $fields, $structure_data);
+            }
+        }
+    }
+
+    /**
+     * Populate a variable row from a ChannelEntry model (used by full models and extension paths).
+     *
+     * @param array $requested_field_names When using select_fields, ensures these vars are set (to empty if channel lacks the field)
+     */
+    protected function populate_variable_row_from_model($channelEntry, $fields, $structure_data, $requested_field_names = array())
+    {
+        $variable_row = &$this->rows_by_entry[$channelEntry->entry_id];
+        $prefix = $variable_row['__prefix'];
+        unset($variable_row['__prefix']);
+
+        foreach ($requested_field_names as $fname) {
+            $variable_row[$prefix . $fname] = '';
+        }
+
+        foreach ($channelEntry->getFields() as $field_name) {
+            $variable_row[$prefix . $field_name] = $channelEntry->$field_name;
+        }
+
+        if (isset($variable_row[$prefix . 'edit_date']) && is_object($variable_row[$prefix . 'edit_date'])) {
+            $variable_row[$prefix . 'edit_date'] = $variable_row[$prefix . 'edit_date']->format('U');
+        }
+
+        foreach ($fields[$channelEntry->Channel->getId()] as $field) {
+            $property = 'field_id_' . $field->getId();
+            $variable_row[$prefix . $field->field_name] = $channelEntry->$property;
+
+            if ($field->field_type === 'file') {
+                if (! isset(ee()->file_field)) {
+                    ee()->load->library('file_field');
+                }
+                $fileUrl = ee()->file_field->parse_string($channelEntry->$property);
+                $variable_row[$prefix . $field->field_name] = $fileUrl;
+            }
+        }
+
+        if (! empty($structure_data[$channelEntry->entry_id])) {
+            $sd = $structure_data[$channelEntry->entry_id];
+            $variable_row[$prefix . 'channel_short_name'] = $channelEntry->Channel->channel_name;
+            $variable_row[$prefix . 'channel'] = $channelEntry->Channel->channel_title;
+            $variable_row[$prefix . 'structure__parent_id'] = array($sd['parent_id']);
+            $variable_row[$prefix . 'structure__uri'] = $sd['structure_url_title'];
+            $variable_row[$prefix . 'structure__template_id'] = array($sd['template_id']);
+            $variable_row[$prefix . 'structure__hidden'] = $sd['hidden'];
+            $variable_row[$prefix . 'structure__listing_channel'] = (empty($sd['listing_cid']) ? null : $sd['listing_cid']);
+        } else {
+            $variable_row[$prefix . 'structure__parent_id'] = array(0);
+            $variable_row[$prefix . 'structure__uri'] = '';
+            $variable_row[$prefix . 'structure__template_id'] = array(0);
+            $variable_row[$prefix . 'structure__hidden'] = 'n';
+            $variable_row[$prefix . 'structure__listing_channel'] = null;
+        }
+
+        $variable_row['channel'] = $channelEntry->Channel->channel_title;
+        $variable_row['channel_short_name'] = $channelEntry->Channel->channel_name;
+        $variable_row['entry_id_path'] = array($channelEntry->entry_id, array('path_variable' => true));
+        $variable_row['url_title_path'] = array($channelEntry->url_title, array('path_variable' => true));
+        $variable_row['title_permalink'] = array($channelEntry->url_title, array('path_variable' => true));
+    }
+
+    protected function add_entry_vars_start($select_fields = '')
     {
         // run new function for getting the entry_vars.
-        $this->add_entry_vars_ee4();
+        $this->add_entry_vars_ee4($select_fields);
     }
 
     protected function add_entry_vars(&$variable_row, $row)
