@@ -728,7 +728,9 @@ class EE_Core
         // This permits the forum to be more light-weight as the template engine is
         // not needed under normal circumstances.
         $forum_trigger = (ee()->config->item('forum_is_installed') == "y") ? ee()->config->item('forum_trigger') : '';
-        $profile_trigger = ee()->config->item('profile_trigger');
+        $profile_trigger = ee('Config')->getFile()->getBoolean('legacy_member_templates')
+            ? ee()->config->item('profile_trigger')
+            : '';
 
         if (
             $forum_trigger &&

@@ -216,8 +216,12 @@ class Api_template_structure extends Api
             $this->reserved_names[] = ee()->config->item("forum_trigger");
         }
 
-        if (ee()->config->item("profile_trigger") != '') {
-            $this->reserved_names[] = ee()->config->item("profile_trigger");
+        $profile_trigger = ee('Config')->getFile()->getBoolean('legacy_member_templates')
+            ? ee()->config->item("profile_trigger")
+            : '';
+
+        if ($profile_trigger != '') {
+            $this->reserved_names[] = $profile_trigger;
         }
     }
 
