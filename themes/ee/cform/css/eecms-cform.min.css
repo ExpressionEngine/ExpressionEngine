@@ -1060,7 +1060,7 @@ h1 .toolbar li a {
     padding: 5px 8px 3px;
 }
 }@media screen and (min-width:750px) {
-    .ee-cform .toolbar.rte li:  first-child a:hover {
+    .ee-cform .toolbar.rte li:first-child a:hover {
     -moz-border-radius: 5px 0 0;
     -webkit-border-radius: 5px 0 0;
     border-radius: 5px 0 0;
