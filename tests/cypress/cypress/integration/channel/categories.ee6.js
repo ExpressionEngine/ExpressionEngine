@@ -544,6 +544,9 @@ context('Categories', () => {
         cy.get('#category-one .category_description').invoke('text').then((text) => {
             expect(text).equal('one description')
         })
+        cy.get('#category-one .category_group_name').invoke('text').then((text) => {
+            expect(text).equal('News Categories')
+        })
         cy.get('#category-one .custom_textfield').invoke('text').then((text) => {
             expect(text).equal('one textfield')
         })
@@ -576,6 +579,9 @@ context('Categories', () => {
         })
         cy.get('#category-two .category_description').invoke('text').then((text) => {
             expect(text).equal('two description')
+        })
+        cy.get('#category-two .category_group_name').invoke('text').then((text) => {
+            expect(text).equal('News Categories')
         })
         cy.get('#category-two .custom_textfield').invoke('text').then((text) => {
             expect(text).equal('two textfield')

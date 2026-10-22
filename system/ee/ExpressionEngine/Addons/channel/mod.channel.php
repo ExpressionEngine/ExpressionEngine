@@ -455,7 +455,7 @@ class Channel
 
                 foreach ($query->result_array() as $row) {
                     if ($val == $row['entry_id']) {
-                        $this->temp_array[$row['cat_id']] = array($row['cat_id'], $row['parent_id'], $row['cat_name'], $row['cat_image'], $row['cat_description'], $row['group_id'], $row['cat_url_title']);
+                        $this->temp_array[$row['cat_id']] = array($row['cat_id'], $row['parent_id'], $row['cat_name'], $row['cat_image'], $row['cat_description'], $row['group_id'], $row['cat_url_title'], $row['group_id'], $row['group_name'] ?? '');
 
                         foreach ($row as $k => $v) {
                             if (strpos($k, 'field') !== false) {
@@ -512,7 +512,7 @@ class Channel
 
             $categories = ee('Model')->get('Category', $cats)->all();
             foreach ($categories as $cat) {
-                $this->temp_array[$cat->cat_id] = array($cat->cat_id, $cat->parent_id, $cat->cat_name, $cat->cat_image, $cat->cat_description, $cat->group_id, $cat->cat_url_title);
+                $this->temp_array[$cat->cat_id] = array($cat->cat_id, $cat->parent_id, $cat->cat_name, $cat->cat_image, $cat->cat_description, $cat->group_id, $cat->cat_url_title, $cat->group_id, $cat->group_name ?? '');
                 if ($cat->parent_id > 0 && ! isset($this->temp_array[$cat->parent_id])) {
                     $parents[$cat->parent_id] = '';
                 }
@@ -2972,7 +2972,7 @@ class Channel
 
                 $this->cat_full_array = array_unique($this->cat_full_array);
 
-                $sql = "SELECT c.cat_id, c.parent_id, c.cat_name, c.cat_url_title, c.cat_image, c.cat_description {$field_sqla}
+                $sql = "SELECT c.cat_id, c.parent_id, c.cat_name, c.cat_url_title, c.cat_image, c.cat_description, c.group_id {$field_sqla}
                 FROM exp_categories AS c
                 {$field_sqlb}
                 WHERE c.cat_id IN (";
@@ -2991,7 +2991,7 @@ class Channel
                     return ee()->TMPL->no_results();
                 }
             } else {
-                $sql = "SELECT c.cat_name, c.cat_url_title, c.cat_image, c.cat_description, c.cat_id, c.parent_id {$field_sqla}
+                $sql = "SELECT c.cat_name, c.cat_url_title, c.cat_image, c.cat_description, c.cat_id, c.parent_id, c.group_id {$field_sqla}
                         FROM exp_categories AS c
                         {$field_sqlb}
                         WHERE c.group_id IN ('" . $group_ids_str . "') ";
@@ -3031,7 +3031,7 @@ class Channel
                     continue;
                 }
 
-                $this->temp_array[$row['cat_id']] = array($row['cat_id'], $row['parent_id'], '1', $row['cat_name'], $row['cat_description'], $row['cat_image'], $row['cat_url_title']);
+                $this->temp_array[$row['cat_id']] = array($row['cat_id'], $row['parent_id'], '1', $row['cat_name'], $row['cat_description'], $row['cat_image'], $row['cat_url_title'], $row['group_id'], $row['group_name'] ?? '');
 
                 foreach ($row as $key => $val) {
                     if (strpos($key, 'field') !== false) {
@@ -3076,6 +3076,8 @@ class Channel
                     'category_image' => (string) $val[5],
                     'category_id' => $val[0],
                     'parent_id' => $val[1],
+                    'category_group_id' => $val[7],
+                    'category_group_name' => $val[8],
                     'has_children' => in_array($val[0], $parent_ids),
                     'active' => ($active_cat == $val[0] || $active_cat == $val[6])
                 );
@@ -3098,7 +3100,9 @@ class Channel
                         LD . 'category_description' . RD,
                         LD . 'category_image' . RD,
                         LD . 'category_id' . RD,
-                        LD . 'parent_id' . RD
+                        LD . 'parent_id' . RD,
+                        LD . 'category_group_id' . RD,
+                        LD . 'category_group_name' . RD
                     ),
                     array(
                         ee()->functions->encode_ee_tags($cat_vars['category_name']),
@@ -3106,7 +3110,9 @@ class Channel
                         ee()->functions->encode_ee_tags($cat_vars['category_description']),
                         $cat_vars['category_image'],
                         $cat_vars['category_id'],
-                        $cat_vars['parent_id']
+                        $cat_vars['parent_id'],
+                        $cat_vars['category_group_id'],
+                        ee()->functions->encode_ee_tags($cat_vars['category_group_name'])
                     ),
                     $chunk
                 );
@@ -3486,6 +3492,8 @@ class Channel
                             'category_image' => (string) $row['cat_image'],
                             'category_id' => $row['cat_id'],
                             'parent_id' => $row['parent_id'],
+                            'category_group_id' => $row['group_id'],
+                            'category_group_name' => $row['group_name'] ?? '',
                             'has_children' => in_array($row['cat_id'], $parent_ids),
                             'active' => ($active_cat == $row['cat_id'] || $active_cat == $row['cat_url_title'])
                         );
@@ -3503,7 +3511,9 @@ class Channel
                                 LD . 'category_url_title' . RD,
                                 LD . 'category_image' . RD,
                                 LD . 'category_description' . RD,
-                                LD . 'parent_id' . RD
+                                LD . 'parent_id' . RD,
+                                LD . 'category_group_id' . RD,
+                                LD . 'category_group_name' . RD
                             ),
                             array(
                                 $cat_vars['category_id'],
@@ -3511,7 +3521,9 @@ class Channel
                                 $cat_vars['category_url_title'],
                                 $cat_vars['category_image'],
                                 ee()->functions->encode_ee_tags($cat_vars['category_description']),
-                                $cat_vars['parent_id']
+                                $cat_vars['parent_id'],
+                                $cat_vars['category_group_id'],
+                                ee()->functions->encode_ee_tags($cat_vars['category_group_name'])
                             ),
                             $chunk
                         );
@@ -3713,7 +3725,7 @@ class Channel
 
             $this->cat_full_array = array_unique($this->cat_full_array);
 
-            $sql = "SELECT c.cat_id, c.parent_id, c.cat_name, c.cat_url_title, c.cat_image, c.cat_description {$field_sqla}
+            $sql = "SELECT c.cat_id, c.parent_id, c.cat_name, c.cat_url_title, c.cat_image, c.cat_description, c.group_id {$field_sqla}
             FROM exp_categories AS c
             {$field_sqlb}
             WHERE c.cat_id IN (";
@@ -3772,7 +3784,7 @@ class Channel
                 continue;
             }
 
-            $this->cat_array[$row['cat_id']] = array($row['parent_id'], $row['cat_name'], $row['cat_image'], $row['cat_description'], $row['cat_url_title']);
+            $this->cat_array[$row['cat_id']] = array($row['parent_id'], $row['cat_name'], $row['cat_image'], $row['cat_description'], $row['cat_url_title'], $row['group_id'], $row['group_name'] ?? '');
 
             foreach ($row as $key => $val) {
                 if (strpos($key, 'field') !== false) {
@@ -3859,6 +3871,8 @@ class Channel
                     'category_image' => (string) $val[2],
                     'category_id' => $key,
                     'parent_id' => $val[0],
+                    'category_group_id' => $val[5],
+                    'category_group_name' => $val[6],
                     'has_children' => in_array($key, $parent_ids),
                     'active' => ($active_cat == $key || $active_cat == $val[4])
                 );
@@ -3880,7 +3894,9 @@ class Channel
                         LD . 'category_url_title' . RD,
                         LD . 'category_image' . RD,
                         LD . 'category_description' . RD,
-                        LD . 'parent_id' . RD
+                        LD . 'parent_id' . RD,
+                        LD . 'category_group_id' . RD,
+                        LD . 'category_group_name' . RD
                     ),
                     array(
                         $cat_vars['category_id'],
@@ -3888,7 +3904,9 @@ class Channel
                         $cat_vars['category_url_title'],
                         $cat_vars['category_image'],
                         ee()->functions->encode_ee_tags($cat_vars['category_description']),
-                        $cat_vars['parent_id']
+                        $cat_vars['parent_id'],
+                        $cat_vars['category_group_id'],
+                        ee()->functions->encode_ee_tags($cat_vars['category_group_name'])
                     ),
                     $chunk
                 );
@@ -4366,11 +4384,11 @@ class Channel
 
             list($field_sqla, $field_sqlb) = $this->generateCategoryFieldSQL($gquery->row('group_id'));
         } else {
-            $field_sqla = '';
-            $field_sqlb = '';
+            // no category fields, but we still might need the category group name
+            list($field_sqla, $field_sqlb) = $this->generateCategoryFieldSQL();
         }
 
-        $query = ee()->db->query("SELECT c.cat_name, c.parent_id, c.cat_url_title, c.cat_description, c.cat_image {$field_sqla}
+        $query = ee()->db->query("SELECT c.cat_name, c.parent_id, c.cat_url_title, c.cat_description, c.cat_image, c.group_id {$field_sqla}
                             FROM exp_categories AS c
                             {$field_sqlb}
                             WHERE c.cat_id = '" . ee()->db->escape_str($cat_id) . "'
@@ -4390,7 +4408,9 @@ class Channel
             'category_description' => $query->row('cat_description'),
             'category_image' => (string) $query->row('cat_image'),
             'category_id' => $cat_id,
-            'parent_id' => $query->row('parent_id')
+            'parent_id' => $query->row('parent_id'),
+            'category_group_id' => $query->row('group_id'),
+            'category_group_name' => $query->row('group_name') ?? ''
         );
 
         // add custom fields for conditionals prep
@@ -4409,7 +4429,9 @@ class Channel
                 LD . 'category_url_title' . RD,
                 LD . 'category_image' . RD,
                 LD . 'category_description' . RD,
-                LD . 'parent_id' . RD
+                LD . 'parent_id' . RD,
+                LD . 'category_group_id' . RD,
+                LD . 'category_group_name' . RD
             ),
             array(
                 $cat_vars['category_id'],
@@ -4417,7 +4439,9 @@ class Channel
                 $cat_vars['category_url_title'],
                 $cat_vars['category_image'],
                 ee()->functions->encode_ee_tags($cat_vars['category_description']),
-                $cat_vars['parent_id']
+                $cat_vars['parent_id'],
+                $cat_vars['category_group_id'],
+                ee()->functions->encode_ee_tags($cat_vars['category_group_name'])
             ),
             ee()->TMPL->tagdata
         );
@@ -5294,6 +5318,13 @@ class Channel
     private function generateCategoryFieldSQL($group_ids = '')
     {
         if ($this->enable['category_fields'] !== true) {
+            // make sure we get category group name if it's not already in the query
+            if (isset(ee()->TMPL->var_single['category_group_name'])) {
+                $field_sqla = ", cg.group_name ";
+                $field_sqlb = " LEFT JOIN exp_category_groups AS cg ON cg.group_id = c.group_id ";
+                return array($field_sqla, $field_sqlb);
+            }
+
             return array('', '');
         }
 
@@ -5316,7 +5347,7 @@ class Channel
 
         $this->cacheCategoryFieldModels();
 
-        $field_sqla = ", cg.field_html_formatting, fd.* ";
+        $field_sqla = ", cg.group_name, cg.field_html_formatting, fd.* ";
         $field_sqlb = " LEFT JOIN exp_category_field_data AS fd ON fd.cat_id = c.cat_id
                         LEFT JOIN exp_category_groups AS cg ON cg.group_id = c.group_id ";
 
