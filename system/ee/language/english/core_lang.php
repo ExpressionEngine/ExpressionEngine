@@ -502,6 +502,8 @@ If you made these changes, please accept the modifications on the Control Panel 
 
     'adapter_local' => 'Local',
 
+    'max_input_vars_error' => 'Too many variables posted. To increase the limit change <code>max_input_vars</code> in <code>php.ini</code>',
+
 );
 
 // EOF

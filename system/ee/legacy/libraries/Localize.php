@@ -60,7 +60,7 @@ class Localize
      */
     public function string_to_timestamp($human_string, $localized = true, $date_format = null)
     {
-        if (trim($human_string) == '') {
+        if (empty($human_string) || trim($human_string) == '') {
             return false;
         }
 
