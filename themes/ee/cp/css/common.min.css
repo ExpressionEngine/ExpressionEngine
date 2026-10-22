@@ -27443,6 +27443,10 @@ input[type=button].btn-block {
   max-width: 550px;
 }
 
+.modal-wrap.must-interact .dialog__close {
+  display: none;
+}
+
 .modal {
   background-color: var(--ee-bg-0);
   margin-bottom: 40px;
@@ -32564,6 +32568,154 @@ fieldset .field-control #eye {
 }
 .grid-field.overwidth .grid-field__table .row-counter-column {
   width: 100% !important;
+}
+
+.js-file-grid .file-grid-view-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.js-file-grid .file-grid-gallery {
+  margin-bottom: 12px;
+}
+.js-file-grid .file-grid-gallery__empty {
+  padding: 12px 14px;
+  border: 1px solid var(--ee-border);
+  border-radius: 6px;
+  background: var(--ee-bg-0);
+  color: var(--ee-text-secondary);
+}
+.js-file-grid .file-grid-gallery__grid {
+  display: block;
+  margin: -8px;
+  border: 1px solid var(--ee-border);
+  border-radius: 5px;
+}
+.js-file-grid .file-grid-gallery__grid:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+.js-file-grid .file-grid-gallery__card {
+  display: flex;
+  flex-direction: column;
+  float: left;
+  position: relative;
+  border: 1px solid var(--ee-border);
+  border-radius: 8px;
+  background: var(--ee-bg-blank);
+  padding: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  margin: 8px;
+  width: calc(25% - 16px);
+  min-width: 200px;
+  box-sizing: border-box;
+  cursor: default;
+}
+.js-file-grid .file-grid-gallery__card.is-sorting {
+  opacity: 0.9;
+  z-index: 10;
+}
+.js-file-grid .file-grid-gallery__thumb {
+  width: 100%;
+  height: 150px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--ee-bg-0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+.js-file-grid .file-grid-gallery__thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.js-file-grid .file-grid-gallery__thumb img.hidden {
+  display: none !important;
+}
+.js-file-grid .file-grid-gallery__thumb figure {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.js-file-grid .file-grid-gallery__thumb figure.no-img {
+  background: transparent;
+}
+.js-file-grid .file-grid-gallery__thumb figure img,
+.js-file-grid .file-grid-gallery__thumb figure svg {
+  max-width: 100%;
+  max-height: 100%;
+}
+.js-file-grid .file-grid-gallery__thumb figure.no-img i {
+  font-size: 2.5rem;
+  color: var(--ee-text-secondary);
+}
+.js-file-grid .file-grid-gallery__thumb-placeholder {
+  font-size: 1.4rem;
+  color: var(--ee-text-secondary);
+}
+.js-file-grid .file-grid-gallery__meta {
+  min-width: 0;
+}
+.js-file-grid .file-grid-gallery__name {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--ee-text-normal);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.js-file-grid .file-grid-gallery__drag {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--ee-border);
+  border-radius: 4px;
+  background: var(--ee-bg-blank);
+  color: var(--ee-text-secondary);
+  cursor: move;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.js-file-grid .file-grid-gallery__placeholder {
+  float: left;
+  border: 2px dashed var(--ee-border);
+  border-radius: 8px;
+  background: var(--ee-bg-0);
+  margin: 8px;
+  width: calc(25% - 16px);
+  min-width: 200px;
+  box-sizing: border-box;
+}
+.js-file-grid.file-grid--gallery-mode .grid-field {
+  display: none;
+}
+@media (max-width: 767px) {
+  .js-file-grid .file-grid-gallery__grid {
+    margin: -6px;
+  }
+  .js-file-grid .file-grid-gallery__card,
+.js-file-grid .file-grid-gallery__placeholder {
+    width: calc(50% - 12px);
+    min-width: 160px;
+    margin: 6px;
+  }
+  .js-file-grid .file-grid-gallery__thumb {
+    height: 120px;
+  }
 }
 
 .select {

@@ -1,5 +1,17 @@
 <div class="js-file-grid">
+	<div class="file-grid-view-controls">
+		<div class="button-group button-group-small file-grid-view-controls__toggle" role="group" aria-label="File Grid View">
+			<button type="button" class="button button--small button--secondary is-active js-file-grid-view-toggle" data-file-grid-view="table">Table</button>
+			<button type="button" class="button button--small button--default js-file-grid-view-toggle" data-file-grid-view="gallery">Gallery</button>
+		</div>
+	</div>
+
 	<?=$grid_markup?>
+
+	<div class="file-grid-gallery hidden js-file-grid-gallery">
+		<div class="file-grid-gallery__empty hidden js-file-grid-gallery-empty"></div>
+		<div class="file-grid-gallery__grid js-file-grid-gallery-grid"></div>
+	</div>
 
 	<?php
     $component = [
