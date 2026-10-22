@@ -50,21 +50,47 @@ class Cache extends Utilities
             )
         );
 
-        ee()->load->library('form_validation');
-        ee()->form_validation->set_rules('cache_type', 'lang:caches_to_clear', 'required|enum[all,page,tag,db]');
+        $validator = ee('Validation')->make();
+        $validator->setRules(array(
+            'cache_type' => 'required|enum[all,page,tag,db]',
+        ));
+        $result = $validator->validate($_POST);
+        if ($response = $this->ajaxValidation($result)) {
+            return $response;
+        }
 
-        if (AJAX_REQUEST) {
-            ee()->form_validation->run_ajax();
-            exit;
-        } elseif (ee()->form_validation->run() !== false) {
+        if ($result->isValid()) {
             ee()->functions->clear_caching(ee()->input->post('cache_type'));
 
             if (ee()->input->post('cache_type') == 'all') {
                 ee('CP/JumpMenu')->clearAllCaches();
             }
 
+            if (AJAX_REQUEST) {
+                // Jump menu request
+                ee()->output->send_ajax_response(array(
+                    'success' => true,
+                    'message' => lang('caches_cleared')
+                ));
+            }
+
             ee()->view->set_message('success', lang('caches_cleared'), '', true);
             ee()->functions->redirect(ee('CP/URL')->make('utilities/cache'));
+        } else {
+            if (AJAX_REQUEST) {
+                // jump menu request
+                $validationErrors = [];
+                foreach ($result->getAllErrors() as $field => $errors) {
+                    foreach ($errors as $error) {
+                        $validationErrors[] = '<b>' . lang($field) . ':</b> ' . $error;
+                    }
+                }
+                ee()->output->send_ajax_response(array(
+                    'status' => 'error',
+                    'error' => true,
+                    'message' => implode('<br>', $validationErrors)
+                ));
+            }
         }
 
         ee()->view->ajax_validate = true;
