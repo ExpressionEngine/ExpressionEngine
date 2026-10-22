@@ -25,20 +25,7 @@ class Updater
      */
     public function do_update()
     {
-        $steps = new \ProgressIterator([
-            'addLegacyMemberTemplatesConfig',
-        ]);
-
-        foreach ($steps as $k => $v) {
-            $this->$v();
-        }
-
         return true;
-    }
-
-    private function addLegacyMemberTemplatesConfig()
-    {
-        ee('Config')->getFile()->set('legacy_member_templates', 'y', true);
     }
 }
 

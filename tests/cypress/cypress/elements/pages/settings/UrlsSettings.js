@@ -12,7 +12,6 @@ class UrlsSettings extends ControlPanel {
         'cp_url': 'input[type!=hidden][name=cp_url]',
         'theme_folder_url': 'input[type!=hidden][name=theme_folder_url]',
         'theme_folder_path': 'input[type!=hidden][name=theme_folder_path]',
-        'profile_trigger': 'input[type!=hidden][name=profile_trigger]',
         'category_segment_trigger': 'input[type!=hidden][name=reserved_category_word]',
         'use_category_name': 'input[type!=hidden][name=use_category_name]',
         'url_title_separator': 'input[type!=hidden][name=word_separator]'

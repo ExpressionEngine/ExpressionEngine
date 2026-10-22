@@ -27,8 +27,6 @@ class MemberPreferences extends CustomType
     protected $mbr_notification_emails;
     protected $require_terms_of_service;
     protected $default_member_group;
-    protected $profile_trigger;
-    protected $member_theme;
     protected $avatar_url;
     protected $avatar_path;
     protected $avatar_max_width;

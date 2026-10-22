@@ -21,7 +21,7 @@
 {if:elseif logged_in}
     <p>You are already registered and logged in.</p>
 
-    <p><a class="btn btn-primary" href="{path=<?=$template_group?>/profile}">Go to Profile</a> &nbsp;&nbsp;&nbsp; <a class="btn btn-sm btn-warning" href="{path=logout}">Logout</a></p>
+    <p><a class="btn btn-primary" href="{path=<?=$template_group?>/profile}">Go to Profile</a> &nbsp;&nbsp;&nbsp; <a class="btn btn-sm btn-warning" href="{path=<?=$template_group?>/logout}">Logout</a></p>
 {if:else}
     {exp:member:registration_form
         return="<?=$template_group?>/registration/success"

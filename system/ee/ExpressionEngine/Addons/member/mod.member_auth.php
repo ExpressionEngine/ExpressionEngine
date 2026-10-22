@@ -821,7 +821,7 @@ class Member_auth extends Member
 
         $template = ee()->functions->fetch_email_template('forgot_password_instructions');
 
-        // Determine if they have a forgot password member template or if we should use the default.
+        // Determine the generated-template reset page to use.
         if (! empty($protected['password_reset_url'])) {
             $reset_url = trim(strtolower($protected['password_reset_url']));
 
@@ -830,7 +830,7 @@ class Member_auth extends Member
                 $reset_url = reduce_double_slashes(ee()->functions->fetch_site_index(0, 0) . '/' . $reset_url);
             }
         } else {
-            $reset_url = reduce_double_slashes(ee()->functions->fetch_site_index(0, 0) . '/' . ee()->config->item('profile_trigger') . '/reset_password');
+            $reset_url = reduce_double_slashes(ee()->functions->fetch_site_index(0, 0) . '/member/reset-password');
         }
 
         // Add the reset code and possible forum_id to the reset pass url.

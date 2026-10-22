@@ -575,7 +575,6 @@ $lang = array(
 
     'can_admin_mbr_groups_desc' => 'When enabled, users assigned to this group may access role settings in the software.',
 
-    'can_admin_mbr_templates' => 'Can administrate member profile templates',
 
     'can_admin_members' => 'Create and edit members',
 

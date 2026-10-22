@@ -128,7 +128,6 @@ abstract class ApiChannelStructureTestBase extends \PHPUnit\Framework\TestCase
         $this->mockConfig->setItem('forum_trigger', 'forum');
         $this->mockConfig->setItem('use_category_name', 'y');
         $this->mockConfig->setItem('reserved_category_word', 'category');
-        $this->mockConfig->setItem('profile_trigger', 'member');
         ee()->setMock('config', $this->mockConfig);
 
         // Language mock
