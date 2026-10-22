@@ -167,7 +167,8 @@ class Filepicker_mcp
             return json_encode([
                 'html' => $html,
                 'url' => $vars['form_url']->compile(),
-                'viewManager_saveDefaultUrl' => ee('CP/URL')->make('files/views/save-default', ['upload_id' => null, 'viewtype' => $vars['viewtype']])->compile()
+                'viewManager_saveDefaultUrl' => ee('CP/URL')->make('files/views/save-default', ['upload_id' => null, 'viewtype' => $vars['viewtype']])->compile(),
+                'requested_directory' => $requested_directory
             ]);
         }
 

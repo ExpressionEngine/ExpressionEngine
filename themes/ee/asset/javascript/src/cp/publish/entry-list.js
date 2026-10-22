@@ -29,6 +29,14 @@ $(document).ready(function () {
 			$('table').toggle_all();
 		}
 
+		if ($(form_selector).parents('.modal-file').length == 1) {
+			var fileFolderObj = {
+				'lastOpenedFileFolderUrl': data.url,
+				'requestedDirectory': data.requested_directory
+			}
+			localStorage.setItem('fileFolderObj', JSON.stringify(fileFolderObj));
+		}
+
 		if ($(form_selector).parents('.modal-wrap').length == 0) {
 			window.history.pushState(null, '', data.url);
 		}
