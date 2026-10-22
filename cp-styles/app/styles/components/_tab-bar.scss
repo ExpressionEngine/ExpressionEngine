@@ -188,6 +188,17 @@
     margin-right: -15px;
     font-size: 0; // allow fields side-by-side
   }
+
+	.fa-rotate-right {
+    position: absolute;
+    right: 15px;
+    top: 0;
+    width: 15px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+	}
 }
 
 .tab-open {
@@ -304,3 +315,4 @@
 			}
 	}
 }
+
