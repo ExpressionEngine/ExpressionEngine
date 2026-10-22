@@ -27443,6 +27443,10 @@ input[type=button].btn-block {
   max-width: 550px;
 }
 
+.modal-wrap.must-interact .dialog__close {
+  display: none;
+}
+
 .modal {
   background-color: var(--ee-bg-0);
   margin-bottom: 40px;
@@ -48494,33 +48498,132 @@ a.ck.ck-button.ck-on {
 }
 
 .fluid {
-  padding: 10px 10px 5px;
-  background: var(--ee-bg-0);
-  border: 1px solid var(--ee-border);
-  border-radius: 5px;
+  padding: 0;
+  background: transparent;
+  border: none;
 }
 
 .fluid__item {
   display: flex;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   background-color: var(--ee-bg-blank);
-  border: 1px solid var(--ee-fluid-item-border);
+  border: 1px solid var(--ee-border-dark);
+  border-radius: 5px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   position: static;
   width: 100%;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.fluid__item:hover {
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  border-color: var(--ee-button-primary-border);
 }
 .fluid__item .fluid__item-fieldset {
-  padding: 10px 15px 5px 15px;
+  padding: 4px 12px;
   position: relative;
+  background-color: var(--ee-bg-5);
+  border-bottom: 1px solid var(--ee-border);
+  border-radius: 5px 5px 0 0;
+  display: flex;
+  align-items: center;
+  min-height: 32px;
 }
 .fluid__item .fluid__item-fieldset .icon--reorder {
   display: none;
 }
 .fluid__item .fluid__item-fieldset .field-instruct {
   padding-right: 55px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+@media (max-width: 700px) {
+  .fluid__item .fluid__item-fieldset .field-instruct {
+    flex-wrap: wrap;
+  }
+}
+.fluid__item .fluid__item-fieldset .field-instruct label {
+  font-weight: 600;
+  font-size: 12px;
+  margin: 0;
+  line-height: 1;
+}
+.fluid__item .fluid__item-fieldset .field-instruct em {
+  margin-left: 8px;
+  font-size: 11px;
+  color: var(--ee-text-secondary);
+  line-height: 1;
+  margin-top: 0;
+}
+@media (max-width: 700px) {
+  .fluid__item .fluid__item-fieldset .field-instruct em {
+    width: 100%;
+    margin-top: 5px;
+    margin-left: 30px;
+    font-size: 10px;
+  }
 }
 .fluid__item .fluid__item-field {
-  padding: 15px 20px;
-  border-top: 1px solid var(--ee-border);
+  padding: 8px 12px;
+  background-color: var(--ee-bg-blank);
+  border-radius: 0 0 5px 5px;
+  margin-bottom: 0 !important;
+}
+.fluid__item .fluid__item-field > *:first-child {
+  margin-top: 0 !important;
+}
+.fluid__item .fluid__item-field > *:last-child {
+  margin-bottom: 0 !important;
+}
+.fluid__item .fluid__item-field > div:not(.field-instruct), .fluid__item .fluid__item-field > p:not(.field-instruct), .fluid__item .fluid__item-field > fieldset:not(.field-instruct), .fluid__item .fluid__item-field > textarea:not(.field-instruct) {
+  margin-bottom: 0 !important;
+}
+.fluid__item .fluid__item-field .file-field__dropzone {
+  margin-top: 5px !important;
+}
+.fluid__item .fluid__item-field .ck.ck-editor__main > .ck-editor__editable,
+.fluid__item .fluid__item-field .redactor-editor {
+  min-height: 100px !important;
+}
+.fluid__item[data-field-type=field_group] {
+  border-left: 3px solid var(--ee-brand-primary);
+}
+.fluid__item[data-field-type=field_group] .fluid__item-fieldset {
+  background-color: var(--ee-bg-10);
+  border-bottom: 1px solid var(--ee-border-dark);
+}
+.fluid__item[data-field-type=field_group] .fluid__item-field {
+  padding: 10px 12px 14px;
+  border-top: none;
+  border-bottom: 1px solid var(--ee-border);
+  margin-bottom: 0 !important;
+}
+.fluid__item[data-field-type=field_group] .fluid__item-field:last-child {
+  border-bottom: none;
+}
+.fluid__item[data-field-type=field_group] .fluid__item-field .field-instruct {
+  margin-bottom: 2px;
+  margin-top: 0 !important;
+  display: block;
+}
+.fluid__item[data-field-type=field_group] .fluid__item-field .field-instruct label {
+  font-weight: 600;
+  font-size: 11px;
+  color: var(--ee-text-normal);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.fluid__item[data-field-type=field_group] .fluid__item-field .field-instruct em {
+  font-size: 10px;
+  margin-left: 0;
+  display: block;
+  margin-top: 2px;
+}
+.fluid__item[data-field-type=field_group] .fluid__item-field > div:not(.field-instruct), .fluid__item[data-field-type=field_group] .fluid__item-field > p:not(.field-instruct), .fluid__item[data-field-type=field_group] .fluid__item-field > fieldset:not(.field-instruct), .fluid__item[data-field-type=field_group] .fluid__item-field > textarea:not(.field-instruct) {
+  margin-bottom: 0 !important;
+}
+.fluid__item[data-field-type=field_group] .fluid__item-field .file-field__dropzone {
+  margin-top: 5px !important;
 }
 
 .fluid__item--dragging {
@@ -48535,12 +48638,24 @@ a.ck.ck-button.ck-on {
 }
 
 .fluid__item--reorderable .fluid__item-fieldset em, .fluid__item--reorderable .fluid__item-fieldset * em {
-  margin-left: 22px;
+  margin-left: 8px;
 }
 .fluid__item--reorderable .fluid__item-fieldset .icon--reorder, .fluid__item--reorderable .fluid__item-fieldset * .icon--reorder {
-  margin-right: 5px;
-  color: var(--ee-text-secondary);
-  display: inline-block;
+  margin-right: 8px;
+  color: var(--ee-text-tertiary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  padding: 2px 4px;
+  border-radius: 3px;
+  background-color: rgba(0, 0, 0, 0.04);
+  transition: background-color 0.2s, color 0.2s;
+  height: 20px;
+}
+.fluid__item--reorderable .fluid__item-fieldset .icon--reorder:hover, .fluid__item--reorderable .fluid__item-fieldset * .icon--reorder:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: var(--ee-text-primary);
 }
 .fluid__item--reorderable .fluid__item-field {
   cursor: initial;
@@ -48567,12 +48682,16 @@ a.ck.ck-button.ck-on {
 }
 
 .fluid__item-tools {
-  transition: opacity 100ms ease;
+  transition: opacity 200ms ease;
   position: absolute;
   top: 50%;
   right: 15px;
   transform: translateY(-50%);
   z-index: 1;
+  opacity: 0.5;
+}
+.fluid__item:hover .fluid__item-tools {
+  opacity: 1;
 }
 .fluid__item-tools .dropdown, .fluid__item-tools .select__dropdown {
   max-height: 90vh;
@@ -48584,6 +48703,7 @@ a.ck.ck-button.ck-on {
 }
 .fluid__item-tools.has-open-dropdown {
   z-index: 200;
+  opacity: 1;
 }
 
 .fluid__item-tools--item-closed {
