@@ -759,7 +759,8 @@ class EE_Schema
 			KEY `entry_date` (`entry_date`),
 			KEY `expiration_date` (`expiration_date`),
 			KEY `site_id` (`site_id`),
-			KEY `sticky_date_id_idx` (`sticky`,`entry_date`,`entry_id`)
+			KEY `sticky_date_id_idx` (`sticky`,`entry_date`,`entry_id`),
+			KEY `channel_id_status_entry_date` (`channel_id`,`status`,`entry_date`)
 		)";
 
         // Channel Titles Autosave
@@ -919,7 +920,8 @@ class EE_Schema
 			KEY `child_id` (`child_id`),
 			KEY `field_id` (`field_id`),
 			KEY `fluid_field_data_id` (`fluid_field_data_id`),
-			KEY `grid_row_id` (`grid_row_id`)
+			KEY `grid_row_id` (`grid_row_id`),
+			KEY `parent_id_field_id` (`parent_id`,`field_id`)
 		)";
 
         // Member Relationships table
@@ -1055,7 +1057,8 @@ class EE_Schema
         $Q[] = "CREATE TABLE exp_category_posts (
 			entry_id int(10) unsigned NOT NULL,
 			cat_id int(10) unsigned NOT NULL,
-			PRIMARY KEY `entry_id_cat_id` (`entry_id`, `cat_id`)
+			PRIMARY KEY `entry_id_cat_id` (`entry_id`, `cat_id`),
+			KEY `cat_id` (`cat_id`)
 		)";
 
         // Control panel log
@@ -1149,7 +1152,8 @@ class EE_Schema
 			PRIMARY KEY `template_id` (`template_id`),
 			KEY `group_id` (`group_id`),
 			KEY `template_name` (`template_name`),
-			KEY `site_id` (`site_id`)
+			KEY `site_id` (`site_id`),
+			KEY `group_id_template_name` (`group_id`,`template_name`)
 		)";
 
         // Template Routes
@@ -1612,7 +1616,7 @@ class EE_Schema
 			`order` int(5) unsigned NOT NULL DEFAULT '0',
 			`group` int(11) unsigned DEFAULT NULL,
 			PRIMARY KEY (`id`),
-			KEY `fluid_field_id_entry_id` (`fluid_field_id`,`entry_id`)
+			KEY `fluid_field_id_entry_id_group_order` (`fluid_field_id`,`entry_id`,`group`,`order`)
 		)";
 
         $Q[] = "CREATE TABLE `exp_menu_sets` (

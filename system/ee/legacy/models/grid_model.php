@@ -159,6 +159,8 @@ class Grid_model extends CI_Model
             ee()->dbforge->add_field($db_columns);
             ee()->dbforge->add_key('row_id', true);
             ee()->dbforge->add_key('entry_id');
+            // Add composite key on (entry_id, fluid_field_data_id) to optimize Grid field queries
+            ee()->dbforge->add_key(array('entry_id', 'fluid_field_data_id'));
             ee()->dbforge->create_table($table_name);
 
             return true;
