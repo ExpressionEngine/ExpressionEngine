@@ -11,6 +11,7 @@
 namespace ExpressionEngine\Controller\Channels;
 
 use ExpressionEngine\Controller\Channels\AbstractChannels as AbstractChannelsController;
+use ExpressionEngine\Service\ChannelSet\ImportException;
 
 /**
  * Channel Set Controller
@@ -71,17 +72,27 @@ class Sets extends AbstractChannelsController
                     ->addToBody(lang('channel_set_filetype_error_desc'))
                     ->now();
             } else {
-                $set = ee('ChannelSet')->importUpload($set_file);
-                $set_path = ee('Encrypt')->encode(
-                    $set->getPath(),
-                    ee()->config->item('session_crypt_key')
-                );
-                ee()->functions->redirect(
-                    ee('CP/URL')->make(
-                        'channels/sets/doImport',
-                        ['set_path' => $set_path]
-                    )
-                );
+                try {
+                    $set = ee('ChannelSet')->importUpload($set_file);
+                    $set_path = ee('Encrypt')->encode(
+                        $set->getPath(),
+                        ee()->config->item('session_crypt_key')
+                    );
+                    ee()->functions->redirect(
+                        ee('CP/URL')->make(
+                            'channels/sets/doImport',
+                            ['set_path' => $set_path]
+                        )
+                    );
+                } catch (ImportException $e) {
+                    ee('CP/Alert')->makeInline('shared-form')
+                        ->asIssue()
+                        ->withTitle(lang('channel_set_upload_error'))
+                        ->addToBody($e->getMessage())
+                        ->now();
+                    
+                    $vars['errors'] = $result;
+                }
             }
         }
 
@@ -195,6 +206,7 @@ class Sets extends AbstractChannelsController
             $set->cleanUpSourceFiles();
             $errors = $result->getErrors();
             $model_errors = $result->getModelErrors();
+            
             foreach (array('Channel Field', 'Category', 'Category Group', 'Status', 'Upload Destination') as $type) {
                 if (isset($model_errors[$type])) {
                     foreach ($model_errors[$type][0][2] as $error) {
