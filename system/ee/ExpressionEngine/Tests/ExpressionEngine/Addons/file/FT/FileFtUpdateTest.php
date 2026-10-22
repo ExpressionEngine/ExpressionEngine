@@ -58,16 +58,16 @@ class FileFtUpdateTest extends FileFtTestBase
             'field_content_type' => 'image',
         ], 41, 'hero_asset');
         $expectedSettings = $fieldtype->settings;
-        $expectedContentId = $fieldtype->content_id;
-        $expectedFieldName = $fieldtype->field_name;
+        $expectedContentId = $this->fieldtypeContentId($fieldtype);
+        $expectedFieldName = $this->fieldtypeName($fieldtype);
         $libraries = $this->loadRecorder->libraries;
         $models = $this->loadRecorder->models;
         $fileFieldCalls = $this->fileFieldMock->calls;
 
         $this->assertTrue($fieldtype->update('7.5.0'));
         $this->assertSame($expectedSettings, $fieldtype->settings);
-        $this->assertSame($expectedContentId, $fieldtype->content_id);
-        $this->assertSame($expectedFieldName, $fieldtype->field_name);
+        $this->assertSame($expectedContentId, $this->fieldtypeContentId($fieldtype));
+        $this->assertSame($expectedFieldName, $this->fieldtypeName($fieldtype));
         $this->assertSame($libraries, $this->loadRecorder->libraries);
         $this->assertSame($models, $this->loadRecorder->models);
         $this->assertSame($fileFieldCalls, $this->fileFieldMock->calls);
