@@ -48,6 +48,52 @@ class RteTest extends TestCase
     }
 
     /**
+     * Resolve Pro Variables page links without changing embedded template tags.
+     *
+     * @return void
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function testVarReplaceTagPreservesTemplateTags()
+    {
+        require_once BASEPATH . 'fieldtypes/EE_Fieldtype.php';
+        require_once BASEPATH . 'helpers/string_helper.php';
+        require_once PATH_ADDONS . 'rte/ft.rte.php';
+
+        $extensions = $this->getMockBuilder(\stdClass::class)->addMethods(['active_hook'])->getMock();
+        $extensions->method('active_hook')->willReturn(false);
+        ee()->setMock('extensions', $extensions);
+
+        $functions = $this->getMockBuilder(\stdClass::class)->addMethods(['fetch_site_index'])->getMock();
+        $functions->method('fetch_site_index')->with(0, 0)->willReturn('https://example.com/');
+        ee()->setMock('functions', $functions);
+
+        $fieldtype = $this->getMockBuilder(\Rte_ft::class)->onlyMethods(['pre_process'])->getMock();
+        $fieldtype->expects($this->never())->method('pre_process');
+
+        $pageTags = new \ReflectionProperty(RteHelper::class, '_pageTags');
+        \TestReflectionHelper::makePropertyAccessible($pageTags);
+        $originalPageTags = $pageTags->getValue();
+        $pageTags->setValue(null, [['_111' => '{page_111}'], ['_111' => '/services/']]);
+
+        try {
+            $templateTags = '{embed="partials/promo"}{if logged_in}Welcome{/if}';
+            $data = '<a href="{page_111}#details">Services</a>' . $templateTags;
+
+            $this->assertSame(
+                '<a href="https://example.com/services/#details">Services</a>' . $templateTags,
+                $fieldtype->var_replace_tag($data)
+            );
+            $this->assertSame(
+                'Services' . $templateTags,
+                $fieldtype->var_replace_tag($data, ['text_only' => 'yes'])
+            );
+        } finally {
+            $pageTags->setValue(null, $originalPageTags);
+        }
+    }
+
+    /**
      * @dataProvider pageUrlsDataProvider
      */
     public function testReplacePageUrls($url, $expected)
