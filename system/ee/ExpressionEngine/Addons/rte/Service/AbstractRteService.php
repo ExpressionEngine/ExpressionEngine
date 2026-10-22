@@ -46,7 +46,7 @@ abstract class AbstractRteService implements RteService {
                     $cache_key = '/rte/' . $configHandle . '/css';
                     $cachedCss = ee()->cache->get($cache_key, Cache::GLOBAL_SCOPE);
                     if ($cachedCss !== false) {
-                        $finfo = ee()->cache->file->get_metadata($cache_key, Cache::GLOBAL_SCOPE);
+                        $finfo = ee()->cache->get_metadata($cache_key, Cache::GLOBAL_SCOPE);
                         if ($finfo['mtime'] >= ee()->CSS_TMPL->template_edit_date) {
                             $prefixedCss = $cachedCss;
                         }
