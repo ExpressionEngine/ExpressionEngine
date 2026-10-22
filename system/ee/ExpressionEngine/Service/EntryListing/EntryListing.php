@@ -211,7 +211,7 @@ class EntryListing
             ->add($this->channel_filter)
             ->add($this->category_filter)
             ->add($this->status_filter)
-            ->add('Date')
+            ->add('EntryDate')
             ->add('EntryKeyword')
             ->add(
                 'SearchIn',
@@ -372,7 +372,7 @@ class EntryListing
 
         $filter_values = $this->filters->values();
 
-        if (! empty($filter_values['filter_by_date'])) {
+        if (! is_null($filter_values['filter_by_date']) && $filter_values['filter_by_date'] !== '') {
             if (is_array($filter_values['filter_by_date'])) {
                 $entries->filter('entry_date', '>=', $filter_values['filter_by_date'][0]);
                 $entries->filter('entry_date', '<', $filter_values['filter_by_date'][1]);

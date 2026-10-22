@@ -370,6 +370,8 @@ $lang = array(
 
     'names_and_email_only' => 'Names & email only',
 
+    'future_entries' => 'Future entries',
+
     'columns_filter' => 'Columns',
 
     'perpage_filter' => 'show',
