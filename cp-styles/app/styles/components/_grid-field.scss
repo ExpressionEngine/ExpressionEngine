@@ -725,3 +725,25 @@
 		}
 	}
 }
+
+.grid-row-description {
+	margin-left: 0;
+	padding-left: 25px;
+	display: none;
+	color: var(--ee-text-secondary);
+	justify-content: center;
+	align-items: center;
+	font-style: italic;
+	margin-left: 5px;
+	font-size: 0.8rem;
+	font-weight: normal;
+	border-radius: 4px;
+	cursor: pointer;
+	-webkit-transition: opacity 0.15s ease-in-out;
+	-moz-transition: opacity 0.15s ease-in-out;
+	-o-transition: opacity 0.15s ease-in-out;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}

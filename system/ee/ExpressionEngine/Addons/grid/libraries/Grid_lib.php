@@ -126,6 +126,7 @@ class Grid_lib
                     'data-fieldtype' => $column['col_type'],
                     'data-column-id' => $column['col_id'],
                     $data_row_id_attr => $row_id,
+                    'data-saved-value' => (isset($row['col_id_' . $column['col_id']])) ? ee('Format')->make('Text', $row['col_id_' . $column['col_id']])->attributeSafe() : ''
                 );
 
                 if (! empty($column['col_width'])) {
