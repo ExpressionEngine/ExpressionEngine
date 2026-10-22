@@ -157,6 +157,8 @@ $lang = array(
 
     'password_label' => 'Password:',
 
+    'please_select' => 'Please select',
+
     'powered_by' => 'Powered By',
 
     'queries_executed' => '%x SQL queries used',
