@@ -31,6 +31,26 @@ $lang = array(
     'command_addons_install_complete'               => '%s installed successfully',
     'command_addons_install_option_addon'           => 'Add-on\'s short name',
 
+    // Lang entries for command addons:unpack
+    'command_addons_unpack_description'            => 'Unpacks an add-on and moves it to the proper location',
+    'command_addons_unpack_summary'                => '',
+    'command_addons_unpack_begin'                  => 'Add-on unpacking is about to begin',
+    'command_addons_unpack_ask_addon'              => 'Which add-on do you want to unpack?',
+    'command_addons_unpack_in_progress'            => 'Performing %s add-on unpacking',
+    'command_addons_unpack_option_addon'           => 'Add-on\'s short name',
+    'command_addons_unpack_option_delete_zip'      => 'Delete the original zip file after unpacking',
+    'command_addons_unpack_moving_files'           => 'Moving files to add-on folder for %s...',
+    'command_addons_some_files_not_copied'         => 'Some files were not copied: %s',
+    'command_addons_unpack_no_zips_found'          => 'No add-on zip files were found to unpack.',
+
+    // Lang entries for command addons:pack
+    'command_addons_pack_description'            => 'Packs an add-on into a zip file',
+    'command_addons_pack_summary'                => '',
+    'command_addons_pack_begin'                  => 'Add-on packing is about to begin',
+    'command_addons_pack_ask_addon'              => 'Which add-on do you want to pack?',
+    'command_addons_pack_in_progress'            => 'Performing %s add-on packing',
+    'command_addons_pack_option_addon'           => 'Add-on\'s short name',
+
     // Lang entries for command addons:uninstall
     'command_addons_uninstall_description'            => 'Uninstalls add-on and all its components',
     'command_addons_uninstall_summary'                => '',
