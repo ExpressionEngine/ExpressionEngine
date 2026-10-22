@@ -24,6 +24,7 @@ class EE_Output
     public $headers = array();
     public $enable_profiler = false;
     public $parse_exec_vars = true; // whether or not to parse variables like {elapsed_time} and {memory_usage}
+    public $add_token_refresh = false; // whether or not to add JS that will refresh CSRF token
 
     public $_zlib_oc = false;
 
@@ -347,6 +348,27 @@ class EE_Output
             }
         }
         // --------------------------------------------------------------------
+
+        // Inject JavaScript to refresh CSRF token lifetime
+        if ($this->add_token_refresh) {
+            ee()->load->library('javascript');
+            $js = "
+            var csrfTokenRefreshRequestTimeout;
+            clearTimeout(csrfTokenRefreshRequestTimeout);
+            function csrfTokenRefreshRequest() {
+                csrfTokenRefreshRequestTimeout = setTimeout(csrfTokenRefreshRequest, 5000);
+                csrfTokenRefreshRequest = new XMLHttpRequest();
+                csrfTokenRefreshRequest.open('POST', '" . ee()->functions->fetch_site_index() . QUERY_MARKER . 'ACT=refresh_csrf_token' . "');
+                csrfTokenRefreshRequest.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+                csrfTokenRefreshRequest.setRequestHeader('X-CSRF-TOKEN', '" . CSRF_TOKEN . "');
+                csrfTokenRefreshRequest.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                csrfTokenRefreshRequest.send();
+                csrfTokenRefreshRequest = null;
+            }
+            csrfTokenRefreshRequestTimeout = setTimeout(csrfTokenRefreshRequest, 3600000);
+            ";
+            $output = $this->add_to_foot($output, ee()->javascript->inline($js));
+        }
 
         // Do we need to generate profile data?
         // If so, load the Profile service and run it.
