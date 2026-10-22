@@ -161,7 +161,8 @@ context('Channel Settings', () => {
 
         page.get('settings_tab').click()
         page.get('channel_description').clear().type('Some description')
-        page.get('channel_lang').check('en', { force: true })
+        page.get('channel_lang_filter').clear().type('English')
+        page.get('channel_lang').filter('[value="en"]').check({ force: true })
         page.get('channel_url').clear().type('http://someurl/channel')
         page.get('comment_url').clear().type('http://someurl/channel/comment')
         page.get('search_results_url').clear().type('http://someurl/channel/search/results')
@@ -213,6 +214,7 @@ context('Channel Settings', () => {
         cy.get('.tab-bar__tabs .tab-bar__tab').contains('Settings').click()
 
         page.get('channel_description').contains('Some description')
+        page.get('channel_lang_filter').clear().type('English')
         page.get('channel_lang').filter('[value="en"]').should('be.checked')
 
         page.get('channel_url').should('have.value', 'http://someurl/channel')

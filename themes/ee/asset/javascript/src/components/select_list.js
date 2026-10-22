@@ -71,6 +71,8 @@ function flattenItemsForVirtualization(items) {
 
 
 function getVirtualItemHeight(item) {
+  if (!item) return 40;
+
   var height = 40;
 
   if (item.instructions) {
@@ -86,6 +88,22 @@ function getVirtualItemHeight(item) {
   }
 
   return height;
+}
+
+function getVirtualItemMetrics(items) {
+  var totalHeight = 0;
+  return items.reduce(function (metrics, item) {
+    var height = getVirtualItemHeight(item);
+    metrics.offsets.push(totalHeight);
+    metrics.heights.push(height);
+    totalHeight += height;
+    metrics.totalHeight = totalHeight;
+    return metrics;
+  }, {
+    heights: [],
+    offsets: [],
+    totalHeight: 0
+  });
 }
 
 var SelectList = /*#__PURE__*/function (_React$Component) {
@@ -535,7 +553,7 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
         handle: this.handleSelect,
         useVirtualization: useVirtualization,
         flattenedItems: flattenedItems,
-        virtualizationHeight: props.virtualizationHeight || 400
+        virtualizationHeight: props.virtualizationHeight
       }, !props.loading && props.items.length == 0 && React.createElement(NoResults, {
         text: props.noResults
       }), props.loading && React.createElement(Loading, {
@@ -577,7 +595,8 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
         groupToggle: props.groupToggle,
         toggles: props.toggles,
         state: this.state,
-        toggleChanged: props.toggleChanged
+        toggleChanged: props.toggleChanged,
+        virtualizationHeight: props.virtualizationHeight
       })), !props.multi && props.tooMany && props.selected[0] && React.createElement(SelectedItem, {
         item: this.getFullItem(props.selected[0]),
         clearSelection: this.clearSelection,
@@ -730,10 +749,13 @@ function FieldInputs(props) {
 
 
   var virtualizationStyle = props.useVirtualization ? {
-    height: "".concat(props.virtualizationHeight, "px"),
     overflow: 'auto',
     position: 'relative'
-  } : {}; // If not nested and virtualization is active, wrap children in ul.field-nested for CSS compatibility
+  } : {};
+
+  if (props.useVirtualization && props.virtualizationHeight !== undefined && props.virtualizationHeight !== null) {
+    virtualizationStyle.height = "".concat(props.virtualizationHeight, "px");
+  } // If not nested and virtualization is active, wrap children in ul.field-nested for CSS compatibility
 
   if (props.useVirtualization) {
     return React.createElement("div", {
@@ -1039,11 +1061,32 @@ var VirtualizedItemList = /*#__PURE__*/function (_React$Component5) {
       });
     });
 
+    _defineProperty(_assertThisInitialized(_this10), "getContainerHeight", function () {
+      if (_this10.scrollContainer && _this10.scrollContainer.clientHeight) {
+        return _this10.scrollContainer.clientHeight;
+      }
+
+      return _this10.props.virtualizationHeight || 400;
+    });
+
+    _defineProperty(_assertThisInitialized(_this10), "updateContainerHeight", function () {
+      var containerHeight = _this10.getContainerHeight();
+
+      if (containerHeight !== _this10.state.containerHeight) {
+        _this10.setState({
+          containerHeight: containerHeight
+        });
+      }
+    });
+
     _this10.state = {
-      scrollTop: 0
+      scrollTop: 0,
+      containerHeight: props.virtualizationHeight || null
     };
     _this10.containerRef = React.createRef();
     _this10.scrollHandler = null;
+    _this10.itemMetrics = null;
+    _this10.itemMetricsSource = null;
     return _this10;
   }
 
@@ -1069,7 +1112,24 @@ var VirtualizedItemList = /*#__PURE__*/function (_React$Component5) {
           };
 
           this.scrollContainer.addEventListener('scroll', this.scrollHandler);
+          this.updateContainerHeight();
+
+          if (window.ResizeObserver) {
+            this.resizeObserver = new window.ResizeObserver(function () {
+              _this11.updateContainerHeight();
+            });
+            this.resizeObserver.observe(this.scrollContainer);
+          } else {
+            window.addEventListener('resize', this.updateContainerHeight);
+          }
         }
+      }
+    }
+  }, {
+    key: "componentDidUpdate",
+    value: function componentDidUpdate(prevProps) {
+      if (prevProps.virtualizationHeight !== this.props.virtualizationHeight) {
+        this.updateContainerHeight();
       }
     }
   }, {
@@ -1079,23 +1139,73 @@ var VirtualizedItemList = /*#__PURE__*/function (_React$Component5) {
         this.scrollContainer.removeEventListener('scroll', this.scrollHandler);
       }
 
+      if (this.resizeObserver) {
+        this.resizeObserver.disconnect();
+      } else {
+        window.removeEventListener('resize', this.updateContainerHeight);
+      }
+
       if (this.scrollTimeout) {
         clearTimeout(this.scrollTimeout);
       }
     }
   }, {
+    key: "getItemMetrics",
+    value: function getItemMetrics() {
+      if (this.itemMetricsSource !== this.props.items) {
+        this.itemMetrics = getVirtualItemMetrics(this.props.items);
+        this.itemMetricsSource = this.props.items;
+      }
+
+      return this.itemMetrics;
+    }
+  }, {
+    key: "findItemIndexAtOffset",
+    value: function findItemIndexAtOffset(offset, metrics) {
+      var low = 0;
+      var high = metrics.heights.length - 1;
+      var result = high;
+
+      while (low <= high) {
+        var mid = Math.floor((low + high) / 2);
+        var itemBottom = metrics.offsets[mid] + metrics.heights[mid];
+
+        if (itemBottom > offset) {
+          result = mid;
+          high = mid - 1;
+        } else {
+          low = mid + 1;
+        }
+      }
+
+      return result;
+    }
+  }, {
     key: "getVisibleRange",
-    value: function getVisibleRange() {
+    value: function getVisibleRange(metrics) {
       var scrollTop = this.state.scrollTop;
-      var containerHeight = 400; // Default container height
-
-      var itemHeight = 40; // Base item height
-
+      var containerHeight = this.state.containerHeight || this.getContainerHeight();
       var overscan = 10; // Render extra items above/below viewport
 
-      var startIndex = Math.max(0, Math.floor(scrollTop / itemHeight) - overscan);
-      var visibleCount = Math.ceil(containerHeight / itemHeight) + overscan * 2;
-      var endIndex = Math.min(this.props.items.length - 1, startIndex + visibleCount);
+      var items = this.props.items;
+
+      if (!items.length) {
+        return {
+          startIndex: 0,
+          endIndex: 0
+        };
+      }
+
+      var firstVisibleIndex = this.findItemIndexAtOffset(scrollTop, metrics);
+      var viewportBottom = scrollTop + containerHeight;
+      var endIndex = firstVisibleIndex;
+
+      while (endIndex < items.length && metrics.offsets[endIndex] < viewportBottom) {
+        endIndex++;
+      }
+
+      var startIndex = Math.max(0, firstVisibleIndex - overscan);
+      endIndex = Math.min(items.length - 1, endIndex + overscan);
       return {
         startIndex: startIndex,
         endIndex: endIndex
@@ -1103,37 +1213,27 @@ var VirtualizedItemList = /*#__PURE__*/function (_React$Component5) {
     }
   }, {
     key: "getTotalHeight",
-    value: function getTotalHeight() {
-      var totalHeight = 0;
-
-      for (var i = 0; i < this.props.items.length; i++) {
-        totalHeight += getVirtualItemHeight(this.props.items[i]);
-      }
-
-      return totalHeight;
+    value: function getTotalHeight(metrics) {
+      return metrics.totalHeight;
     }
   }, {
     key: "getOffsetTop",
-    value: function getOffsetTop(startIndex) {
-      var offset = 0;
-
-      for (var i = 0; i < startIndex; i++) {
-        offset += getVirtualItemHeight(this.props.items[i]);
-      }
-
-      return offset;
+    value: function getOffsetTop(startIndex, metrics) {
+      return metrics.offsets[startIndex] || 0;
     }
   }, {
     key: "render",
     value: function render() {
       var _this12 = this;
 
-      var _this$getVisibleRange = this.getVisibleRange(),
+      var metrics = this.getItemMetrics();
+
+      var _this$getVisibleRange = this.getVisibleRange(metrics),
           startIndex = _this$getVisibleRange.startIndex,
           endIndex = _this$getVisibleRange.endIndex;
 
-      var totalHeight = this.getTotalHeight();
-      var offsetTop = this.getOffsetTop(startIndex);
+      var totalHeight = this.getTotalHeight(metrics);
+      var offsetTop = this.getOffsetTop(startIndex, metrics);
       var visibleItems = this.props.items.slice(startIndex, endIndex + 1); // Return virtualization structure without wrapping <ul>
       // Parent FieldInputs component provides the <ul> wrapper and handles scrolling
 
@@ -1157,7 +1257,11 @@ var VirtualizedItemList = /*#__PURE__*/function (_React$Component5) {
           key: item.value ? item.value : item.section,
           className: "nestable-item",
           "data-id": item.value,
-          "data-depth": item.depth || 0
+          "data-depth": item.depth || 0,
+          style: {
+            minHeight: "".concat(metrics.heights[globalIndex], "px"),
+            boxSizing: 'border-box'
+          }
         }, React.createElement(SelectItem, {
           item: item,
           name: _this12.props.name,
