@@ -30804,6 +30804,9 @@ fieldset.hide-block {
 .field-instruct label:last-child {
   margin-bottom: 10px;
 }
+.field-instruct label[data-track-hash] {
+  cursor: pointer;
+}
 .field-instruct p {
   margin-bottom: 10px;
 }

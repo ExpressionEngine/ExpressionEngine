@@ -90,6 +90,8 @@
             <?=$field->renderAlert()?>
             <?php
                 $field_class = '';
+                $show_anchor_links = ee()->session->userdata('show_anchor_links', ee()->config->item('show_anchor_links'));
+                $anchor_links_href = '';
                 if ($field->getStatus() == 'warning') {
                     $field_class .= ' warned';
                 }
@@ -107,6 +109,9 @@
                 if ($field->isConditional() && $field->isConditionallyHidden()) {
                     $field_class .= ' hide-block';
                 }
+                if (isset($show_anchor_links) && $show_anchor_links == 'y') {
+                    $anchor_links_href = 'data-track-hash="fieldset-' . $field->getId() . '"';
+                }
             ?>
             <?php if ($field->getType() == 'grid' || $field->getType() == 'file_grid'): ?>
             <div class="fieldset-faux <?=$field_class?>"  data-field_id="<?=$field->getId()?>" <?php if (!isset($pro_class)) : ?> style="width:<?php echo $field->getWidth()?>%" <?php endif; ?>>
@@ -115,7 +120,7 @@
             <?php endif; ?>
                 <div class="field-instruct">
                     <?php if (! $field->titleIsHidden()):?>
-                        <label><?php if (!isset($pro_class)) : ?><span class="ico sub-arrow js-toggle-field"></span><?php endif; ?><?=$field->getLabel()?></label>
+                        <label <?=$anchor_links_href?>><?php if (!isset($pro_class)) : ?><span class="ico sub-arrow js-toggle-field"></span><?php endif; ?><?=$field->getLabel()?></label>
                         <?=$field->getNameBadge()?>
                         <?php
                         $fieldInstructions = $field->getInstructions();

@@ -75,6 +75,10 @@ fieldset {
 		&:last-child {
 		margin-bottom: $s-s;
 		}
+
+		&[data-track-hash] {
+			cursor: pointer;
+		}
 	}
 
 	p {
