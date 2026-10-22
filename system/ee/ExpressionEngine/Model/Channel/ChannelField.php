@@ -134,7 +134,7 @@ class ChannelField extends FieldModel
     protected $field_maxl;
     protected $field_required;
     protected $field_text_direction;
-    protected $field_search;
+    protected $field_search = 'y';
     protected $field_is_hidden;
     protected $field_is_conditional;
     protected $field_fmt;
