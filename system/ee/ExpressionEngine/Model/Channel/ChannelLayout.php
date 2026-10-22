@@ -110,6 +110,11 @@ class ChannelLayout extends Model implements LayoutInterface
                     $field->setWidth(100);
                 }
 
+                // custom field label
+                if (isset($field_info['label'])) {
+                    $field->setLabel($field_info['label']);
+                }
+
                 // Fields can be configured to start collapsed or expaned, but
                 // a layout should always override it.
                 if (isset($field_info['collapsed'])) {
