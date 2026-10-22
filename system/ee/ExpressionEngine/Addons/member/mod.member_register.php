@@ -52,9 +52,14 @@ class Member_register extends Member
             ->order_by('m_field_order')
             ->get('member_fields');
 
+        // Temporarily masquerade as CP so these libraries can initialize, then
+        // restore router state so downstream template/layout parsing keeps the
+        // original front-end context.
+        $original_router_class = ee()->router->fetch_class();
         ee()->router->set_class('cp');
         ee()->load->library('cp');
         ee()->load->library('javascript');
+        ee()->router->set_class($original_router_class);
         ee()->load->helper('form');
 
         $fields = [];

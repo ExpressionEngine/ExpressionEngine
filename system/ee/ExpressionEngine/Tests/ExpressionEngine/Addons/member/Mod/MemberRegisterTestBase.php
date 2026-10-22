@@ -74,6 +74,7 @@ abstract class MemberRegisterTestBase extends TestCase
     protected $modelService;
     protected $load;
     protected $functions;
+    protected $router;
 
     protected function setUp(): void
     {
@@ -406,11 +407,22 @@ abstract class MemberRegisterTestBase extends TestCase
         };
         ee()->setMock('output', $this->output);
 
-        ee()->setMock('router', new class {
+        $this->router = new class {
+            public $class = 'ee';
+            public $history = [];
+
+            public function fetch_class()
+            {
+                return $this->class;
+            }
+
             public function set_class($class)
             {
+                $this->class = $class;
+                $this->history[] = $class;
             }
-        });
+        };
+        ee()->setMock('router', $this->router);
 
         $this->load = new class {
             public $helpers = [];
