@@ -308,3 +308,23 @@ input[type="button"] {
 .publish__add-category-button {
   margin-top: 1em;
 }
+
+.structure-uri-link {
+  display: inline-flex; 
+  margin-left: 10px;
+
+  span.button {
+    padding: 0 !important;
+
+    a {
+      display: block;
+      padding: 5px 15px !important;
+    }
+  }
+}
+
+.structure-uri-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
