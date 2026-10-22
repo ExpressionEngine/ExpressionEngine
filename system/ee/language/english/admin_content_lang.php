@@ -836,6 +836,8 @@ $lang = array(
     /* Channel Entries API */
     'default_value' => 'Default value',
 
+    'field_placeholder' => 'Placeholder',
+
     'field_fmt' => 'Text formatting',
 
     'field_max_length' => 'Maximum characters',

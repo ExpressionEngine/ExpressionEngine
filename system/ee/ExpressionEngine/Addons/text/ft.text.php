@@ -207,6 +207,15 @@ class Text_ft extends EE_Fieldtype
                 )
             ),
             array(
+                'title' => 'field_placeholder',
+                'fields' => array(
+                    'field_placeholder' => array(
+                        'type' => 'text',
+                        'value' => $data['field_placeholder'] ?? ''
+                    )
+                )
+            ),
+            array(
                 'title' => 'field_fmt',
                 'fields' => array(
                     'field_fmt' => array(
@@ -322,6 +331,7 @@ class Text_ft extends EE_Fieldtype
     {
         $defaults = array(
             'field_maxl' => 256,
+            'field_placeholder' => '',
             'field_content_type' => '',
             'field_show_smileys' => 'n',
             'field_show_file_selector' => 'n'
