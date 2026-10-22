@@ -49,6 +49,8 @@ context('Fluid Fields', () => {
             page.get('fields').find("[value='5']").should('be.checked')
             page.get('fields').find("[value='6']").should('be.checked')
             page.get('fields').find("[value='7']").should('be.checked')
+            cy.get('[data-input-value="field_channel_fields"] input[type="hidden"][name="fluid_field_allow_multiple[]"][value="2"]').should('exist')
+            cy.get('[data-input-value="field_channel_fields"] input[type="hidden"][name="fluid_field_required[]"][value="2"]').should('not.exist')
 
         })
     })
