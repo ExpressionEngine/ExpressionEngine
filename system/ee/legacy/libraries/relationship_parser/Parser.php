@@ -425,6 +425,10 @@ class EE_Relationship_data_parser
 
         foreach ($entry_ids as $entry_id) {
             $data = $this->entry($entry_id);
+            if (is_null($data)) {
+                // relationship record exists, but entry does not
+                continue;
+            }
 
             if ($node->param('show_future_entries') != 'yes') {
                 if ($data['entry_date'] > ee()->localize->now) {
