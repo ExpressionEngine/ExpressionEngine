@@ -12,7 +12,7 @@ if (isset($settings['group'])) {
 <?php if ($name === 'fieldset_group'): ?>
 	<div class="fieldset-group">
 <?php elseif (is_string($name)): ?>
-	<h2<?php if ($group): ?> data-section-group="<?=$group?>"<?php endif ?>><?=lang($name)?></h2>
+	<h2<?php if ($group): ?> data-section-group="<?=$group?>" data-group="<?=$group?>"<?php endif ?>><?=lang($name)?></h2>
 <?php endif ?>
 <?php
 foreach ($settings as $setting) {

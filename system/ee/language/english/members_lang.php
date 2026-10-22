@@ -255,7 +255,7 @@ $lang = array(
 
     'role_groups' => 'Role Groups',
 
-    'role_groups_desc' => 'Assign this user a group of access permissions.',
+    'role_groups_desc' => 'Include into group of multiple roles.',
 
     'additional_roles' => 'Additional Roles',
 
