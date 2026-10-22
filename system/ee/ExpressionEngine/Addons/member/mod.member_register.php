@@ -484,7 +484,8 @@ class Member_register extends Member
         }
 
         // Custom Member field validation
-        foreach($fields as $field) {
+        $customFieldData = [];
+        foreach ($fields as $field) {
             $field_name = 'm_field_id_' . $field->m_field_id;
             if(array_key_exists($field_name, $custom_data)) {
                 $validator->defineRule("validate_$field_name", function ($key, $value, $params, $rule) use($field, $custom_data, $field_name) {
@@ -492,6 +493,7 @@ class Member_register extends Member
                 });
                 $validator->setRule($field_name, "validate_$field_name");
             }
+            $customFieldData[$field->m_field_name] = $custom_data[$field_name] ?? '';
         }
 
         $validatorResult = $validator->validate($_POST);
@@ -554,13 +556,15 @@ class Member_register extends Member
         ) {
             $name = ($data['screen_name'] != '') ? $data['screen_name'] : $data['username'];
 
-            $swap = array(
+            // custom fields are available in notification template
+            // but this is experimental feature, only single tags are supported
+            $swap = array_merge($customFieldData, array(
                 'name' => $name,
                 'site_name' => stripslashes(ee()->config->item('site_name')),
                 'control_panel_url' => ee()->config->item('cp_url'),
                 'username' => $data['username'],
                 'email' => $data['email']
-            );
+            ));
 
             $template = ee()->functions->fetch_email_template('admin_notify_reg');
             $email_tit = $this->_var_swap($template['title'], $swap);

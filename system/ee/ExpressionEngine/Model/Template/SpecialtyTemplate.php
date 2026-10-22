@@ -67,7 +67,7 @@ class SpecialtyTemplate extends Model
     public function getAvailableVariables()
     {
         $vars = array(
-            'admin_notify_reg' => array('name', 'username', 'email', 'site_name', 'control_panel_url'),
+            'admin_notify_reg' => array('name', 'username', 'email', 'site_name', 'control_panel_url', 'custom_field_single_tag'),
             'admin_notify_entry' => array('channel_name', 'entry_title', 'entry_url', 'comment_url', 'cp_edit_entry_url', 'name', 'email'),
             'admin_notify_comment' => array('channel_name', 'entry_title', 'entry_id', 'url_title', 'channel_id', 'comment_url_title_auto_path',  'comment_url', 'comment', 'comment_id', 'name', 'url', 'email', 'location', 'unwrap}{delete_link}{/unwrap', 'unwrap}{close_link}{/unwrap', 'unwrap}{approve_link}{/unwrap'),
             'admin_notify_forum_post' => array('name_of_poster', 'forum_name', 'title', 'body', 'thread_url', 'post_url'),
