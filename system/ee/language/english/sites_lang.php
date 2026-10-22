@@ -28,7 +28,7 @@ $lang = array(
 
     'edit_site_success_desc' => 'The site <b>%s</b> has been updated.',
 
-    'invalid_short_name' => 'Your site name must contain only alpha-numeric characters, underscroes, dashes, and no spaces.',
+    'invalid_short_name' => 'Your site name must contain only alpha-numeric characters, underscores, dashes, and no spaces.',
 
     'name_desc' => 'Full descriptive name of this site.',
 

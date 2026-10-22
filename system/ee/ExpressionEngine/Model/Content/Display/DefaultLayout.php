@@ -69,6 +69,9 @@ class DefaultLayout implements LayoutInterface
 
             foreach ($section['fields'] as $field) {
                 $field_id = $field['field'];
+                if (!array_key_exists($field_id, $fields)) {
+                    continue;
+                }
                 $tab->addField($fields[$field_id]);
                 unset($fields[$field_id]);
             }

@@ -67,12 +67,31 @@ class SecurityPrivacy extends Settings
                         )
                     )
                 ),
+            ),
+            'cli_settings' => array(
                 array(
                     'title' => 'cli_enabled',
                     'desc' => '',
                     'fields' => array(
                         'cli_enabled' => array(
                             'type' => 'yes_no',
+                            'value' => ee()->config->item('cli_enabled') ?: 'y',
+                            'group_toggle' => array(
+                                'y' => 'cli_member_id'
+                            )
+                        )
+                    )
+                ),
+                array(
+                    'title' => 'cli_user',
+                    'desc' => 'cli_user_desc',
+                    'group' => 'cli_member_id',
+                    'fields' => array(
+                        'cli_member_id' => array(
+                            'type' => 'radio',
+                            'choices' => ee('Member')->getAuthors(),
+                            'filter_url' => ee('CP/URL')->make('channels/author-list')->compile(),
+                            'value' => ee('Member')->getDefaultCLIAuthor()->getId()
                         )
                     )
                 ),
