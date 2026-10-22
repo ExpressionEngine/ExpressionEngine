@@ -321,72 +321,72 @@
     margin-top:0;
 }
 
-/* EE6 styles */
-body[data-ee-version^="6."] .pro-search-home code {
+/* EE6+ styles */
+body[data-ee-version] .pro-search-home code {
     color:var(--ee-gray-50);
 }
 
-body[data-ee-version^="6."] .pro-tabs .active a {
+body[data-ee-version] .pro-tabs .active a {
     background: var(--ee-bg-0);
     border-color: var(--ee-list-item-border);
 }
 
-body[data-ee-version^="6."] .pro-tabs li:not(.active) a {
+body[data-ee-version] .pro-tabs li:not(.active) a {
     color:var(--ee-text-primary);
 }
 
-body[data-ee-version^="6."] .pro-tabs-pages {
+body[data-ee-version] .pro-tabs-pages {
     background: var(--ee-bg-0);
     border-color: var(--ee-list-item-border);
 }
 
-body[data-ee-version^="6."] #pro-lexicon .pro-status {
+body[data-ee-version] #pro-lexicon .pro-status {
     border-color: var(--ee-list-item-border);
 }
 
-body[data-ee-version^="6."] #pro-lexicon .pro-found-words a:hover {
+body[data-ee-version] #pro-lexicon .pro-found-words a:hover {
     color:var(--ee-accent-dark);
 }
 
-body[data-ee-version^="6."] #parameters button {
+body[data-ee-version] #parameters button {
     color:var(--ee-gray-50);
 }
 
-body[data-ee-version^="6."] #parameters button:hover {
+body[data-ee-version] #parameters button:hover {
     color: var(--ee-gray-60);
 }
 
-body[data-ee-version^="6."] .pro-log .params var {
+body[data-ee-version] .pro-log .params var {
     color:var(--ee-gray-5);
 }
 
-body[data-ee-version^="6."] #pro-find-replace .pro-tabs-pages {
+body[data-ee-version] #pro-find-replace .pro-tabs-pages {
     color: var(--ee-text-normal);
 }
 
-body[data-ee-version^="6."] #pro-find-replace .pro-boxes h4 span:hover {
+body[data-ee-version] #pro-find-replace .pro-boxes h4 span:hover {
     color: inherit;
 }
 
-body[data-ee-version^="6."] #pro-find-replace .pro-boxes label:hover {
+body[data-ee-version] #pro-find-replace .pro-boxes label:hover {
     color: inherit;
     background: inherit;
 }
 
-body[data-ee-version^="6."] #pro-find-replace .pro-boxes label:hover {
+body[data-ee-version] #pro-find-replace .pro-boxes label:hover {
     color: var(--ee-text-primary);
     background: var(--ee-gray-5);
 }
 
-body[data-ee-version^="6."] #pro-find-replace dl {
+body[data-ee-version] #pro-find-replace dl {
     color: inherit;
 }
 
-body[data-ee-version^="6."] #pro-find-replace .item:hover {
+body[data-ee-version] #pro-find-replace .item:hover {
     border-color: inherit;
 }
 
-body[data-ee-version^="6."] #pro-find-replace .item.selected {
+body[data-ee-version] #pro-find-replace .item.selected {
     background-color:inherit;
     border-color:inherit;
 }
