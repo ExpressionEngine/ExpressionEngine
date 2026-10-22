@@ -544,11 +544,27 @@ var Relationship = /*#__PURE__*/function (_React$Component) {
       $('.react-deferred-loading--relationship', context).each(function () {
         var $wrapper = $(this);
         var $button = $wrapper.find('.js-dropdown-toggle');
-        $button.on('click', function () {
+        $button.off('click.defferedLoad').on('click.defferedLoad', function () {
           $('div[data-relationship-react]', $wrapper).each(function () {
-            var props = JSON.parse(window.atob($(this).data('relationshipReact')));
-            props.name = $(this).data('inputValue');
-            ReactDOM.render(React.createElement(Relationship, props, null), this);
+            var _this6 = this;
+
+            var deferUrl = $(this).data('deferurl');
+
+            if (typeof deferUrl !== 'undefined') {
+              fetch(deferUrl).then(function (res) {
+                return res.json();
+              }).then(function (result) {
+                var props = JSON.parse(window.atob(result.content));
+                props.name = $(_this6).data('inputValue');
+                ReactDOM.render(React.createElement(Relationship, props, null), _this6);
+              }, function (error) {
+                console.log('error', error);
+              });
+            } else {
+              var props = JSON.parse(window.atob($(this).data('relationshipReact')));
+              props.name = $(this).data('inputValue');
+              ReactDOM.render(React.createElement(Relationship, props, null), this);
+            }
           });
         });
       });

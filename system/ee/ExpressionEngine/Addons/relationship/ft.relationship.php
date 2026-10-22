@@ -471,7 +471,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
 
         $multiple = (bool) $this->settings['allow_multiple'];
 
-        $statuses = ee('Model')->get('Status')->all('true')->getDictionary('status', 'highlight');
+        $statuses = ee('Model')->get('Status')->all(true)->getDictionary('status', 'highlight');
         ee()->javascript->set_global([
             'statuses' => $statuses
         ]);
@@ -521,6 +521,55 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             ];
         }
 
+        // if the loading is deferred, set up URL
+        $deferred = isset($this->settings['deferred_loading']) ? $this->settings['deferred_loading'] : false;
+        $deferUrlParams = [
+            'entry_id' => $this->content_id()
+        ];
+        if (isset($this->settings['fluid_field_data_id'])) {
+            $deferUrlParams['fluid_field_data_id'] = $this->settings['fluid_field_data_id'];
+        }
+        $deferUrl = null;
+        if ($deferred && !empty($deferUrlParams['entry_id'])) {
+            // Grid and Grid in Fluid
+            if ($this->content_type() == 'grid') {
+                // some third-party add-ons might mimic grid, but they don't have this property
+                // we also check for grid_row_id because we only need defer for existing rows
+                if (isset($this->settings['grid_row_id']) && isset($this->settings['grid_content_type']) && $this->settings['grid_content_type'] == 'channel') {
+                    $deferUrlParams['grid_field_id'] = $this->settings['grid_field_id'];
+                    $deferUrlParams['grid_col_id'] = $this->settings['col_id'];
+                    $deferUrlParams['grid_row_id'] = $this->settings['grid_row_id'];
+                    $deferUrl = ee('CP/URL')->make('addons/settings/relationship/defer', $deferUrlParams)->compile();
+                }
+            // Fluid field
+            } elseif (isset($deferUrlParams['fluid_field_data_id'])) {
+                $deferUrlParams['field_id'] = $this->field_id;
+                $deferUrl = ee('CP/URL')->make('addons/settings/relationship/defer', $deferUrlParams)->compile();
+            // regular field
+            } else {
+                $deferUrlParams['field_name'] = $this->field_name;
+                $deferUrl = ee('CP/URL')->make('addons/settings/relationship/defer', $deferUrlParams)->compile();
+            }
+            // -------------------------------------------
+            // 'relationships_set_defer_url' hook.
+            //  - Allow third-party fieldtypes to set up their own deferUrl
+            //
+            if (is_null($deferUrl) && ee()->extensions->active_hook('relationships_set_defer_url') === true) {
+                $deferUrlParams = ee()->extensions->call(
+                    'relationships_set_defer_url',
+                    $this,
+                    $deferUrlParams
+                );
+                $deferUrl = ee('CP/URL')->make('addons/settings/relationship/defer', $deferUrlParams)->compile();
+            }
+        }
+
+        // set the view depe
+        $view = 'relationship:publish';
+        if (ee()->uri->segment(5) == 'defer') {
+            $view = 'relationship:component';
+        }
+
         $channelsForNewEntriesChoices = [];
         $channelsForNewEntries = $channels->filter(function ($channel) {
             return ! $channel->maxEntriesLimitReached()
@@ -533,8 +582,9 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             ];
         }
 
-        return ee('View')->make('relationship:publish')->render([
-            'deferred' => isset($this->settings['deferred_loading']) ? $this->settings['deferred_loading'] : false,
+        return ee('View')->make($view)->render([
+            'deferred' => $deferred,
+            'deferUrl' => $deferUrl,
             'field_name' => $field_name,
             'choices' => $choices,
             'selected' => $selected,
