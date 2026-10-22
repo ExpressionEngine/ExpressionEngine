@@ -12,7 +12,7 @@
         </h3>
         <div class="title-bar__extra-tools">
   				<?php if ($can_create_categories):?>
-  					<a class="tn button button--primary" href="<?=ee('CP/URL')->make('categories/create/' . $cat_group->group_id)?>"><?=lang('new_category')?></a>
+  					<a class="tn button button--primary" href="<?=ee('CP/URL')->make('categories/create/' . $cat_group->group_id)?>" data-shortcut="a"><?=lang('new_category')?></a>
   				<?php endif; ?>
   			</div>
       </div>

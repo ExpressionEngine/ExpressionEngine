@@ -14,7 +14,7 @@ context('Channel Create/Edit', () => {
     beforeEach(function() {
         cy.authVisit(page.url);
         cy.dismissLicenseAlert()
-        cy.get('a').contains('New Channel').first().click()
+        cy.get('a').contains('Add Channel').first().click()
         cy.dismissLicenseAlert()
     })
 

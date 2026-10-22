@@ -29,7 +29,7 @@ context('Entry Manager', () => {
       cy.createEntries({'n': 1, 'channel': channel.channel_id})
       cy.visit(Cypress._.replace(page.url, '{filter_by_channel}', 'filter_by_channel='+channel.channel_id), {failOnStatusCode: false})
 
-      page.get('wrap').find('a:contains("New in")').should('not.exist')
+      page.get('wrap').find('a:contains("Add to")').should('not.exist')
       page.get('alert').contains("Channel limit reached")
     })
 
@@ -45,7 +45,7 @@ context('Entry Manager', () => {
       cy.createEntries({'n': 2, 'channel': channel.channel_id})
       cy.visit(Cypress._.replace(page.url, '{filter_by_channel}', 'filter_by_channel='+channel.channel_id), {failOnStatusCode: false})
 
-      const btn_txt = 'New in ' + channel.channel_title;
+      const btn_txt = 'Add to ' + channel.channel_title;
       page.get('wrap').find('a:contains("'+btn_txt+'")').should('exist')
     })
 
