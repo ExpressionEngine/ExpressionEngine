@@ -28,6 +28,7 @@ class Columns extends Filter
         $this->label = lang('columns_filter');
         $this->options = $columns;
         $this->view_id = $view_id;
+        $this->placeholder = lang('keyword_filter');
 
         $this->default_value = ['entry_id', 'title', 'entry_date', 'author', 'status', 'comments'];
     }
@@ -76,10 +77,12 @@ class Columns extends Filter
         }
         $options = array_merge($options, $this->options);
         $filter = array(
+            'name' => $this->name,
             'label' => '<i class=\'fal fa-columns\'></i>',
             'value' => '',
             'available_columns' => $options,
-            'selected_columns' => $selected
+            'selected_columns' => $selected,
+            'placeholder' => $this->placeholder,
         );
 
         return $view->make('_shared/filters/columns')->render($filter);
