@@ -53,6 +53,7 @@ class GridInput extends Table
             'grid_min_rows' => 0,
             'grid_max_rows' => '',
             'show_add_button' => true,
+            'collapse_rows' => false,
         );
 
         parent::__construct(array_merge($defaults, $config));

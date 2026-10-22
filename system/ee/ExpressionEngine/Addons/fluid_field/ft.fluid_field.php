@@ -588,7 +588,8 @@ class Fluid_field_ft extends EE_Fieldtype
                         'reorderable' => true,
                         'show_field_type' => false,
                         'field_filters' => $filter_options,
-                        'field_name_prefix' => $field_name_prefix
+                        'field_name_prefix' => $field_name_prefix,
+                        'collapse_rows' => isset($this->settings['collapse_rows']) ? get_bool_from_string($this->settings['collapse_rows']) : false,
                     ];
 
                     if ($is_group) {
@@ -887,6 +888,18 @@ class Fluid_field_ft extends EE_Fieldtype
             )
         );
 
+        $settings[] = array(
+            'title' => 'collapse_rows',
+            'desc' => 'collapse_rows_desc',
+            'group' => 'grid_collapse_rows',
+            'fields' => array(
+                'collapse_rows' => array(
+                    'type' => 'yes_no',
+                    'value' => isset($data['collapse_rows']) ? $data['collapse_rows'] : 'n'
+                )
+            )
+        );
+
         if (! $this->isNew()) {
             ee()->javascript->set_global(array(
                 'fields.fluid_field.fields' => $data['field_channel_fields'],
@@ -913,6 +926,7 @@ class Fluid_field_ft extends EE_Fieldtype
         $defaults = array(
             'field_channel_fields' => array(),
             'field_channel_field_groups' => array(),
+            'collapse_rows' => 'n',
         );
 
         $all = array_merge($defaults, $data);
