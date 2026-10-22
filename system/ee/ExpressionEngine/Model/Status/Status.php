@@ -141,6 +141,8 @@ class Status extends Model
 
     public function renderTag()
     {
+        ee()->lang->loadfile('admin_content');
+
         $status_name = ($this->status == 'closed' or $this->status == 'open') ? lang($this->status) : $this->status;
 
         $status_class = str_replace(' ', '_', strtolower((string) $this->status));

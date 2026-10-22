@@ -49,6 +49,24 @@
                 </select>
             </td>
         </tr>
+        <tr class="odd">
+            <td><?=lang('show_nav_status')?></td>
+            <td>
+                <select name="show_nav_status">
+                    <option value="y"<?=set_select('yes', 'Yes', ($settings['show_nav_status'] == '' || $settings['show_nav_status'] == 'y' ? 'y' : ''));?>><?=lang('yes')?></option>
+                    <option value="n"<?=set_select('no', 'No', ($settings['show_nav_status'] == '' || $settings['show_nav_status'] == 'n' ? 'y' : ''));?>><?=lang('no')?></option>
+                </select>
+            </td>
+        </tr>
+        <tr class="even">
+            <td><?=lang('show_entry_status')?></td>
+            <td>
+                <select name="show_entry_status">
+                    <option value="y"<?=set_select('yes', 'Yes', ($settings['show_entry_status'] == '' || $settings['show_entry_status'] == 'y' ? 'y' : ''));?>><?=lang('yes')?></option>
+                    <option value="n"<?=set_select('no', 'No', ($settings['show_entry_status'] == '' || $settings['show_entry_status'] == 'n' ? 'y' : ''));?>><?=lang('no')?></option>
+                </select>
+            </td>
+        </tr>
     </tbody>
 </table>
 <?php endif;?>
