@@ -139,10 +139,10 @@ class Routes extends AbstractDesignController
                     'grid' => true,
                 ));
         } else {
-            $row['attrs']['row_id'] = $route->Template->template_id;
-            $id = 'row_id_' . $route->Template->template_id;
+            $row['attrs']['row_id'] = $route->route_id;
+            $id = 'row_id_' . $route->route_id;
 
-            $template_field = htmlentities($route->Template->template_name, ENT_QUOTES, 'UTF-8');
+            $template_field = htmlentities($route->Template->template_name, ENT_QUOTES, 'UTF-8') . form_hidden('template_id', $route->Template->template_id);
         }
 
         $required = ee('View')->make('_shared/form/field')
@@ -202,7 +202,7 @@ class Routes extends AbstractDesignController
             ->order('TemplateRoute.order', 'asc')
             ->all();
 
-        $existing_routes_indexed = $existing_routes->indexBy('template_id');
+        $existing_routes_indexed = $existing_routes->indexBy('route_id');
 
         $submitted = ee()->input->post('routes');
 
@@ -212,30 +212,30 @@ class Routes extends AbstractDesignController
 
         $order = array_keys($submitted['rows']);
 
-        foreach ($submitted['rows'] as $template_id => $data) {
+        foreach ($submitted['rows'] as $route_id => $data) {
             $data['route'] = trim($data['route']);
 
             // Let them delete and re-add the same route
             if (in_array($data['route'], $existing_routes->pluck('route')) &&
                 ! in_array($data['route'], $routes->pluck('route')) &&
-                strpos($template_id, 'new_') === 0) {
+                strpos($route_id, 'new_') === 0) {
                 $route = $existing_routes->filter('route', $data['route'])->first();
             }
             // New route all together
-            elseif (strpos($template_id, 'new_') === 0) {
+            elseif (strpos($route_id, 'new_') === 0) {
                 $route = ee('Model')->make('TemplateRoute');
                 $route->Template = ee('Model')->get('Template', $data['template_id'])
                     ->with('TemplateGroup')
                     ->first();
             } else {
-                $route = $existing_routes_indexed[str_replace('row_id_', '', $template_id)];
+                $route = $existing_routes_indexed[str_replace('row_id_', '', $route_id)];
             }
 
             $route->route = $data['route'];
             $route->route_required = ($data['required'] == 'y') ? true : false;
-            $route->order = array_search($template_id, $order);
+            $route->order = array_search($route_id, $order);
 
-            $field_prefix = "routes[rows][{$template_id}]";
+            $field_prefix = "routes[rows][{$route_id}]";
 
             $validator = ee('Validation')->make(array(
                 'route' => 'uniqueRoute'
@@ -314,7 +314,7 @@ class Routes extends AbstractDesignController
             ->order('TemplateGroup.group_name')
             ->order('template_name');
 
-        $template_ids = ee('Model')->get('TemplateRoute')
+        /*$template_ids = ee('Model')->get('TemplateRoute')
             ->fields('template_id')
             ->with('Template')
             ->filter('Template.site_id', ee()->config->item('site_id'))
@@ -323,7 +323,7 @@ class Routes extends AbstractDesignController
 
         if ($template_ids) {
             $all_templates->filter('template_id', 'NOT IN', $template_ids);
-        }
+        }*/
 
         if ($search_query) {
             $templates = $all_templates->all()->filter(function ($template) use ($search_query) {
