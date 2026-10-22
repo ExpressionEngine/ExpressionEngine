@@ -34,10 +34,12 @@ window.Rte;
 
         if (this.defer) {
             this.showIframe(this.config.type);
-        } else if (this.config.type == 'redactor') {
-            this.initRedactor();
+        } else if (this.config.type == 'redactorClassic') {
+            this.initRedactorClassic();
         } else if (this.config.type == 'redactorX') {
             this.initRedactorX();
+        } else if (this.config.type == 'redactor') {
+            this.initRedactor();
         } else {
             this.initCKEditor();
         }
@@ -73,10 +75,34 @@ window.Rte;
 
             if (type == 'ckeditor') {
                 $(iDoc).click($.proxy(this, 'initCKEditor'));
+            } else if (type == 'redactorClassic') {
+                $(iDoc).click(() => {this.initRedactorClassic();});
             } else if (type == 'redactor') {
                 $(iDoc).click(() => {this.initRedactor();});
             } else {
                 $(iDoc).click(() => {this.initRedactorX();});
+            }
+        },
+
+        /**
+         * Init Redactor
+         */
+        initRedactorClassic: function() {
+            var config = typeof this.config === 'string'
+                            ? JSON.parse(this.config)
+                            : this.config;
+            config.callbacks = {
+                blur: function(e) {
+                    $('#' + this.id).trigger('change');
+                },
+                keyup: function(e) {
+                    $("[data-publish] > form").trigger("entry:startAutosave")
+                }
+            };
+            $R('#' + this.id, config);
+
+            if (this.$iframe) {
+                this.$iframe.remove();
             }
         },
 
@@ -95,7 +121,15 @@ window.Rte;
                     $("[data-publish] > form").trigger("entry:startAutosave")
                 }
             };
-            $R('#' + this.id, config);
+
+            config.popups = config.popups || {};
+            config.popups.extrabar = config['buttons']['extrabar'];
+            config.popups.addbar = config['buttons']['addbar'];
+            config.popups.context = config['buttons']['context'];
+            config.popups.format = config['format'];
+            config.toolbar.hide = ['image'];
+            console.log('initRedactor', config);
+            Redactor('#' + this.id, config);
 
             if (this.$iframe) {
                 this.$iframe.remove();

@@ -420,7 +420,13 @@ $lang = array(
 
     'rte_show_topbar_desc' => 'Displayed to the right of main toolbar',
 
+    'rte_show_extrabar' => 'Show extrabar bar?',
+
+    'rte_show_extrabar_desc' => 'Displayed to the right of main toolbar',
+
     'rte_topbar' => 'Top bar',
+
+    'rte_extrabar' => 'Extrabar bar',
 
     'rte_toolbar_sticky' => 'Make toolbar sticky?',
 

@@ -76,7 +76,7 @@ class Rte_upd extends Installer
         // -------------------------------------------
         //  Populate it
         // -------------------------------------------
-        foreach (['ckeditor', 'redactorX'] as $toolset_type) {
+        foreach (['ckeditor', 'redactor'] as $toolset_type) {
             $toolbars = ee('rte:' . ucfirst($toolset_type) . 'Service')->defaultToolbars();
             foreach ($toolbars as $name => $toolbar) {
                 $config_settings = array_merge(ee('rte:' . ucfirst($toolset_type) . 'Service')->defaultConfigSettings(), array('toolbar' => $toolbar));
@@ -98,6 +98,33 @@ class Rte_upd extends Installer
      */
     public function update($current = '')
     {
+        if (version_compare($current, '2.3.0', '<')) {
+            // rename old Redactor (legacy) toolsets
+            $check = ee('db')->where_in('toolset_type', ['redactor', 'redactorClassic'])->get('rte_toolsets');
+            if ($check->num_rows() > 0) {
+                foreach ($check->result() as $row) {
+                    $upd = ['toolset_type' => 'redactorClassic'];
+                    if (strpos($row->toolset_name, '(legacy)') === false) {
+                        $upd['toolset_name'] = $row->toolset_name . ' (legacy)';
+                    }
+                    ee('db')->where('toolset_id', $row->toolset_id)->update('rte_toolsets', $upd);
+                }
+            }
+            // install new Redactor
+            $check = ee('db')->where('toolset_type', 'redactor')->get('rte_toolsets');
+            if ($check->num_rows() == 0) {
+                $toolbars = ee('rte:RedactorService')->defaultToolbars();
+                foreach ($toolbars as $name => $toolbar) {
+                    $config_settings = array_merge(ee('rte:RedactorService')->defaultConfigSettings(), array('toolbar' => $toolbar));
+                    $config = ee('Model')->make('rte:Toolset');
+                    $config->toolset_name = $name;
+                    $config->toolset_type = 'redactor';
+                    $config->settings = $config_settings;
+                    $config->save();
+                }
+            }
+        }
+
         if (version_compare($current, '2.2.0', '<')) {
             $check = ee('db')->where('toolset_type', 'redactorX')->get('rte_toolsets');
             if ($check->num_rows() == 0) {
@@ -139,12 +166,12 @@ class Rte_upd extends Installer
                 }
 
                 //install Redactor toolsets
-                $toolbars = ee('rte:RedactorService')->defaultToolbars();
+                $toolbars = ee('rte:RedactorLegacyService')->defaultToolbars();
                 foreach ($toolbars as $name => $toolbar) {
-                    $config_settings = array_merge(ee('rte:RedactorService')->defaultConfigSettings(), array('toolbar' => $toolbar));
+                    $config_settings = array_merge(ee('rte:RedactorLegacyService')->defaultConfigSettings(), array('toolbar' => $toolbar));
                     $config = ee('Model')->make('rte:Toolset');
                     $config->toolset_name = $name;
-                    $config->toolset_type = 'redactor';
+                    $config->toolset_type = 'redactorClassic';
                     $config->settings = $config_settings;
                     $config->save();
                 }
