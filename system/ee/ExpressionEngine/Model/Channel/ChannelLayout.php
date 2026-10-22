@@ -110,6 +110,12 @@ class ChannelLayout extends Model implements LayoutInterface
                     $field->setWidth(100);
                 }
 
+                if (isset($field_info['required_condition'])) {
+                    $field->setRequiredCondition(get_bool_from_string($field_info['required_condition']));
+                } else {
+                    $field->setRequiredCondition(strpos($field_info['field'], 'field_id_') === 0);
+                }
+
                 // Fields can be configured to start collapsed or expaned, but
                 // a layout should always override it.
                 if (isset($field_info['collapsed'])) {
@@ -123,6 +129,16 @@ class ChannelLayout extends Model implements LayoutInterface
                 // Visible is "optional" and defaults to "I can see you!"
                 if (isset($field_info['visible']) && ! $field_info['visible']) {
                     $field->hide();
+                }
+
+                // Fields can be configured to start required or not, but
+                // a layout should always override it.
+                if (isset($field_info['required'])) {
+                    if (get_bool_from_string($field_info['required'])) {
+                        $field->required();
+                    } else {
+                        $field->notRequired();
+                    }
                 }
 
                 $tab->addField($field);
@@ -225,7 +241,8 @@ class ChannelLayout extends Model implements LayoutInterface
         $field_info = array(
             'field' => 'field_id_' . $field->field_id,
             'visible' => true,
-            'collapsed' => $field->getProperty('field_is_hidden')
+            'collapsed' => $field->getProperty('field_is_hidden'),
+            'required_condition' => true
         );
         $field_layout[0]['fields'][] = $field_info;
 

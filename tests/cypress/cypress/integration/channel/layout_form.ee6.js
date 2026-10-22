@@ -224,6 +224,32 @@ context('Channel Layouts: Create/Edit', () => {
         page.get('hide_options_tab').should('have.class', 'tab-on')
     })
 
+    it('cannot hide a tab with a custom required field moved into it', function() {
+        page.get('publish_tab').click()
+
+        page.get('hide_options_tab').should('have.class', 'tab-on')
+        page.get('hide_options_tab').trigger('click', { force: true })
+        page.get('hide_options_tab').should('have.class', 'tab-off')
+
+        page.get('publish_tab').click()
+        page.get('fields').filter(':visible').find('.field-option-required-custom-field input').first().as('custom_required_toggle')
+        cy.get('@custom_required_toggle').should('exist')
+        cy.get('@custom_required_toggle').check({ force: true })
+        cy.get('@custom_required_toggle').should('be.checked')
+
+        cy.get('@custom_required_toggle')
+            .closest('.layout-item')
+            .find('.ui-sortable-handle')
+            .dragTo(page.$('options_tab'))
+
+        page.get('hide_options_tab').should('have.class', 'tab-on')
+
+        page.get('hide_options_tab').trigger('click', { force: true })
+        page.hasAlert()
+        page.get('alert').contains('Cannot Hide Tab')
+        page.get('hide_options_tab').should('have.class', 'tab-on')
+    })
+
     // This was a bug in 3.0
     it('can create two layouts for the same channel', function() {
         page.get('layout_name').clear().type('Default')
