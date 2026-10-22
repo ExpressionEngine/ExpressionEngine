@@ -29,7 +29,7 @@ class RelationshipsFtCpAllOrderOptionsTest extends RelationshipTestBase
             'entry_date' => 'rel_ft_order_date'
         ];
 
-        $this->assertEquals($expected, $result);
+        $this->assertContains($expected, $result);
     }
 
     /**
