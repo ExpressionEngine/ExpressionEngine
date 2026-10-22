@@ -1,4 +1,68 @@
 
+@mixin grid-card-row-shell($border-color, $bg-color, $mb: 10px, $pb: 15px) {
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	border: 1px solid $border-color;
+	margin-bottom: $mb;
+	padding-bottom: $pb;
+	background-color: $bg-color;
+}
+
+@mixin grid-card-cell-shell($pad: 10px 15px 10px 15px, $font-size: 1rem) {
+	border-right: none;
+	min-width: 0;
+	width: 100%;
+	max-width: 100%;
+	display: block;
+	border-bottom: none;
+	padding: $pad;
+	font-size: $font-size;
+}
+
+@mixin grid-collapsed-item-state($hide-non-fieldset: false) {
+	padding-bottom: 0 !important;
+
+	@if $hide-non-fieldset {
+		td:not(.grid-field__item-fieldset) {
+			display: none !important;
+		}
+	}
+
+	td.grid-field__item-fieldset {
+		border-bottom: none !important;
+
+		.grid-field__item-tool {
+			transform: rotate(180deg);
+		}
+	}
+}
+
+@mixin grid-column-label-stacked {
+	margin-bottom: 10px;
+
+	label {
+		color: var(--ee-text-secondary);
+		margin: 0;
+	}
+
+	em {
+		color: var(--ee-text-secondary);
+		font-style: normal;
+		margin: 0;
+	}
+}
+
+@mixin grid-row-counter-full-width {
+	width: 100% !important;
+}
+
+@mixin grid-hide-tools-column {
+	td.grid-field__column--tools {
+		display: none !important;
+	}
+}
+
 .grid-field {
 	width: 100%;
 
@@ -55,25 +119,20 @@
   			max-width: 100% !important;
   		}
 
-  		&.grid-rte,
-  		&.grid-file-upload,
-  		&.grid-multi-relate {
-  			// min-width: 400px;
-  		}
-
-  		&.grid-field__column--tools {
-
-  		}
-
-  		&.grid-multi-relate {
-  			@include m-tablet-down {
-  				position: relative;
+	  	&.grid-multi-relate {
+	  			@include m-tablet-down {
+	  				position: relative;
 
   				.dropdown--open {
   					top: calc(100% + 4px) !important;
   					transform: none !important;
   				}
   			}
+  		}
+
+  		&.grid-field__column--tools {
+  			max-width: 80px;
+  			min-width: 0;
   		}
   	}
 	}
@@ -114,16 +173,16 @@
   .file-field__dropzone {
     margin-top: 0px;
 
-	.dropdown__link, .file-field__buttons {
-		text-indent: 0;
-	}
-	.dropdown__link--selected {
-		&::before {
-			margin-right: 20px;
-			margin-left: 0;
+		.dropdown__link, .file-field__buttons {
+			text-indent: 0;
 		}
-	}
-  }
+		.dropdown__link--selected {
+			&::before {
+				margin-right: 20px;
+				margin-left: 0;
+			}
+		}
+ 	}
 
 	.file-field__buttons {
 		.dropdown__link {
@@ -166,9 +225,7 @@
 			background: inherit;
 		}
 	}
-}
 
-#routes {
 	.table-responsive {
 		overflow-x: auto;
 	}
@@ -296,17 +353,7 @@
 	}
 
 	tr.grid__item--collapsed {
-		padding-bottom: 0 !important;
-
-		td:not(.grid-field__item-fieldset) { display: none !important;}
-
-		td.grid-field__item-fieldset {
-			border-bottom: none !important;
-
-			.grid-field__item-tool {
-				transform: rotate(180deg);
-			}
-		}
+		@include grid-collapsed-item-state(true);
 	}
 }
 
@@ -336,23 +383,10 @@
 			border: none;
 
 			& > tr:not(.hidden) {
-				display: flex;
-				flex-direction: column;
-				position: relative;
-				border: 1px solid var(--ee-border);
-				margin-bottom: 10px;
-				padding-bottom: 15px;
-				background-color: var(--ee-bg-blank);
+				@include grid-card-row-shell(var(--ee-border), var(--ee-bg-blank));
 
 				& > td {
-					border-right: none;
-					min-width: 0;
-					width: 100%;
-					max-width: 100%;
-					display: block;
-					border-bottom: none;
-					padding: 10px 15px 10px 15px;
-          font-size: 1rem;
+					@include grid-card-cell-shell();
 
 					&.grid-field__column--tools {
 						text-align: left;
@@ -366,8 +400,8 @@
 
 			tr.no-results {
 				padding: 0px;
-        background-color: transparent;
-        border: none;
+				background-color: transparent;
+				border: none;
 
 				td {
 					padding-top: 0;
@@ -376,17 +410,7 @@
 			}
 
 			tr.grid__item--collapsed {
-				padding-bottom: 0 !important;
-
-				// td:not(.grid-field__item-fieldset) { display: none !important;}
-
-				td.grid-field__item-fieldset {
-					border-bottom: none !important;
-
-					.grid-field__item-tool {
-						transform: rotate(180deg);
-					}
-				}
+				@include grid-collapsed-item-state;
 			}
 
 			td.required {
@@ -401,7 +425,7 @@
 		}
 
 		.row-counter-column {
-			width: 100% !important;
+			@include grid-row-counter-full-width;
 		}
 	}
 
@@ -424,23 +448,12 @@
     }
 	}
 
-	.grid-field__column--tools { display: none !important;}
+	@include grid-hide-tools-column;
 
-  .grid-field__column-label {
-  	display: inherit;
-  	margin-bottom: 10px;
-
-  	label {
-  		color: var(--ee-text-secondary);
-  		margin: 0;
-  	}
-
-  	em {
-			color: var(--ee-text-secondary);
-			font-style: normal;
-			margin: 0;
-  	}
-  }
+	.grid-field__column-label {
+		display: inherit;
+		@include grid-column-label-stacked;
+	}
 }
 
 // HORIZONTAL GRID LAYOUT
@@ -475,31 +488,20 @@
 			display: none;
 		}
 
-		& > tbody {
-			& > tr {
-				display: flex;
-				flex-direction: column;
+			& > tbody {
+				& > tr {
+					@include grid-card-row-shell(color(border), var(--ee-bg-blank), 10px, $sq-s);
 
-	      &.hidden {
-	        display: none;
-	      }
-			}
+		      &.hidden {
+		        display: none;
+		      }
+				}
 
-			& > tr {
-				position: relative;
-				border: 1px solid color(border);
-				margin-bottom: 10px;
-				padding-bottom: $sq-s;
-				background-color: var(--ee-bg-blank);
-
-	      &.no-results {
-	        padding: 0px;
-
-	        td {
-	          // padding-top: 0;
-	        }
-	      }
-			}
+				& > tr {
+		      &.no-results {
+		        padding: 0px;
+		      }
+				}
 
 			& > tr > td {
 				display: block !important;
@@ -507,25 +509,15 @@
 				padding: $sq-inset-s;
 			}
 
-			tr.grid__item--collapsed {
-				padding-bottom: 0 !important;
-
-				td:not(.grid-field__item-fieldset) { display: none !important;}
-
-				td.grid-field__item-fieldset {
-					border-bottom: none !important;
-
-					.grid-field__item-tool {
-						transform: rotate(180deg);
-					}
+				tr.grid__item--collapsed {
+					@include grid-collapsed-item-state(true);
 				}
 			}
-		}
 
-		.row-counter-column {
-			width: 100% !important;
+			.row-counter-column {
+				@include grid-row-counter-full-width;
+			}
 		}
-	}
 
 	.grid-field:not(.horizontal-layout) .grid-field__column--tools {
 		text-align: left;
@@ -535,21 +527,21 @@
     }
 	}
 
-	.entry-grid, .vertical-layout {
-		padding: 10px;
-		background: var(--ee-bg-0);
+		.entry-grid, .vertical-layout {
+			padding: 10px;
+			background: var(--ee-bg-0);
 		border: 1px solid var(--ee-border);
 		border-radius: 5px;
 
-		.grid-field__item-fieldset {
-			display: block;
-			position: relative;
-			border-bottom: 1px solid var(--ee-border) !important;
-      font-size: 1rem;
-		}
+			.grid-field__item-fieldset {
+				display: block;
+				position: relative;
+				border-bottom: 1px solid var(--ee-border) !important;
+	      font-size: 1rem;
+			}
 
-		td.grid-field__column--tools { display: none !important;}
-	}
+			@include grid-hide-tools-column;
+		}
 
 	.grid-field.horizontal-layout {
 		tbody {
@@ -582,31 +574,18 @@
 			display: none;
 		}
 
-		& > tbody {
-			width: 100%;
-			border: none;
+			& > tbody {
+				width: 100%;
+				border: none;
 
-			& > tr:not(.hidden) {
-				display: flex;
-				flex-direction: column;
-				position: relative;
-				border: 1px solid var(--ee-border);
-				margin-bottom: 10px;
-				padding-bottom: 15px;
-				background-color: var(--ee-bg-blank);
+				& > tr:not(.hidden) {
+					@include grid-card-row-shell(var(--ee-border), var(--ee-bg-blank));
 
-				& > td:not(.hidden) {
-					border-right: none;
-					min-width: 0;
-					width: 100%;
-					max-width: 100%;
-					display: block;
-					border-bottom: none;
-					padding: 10px 15px 10px 15px;
-					font-size: 1rem;
+					& > td:not(.hidden) {
+						@include grid-card-cell-shell();
 
-					@include m-tablet-up {
-						border-bottom: 1px solid var(--ee-table-border);
+						@include m-tablet-up {
+							border-bottom: 1px solid var(--ee-table-border);
 					}
 
 					&:last-child {
@@ -617,29 +596,18 @@
 						width: 100%;
 					}
 
-					.ee-form-error-message {
-						margin-left: auto;
-					}
-
-					.grid-field__column-label {
-						display: block;
-						color: var(--ee-text-secondary);
-						font-weight: 500;
-						white-space: normal;
-						margin-bottom: 10px;
-						flex: 0 0 100%;
-
-						label {
-							color: var(--ee-text-secondary);
-							margin: 0;
+						.ee-form-error-message {
+							margin-left: auto;
 						}
 
-						em {
-							font-style: normal;
+						.grid-field__column-label {
+							display: block;
 							color: var(--ee-text-secondary);
-							margin: 0;
+							font-weight: 500;
+							white-space: normal;
+							flex: 0 0 100%;
+							@include grid-column-label-stacked;
 						}
-					}
 
 					.grid-field__column-tools {
 						width: 100%;
@@ -662,17 +630,9 @@
 				padding: 0;
 			}
 
-			tr.grid__item--collapsed {
-				padding-bottom: 0 !important;
-
-				td.grid-field__item-fieldset {
-					border-bottom: none !important;
-
-					.grid-field__item-tool {
-						transform: rotate(180deg);
-					}
+				tr.grid__item--collapsed {
+					@include grid-collapsed-item-state;
 				}
-			}
 
 			td.required {
 				&:before {
@@ -685,11 +645,11 @@
 			}
 		}
 
-		.row-counter-column {
-			width: 100% !important;
+			.row-counter-column {
+				@include grid-row-counter-full-width;
+			}
 		}
 	}
-}
 
 .grid-field.overwidth {
 	padding: 10px;
@@ -704,12 +664,9 @@
 
 	.grid-field__table {
 		& > tbody > tr:not(.hidden) {
+			@include grid-hide-tools-column;
+
 			& > td {
-
-				&.grid-field__column--tools { display: none !important;}
-
-				// div:empty:not(.ck-insert-table-dropdown-grid-box) { display: none;}
-
 				&.grid-field__item-fieldset {
 					position: relative;
 
@@ -721,7 +678,7 @@
 		}
 
 		.row-counter-column {
-			width: 100% !important;
+			@include grid-row-counter-full-width;
 		}
 	}
 }

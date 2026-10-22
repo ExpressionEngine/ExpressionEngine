@@ -237,6 +237,10 @@ $lang = array(
 
     'grid_row_count_title' => 'Show Row Numbers',
 
+    'grid_tools_position_title' => 'Row Controls First',
+
+    'grid_tools_position_desc' => 'Display reorder and trash controls at the start of each row.',
+
     'grid_chars_allowed' => 'Characters allowed.',
 
     'grid_col_instr' => 'Instructions',
