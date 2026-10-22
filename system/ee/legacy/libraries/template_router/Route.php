@@ -100,7 +100,7 @@ class EE_Route
         $index = 0;
 
         foreach ($this->segments as $segment) {
-            $regex = $segment->regex();
+            $regex = $segment->validator();
 
             $add_question_mark = (! $this->required);
 
@@ -108,15 +108,18 @@ class EE_Route
                 $add_question_mark = false;
             }
 
-            if ($index < count($this->segments) - 1) {
-                $regex .= '\/';
-            }
-
             if ($add_question_mark) {
                 $regex .= '?';
             }
 
-            $url[] = $regex;
+            if ($index < count($this->segments) - 1) {
+                $regex .= '\/';
+                if ($add_question_mark) {
+                    $regex .= '?';
+                }
+            }
+
+            $url[] = '(' . $regex . ')';
             $index++;
         }
 
