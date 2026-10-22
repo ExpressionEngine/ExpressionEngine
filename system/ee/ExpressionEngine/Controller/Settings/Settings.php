@@ -82,9 +82,9 @@ class Settings extends CP_Controller
             $item->isActive();
         }
 
-        if (ee('Permission')->hasAll('can_access_design', 'can_admin_design')) {
-            $list->addItem(lang('template_settings'), ee('CP/URL')->make('settings/template'));
-        }
+        $list->addItem(lang('template_settings'), ee('CP/URL')->make('settings/template'));
+
+        $list->addItem(lang('uri_variables'), ee('CP/URL')->make('settings/uri-variables'));
 
         $sidebar->addItem(lang('frontedit'), ee('CP/URL')->make('settings/pro/frontedit'));
         $sidebar->addItem(lang('branding_settings'), ee('CP/URL')->make('settings/pro/branding'));

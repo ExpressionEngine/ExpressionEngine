@@ -1068,6 +1068,14 @@ class JumpMenu extends AbstractJumpMenu
                     ),
                 )
             ),
+            'systemSettingsUriVariables' => array(
+                'icon' => 'fa-wrench',
+                'command' => 'system_settings uri_variables',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'settings/uri-variables',
+                'permission' => 'can_access_sys_prefs'
+            ),
             'systemSettingsTracking' => array(
                 'icon' => 'fa-wrench',
                 'command' => 'system_settings tracking    ',
