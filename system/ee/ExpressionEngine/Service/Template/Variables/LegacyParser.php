@@ -153,7 +153,21 @@ class LegacyParser
             $result = array();
 
             foreach ($matches as $match) {
-                $result[$match[1]] = (trim($match[4]) == '') ? $match[4] : trim($match[4]);
+                $separator = '.';
+                // Handle array data with nested keys separated by $separator
+                if(strpos($match[1], $separator)) {
+                    $pieces = explode($separator, $match[1]);
+                    $current = &$result;
+                    foreach($pieces as $piece) {
+                        if(!is_array($current[$piece] ?? null)) {
+                            $current[$piece] = [];
+                        }
+                        $current = &$current[$piece];
+                    }
+                    $current = (trim($match[4]) == '') ? $match[4] : trim($match[4]);
+                }else{
+                    $result[$match[1]] = (trim($match[4]) == '') ? $match[4] : trim($match[4]);
+                }
             }
 
             foreach ($defaults as $name => $default_value) {

@@ -454,7 +454,9 @@ class EE_Template
                 // add 'embed:' to the key for replacement and so these variables work in conditionals
                 $this->embed_vars['embed:' . $key] = $val;
                 unset($this->embed_vars[$key]);
-                $this->template = $this->_parse_var_single('embed:' . $key, $val, $this->template);
+                $this->template = (is_array($val)) ?
+                    $this->_parse_var_pair('embed:' . $key, $val, $this->template) :
+                    $this->_parse_var_single('embed:' . $key, $val, $this->template);
             }
         }
 
