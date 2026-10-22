@@ -63,6 +63,13 @@ class Email_address_Ft extends EE_Fieldtype
      */
     public function display_field($data)
     {
+        if (
+            (empty($this->content_id) || (isset($this->settings['grid_field_id']) && !isset($this->settings['grid_row_id'])))
+            && isset($this->settings['field_default_value']) && $this->settings['field_default_value'] != ''
+        ) {
+            $data = $this->settings['field_default_value'];
+        }
+
         $field = array(
             'name' => $this->field_name,
             'value' => $data,
@@ -74,6 +81,32 @@ class Email_address_Ft extends EE_Fieldtype
         }
 
         return form_input($field);
+    }
+
+    public function display_settings($data)
+    {
+        $settings = array();
+
+        $settings[] = array(
+            'title' => 'default_value',
+            'desc' => 'default_value_desc',
+            'fields' => array(
+                'field_default_value' => array(
+                    'type' => 'text',
+                    'value' => (! isset($data['field_default_value'])) ? '' : (string) $data['field_default_value']
+                )
+            )
+        );
+
+        if ($this->content_type() == 'grid') {
+            return array('field_options' => $settings);
+        }
+
+        return array('field_options_email_address' => array(
+            'label' => 'field_options',
+            'group' => 'email_address',
+            'settings' => $settings
+        ));
     }
 
     /**
