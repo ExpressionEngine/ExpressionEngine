@@ -9,7 +9,6 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-use ExpressionEngine\Addons\Rte\RteHelper;
 use ExpressionEngine\Service\Addon\Installer;
 
 class Rte_upd extends Installer
@@ -37,6 +36,7 @@ class Rte_upd extends Installer
         parent::install();
 
         $this->install_rte_toolsets_table();
+        ee('rte:RedactorMigrationService')->ensureAuditTable();
 
         return true;
     }
@@ -76,7 +76,7 @@ class Rte_upd extends Installer
         // -------------------------------------------
         //  Populate it
         // -------------------------------------------
-        foreach (['ckeditor', 'redactorX'] as $toolset_type) {
+        foreach (['ckeditor', 'redactor'] as $toolset_type) {
             $toolbars = ee('rte:' . ucfirst($toolset_type) . 'Service')->defaultToolbars();
             foreach ($toolbars as $name => $toolbar) {
                 $config_settings = array_merge(ee('rte:' . ucfirst($toolset_type) . 'Service')->defaultConfigSettings(), array('toolbar' => $toolbar));
@@ -98,15 +98,19 @@ class Rte_upd extends Installer
      */
     public function update($current = '')
     {
+        if (version_compare($current, '2.3.0', '<')) {
+            ee('rte:RedactorMigrationService')->migrate();
+        }
+
         if (version_compare($current, '2.2.0', '<')) {
-            $check = ee('db')->where('toolset_type', 'redactorX')->get('rte_toolsets');
+            $check = ee('db')->where('toolset_type', 'redactor')->get('rte_toolsets');
             if ($check->num_rows() == 0) {
-                $toolbars = ee('rte:RedactorXService')->defaultToolbars();
+                $toolbars = ee('rte:RedactorService')->defaultToolbars();
                 foreach ($toolbars as $name => $toolbar) {
-                    $config_settings = array_merge(ee('rte:RedactorXService')->defaultConfigSettings(), array('toolbar' => $toolbar));
+                    $config_settings = array_merge(ee('rte:RedactorService')->defaultConfigSettings(), array('toolbar' => $toolbar));
                     $config = ee('Model')->make('rte:Toolset');
                     $config->toolset_name = $name;
-                    $config->toolset_type = 'redactorX';
+                    $config->toolset_type = 'redactor';
                     $config->settings = $config_settings;
                     $config->save();
                 }
@@ -182,6 +186,7 @@ class Rte_upd extends Installer
         // Drop the exp_rte_configs table
         ee()->load->dbforge();
         ee()->dbforge->drop_table('rte_toolsets');
+        ee()->dbforge->drop_table('rte_migration_audit');
 
         return true;
     }

@@ -18,9 +18,9 @@ class RedactorService extends AbstractRteService implements RteService {
     public $handle;
     protected $settings;
     protected $toolset;
+    protected static $type = 'redactor';
     protected static $_includedFieldResources = false;
     protected static $_includedConfigs;
-    protected static $type = 'redactor';
 
     protected function includeFieldResources()
     {
@@ -92,20 +92,114 @@ class RedactorService extends AbstractRteService implements RteService {
             return $configHandle;
         }
 
+        if (!isset($config['toolbar']['editor']) || !is_object($config['toolbar']['editor'])) {
+            $config['toolbar']['editor'] = new \stdClass();
+        }
+
         // language
         $language = isset(ee()->session) ? ee()->session->get_language() : ee()->config->item('deft_lang');
-        $config['toolbar']['lang'] = ee()->lang->code($language);
+        $config['toolbar']['editor']->lang = ee()->lang->code($language);
+        if (isset($config['field_text_direction']) && $config['field_text_direction'] == 'rtl') {
+            $config['toolbar']['editor']->direction = 'rtl';
+        }
 
+        $config['toolbar']['editor']->focus = false;
+        $config['toolbar']['editor']->drop = false;
+        $config['toolbar']['reorder'] = true;
+
+        // toolbars
+        if (!isset($config['toolbar']['toolbar']) || !is_object($config['toolbar']['toolbar'])) {
+            $config['toolbar']['toolbar'] = new \stdClass();
+        }
+        if (isset($config['toolbar']['sticky'])) {
+            $config['toolbar']['toolbar']->sticky = get_bool_from_string($config['toolbar']['sticky']);
+            unset($config['toolbar']['sticky']);
+        }
+        $config['toolbar']['toolbar']->stickyTopOffset = 60;
+
+        if (isset($config['toolbar']['hide'])) {
+            $config['toolbar']['toolbar']->hide = $config['toolbar']['hide'];
+        }
+
+        if (isset($config['toolbar']['toolbar_hide'])) {
+            if ($config['toolbar']['toolbar_hide'] != 'y') {
+                $config['toolbar']['toolbar'] = false;
+            }
+        }
+
+        if (!isset($config['toolbar']['buttons']) || !is_object($config['toolbar']['buttons'])) {
+            $config['toolbar']['buttons'] = new \stdClass();
+        }
+        // The set of buttons to the right of the toolbar
+        if (isset($config['toolbar']['extrabar'])) {
+            $config['toolbar']['buttons']->extrabar = $config['toolbar']['extrabar'];
+        }
+        unset($config['toolbar']['extrabar']);
+        if (isset($config['toolbar']['toolbar_extrabar'])) {
+            if ($config['toolbar']['toolbar_extrabar'] != 'y') {
+                $config['toolbar']['extrabar'] = false;
+            }
+        }
+
+        if (isset($config['toolbar']['addbar'])) {
+            $config['toolbar']['buttons']->addbar = $config['toolbar']['addbar'];
+        }
+        unset($config['toolbar']['addbar']);
+        if (isset($config['toolbar']['toolbar_addbar'])) {
+            if ($config['toolbar']['toolbar_addbar'] != 'y') {
+                $config['toolbar']['addbar'] = false;
+            }
+        }
+
+        // The context bar appears when text is selected.
+        if (isset($config['toolbar']['context'])) {
+            $config['toolbar']['buttons']->context = $config['toolbar']['context'];
+        }
+        unset($config['toolbar']['context']);
+        if (isset($config['toolbar']['toolbar_context'])) {
+            if ($config['toolbar']['toolbar_context'] != 'y') {
+                $config['toolbar']['context'] = false;
+            } else {
+                $config['toolbar']['context'] = true;
+            }
+        }
+
+        if (!isset($config['toolbar']['plugins'])) {
+            $config['toolbar']['plugins'] = [];
+        }
+
+        if (isset($config['toolbar']['toolbar_control'])) {
+            $config['toolbar']['control'] = ($config['toolbar']['toolbar_control'] == 'y');
+        }
+
+        if (isset($config['toolbar']['spellcheck'])) {
+            switch ($config['toolbar']['spellcheck']) {
+                case 'browser':
+                    $config['toolbar']['editor']->spellcheck = true;
+                    break;
+                case 'grammarly':
+                    $config['toolbar']['editor']->spellcheck = false;
+                    $config['toolbar']['editor']->grammarly = true;
+                    break;
+                case 'none':
+                default:
+                    $config['toolbar']['editor']->spellcheck = false;
+                    break;
+            }
+            unset($config['toolbar']['spellcheck']);
+        }
+
+        // Structure / Pages linking
         if (!empty(ee()->config->item('site_pages')) && !empty(array_intersect(['rte_definedlinks', 'pages'], $config['toolbar']['plugins']))) {
             $action_id = ee()->db->select('action_id')
                 ->where('class', 'Rte')
                 ->where('method', 'pages_autocomplete')
                 ->get('actions');
-            $config['toolbar']['definedlinks'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id->row('action_id') . '&t=' . ee()->localize->now;
+            $config['toolbar']['definedlinks'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id->row('action_id') . '&structured=y&t=' . ee()->localize->now;
             $config['toolbar']['handle'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id->row('action_id') . '&t=' . ee()->localize->now;
         }
 
-        $config['toolbar']['stylesClass'] = 'redactor-styles rte_' . $configHandle;
+        $config['toolbar']['editor']->classname = 'content redactor-styles rx-content rte_' . $configHandle;
 
         // -------------------------------------------
         //  File Browser Config
@@ -132,7 +226,7 @@ class RedactorService extends AbstractRteService implements RteService {
         }
 
         // EE FilePicker is not available on frontend channel forms
-        if (stripos($fqcn, 'filepicker_rtefb') !== false && REQ != 'CP') {
+        if (isset($fqcn) && stripos($fqcn, 'filepicker_rtefb') !== false && REQ != 'CP') {
             $filemanager_key = array_search('filebrowser', $config['toolbar']['plugins']);
             if ($filemanager_key !== false) {
                 $items = $config['toolbar']['plugins'];
@@ -146,11 +240,6 @@ class RedactorService extends AbstractRteService implements RteService {
         }
         if (isset($config['max_height']) && !empty($config['max_height']) && is_numeric($config['max_height'])) {
             $config['toolbar']['maxHeight'] = (int) $config['max_height'] . 'px';
-        }
-
-        if (isset($config['limiter']) && !empty($config['limiter']) && is_numeric($config['limiter'])) {
-            $config['toolbar']['plugins'][] = 'limiter';
-            $config['toolbar']['limiter'] = (int) $config['limiter'];
         }
 
         //link
@@ -204,114 +293,179 @@ class RedactorService extends AbstractRteService implements RteService {
         );
     }
 
-    public function toolbarInputHtml($config)
+    public function toolbarInputHtml($config, $toolbar = 'buttons')
     {
-            ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.css" type="text/css" />');
+        ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.css" type="text/css" />');
 
+        $selection = [];
+        if (is_object($config->settings['toolbar'])) {
+            $selection = (array) $config->settings['toolbar'];
+        } else {
+            $selection = isset($config->settings['toolbar'][$toolbar]) ? $config->settings['toolbar'][$toolbar] : $config->settings['toolbar'];
+        }
+
+        switch ($toolbar) {
+            case 'hide':
+                $allButtons = static::defaultToolbars()['Redactor Full']['editor'];
+                unset($allButtons[array_search('image', $allButtons)]);
+                break;
+            case 'format':
+            case 'plugins':
+            case 'addbar':
+            case 'context':
+            case 'extrabar':
+                $allButtons = static::defaultToolbars()['Redactor Full'][$toolbar];
+                break;
+            default:
+                $allButtons = array_merge(
+                    static::defaultToolbars()['Redactor Full']['editor'],
+                    static::defaultToolbars()['Redactor Full']['addbar'],
+                    static::defaultToolbars()['Redactor Full']['context'],
+                    static::defaultToolbars()['Redactor Full']['extrabar']
+                );
+                break;
+        }
+
+        $allButtons = array_unique($allButtons);
+        if ($toolbar == 'addbar') {
+            unset($allButtons[array_search('addbar', $allButtons)]);
+            unset($allButtons[array_search('link', $allButtons)]);
+            unset($allButtons[array_search('text', $allButtons)]);
+            unset($allButtons[array_search('hotkeys', $allButtons)]);
+            unset($allButtons[array_search('image', $allButtons)]);
+        }
+        if (empty($config->toolset_id)) {
+            $selection = ($toolbar != 'hide') ? static::defaultToolbars()['Redactor Full'][$toolbar] : [];
+        }
+        if (is_null($selection)) {
             $selection = [];
-            if (is_object($config->settings['toolbar'])) {
-                $selection = (array) $config->settings['toolbar'];
-            } else {
-                $selection = isset($config->settings['toolbar']['buttons']) && is_array($config->settings['toolbar']['buttons']) ? $config->settings['toolbar']['buttons'] : $config->settings['toolbar'];
+        }
+        $fullToolbar = array_merge($selection, $allButtons);//merge to get the right order
+        $fullToolset = [];
+        foreach ($fullToolbar as $i => $tool) {
+            if (in_array($tool, $allButtons)) {
+                $fullToolset[$tool] = lang($tool . '_rte');
             }
+        }
 
-            $fullToolbar = array_merge($selection, static::defaultToolbars()['Redactor Full']['buttons']);//merge to get the right order
-            $fullToolset = [];
-            foreach ($fullToolbar as $i => $tool) {
-                if (in_array($tool, static::defaultToolbars()['Redactor Full']['buttons'])) {
-                    $fullToolset[$tool] = lang($tool . '_rte');
-                }
-            }
-
-            return ee('View')->make('rte:redactor-toolbar')->render(
-                [
-                    'buttons' => $fullToolset,
-                    'selection' => $selection,
-                    'type' => 'buttons'
-                ]
-            );
-    }
-
-    public function pluginsInputHtml($config)
-    {
-            $selection = [];
-            if (is_object($config->settings['toolbar'])) {
-                $selection = (array) $config->settings['toolbar'];
-            } else {
-                $selection = isset($config->settings['toolbar']['plugins']) ? $config->settings['toolbar']['plugins'] : $config->settings['toolbar'];
-            }
-
-            $fullToolbar = array_merge($selection, static::defaultToolbars()['Redactor Full']['plugins']);
-            $fullToolset = [];
-            foreach ($fullToolbar as $i => $tool) {
-                if ($tool == 'limiter') {
-                    continue;//this one one is included based on whether setting is provided
-                }
-                if (in_array($tool, static::defaultToolbars()['Redactor Full']['plugins'])) {
-                    $fullToolset[$tool] = lang($tool . '_rte');
-                }
-            }
-
-            return ee('View')->make('rte:redactor-toolbar')->render(
-                [
-                    'buttons' => $fullToolset,
-                    'selection' => $selection,
-                    'type' => 'plugins'
-                ]
-            );
+        return ee('View')->make('rte:redactor-toolbar')->render(
+            [
+                'buttons' => $fullToolset,
+                'selection' => $selection,
+                'type' => $toolbar,
+                'reverse' => ($toolbar == 'hide')
+            ]
+        );
     }
 
     public static function defaultToolbars()
     {
         return [
             'Redactor Basic' => [
-                'buttons' => [
+                'toolbar_hide' => 'y',
+                'toolbar_extrabar' => 'n',
+                'toolbar_addbar' => 'n',
+                'toolbar_context' => 'n',
+                'toolbar_control' => 'n',
+                'hide' => [],
+                'extrabar' => [
+                    'hotkeys'
+                ],
+                'addbar' => [
+                    'text',
+                    'image',
+                    'table'
+                ],
+                'context' => [
                     'bold',
                     'italic',
-                    'underline',
-                    'ol',
-                    'ul',
-                    'link',
+                    'mark',
+                    'link'
+                ],
+                'editor' => [
+                    'format',
+                    'bold',
+                    'italic',
+                    'link'
+                ],
+                'format' =>  [
+                    'text',
+                    'bulletlist',
+                    'numberedlist'
                 ],
                 'plugins' => [
-
-                ],
+                    'filebrowser',
+                    'rte_definedlinks',
+                    'pages',
+                    'blockclass',
+                ]
             ],
             'Redactor Full' => [
-                'buttons' => [
+                'toolbar_hide' => 'y',
+                'toolbar_extrabar' => 'y',
+                'toolbar_addbar' => 'y',
+                'toolbar_context' => 'y',
+                'toolbar_control' => 'y',
+                'hide' => [],
+                'editor' => [
                     'html',
                     'format',
                     'bold',
                     'italic',
                     'deleted',
-                    'underline',
-                    'redo',
+                    'moreinline',
+                    'list',
+                    'link'
+                ],
+                'extrabar' => [
                     'undo',
-                    'ol',
-                    'ul',
-                    'indent',
-                    'outdent',
-                    'sup',
-                    'sub',
-                    'link',
-                    'line'
+                    'redo',
+                    'hotkeys'
+                ],
+                'addbar' => [
+                    'text',
+                    'heading',
+                    'todo',
+                    'list',
+                    'embed',
+                    'table',
+                    'quote',
+                    'pre',
+                    'line',
+                    'layout',
+                    'wrapper'
+                ],
+                'context' => [
+                    'format',
+                    'bold',
+                    'italic',
+                    'deleted',
+                    'moreinline',
+                    'link'
+                ],
+                'format' => [
+                    'text',
+                    'h1',
+                    'h2',
+                    'h3',
+                    'h4',
+                    'quote',
+                    'bulletlist',
+                    'numberedlist',
+                    'todo'
                 ],
                 'plugins' => [
+                    'underline',
                     'alignment',
+                    'blockid',
+                    'blockclass',
+                    'blockcode',
                     'rte_definedlinks',
-                    'filebrowser',
                     'pages',
-                    'inlinestyle',
-                    'fontcolor',
-                    'limiter',
-                    'counter',
-                    'properties',
-                    'specialchars',
-                    'table',
-                    'video',
-                    'widget',
                     'readmore',
-                    'fullscreen',
+                    'filebrowser',
+                    'imageposition',
+                    'imageresize',
                 ]
             ]
         ];

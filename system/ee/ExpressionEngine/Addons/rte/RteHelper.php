@@ -16,6 +16,10 @@ use ExpressionEngine\Library\CP\FileManager\Traits\FileUsageTrait;
 
 class RteHelper
 {
+    private const LEGACY_TOOLSET_TYPE_MAP = [
+        'redactorclassic' => 'redactor',
+        'redactorx' => 'redactor',
+    ];
     use FileUsageTrait;
 
     private static $_fileTags;
@@ -311,6 +315,36 @@ class RteHelper
     }
 
     /**
+     * Normalizes legacy read-more markup so the current Redactor editor renders separators correctly.
+     */
+    public static function normalizeReadMoreMarkup(&$data): void
+    {
+        if (empty($data) || stripos((string) $data, 'readmore') === false) {
+            return;
+        }
+
+        $migration = ee('rte:RedactorMigrationService')->normalizeReadMoreMarkup((string) $data);
+        if ($migration['changed']) {
+            $data = $migration['html'];
+        }
+    }
+
+    public static function normalizeToolsetType(?string $toolsetType): string
+    {
+        $type = strtolower((string) $toolsetType);
+        if (isset(self::LEGACY_TOOLSET_TYPE_MAP[$type])) {
+            return self::LEGACY_TOOLSET_TYPE_MAP[$type];
+        }
+
+        return !empty($toolsetType) ? $toolsetType : 'ckeditor';
+    }
+
+    public static function getServiceNameForToolsetType(?string $toolsetType): string
+    {
+        return ucfirst(self::normalizeToolsetType($toolsetType)) . 'Service';
+    }
+
+    /**
      * Backwards compatibility for third-party fieldtypes
      *
      * @param [type] $toolset_id
@@ -326,7 +360,7 @@ class RteHelper
         }
 
         // Load proper toolset
-        $serviceName = ucfirst($toolset->toolset_type) . 'Service';
+        $serviceName = self::getServiceNameForToolsetType($toolset->toolset_type);
         $configHandle = ee('rte:' . $serviceName)->init([], $toolset);
 
         return $configHandle;

@@ -24,7 +24,7 @@ class Rte_ft extends EE_Fieldtype
 
     public $info = [
         'name' => 'Rich Text Editor',
-        'version' => '2.1.0'
+        'version' => '2.3.0'
     ];
 
     public $defaultEvaluationRule = 'isNotEmpty';
@@ -177,7 +177,7 @@ class Rte_ft extends EE_Fieldtype
         }
 
         // Load proper toolset
-        $serviceName = ucfirst($toolset->toolset_type) . 'Service';
+        $serviceName = RteHelper::getServiceNameForToolsetType($toolset->toolset_type);
         $configHandle = ee('rte:' . $serviceName)->init($this->settings, $toolset);
 
         $id = str_replace(array('[', ']'), array('_', ''), $this->field_name);
@@ -197,6 +197,8 @@ class Rte_ft extends EE_Fieldtype
 
         //Third party conversion
         RteHelper::replaceExtraTags($data);
+
+        RteHelper::normalizeReadMoreMarkup($data);
 
         if (ee()->extensions->active_hook('rte_before_display')) {
             $data = ee()->extensions->call('rte_before_display', $this, $data);
@@ -234,7 +236,7 @@ class Rte_ft extends EE_Fieldtype
         }
 
         // Load proper toolset
-        $serviceName = ucfirst($toolset->toolset_type) . 'Service';
+        $serviceName = RteHelper::getServiceNameForToolsetType($toolset->toolset_type);
         $configHandle = ee('rte:' . $serviceName)->init($this->settings, $toolset);
 
         // get the cache
@@ -263,6 +265,8 @@ class Rte_ft extends EE_Fieldtype
 
         // convert site page tags to URLs
         RteHelper::replacePageTags($data);
+
+        RteHelper::normalizeReadMoreMarkup($data);
 
         if (ee()->extensions->active_hook('rte_before_display')) {
             $data = ee()->extensions->call('rte_before_display', $this, $data);
