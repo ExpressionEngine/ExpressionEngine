@@ -226,6 +226,15 @@ class Rss
             $sql .= ") ";
         }
 
+        if (ee()->TMPL->fetch_param('show_offline_sites') != 'no') {
+            $onlineSiteIds = ee('Model')->get('Config')
+                ->filter('key', 'is_site_on')
+                ->filter('value', 'y')
+                ->all(true)
+                ->pluck('site_id');
+            $sql .= " AND exp_channel_titles.site_id IN ('" . implode("','", $onlineSiteIds) . "') ";
+        }
+
         //  We only select entries that have not expired
         $timestamp = (ee()->TMPL->cache_timestamp != '') ? ee()->TMPL->cache_timestamp : ee()->localize->now;
 
