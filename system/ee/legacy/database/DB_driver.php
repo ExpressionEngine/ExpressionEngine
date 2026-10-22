@@ -74,6 +74,7 @@ class CI_DB_driver
     public $limit_used;
 
     protected $_escape_char = '"';
+    protected $_regexp_uses_icu_word_boundaries = null;
 
     /**
      * Constructor.  Accepts one parameter containing the database
@@ -150,6 +151,56 @@ class CI_DB_driver
         }
 
         return $this->query($sql)->row('ver');
+    }
+
+    /**
+     * Build a whole-word REGEXP pattern for the active database.
+     *
+     * MySQL 8.0.4+ uses ICU regular expressions, which do not support the
+     * Spencer word-boundary markers used by older MySQL and MariaDB.
+     *
+     * @param string $term
+     * @return string
+     */
+    public function word_boundary_regex($term)
+    {
+        $term = preg_quote((string) $term);
+
+        if ($this->_uses_icu_regexp_word_boundaries()) {
+            return '(\\b|^)' . $term . '(\\b|$)';
+        }
+
+        return '([[:<:]]|^)' . $term . '([[:>:]]|$)';
+    }
+
+    /**
+     * Determine whether the active database uses ICU REGEXP word boundaries.
+     *
+     * @return bool
+     */
+    protected function _uses_icu_regexp_word_boundaries()
+    {
+        if ($this->_regexp_uses_icu_word_boundaries !== null) {
+            return $this->_regexp_uses_icu_word_boundaries;
+        }
+
+        $this->_regexp_uses_icu_word_boundaries = false;
+
+        try {
+            $version = $this->version();
+        } catch (Throwable $e) {
+            return $this->_regexp_uses_icu_word_boundaries;
+        }
+
+        if (! is_string($version) || $version === '' || stripos($version, 'mariadb') !== false) {
+            return $this->_regexp_uses_icu_word_boundaries;
+        }
+
+        if (preg_match('/\d+(?:\.\d+){1,2}/', $version, $match)) {
+            $this->_regexp_uses_icu_word_boundaries = version_compare($match[0], '8.0.4', '>=');
+        }
+
+        return $this->_regexp_uses_icu_word_boundaries;
     }
 
     /**
