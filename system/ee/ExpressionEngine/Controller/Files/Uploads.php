@@ -928,7 +928,10 @@ class Uploads extends AbstractFilesController
             ($current_files = ee()->input->post('files')) === false
             && $db_sync != 'y'
         ) {
-            return false;
+            return ee()->output->send_ajax_response([
+                'message_type' => 'failure',
+                'errors' => lang('invalid_action'),
+            ]);
         }
 
         $uploadDestination = ee('Model')->get('UploadDestination', $id)->first();
