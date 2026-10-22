@@ -66,6 +66,7 @@
     align-items: center;
     flex: 0 0 50px;
     margin-right: 20px;
+    margin-bottom: auto;
 
     .price {
     margin-top: 5px;
@@ -117,9 +118,9 @@
 
 .add-on-card__desc {
   position: relative;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  // white-space: nowrap;
+  // overflow: hidden;
+  // text-overflow: ellipsis;
   max-width: 100%;
   // font-size: 0.9em;
   // margin-bottom: $s-s;
