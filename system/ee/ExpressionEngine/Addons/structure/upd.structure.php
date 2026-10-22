@@ -58,6 +58,12 @@ class Structure_upd
                 'htmlbuttons'   => 'true',
                 'width'         => '100%'
             ),
+            'hidden_from_named_nav' => array(
+                'visible'       => true,
+                'collapse'      => false,
+                'htmlbuttons'   => 'true',
+                'width'         => '100%'
+            ),
             'listing_channel' => array(
                 'visible'       => true,
                 'collapse'      => false,
@@ -121,6 +127,7 @@ class Structure_upd
         $this->create_table_structure_listings();
         $this->create_table_structure_members();
         $this->create_table_structure_nav_history();
+        $this->create_table_structure_named_navs();
 
         // populate listings
         $this->populate_listings();
@@ -236,18 +243,19 @@ class Structure_upd
         // Create Structure Table
         if (! ee()->db->table_exists('structure')) {
             $fields = array(
-                'site_id'             => array('type' => 'int', 'constraint' => '4',  'unsigned' => true, 'null' => false, 'default' => '1'),
-                'entry_id'            => array('type' => 'int', 'constraint' => '10', 'unsigned' => true, 'null' => false, 'default' => '0'),
-                'parent_id'           => array('type' => 'int', 'constraint' => '10', 'unsigned' => true, 'null' => false, 'default' => '0'),
-                'channel_id'          => array('type' => 'int', 'constraint' => '6',  'unsigned' => true, 'null' => false, 'default' => '0'),
-                'listing_cid'         => array('type' => 'int', 'constraint' => '6',  'unsigned' => true, 'null' => false, 'default' => '0'),
-                'lft'                 => array('type' => 'smallint', 'constraint' => '5',   'unsigned' => true, 'null' => false, 'default' => '0'),
-                'rgt'                 => array('type' => 'smallint', 'constraint' => '5',   'unsigned' => true, 'null' => false, 'default' => '0'),
-                'dead'                => array('type' => 'varchar',  'constraint' => '100', 'null' => false),
-                'hidden'              => array('type' => 'char', 'null' => false, 'default' => 'n'),
-                'structure_url_title' => array('type' => 'varchar', 'constraint' => '200', 'null' => true),
-                'template_id'         => array('type' => 'int', 'constraint' => '10', 'unsigned' => true, 'null' => false, 'default' => '0'),
-                'updated'             => array('type' => 'datetime')
+                'site_id'               => array('type' => 'int', 'constraint' => '4',  'unsigned' => true, 'null' => false, 'default' => '1'),
+                'entry_id'              => array('type' => 'int', 'constraint' => '10', 'unsigned' => true, 'null' => false, 'default' => '0'),
+                'parent_id'             => array('type' => 'int', 'constraint' => '10', 'unsigned' => true, 'null' => false, 'default' => '0'),
+                'channel_id'            => array('type' => 'int', 'constraint' => '6',  'unsigned' => true, 'null' => false, 'default' => '0'),
+                'listing_cid'           => array('type' => 'int', 'constraint' => '6',  'unsigned' => true, 'null' => false, 'default' => '0'),
+                'lft'                   => array('type' => 'smallint', 'constraint' => '5',   'unsigned' => true, 'null' => false, 'default' => '0'),
+                'rgt'                   => array('type' => 'smallint', 'constraint' => '5',   'unsigned' => true, 'null' => false, 'default' => '0'),
+                'dead'                  => array('type' => 'varchar',  'constraint' => '100', 'null' => false),
+                'hidden'                => array('type' => 'char', 'null' => false, 'default' => 'n'),
+                'hidden_from_named_nav' => array('type' => 'varchar',  'constraint' => '100', 'null' => true),
+                'structure_url_title'   => array('type' => 'varchar', 'constraint' => '200', 'null' => true),
+                'template_id'           => array('type' => 'int', 'constraint' => '10', 'unsigned' => true, 'null' => false, 'default' => '0'),
+                'updated'               => array('type' => 'datetime')
             );
 
             ee()->dbforge->add_field($fields);
@@ -323,6 +331,28 @@ class Structure_upd
             ee()->dbforge->add_field($fields);
             ee()->dbforge->add_key(array('site_id', 'channel_id'), true);
             ee()->dbforge->create_table('structure_channels');
+        }
+    }
+
+    /**
+     * Function to create the named navs table
+     *
+     * @method create_table_structure_named_navs
+     * @return none
+     */
+    private function create_table_structure_named_navs()
+    {
+        // Create Structure named nav table
+        if (! ee()->db->table_exists('structure_named_navs')) {
+            $fields = array(
+                'id'                => array('type' => 'int', 'constraint' => '10', 'unsigned' => true, 'null' => false, 'auto_increment' => true),
+                'site_id'           => array('type' => 'smallint',  'unsigned' => true, 'null' => false),
+                'nav_name'          => array('type' => 'LONGTEXT'),
+            );
+
+            ee()->dbforge->add_field($fields);
+            ee()->dbforge->add_key(array('id', 'site_id'), true);
+            ee()->dbforge->create_table('structure_named_navs');
         }
     }
 
@@ -664,6 +694,14 @@ class Structure_upd
         if (version_compare($current, '5.1.2', "<")) {
             add_structure_nav_revision(false, 'Pre 5.1.2 update structure nav');
             $sql = "UPDATE exp_structure s, exp_channel_titles t SET s.channel_id = t.channel_id WHERE s.entry_id = t.entry_id;";
+            ee()->db->query($sql);
+        }
+
+        if (version_compare($current, '6.1.0', "<")) {
+            $this->create_table_structure_named_navs();
+
+            // Add hidden_from_named_nav to the structure table after the hidden column
+            $sql = "ALTER TABLE `exp_structure` ADD `hidden_from_named_nav` varchar(100) NULL AFTER `hidden`";
             ee()->db->query($sql);
         }
 
