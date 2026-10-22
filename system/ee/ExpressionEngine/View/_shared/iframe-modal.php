@@ -17,7 +17,7 @@
 	<body data-ee-version="<?=APP_VER?>" class="<?php if (isset($pro_class)) echo $pro_class; ?> app-modal-inner">
 		<?php if (!isset($pro_class)): ?>
 		<script type="text/javascript">
-		var currentTheme = localStorage.getItem('theme');
+		var currentTheme = localStorage.getItem('theme') ?? '<?=ee()->config->item('cp_theme') ?: 'light'?>';
 
 		// Restore the currently selected theme
 		// This is at the top of the body to prevent the default theme from flashing
