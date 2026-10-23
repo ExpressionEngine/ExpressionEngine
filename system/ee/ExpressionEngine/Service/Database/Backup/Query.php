@@ -433,10 +433,10 @@ class Query
     }
 
     /**
-     * Infers a data type for a given column type
+     * Infers the backup data type for a database column.
      *
-     * @param	string	$column_type	Table name
-     * @return	const	Constant to define data type
+     * @param string $column_type The database column type.
+     * @return int|null The backup type constant, or null for unsupported types.
      */
     protected function getDataType($column_type)
     {
@@ -445,14 +445,19 @@ class Query
         if (strpos($type, 'binary') !== false or
             strpos($type, 'blob') !== false) {
             return self::BINARY_TYPE;
-        } elseif (strpos($type, 'char') !== false or
+        }
+
+        if (strpos($type, 'char') !== false or
             strpos($type, 'text') !== false or
+            strpos($type, 'json') !== false or
             strpos($type, 'date') !== false or
             strpos($type, 'time') !== false or
             strpos($type, 'set') !== false or
             strpos($type, 'enum') !== false) {
             return self::STRING_TYPE;
-        } elseif (strpos($type, 'int') !== false or
+        }
+
+        if (strpos($type, 'int') !== false or
             strpos($type, 'float') !== false or
             strpos($type, 'double') !== false or
             strpos($type, 'decimal') !== false) {
