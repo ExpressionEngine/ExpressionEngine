@@ -73,8 +73,26 @@ $.fn.eeTableReorder = function(params) {
 			tolerance: 'pointer',
 			helper: function(event, row)	// Fix issue where cell widths collapse on drag
 			{
-				var $originals = row.children();
-				var $helper = row.clone();
+				var $originals = row.children(),
+					$helper = row.clone(),
+					isFlexLayout = row.css('display') === 'flex',
+					originalLeft = row.offset().left;
+
+				// Keep the helper the same width as the row when it is appended
+				// outside of its table (for example, to the publish tab wrapper).
+				if (row.is('tr')) {
+					if (isFlexLayout) {
+						$helper.addClass('ee-table-reorder-helper--flex');
+					} else {
+						$helper.css({
+							display: 'table',
+							tableLayout: 'fixed'
+						});
+					}
+				}
+				$helper
+					.width(row.width())
+					.data('eeTableReorderLeft', originalLeft);
 
 				// Make sure radio buttons retain their state after sort,
 				// explanation:
@@ -90,8 +108,11 @@ $.fn.eeTableReorder = function(params) {
 
 				$helper.children().each(function(index)
 				{
-					// Set helper cell sizes to match the original sizes
-					$(this).width($originals.eq(index).outerWidth())
+					// Flex rows use the component styles to keep their cells stacked.
+					// Set fixed cell sizes for regular table rows.
+					if (! isFlexLayout) {
+						$(this).width($originals.eq(index).width())
+					}
 				});
 
 				return $helper;
@@ -103,6 +124,11 @@ $.fn.eeTableReorder = function(params) {
 				{
 					params.beforeSort(ui.item);
 				}
+
+				// The y axis prevents jQuery UI from setting a horizontal
+				// position. Anchor the helper to the original row instead of
+				// the potentially wider appendTo container.
+				ui.helper.css('left', ui.helper.data('eeTableReorderLeft') - ui.helper.offsetParent().offset().left);
 				ui.placeholder.height(ui.helper.height());
 			},
 			// After sort finishes
