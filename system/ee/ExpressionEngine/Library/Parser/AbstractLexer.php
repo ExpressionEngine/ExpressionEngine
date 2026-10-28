@@ -23,17 +23,9 @@ abstract class AbstractLexer
     protected $str;
 
     /**
-     * Current position in $str. Moving the offset instead of cutting the
-     * consumed part off $str avoids copying the rest of the template on every
-     * move (quadratic for large templates). Regular expressions run on a short
-     * window from $pos, because before PHP 8.3 PCRE with the u flag checks the
-     * whole subject for valid UTF-8 on every call; they fall back to the rest
-     * of the template if the window cannot decide.
+     * Current byte position in the unchanged input buffer.
      */
     protected $pos = 0;
-
-    const WINDOW = 512;     // bytes handed to a regex
-    const MARGIN = 64;      // a match must end this far before the window end
 
     /**
      * Final token array
@@ -43,16 +35,16 @@ abstract class AbstractLexer
     /**
      * All lexers must implement their own tokenizing method.
      *
-     * @param String $str The string to tokenize
-     * @return array of tokens
+     * @param string $str The input to tokenize.
+     * @return array The resulting tokens.
      */
     abstract public function tokenize($str);
 
     /**
-     * Peek ahead n characters without moving
+     * Read up to $n bytes without advancing the cursor.
      *
-     * @param int $n The number of characters to peek ahead
-     * @return string The next $n characters
+     * @param int $n The number of bytes to read.
+     * @return string The requested bytes, or an empty string at the end of input.
      */
     protected function peek($n = 1)
     {
@@ -64,49 +56,24 @@ abstract class AbstractLexer
      *
      * @param string $regex A regular expression
      * @param string $flags Optionally change the regex flags
-     * @return array|string The result of the match or an empty string
+     * @return string|null The matched text or null
      */
-    protected function peekRegex($regex, $flags = 'us', $nomatch_final = false)
+    protected function peekRegex($regex, $flags = 'us')
     {
-        $matches = $this->matchAnchored('/' . $regex . '/A' . $flags, $nomatch_final);
+        $matches = $this->matchAnchored('/' . $regex . '/A' . $flags);
 
         return isset($matches) ? $matches[0] : null;
     }
 
     /**
-     * Anchored match at $pos on a window, same result as matching the rest
-     * of the template.
+     * Match an anchored pattern against the current regex subject.
      *
-     * @param string $pattern Complete pattern, anchored (/A)
-     * @param bool $nomatch_final The caller knows that a pattern which does not
-     *   match within the window cannot match the rest either (short patterns,
-     *   or decided by the first character)
-     * @return array|null The matches or null
+     * @param string $pattern The complete anchored regular expression.
+     * @return array|null The matched captures or null.
      */
-    protected function matchAnchored($pattern, $nomatch_final = false)
+    protected function matchAnchored($pattern)
     {
-        $window = substr($this->str, $this->pos, self::WINDOW);
-        $whole = strlen($window) < self::WINDOW; // the window is the whole rest
-
-        if (! $whole) {
-            // drop the last character, it may be cut in the middle (invalid UTF-8)
-            $i = strlen($window) - 1;
-            while ($i > 0 && (ord($window[$i]) & 0xC0) == 0x80) {
-                $i--;
-            }
-            $window = substr($window, 0, $i);
-        }
-
-        if (preg_match($pattern, $window, $matches)) {
-            if ($whole || strlen($matches[0]) <= strlen($window) - self::MARGIN) {
-                return $matches;
-            }
-        } elseif ($whole || $nomatch_final) {
-            return null;
-        }
-
-        // the window cannot decide: match the rest, as before the patch
-        if (preg_match($pattern, substr($this->str, $this->pos), $matches)) {
+        if (preg_match($pattern, $this->getRegexSubject(), $matches) === 1) {
             return $matches;
         }
 
@@ -114,15 +81,23 @@ abstract class AbstractLexer
     }
 
     /**
-     * Seek to the first character in char mask
+     * Provide the remaining input with the current position at subject start.
      *
-     * @param string $char_mask The characters we are seeking
-     * @return string The characters lost in the move
+     * @return string
+     */
+    protected function getRegexSubject()
+    {
+        return $this->rest();
+    }
+
+    /**
+     * Advance to the first byte in the character mask, leaving that byte unconsumed.
+     *
+     * @param string $char_mask The delimiter bytes to seek.
+     * @return string The bytes consumed before the delimiter or end of input.
      */
     protected function seekTo($char_mask)
     {
-        $n = 0;
-
         // strcspn from the current position (mbstring.func_overload, the
         // reason for the old regex, no longer exists as of PHP 8)
         $n = strcspn($this->str, $char_mask, $this->pos);
@@ -131,9 +106,9 @@ abstract class AbstractLexer
     }
 
     /**
-     * Move to the next character
+     * Consume the next byte if one is available.
      *
-     * @return string The consumed character
+     * @return string The consumed byte, or an empty string at the end of input.
      */
     protected function next()
     {
@@ -141,10 +116,10 @@ abstract class AbstractLexer
     }
 
     /**
-     * Move ahead n characters in the string, returning the consumed bit
+     * Consume up to $n bytes and advance the cursor by the number consumed.
      *
-     * @param int $n The number of characters to move ahead
-     * @return string The characters lost in the move
+     * @param int $n The number of bytes to consume.
+     * @return string The consumed bytes.
      */
     protected function move($n)
     {
@@ -155,9 +130,9 @@ abstract class AbstractLexer
     }
 
     /**
-     * Check if end of string reached.
+     * Check whether the cursor has reached the end of input.
      *
-     * @return Bool End reached
+     * @return bool
      */
     protected function eof()
     {
@@ -165,9 +140,9 @@ abstract class AbstractLexer
     }
 
     /**
-     * Get the remaining string to be lexed
+     * Return the input remaining at the cursor.
      *
-     * @return Remaining string
+     * @return string
      */
     protected function rest()
     {

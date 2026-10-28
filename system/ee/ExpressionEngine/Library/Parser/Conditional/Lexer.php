@@ -139,6 +139,20 @@ class Lexer extends AbstractLexer
     protected $context;
     protected $annotations;
 
+    /**
+     * Exclusive end of the current non-comment regex subject.
+     *
+     * @var int
+     */
+    protected $regex_subject_end = 0;
+
+    /**
+     * Whether bounded subjects preserve the input's UTF-8 validation behavior.
+     *
+     * @var bool
+     */
+    protected $valid_utf8 = false;
+
     public function __construct()
     {
         $this->lineno = 1;
@@ -152,16 +166,18 @@ class Lexer extends AbstractLexer
     }
 
     /**
-     * Finds conditionals an returns a token stream for the entire template, with
-     * conditional specific tokens.
+     * Tokenize a template into conditional tokens and intervening template text.
      *
-     * @param $str The template chunk to look through
-     * @return array [new chunk, new variables]
+     * @param string $str The template chunk to tokenize.
+     * @return Token[]
+     * @throws LexerException When a string or tag is unclosed, or a reserved if: prefix is misused.
      */
     public function tokenize($str)
     {
         $this->str = $str;
         $this->pos = 0;
+        $this->regex_subject_end = 0;
+        $this->valid_utf8 = preg_match('//u', $str) === 1;
         $this->tokens = array();
 
         while (! $this->eof()) {
@@ -188,6 +204,37 @@ class Lexer extends AbstractLexer
     }
 
     /**
+     * Bound regex subjects at delimiters that terminate the conditional token rules.
+     *
+     * The closing brace stays in the subject so lookaheads see a real delimiter.
+     * Strings and nested tags scan the original buffer and may advance past it.
+     * Invalid UTF-8 uses the complete remainder to preserve legacy matching.
+     *
+     * @return string
+     */
+    protected function getRegexSubject()
+    {
+        if (! $this->valid_utf8) {
+            return parent::getRegexSubject();
+        }
+
+        if ($this->peek(4) === '{!--') {
+            $end = strpos($this->str, '--}', $this->pos + 4);
+
+            return $end === false
+                ? parent::getRegexSubject()
+                : substr($this->str, $this->pos, $end + 3 - $this->pos);
+        }
+
+        if ($this->pos >= $this->regex_subject_end) {
+            $end = strpos($this->str, '}', $this->pos);
+            $this->regex_subject_end = $end === false ? strlen($this->str) : $end + 1;
+        }
+
+        return substr($this->str, $this->pos, $this->regex_subject_end - $this->pos);
+    }
+
+    /**
      * We saw a {, check if it's an ee tag that we can use.
      */
     private function templateTags()
@@ -200,7 +247,7 @@ class Lexer extends AbstractLexer
             $this->addToken('LD', '{');
             $this->addToken('ELSE', 'if:else');
             $this->move(8);
-        } elseif ($if = $this->peekRegex('\{(if(:elseif)?\s)', 'us', true)) {
+        } elseif ($this->peek(3) === '{if' && ($if = $this->peekRegex('\{(if(:elseif)?\s)'))) {
             $last = end($this->tokens);
 
             if (! $last || $last->type != 'COMMENT' || ! $last->conditional_annotation) {
@@ -231,7 +278,7 @@ class Lexer extends AbstractLexer
 
             $this->whitespace();
             $this->expression();
-        } elseif ($this->peek(4) == '{!--' && $comment = $this->peekRegex(self::COMMENT_PATTERN, 'usx')) {
+        } elseif ($this->peek(4) === '{!--' && ($comment = $this->peekRegex(self::COMMENT_PATTERN, 'usx'))) {
             $this->addToken('COMMENT', $this->move(strlen($comment)));
 
             return;
@@ -326,7 +373,7 @@ class Lexer extends AbstractLexer
      */
     private function whitespace()
     {
-        if ($ws = $this->peekRegex('\s+', 'us', true)) {
+        if ($ws = $this->peekRegex('\s+')) {
             $this->move(strlen($ws));
             $this->addToken('WHITESPACE', $ws);
         }
@@ -337,14 +384,7 @@ class Lexer extends AbstractLexer
      */
     private function value()
     {
-        // No match is final if the first character can start none of the
-        // patterns (ASCII other than a word character, a dot or the {!-- of
-        // a comment)
-        $first = $this->peek();
-        $nomatch_final = $first !== '' && ord($first) < 128 && ! ctype_alnum($first)
-            && $first != '_' && $first != '.' && $this->peek(4) != '{!--';
-
-        if ($matches = $this->matchAnchored($this->compiled_pattern, $nomatch_final)) {
+        if ($matches = $this->matchAnchored($this->compiled_pattern)) {
             foreach (array_reverse($matches) as $type => $value) {
                 if (is_string($type)) {
                     $this->addToken($type, $value);
@@ -371,7 +411,7 @@ class Lexer extends AbstractLexer
      */
     private function operator()
     {
-        $operator = $this->peekRegex($this->operator_pattern, 'usi', true);
+        $operator = $this->peekRegex($this->operator_pattern, 'usi');
 
         if (isset($operator)) {
             $this->move(strlen($operator));
