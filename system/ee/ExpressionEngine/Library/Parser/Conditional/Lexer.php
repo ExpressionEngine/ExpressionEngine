@@ -161,6 +161,7 @@ class Lexer extends AbstractLexer
     public function tokenize($str)
     {
         $this->str = $str;
+        $this->pos = 0;
         $this->tokens = array();
 
         while (! $this->eof()) {
@@ -199,7 +200,7 @@ class Lexer extends AbstractLexer
             $this->addToken('LD', '{');
             $this->addToken('ELSE', 'if:else');
             $this->move(8);
-        } elseif ($if = $this->peekRegex('\{(if(:elseif)?\s)')) {
+        } elseif ($if = $this->peekRegex('\{(if(:elseif)?\s)', 'us', true)) {
             $last = end($this->tokens);
 
             if (! $last || $last->type != 'COMMENT' || ! $last->conditional_annotation) {
@@ -230,7 +231,7 @@ class Lexer extends AbstractLexer
 
             $this->whitespace();
             $this->expression();
-        } elseif ($comment = $this->peekRegex(self::COMMENT_PATTERN, 'usx')) {
+        } elseif ($this->peek(4) == '{!--' && $comment = $this->peekRegex(self::COMMENT_PATTERN, 'usx')) {
             $this->addToken('COMMENT', $this->move(strlen($comment)));
 
             return;
@@ -325,7 +326,7 @@ class Lexer extends AbstractLexer
      */
     private function whitespace()
     {
-        if ($ws = $this->peekRegex('\s+')) {
+        if ($ws = $this->peekRegex('\s+', 'us', true)) {
             $this->move(strlen($ws));
             $this->addToken('WHITESPACE', $ws);
         }
@@ -336,7 +337,14 @@ class Lexer extends AbstractLexer
      */
     private function value()
     {
-        if (preg_match($this->compiled_pattern, $this->str, $matches)) {
+        // No match is final if the first character can start none of the
+        // patterns (ASCII other than a word character, a dot or the {!-- of
+        // a comment)
+        $first = $this->peek();
+        $nomatch_final = $first !== '' && ord($first) < 128 && ! ctype_alnum($first)
+            && $first != '_' && $first != '.' && $this->peek(4) != '{!--';
+
+        if ($matches = $this->matchAnchored($this->compiled_pattern, $nomatch_final)) {
             foreach (array_reverse($matches) as $type => $value) {
                 if (is_string($type)) {
                     $this->addToken($type, $value);
@@ -363,7 +371,7 @@ class Lexer extends AbstractLexer
      */
     private function operator()
     {
-        $operator = $this->peekRegex($this->operator_pattern, 'usi');
+        $operator = $this->peekRegex($this->operator_pattern, 'usi', true);
 
         if (isset($operator)) {
             $this->move(strlen($operator));
