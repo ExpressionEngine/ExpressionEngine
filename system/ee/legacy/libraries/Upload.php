@@ -1161,6 +1161,11 @@ class EE_Upload
     {
         $current = ee('Memory')->getMemoryLimitBytes();
 
+        // -1 means no limit, so there is nothing to increase
+        if ($current === -1) {
+            return;
+        }
+
         // There was a bug/behavioural change in PHP 5.2, where numbers over
         // one million get output into scientific notation.  number_format()
         // ensures this number is an integer
