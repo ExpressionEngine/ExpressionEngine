@@ -245,6 +245,36 @@ class RememberMfaTest extends TestCase
     }
 
     /**
+     * MFA must use the token rotated earlier in the same request.
+     *
+     * @return void
+     */
+    public function testVerificationAfterRefreshUsesTheRotatedToken()
+    {
+        $functions = $this->getMockBuilder(\stdClass::class)->addMethods(['random'])->getMock();
+        $functions->expects($this->exactly(2))->method('random')
+            ->willReturnOnConsecutiveCalls('refreshed-token', 'verified-token');
+        ee()->setMock('functions', $functions);
+
+        // The fixture's token is old enough for the daily refresh to rotate it.
+        $this->remember->refresh();
+        $this->assertSame('refreshed-token', $this->cookieValue);
+        $this->assertSame('refreshed-token', $this->db->tables['remember_me'][0]['remember_me_id']);
+        $expires = $this->db->tables['remember_me'][0]['expiration'];
+
+        $this->remember->remember_mfa(42);
+
+        $this->assertSame('verified-token', $this->cookieValue);
+        $this->assertSame('verified-token', $this->db->tables['remember_me'][0]['remember_me_id']);
+        $this->assertSame($this->clock->now, $this->db->tables['remember_me'][0]['mfa_verified_at']);
+        $this->assertSame($expires, $this->db->tables['remember_me'][0]['expiration']);
+        $this->assertTrue((new \Remember())->is_mfa_verified(42));
+
+        $this->cookieValue = 'refreshed-token';
+        $this->assertFalse((bool) (new \Remember())->exists());
+    }
+
+    /**
      * An overlapping token revocation must not issue an approved replacement.
      */
     public function testConcurrentRevocationDoesNotIssueAVerifiedCookie()
