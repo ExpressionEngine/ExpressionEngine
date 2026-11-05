@@ -88,6 +88,30 @@ context('Remembered MFA', () => {
         });
     });
 
+
+    it('rejects a token copied before MFA after verification rotates it', () => {
+        login();
+        cy.getCookies().then(cookies => {
+            const before = cookies.find(cookie => cookie.name.endsWith('remember'));
+            expect(before, 'pre-MFA remember token').to.exist;
+            verifyCode();
+            cy.getCookie(before.name).then(after => {
+                expect(after.value).not.to.eq(before.value);
+                expireSession();
+                cy.setCookie(before.name, before.value);
+                cy.visit('admin.php');
+                cy.get('input[name=username]').should('be.visible');
+                cy.get('input[name=password]').should('be.visible');
+
+                expireSession();
+                cy.setCookie(after.name, after.value);
+                cy.visit('admin.php');
+                cy.get('input[name=mfa_code]').should('not.exist');
+                cy.get('input[name=username]').should('not.be.visible');
+            });
+        });
+    });
+
     it('requests a code without a password when the MFA period expires', () => {
         login();
         verifyCode();

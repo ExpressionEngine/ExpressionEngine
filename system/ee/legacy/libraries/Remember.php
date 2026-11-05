@@ -123,10 +123,26 @@ class Remember
             return;
         }
 
-        $this->data['mfa_verified_at'] = ee()->localize->now;
+        // A token issued before MFA must not gain verification in place: a copy
+        // of that token could otherwise inherit the member's successful code.
+        $id = $this->_generate_id();
+        $verified_at = ee()->localize->now;
 
         ee()->db->where('remember_me_id', $this->cookie_value)
-            ->update($this->table, ['mfa_verified_at' => $this->data['mfa_verified_at']]);
+            ->update($this->table, [
+                'remember_me_id' => $id,
+                'mfa_verified_at' => $verified_at
+            ]);
+
+        // Another request may have revoked or rotated the token after validation.
+        if (ee()->db->affected_rows() !== 1) {
+            $this->data['mfa_verified_at'] = 0;
+            return;
+        }
+
+        $this->data['remember_me_id'] = $id;
+        $this->data['mfa_verified_at'] = $verified_at;
+        $this->_set_cookie($id, $this->data('expiration') - $verified_at);
     }
 
     /**

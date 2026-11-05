@@ -24,6 +24,8 @@ class RememberMfaTest extends TestCase
     private $clock;
     private $input;
     private $remember;
+    private $cookieValue = 'token-a';
+    private $cookieExpiration;
 
     /**
      * Load the real authentication libraries with isolated request services.
@@ -46,7 +48,13 @@ class RememberMfaTest extends TestCase
         $this->input = $this->getMockBuilder(\stdClass::class)
             ->addMethods(['cookie', 'ip_address', 'user_agent', 'delete_cookie', 'set_cookie'])
             ->getMock();
-        $this->input->method('cookie')->with('remember')->willReturn('token-a');
+        $this->input->method('cookie')->with('remember')->willReturnCallback(function () {
+            return $this->cookieValue;
+        });
+        $this->input->method('set_cookie')->willReturnCallback(function ($name, $value, $expiration) {
+            $this->cookieValue = $value;
+            $this->cookieExpiration = $expiration;
+        });
         $this->input->method('user_agent')->willReturn('test-browser');
         $this->input->method('ip_address')->willReturn('127.0.0.1');
 
@@ -66,6 +74,9 @@ class RememberMfaTest extends TestCase
         ee()->setMock('config', $this->config);
         ee()->setMock('input', $this->input);
         ee()->setMock('localize', $this->clock);
+        $functions = $this->getMockBuilder(\stdClass::class)->addMethods(['random'])->getMock();
+        $functions->method('random')->willReturn('verified-token');
+        ee()->setMock('functions', $functions);
         $this->remember = new \Remember();
         ee()->setMock('remember', $this->remember);
     }
@@ -194,6 +205,56 @@ class RememberMfaTest extends TestCase
         $this->assertTrue($this->remember->is_mfa_verified(42));
 
         $this->clock->now += 604800;
+        $this->assertFalse($this->remember->is_mfa_verified(42));
+    }
+
+
+    /**
+     * A token copied before the code was verified must never gain MFA approval.
+     */
+    public function testPreVerificationTokenCannotRestoreLoginAfterMfa()
+    {
+        $oldToken = $this->cookieValue;
+        $this->remember->remember_mfa(42);
+        $newToken = $this->cookieValue;
+
+        $this->assertNotSame($oldToken, $newToken);
+        $this->assertSame($newToken, $this->db->tables['remember_me'][0]['remember_me_id']);
+
+        $this->cookieValue = $oldToken;
+        $stale = new \Remember();
+        $this->assertFalse((bool) $stale->exists());
+        $this->assertFalse($stale->is_mfa_verified(42));
+
+        $this->cookieValue = $newToken;
+        $this->assertTrue((new \Remember())->is_mfa_verified(42));
+    }
+
+    /**
+     * Completing MFA changes the token, not the remembered login's expiration.
+     */
+    public function testVerificationRotationDoesNotExtendRememberExpiration()
+    {
+        $expires = $this->db->tables['remember_me'][0]['expiration'];
+        $this->clock->now += 3600;
+        $this->remember->remember_mfa(42);
+
+        $this->assertSame($expires, $this->db->tables['remember_me'][0]['expiration']);
+        $this->assertSame($expires - $this->clock->now, $this->cookieExpiration);
+        $this->assertSame($this->clock->now, $this->db->tables['remember_me'][0]['mfa_verified_at']);
+    }
+
+    /**
+     * An overlapping token revocation must not issue an approved replacement.
+     */
+    public function testConcurrentRevocationDoesNotIssueAVerifiedCookie()
+    {
+        $this->remember->exists();
+        $this->db->tables['remember_me'] = [];
+        $this->remember->remember_mfa(42);
+
+        $this->assertSame('token-a', $this->cookieValue);
+        $this->assertNull($this->cookieExpiration);
         $this->assertFalse($this->remember->is_mfa_verified(42));
     }
 
@@ -374,6 +435,7 @@ class RememberMfaDatabase
     public $updates = [];
     private $where = [];
     private $changes = [];
+    private $affectedRows = 0;
 
     /**
      * Restrict the next write to matching fixture rows.
@@ -488,15 +550,22 @@ class RememberMfaDatabase
      */
     public function update($table, $changes = null)
     {
+        $this->affectedRows = 0;
         $changes = $changes === null ? $this->changes : $changes;
         $this->updates[] = ['table' => $table, 'where' => $this->where, 'changes' => $changes];
         foreach ($this->tables[$table] as &$row) {
             if (!array_diff_assoc($this->where, $row)) {
                 $row = array_merge($row, $changes);
+                $this->affectedRows++;
             }
         }
         $this->where = [];
         $this->changes = [];
+    }
+
+    public function affected_rows()
+    {
+        return $this->affectedRows;
     }
 
     /**
