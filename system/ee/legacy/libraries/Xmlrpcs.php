@@ -263,19 +263,14 @@ class EE_Xmlrpcs extends EE_Xmlrpc
         $objectCall = (isset($method_parts['1']) && $method_parts['1'] != "") ? true : false;
 
         if ($system_call === true) {
-            if (! is_callable(array($this,$method_parts['1']))) {
-                return new XML_RPC_Response(0, $this->xmlrpcerr['unknown_method'], $this->xmlrpcstr['unknown_method']);
-            }
+            $callback = array($this, $method_parts['1']);
         } else {
             $object = $this->object === false ? $method_parts['0'] : $this->object;
+            $callback = $objectCall ? array($object, $method_parts['1']) : $this->methods[$methName]['function'];
+        }
 
-            if ($objectCall && ! is_callable(array($object, $method_parts['1']))) {
-                return new XML_RPC_Response(0, $this->xmlrpcerr['unknown_method'], $this->xmlrpcstr['unknown_method']);
-            }
-
-            if (! $objectCall && ! is_callable($this->methods[$methName]['function'])) {
-                return new XML_RPC_Response(0, $this->xmlrpcerr['unknown_method'], $this->xmlrpcstr['unknown_method']);
-            }
+        if (! is_callable($callback)) {
+            return new XML_RPC_Response(0, $this->xmlrpcerr['unknown_method'], $this->xmlrpcstr['unknown_method']);
         }
 
         //-------------------------------------
