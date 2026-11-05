@@ -35,7 +35,7 @@ class Pro
     }
 
     /**
-     * Enables MFA
+     * Enable MFA after verifying the member's setup code.
      *
      * @return void
      */
@@ -77,6 +77,7 @@ class Pro
                         $session->save();
                     }
 
+                    ee()->remember->remember_mfa($member->member_id);
                     $this->redirectBack();
                 }
             }
@@ -222,7 +223,7 @@ class Pro
     }
 
     /**
-     * Validates one-time password
+     * Verify a one-time password and remember MFA when configured.
      *
      * @return void
      */
@@ -259,6 +260,7 @@ class Pro
                         $session->mfa_flag = 'skip';
                         $session->save();
                     }
+                    ee()->remember->remember_mfa(ee()->session->userdata('member_id'));
                     $this->redirectBack();
                 }
             }

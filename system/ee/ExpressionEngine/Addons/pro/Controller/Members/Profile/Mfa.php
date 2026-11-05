@@ -56,7 +56,9 @@ class Mfa extends Profile\Pro
     }
 
     /**
-     * MFA Settings
+     * Update MFA settings and remember successful enrollment when configured.
+     *
+     * @return void
      */
     public function mfa()
     {
@@ -111,6 +113,8 @@ class Mfa extends Profile\Pro
                         $session->mfa_flag = 'skip';
                         $session->save();
                     }
+
+                    ee()->remember->remember_mfa($this->member->member_id);
 
                     ee('CP/Alert')->makeInline('shared-form')
                         ->asSuccess()

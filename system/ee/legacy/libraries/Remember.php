@@ -41,7 +41,7 @@ class Remember
     }
 
     /**
-     * Create a new remember me
+     * Create a new remembered login without inheriting MFA verification.
      *
      * @return void
      */
@@ -66,7 +66,8 @@ class Remember
             'admin_sess' => ee()->session->userdata('admin_sess'),
             'site_id' => ee()->config->item('site_id'),
             'expiration' => ee()->localize->now + $this->expiry,
-            'last_refresh' => ee()->localize->now
+            'last_refresh' => ee()->localize->now,
+            'mfa_verified_at' => 0
         );
 
         ee()->db->set($this->data);
@@ -111,6 +112,91 @@ class Remember
     }
 
     /**
+     * Remember successful MFA for the current member and site.
+     *
+     * @param int $member_id The member whose one-time code was verified.
+     * @return void
+     */
+    public function remember_mfa($member_id)
+    {
+        if (!$this->_mfa_ttl() || !$this->_matches_mfa_member($member_id)) {
+            return;
+        }
+
+        $this->data['mfa_verified_at'] = ee()->localize->now;
+
+        ee()->db->where('remember_me_id', $this->cookie_value)
+            ->update($this->table, ['mfa_verified_at' => $this->data['mfa_verified_at']]);
+    }
+
+    /**
+     * Check whether a remembered login can reuse its MFA verification.
+     *
+     * @param int $member_id The member whose session is being restored.
+     * @return bool
+     */
+    public function is_mfa_verified($member_id)
+    {
+        $ttl = $this->_mfa_ttl();
+
+        if (!$ttl || !$this->_matches_mfa_member($member_id)) {
+            return false;
+        }
+
+        $verified_at = (int) $this->data('mfa_verified_at');
+        $now = ee()->localize->now;
+
+        return $verified_at > 0 && $verified_at <= $now && ($now - $verified_at) < $ttl;
+    }
+
+    /**
+     * Revoke remembered MFA after a member's authentication settings change.
+     *
+     * @param int $member_id The member whose remembered logins must be cleared.
+     * @return void
+     */
+    public function clear_mfa($member_id)
+    {
+        ee()->db->where('member_id', $member_id)
+            ->update($this->table, ['mfa_verified_at' => 0]);
+
+        if ((int) $this->data('member_id') === (int) $member_id) {
+            $this->data['mfa_verified_at'] = 0;
+        }
+    }
+
+    /**
+     * Get the configured MFA reuse period, treating invalid values as disabled.
+     *
+     * @return int
+     */
+    protected function _mfa_ttl()
+    {
+        $ttl = ee()->config->item('mfa_remember_ttl');
+
+        if (!is_int($ttl) && !is_string($ttl)) {
+            return 0;
+        }
+
+        return filter_var($ttl, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) ?: 0;
+    }
+
+    /**
+     * Require a valid remembered login belonging to this member and site.
+     *
+     * @param int $member_id The member being authenticated.
+     * @return bool
+     */
+    protected function _matches_mfa_member($member_id)
+    {
+        return $member_id > 0
+            && $this->exists()
+            && (int) $this->data('member_id') === (int) $member_id
+            && (int) $this->data('site_id') === (int) ee()->config->item('site_id')
+            && $this->data('expiration') > ee()->localize->now;
+    }
+
+    /**
      * Clear the current remember me
      *
      * @return void
@@ -150,7 +236,7 @@ class Remember
     }
 
     /**
-     * Get the remember me data in the db and validate it
+     * Refresh the remembered login without extending its MFA verification.
      *
      * @return void
      */
@@ -168,13 +254,17 @@ class Remember
             // push the expiration date ahead by as much as we've lost
             $adjust_expire = ee()->localize->now - $this->data['last_refresh'];
 
-            // refresh all the data
             $this->data['last_refresh'] = ee()->localize->now;
             $this->data['remember_me_id'] = $id;
             $this->data['expiration'] += $adjust_expire;
 
+            // Write only rotating fields so a concurrent MFA revocation stays cleared.
             ee()->db->where('remember_me_id', $this->cookie_value)
-                ->set($this->data)
+                ->set([
+                    'last_refresh' => $this->data['last_refresh'],
+                    'remember_me_id' => $this->data['remember_me_id'],
+                    'expiration' => $this->data['expiration']
+                ])
                 ->update($this->table);
 
             $expiration = $this->data['expiration'] - ee()->localize->now;

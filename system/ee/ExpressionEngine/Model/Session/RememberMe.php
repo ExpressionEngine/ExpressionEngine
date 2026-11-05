@@ -37,6 +37,7 @@ class RememberMe extends Model
     protected $site_id;
     protected $expiration;
     protected $last_refresh;
+    protected $mfa_verified_at;
 }
 
 // EOF

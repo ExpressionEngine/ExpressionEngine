@@ -42,6 +42,11 @@ class Login extends CP_Controller
         ee()->functions->redirect(ee('CP/URL')->make('login', $return)->compile());
     }
 
+    /**
+     * Verify the member's MFA code and remember it when configured.
+     *
+     * @return void
+     */
     public function mfa()
     {
         if (ee()->session->userdata('member_id') == 0) {
@@ -107,6 +112,7 @@ class Login extends CP_Controller
                     $session->mfa_flag = 'skip';
                     $session->save();
                 }
+                ee()->remember->remember_mfa(ee()->session->userdata('member_id'));
                 $this->functions->redirect($return_path);
             }
         }

@@ -96,7 +96,9 @@ class EE_Session
     private $member_model = null;
 
     /**
-     * Session Class Constructor
+     * Initialize the current request's session and member data.
+     *
+     * @return void
      */
     public function __construct()
     {
@@ -191,6 +193,7 @@ class EE_Session
             } else {
                 if ($this->validation == 'c') {
                     $this->create_new_session($this->userdata['member_id']);
+                    $this->_restore_remembered_mfa();
                 } else {
                     $this->fetch_guest_data();
                 }
@@ -414,6 +417,23 @@ class EE_Session
         $this->session_exists = true;
 
         return $this->sdata['session_id'];
+    }
+
+    /**
+     * Restore verified MFA only when recreating a remembered login's session.
+     *
+     * @return void
+     */
+    protected function _restore_remembered_mfa()
+    {
+        if ($this->sdata['mfa_flag'] !== 'show' || !ee()->remember->is_mfa_verified($this->sdata['member_id'])) {
+            return;
+        }
+
+        $this->sdata['mfa_flag'] = 'skip';
+
+        ee()->db->where('session_id', $this->sdata['session_id'])
+            ->update('sessions', ['mfa_flag' => 'skip']);
     }
 
     /**

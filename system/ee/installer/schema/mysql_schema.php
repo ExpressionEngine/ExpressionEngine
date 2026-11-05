@@ -1582,6 +1582,7 @@ class EE_Schema
 			`site_id` int(4) DEFAULT '1',
 			`expiration` bigint(10) DEFAULT '0',
 			`last_refresh` bigint(10) DEFAULT '0',
+			`mfa_verified_at` bigint(10) unsigned NOT NULL DEFAULT '0',
 			PRIMARY KEY (`remember_me_id`),
 			KEY `member_id` (`member_id`)
 		)";
