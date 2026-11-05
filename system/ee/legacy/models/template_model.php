@@ -422,7 +422,7 @@ class Template_model extends CI_Model
         // because it can be a anonymous request
         if (!ee('Permission')->isSuperAdmin() && $this->session->userdata('member_id')) {
             $data = array();
-            $data['group_id'] = $this->session->userdata('group_id');
+            $data['role_id'] = $this->session->userdata('group_id');
             $data['template_group_id'] = $template_group_id;
 
             $this->db->insert('template_groups_roles', $data);
