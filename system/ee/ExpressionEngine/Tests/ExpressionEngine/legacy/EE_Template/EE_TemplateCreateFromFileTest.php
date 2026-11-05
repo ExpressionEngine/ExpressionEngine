@@ -350,7 +350,7 @@ class EE_TemplateCreateFromFileTest extends EE_TemplateTestBase
             ->method('create_group')
             ->with($this->callback(function($data) {
                 return $data['group_name'] === 'new_group' && $data['group_order'] === 5;
-            }))
+            }), false)
             ->willReturn(44);
         ee()->template_model = $templateModelService;
         ee()->setMock('template_model', $templateModelService);

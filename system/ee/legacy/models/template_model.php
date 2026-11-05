@@ -399,9 +399,10 @@ class Template_model extends CI_Model
      *
      * @access	public
      * @param	array
+     * @param	bool Whether to assign the creator's role to the new group
      * @return	int
      */
-    public function create_group($data)
+    public function create_group($data, $grant_creator_access = true)
     {
         if ($data['is_site_default'] == 'y') {
             $this->db->where('site_id', $data['site_id']);
@@ -420,7 +421,7 @@ class Template_model extends CI_Model
         // access to the group they just created
         // We need also check if the user is logged in,
         // because it can be a anonymous request
-        if (!ee('Permission')->isSuperAdmin() && $this->session->userdata('member_id')) {
+        if ($grant_creator_access && !ee('Permission')->isSuperAdmin() && $this->session->userdata('member_id')) {
             $data = array();
             $data['role_id'] = $this->session->userdata('group_id');
             $data['template_group_id'] = $template_group_id;

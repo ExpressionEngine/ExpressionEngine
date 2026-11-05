@@ -13,7 +13,7 @@ class TemplateModelCreateGroupTest extends TestCase
         ee()->resetMocks();
     }
 
-    public function testNewGroupGrantsItsCreatorRoleAccess(): void
+    public function testNewGroupGrantsItsCreatorRoleAccessUnlessDisabled(): void
     {
         $db = new class {
             public $inserts = [];
@@ -45,5 +45,15 @@ class TemplateModelCreateGroupTest extends TestCase
             ['role_id' => 9, 'template_group_id' => 42],
             $db->inserts['template_groups_roles']
         );
+
+        unset($db->inserts['template_groups_roles']);
+
+        (new Template_model())->create_group([
+            'group_name' => 'file_group',
+            'is_site_default' => 'n',
+            'site_id' => 1,
+        ], false);
+
+        $this->assertArrayNotHasKey('template_groups_roles', $db->inserts);
     }
 }
