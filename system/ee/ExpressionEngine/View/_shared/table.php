@@ -387,6 +387,9 @@ else: ?>
                                     <a href class="dropdown__link js-hide-all-grid-field-items"><?=lang('collapse_all')?></a>
                                     <a href class="dropdown__link js-show-all-grid-field-items"><?=lang('expand_all')?></a>
                                     <div class="dropdown__divider"></div>
+                                    <?php if ($show_add_button): ?>
+                                    <a href class="dropdown__link js-hide-dropdowns" rel="insert_row"><i class="fal fa-fw fa-plus"></i> <?=lang('insert_row')?></a>
+                                    <?php endif ?>
                                     <a href class="dropdown__link dropdown__link--danger js-grid-field-remove" rel="remove_row"><i class="fal fa-fw fa-trash-alt"></i> <?=lang('delete')?></a>
                                 </div>
                             </div>
@@ -502,6 +505,11 @@ else: ?>
                                 <?php if ($reorder): ?>
                                 <button type="button" class="button button--small button--default cursor-move js-grid-reorder-handle">
                                     <span class="grid-field__column-tool"><i class="fal fa-fw fa-arrows-alt"></i></span>
+                                </button>
+                                <?php endif ?>
+                                <?php if ($show_add_button): ?>
+                                <button type="button" rel="insert_row" class="button button--small button--default">
+                                    <span class="grid-field__column-tool" title="<?=lang('insert_row')?>"><i class="fal fa-fw fa-plus"><span class="hidden"><?=lang('insert_row')?></span></i></span>
                                 </button>
                                 <?php endif ?>
                                 <button type="button" rel="remove_row" class="button button--small button--default">

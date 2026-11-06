@@ -620,6 +620,37 @@ context('Publish Entry', () => {
           expect(text).to.eq('staff_jason.png')
         })
       })
+
+      it('Grid row can be inserted below another row', () => {
+        cy.authVisit('admin.php?/cp/fields/create/1')
+        cy.get('[data-input-value=field_type] .select__button.js-dropdown-toggle').should('exist')
+        cy.get('[data-input-value=field_type] .select__button').click()
+        cy.get('[data-input-value=field_type] .select__dropdown-item:contains("Grid")').last().click()
+        cy.get('input[type="text"][name = "field_label"]').type("Grid Insert Rows")
+        cy.get('[name="grid[cols][new_0][col_label]"]:visible').type("col 1")
+        cy.get('body').type('{ctrl}', {release: false}).type('s')
+        cy.get('p').contains('has been created')
+
+        const grid = () => cy.get('label:contains("Grid Insert Rows")').parents('.fieldset-faux').find('.grid-field')
+        const rowValues = () => grid().find('tbody tr:visible input[type=text]').then(($inputs) => {
+          return Cypress._.map($inputs, 'value')
+        })
+
+        cy.visit('admin.php?/cp/publish/edit/entry/1')
+        grid().find('[rel=add_row]:visible').first().click()
+        grid().find('td[data-new-row-id="new_row_1"] input[type=text]').type('first')
+        grid().find('[rel=add_row]:visible').first().click()
+        grid().find('td[data-new-row-id="new_row_2"] input[type=text]').type('third')
+
+        // Insert a row between the two rows
+        grid().find('td[data-new-row-id="new_row_1"]').first().closest('tr').find('[rel=insert_row]:visible').click()
+        grid().find('td[data-new-row-id="new_row_3"] input[type=text]').type('second')
+        rowValues().should('deep.equal', ['first', 'second', 'third'])
+
+        cy.get('body').type('{ctrl}', {release: false}).type('s')
+        cy.get('p').contains('has been updated')
+        rowValues().should('deep.equal', ['first', 'second', 'third'])
+      })
     })
 
     context('Date field', () => {
