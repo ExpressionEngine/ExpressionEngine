@@ -1005,11 +1005,13 @@ class File_field
         $upload_prefs = $this->_get_upload_prefs();
 
         $upload_destinations = [];
+        $allowed_directory_types = [];
         foreach ($upload_prefs as $upload_pref) {
             if (
                 ($upload_pref->site_id == 0 || $upload_pref->site_id == ee()->config->item('site_id')) &&
                 $upload_pref->module_id == 0
             ) {
+                $allowed_directory_types[$upload_pref->id] = $upload_pref->allowed_types;
                 $upload_destinations[$upload_pref->id] = [
                     'label' => $upload_pref->name,
                     'path' => '',
@@ -1020,6 +1022,7 @@ class File_field
         }
         if (!ee('Permission')->has('can_access_files')) {
             $upload_destinations = [];
+            $allowed_directory_types = [];
         }
 
         if (REQ == 'CP') {
@@ -1046,8 +1049,10 @@ class File_field
                 'lang.file_dnd_create_directory' => lang('file_dnd_create_directory'),
                 'lang.hidden_input' => lang('hidden_input'),
                 'lang.file_dnd_no_directories' => lang('file_dnd_no_directories'),
+                'lang.file_dnd_no_compatible_directories' => lang('file_dnd_no_compatible_directories'),
                 'lang.file_dnd_no_directories_desc' => !ee('Permission')->has('can_access_files') ? lang('file_dnd_no_directory_permissions') : lang('file_dnd_no_directories_desc'),
 
+                'dragAndDrop.allowedDirectoryTypes' => (object) $allowed_directory_types,
                 'dragAndDrop.uploadDesinations' => ee('View/Helpers')->normalizedChoices($upload_destinations),
                 'dragAndDrop.endpoint' => ee('CP/URL')->make('addons/settings/filepicker/ajax-upload')->compile(),
                 'dragAndDrop.resolveConflictEndpoint' => ee('CP/URL')->make('addons/settings/filepicker/ajax-overwrite-or-rename')->compile(),

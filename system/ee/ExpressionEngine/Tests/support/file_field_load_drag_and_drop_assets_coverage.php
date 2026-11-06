@@ -52,6 +52,8 @@ function build_load_drag_drop_upload_pref(int $id, int $siteId, int $moduleId, s
         /** @var string */
         public $name;
 
+        public $allowed_types = ['all'];
+
         /** @var array<string|int, string> */
         private $dropdown;
 

@@ -158,6 +158,8 @@ $lang = array(
 
     'security_failure' => 'The file type you are attempting to upload is not allowed.',
 
+    'upload_directory_type_not_allowed' => 'The &ldquo;%s&rdquo; upload directory does not allow this file type. Choose another directory.',
+
     'select' => 'Select...',
 
     'show_all_files' => 'All %d files',
