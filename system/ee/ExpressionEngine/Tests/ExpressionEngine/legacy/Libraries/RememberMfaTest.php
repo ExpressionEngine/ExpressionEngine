@@ -55,6 +55,9 @@ class RememberMfaTest extends TestCase
             $this->cookieValue = $value;
             $this->cookieExpiration = $expiration;
         });
+        $this->input->method('delete_cookie')->willReturnCallback(function () {
+            $this->cookieValue = false;
+        });
         $this->input->method('user_agent')->willReturn('test-browser');
         $this->input->method('ip_address')->willReturn('127.0.0.1');
 
@@ -75,7 +78,10 @@ class RememberMfaTest extends TestCase
         ee()->setMock('input', $this->input);
         ee()->setMock('localize', $this->clock);
         $functions = $this->getMockBuilder(\stdClass::class)->addMethods(['random'])->getMock();
-        $functions->method('random')->willReturn('verified-token');
+        $tokenNumber = 0;
+        $functions->method('random')->willReturnCallback(function () use (&$tokenNumber) {
+            return 'generated-token-' . ++$tokenNumber;
+        });
         ee()->setMock('functions', $functions);
         $this->remember = new \Remember();
         ee()->setMock('remember', $this->remember);
@@ -289,23 +295,122 @@ class RememberMfaTest extends TestCase
     }
 
     /**
-     * Revocation clears every remembered login for the member and cached state.
+     * Revocation preserves only a new, unverified token for the current browser.
      *
      * @return void
      */
     public function testRevocationClearsAllMemberTokensAcrossSites()
     {
         $this->remember->remember_mfa(42);
+        $oldToken = $this->cookieValue;
+        $expires = $this->remember->data('expiration');
         $other = $this->db->tables['remember_me'][0];
         $other['remember_me_id'] = 'token-b';
         $other['site_id'] = 2;
         $this->db->tables['remember_me'][] = $other;
+        $other['remember_me_id'] = 'token-c';
         $other['member_id'] = 43;
         $this->db->tables['remember_me'][] = $other;
 
+        $this->clock->now += 3600;
         $this->remember->clear_mfa(42);
+
         $this->assertFalse($this->remember->is_mfa_verified(42));
-        $this->assertSame([0, 0, 2000000], array_column($this->db->tables['remember_me'], 'mfa_verified_at'));
+        $this->assertNotSame($oldToken, $this->cookieValue);
+        $this->assertSame($expires - $this->clock->now, $this->cookieExpiration);
+        $this->assertSame([42, 43], array_column($this->db->tables['remember_me'], 'member_id'));
+        $this->assertSame([0, 2000000], array_column($this->db->tables['remember_me'], 'mfa_verified_at'));
+        $this->assertSame($other, $this->db->tables['remember_me'][1]);
+
+        $this->cookieValue = $oldToken;
+        $this->assertFalse((bool) (new \Remember())->exists());
+    }
+
+    /**
+     * A security change must win over MFA completed by an overlapping request.
+     *
+     * @dataProvider overlappingVerificationProvider
+     * @param bool $verificationFirst Whether MFA rotates the token before revocation.
+     * @return void
+     */
+    public function testRevocationPreventsOverlappingVerification($verificationFirst)
+    {
+        $this->assertTrue((bool) $this->remember->exists());
+        $revokingRequest = new \Remember();
+        $this->assertTrue((bool) $revokingRequest->exists());
+
+        if ($verificationFirst) {
+            $this->remember->remember_mfa(42);
+        }
+        $revokingRequest->clear_mfa(42);
+        if (!$verificationFirst) {
+            $this->remember->remember_mfa(42);
+        }
+
+        // Inspect every surviving token, not just the last response's cookie.
+        foreach ($this->db->tables['remember_me'] as $row) {
+            $this->cookieValue = $row['remember_me_id'];
+            $this->assertFalse((new \Remember())->is_mfa_verified(42));
+        }
+        $this->assertCount($verificationFirst ? 0 : 1, $this->db->tables['remember_me']);
+        $this->cookieValue = 'token-a';
+        $this->assertFalse((bool) (new \Remember())->exists());
+    }
+
+    /**
+     * Cover both orders in which the overlapping requests write their tokens.
+     *
+     * @return array
+     */
+    public static function overlappingVerificationProvider()
+    {
+        return ['revocation first' => [false], 'verification first' => [true]];
+    }
+
+    /**
+     * Enrollment can remember a valid code after saving the new MFA settings.
+     *
+     * @return void
+     */
+    public function testEnrollmentRemembersMfaAfterRevocation()
+    {
+        $this->remember->exists();
+        $expires = $this->remember->data('expiration');
+        $this->remember->clear_mfa(42);
+        $unverifiedToken = $this->cookieValue;
+
+        $this->assertTrue((bool) (new \Remember())->exists());
+        $this->assertFalse((new \Remember())->is_mfa_verified(42));
+        $this->remember->remember_mfa(42);
+
+        $this->assertNotSame($unverifiedToken, $this->cookieValue);
+        $this->assertTrue((new \Remember())->is_mfa_verified(42));
+        $this->assertSame($expires, $this->remember->data('expiration'));
+        $this->assertSame($expires - $this->clock->now, $this->cookieExpiration);
+
+        $this->cookieValue = $unverifiedToken;
+        $this->assertFalse((bool) (new \Remember())->exists());
+    }
+
+    /**
+     * Changing another member's security settings leaves the administrator alone.
+     *
+     * @return void
+     */
+    public function testRevokingAnotherMemberPreservesCurrentLogin()
+    {
+        $this->remember->remember_mfa(42);
+        $currentToken = $this->cookieValue;
+        $other = $this->db->tables['remember_me'][0];
+        $other['remember_me_id'] = 'token-b';
+        $other['member_id'] = 43;
+        $this->db->tables['remember_me'][] = $other;
+
+        $this->remember->clear_mfa(43);
+
+        $this->assertSame($currentToken, $this->cookieValue);
+        $this->assertTrue((new \Remember())->is_mfa_verified(42));
+        $this->assertSame([42], array_column($this->db->tables['remember_me'], 'member_id'));
     }
 
     /**
@@ -606,8 +711,11 @@ class RememberMfaDatabase
      */
     public function delete($table)
     {
-        $this->tables[$table] = array_values(array_filter($this->tables[$table], function ($row) {
-            return (bool) array_diff_assoc($this->where, $row);
+        $where = $this->where;
+        $except = $where['remember_me_id !='] ?? null;
+        unset($where['remember_me_id !=']);
+        $this->tables[$table] = array_values(array_filter($this->tables[$table], function ($row) use ($where, $except) {
+            return (bool) array_diff_assoc($where, $row) || $row['remember_me_id'] === $except;
         }));
         $this->where = [];
     }

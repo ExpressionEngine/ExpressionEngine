@@ -44,6 +44,18 @@ context('Remembered MFA', () => {
         return Number(rows[0].mfa_verified_at);
     });
 
+    const seedOtherRememberedLogin = () => cy.task('db:query', `
+        INSERT INTO exp_remember_me
+            (remember_me_id, member_id, ip_address, user_agent, admin_sess,
+             site_id, expiration, last_refresh, mfa_verified_at)
+        SELECT 'other-device-token', member_id, ip_address, user_agent, admin_sess,
+               site_id, expiration, last_refresh, mfa_verified_at
+        FROM exp_remember_me WHERE member_id = ${memberId} LIMIT 1
+    `).then(() => {
+        cy.task('db:query', `SELECT remember_me_id FROM exp_remember_me WHERE member_id = ${memberId}`)
+            .then(([rows]) => expect(rows).to.have.length(2));
+    });
+
     before(() => {
         cy.task('db:seed');
         // Enrollment is available without a Pro license on a site with one CP member.
@@ -175,9 +187,41 @@ context('Remembered MFA', () => {
         cy.get('h1').should('contain', 'Getting to Know ExpressionEngine');
     });
 
+    it('revokes old remembered tokens when MFA is disabled and preserves this browser', () => {
+        login();
+        verifyCode();
+        seedOtherRememberedLogin();
+        cy.getCookies().then(cookies => {
+            const before = cookies.find(cookie => cookie.name.endsWith('remember'));
+            expect(before, 'verified remember token').to.exist;
+            cy.visit('admin.php?/cp/members/profile/pro/mfa');
+            cy.get('[data-toggle-for="enable_mfa"]').click();
+            cy.get('input[name=password_confirm]').type(Cypress.env('USER_PASSWORD'), { log: false });
+            cy.get('.button--primary').first().click();
+            cy.get('[data-toggle-for="enable_mfa"]').should('not.have.class', 'on');
+            cy.get('.app-notice---success').should('be.visible');
+            verificationTime().should('eq', 0);
+
+            cy.getCookie(before.name).then(after => {
+                expect(after.value).not.to.eq(before.value);
+                expireSession();
+                cy.setCookie(before.name, before.value);
+                cy.visit('admin.php');
+                cy.get('input[name=username]').should('be.visible');
+                cy.get('input[name=password]').should('be.visible');
+
+                expireSession();
+                cy.setCookie(after.name, after.value);
+                cy.visit('admin.php');
+                cy.get('input[name=username]').should('not.be.visible');
+            });
+        });
+    });
+
     it('remembers successful CP enrollment after clearing previous verification', () => {
         cy.task('db:query', `UPDATE exp_members SET enable_mfa = 'n', backup_mfa_code = '' WHERE member_id = ${memberId}`);
         login(true, false);
+        seedOtherRememberedLogin();
         cy.visit('admin.php?/cp/members/profile/pro/mfa');
         cy.get('[data-toggle-for="enable_mfa"]').click();
         cy.get('input[name=backup_mfa_code]').invoke('val').then(code => {
@@ -189,15 +233,18 @@ context('Remembered MFA', () => {
             });
         });
         cy.get('[data-toggle-for="enable_mfa"]').should('have.class', 'on');
+        // Only this browser survives enrollment and retains the verified code.
         verificationTime().should('be.greaterThan', 0);
         expireSession();
         cy.visit('admin.php');
         cy.get('input[name=mfa_code]').should('not.exist');
+        cy.get('input[name=username]').should('not.be.visible');
     });
 
     it('remembers successful frontend enrollment', () => {
         cy.task('db:query', `UPDATE exp_members SET enable_mfa = 'n', backup_mfa_code = '' WHERE member_id = ${memberId}`);
         login(true, false);
+        seedOtherRememberedLogin();
         cy.visit('index.php/pro/mfa');
         cy.get('#enable_mfa_link').click();
         cy.get('input[name=backup_mfa_code]').invoke('val').then(code => verifyCode(code));

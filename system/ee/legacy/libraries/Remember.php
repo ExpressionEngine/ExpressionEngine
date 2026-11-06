@@ -123,26 +123,7 @@ class Remember
             return;
         }
 
-        // A token issued before MFA must not gain verification in place: a copy
-        // of that token could otherwise inherit the member's successful code.
-        $id = $this->_generate_id();
-        $verified_at = ee()->localize->now;
-
-        ee()->db->where('remember_me_id', $this->cookie_value)
-            ->update($this->table, [
-                'remember_me_id' => $id,
-                'mfa_verified_at' => $verified_at
-            ]);
-
-        // Another request may have revoked or rotated the token after validation.
-        if (ee()->db->affected_rows() !== 1) {
-            $this->data['mfa_verified_at'] = 0;
-            return;
-        }
-
-        $this->data['remember_me_id'] = $id;
-        $this->data['mfa_verified_at'] = $verified_at;
-        $this->_set_cookie($id, $this->data('expiration') - $verified_at);
+        $this->_rotate_mfa_token(ee()->localize->now);
     }
 
     /**
@@ -173,12 +154,48 @@ class Remember
      */
     public function clear_mfa($member_id)
     {
-        ee()->db->where('member_id', $member_id)
-            ->update($this->table, ['mfa_verified_at' => 0]);
+        // Rotate first so an overlapping request cannot approve the old token.
+        if ($this->_matches_mfa_member($member_id) && $this->_rotate_mfa_token(0)) {
+            $this->delete_others($member_id);
+            return;
+        }
+
+        // If the current token was already replaced, revoke its replacement too.
+        ee()->db->where('member_id', $member_id)->delete($this->table);
 
         if ((int) $this->data('member_id') === (int) $member_id) {
-            $this->data['mfa_verified_at'] = 0;
+            $this->data = array();
+            $this->_delete_cookie();
         }
+    }
+
+    /**
+     * Change MFA approval only on a new token, preserving its expiration.
+     *
+     * @param int $verified_at Verification time, or zero to revoke approval.
+     * @return bool Whether the current token was successfully rotated.
+     */
+    protected function _rotate_mfa_token($verified_at)
+    {
+        $id = $this->_generate_id();
+
+        ee()->db->where('remember_me_id', $this->cookie_value)
+            ->update($this->table, [
+                'remember_me_id' => $id,
+                'mfa_verified_at' => $verified_at
+            ]);
+
+        // Another request may have revoked or rotated the token after validation.
+        if (ee()->db->affected_rows() !== 1) {
+            $this->data['mfa_verified_at'] = 0;
+            return false;
+        }
+
+        $this->data['remember_me_id'] = $id;
+        $this->data['mfa_verified_at'] = $verified_at;
+        $this->_set_cookie($id, $this->data('expiration') - ee()->localize->now);
+
+        return true;
     }
 
     /**
