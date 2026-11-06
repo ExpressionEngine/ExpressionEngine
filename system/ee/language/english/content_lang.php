@@ -869,6 +869,8 @@ $lang = array(
 
     'hide' => 'Hide',
 
+    'insert_row' => 'Insert row below',
+
     'item_to_relate_with' => 'Item to <strong>relate with</strong> this entry.',
 
     'items_related_to' => 'Items <strong>related to</strong> this entry.',

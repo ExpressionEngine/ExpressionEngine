@@ -68,6 +68,7 @@ Grid.Publish = function(field, settings) {
 	this.reorderHandleContainerSelector = '.js-grid-reorder-handle';
 	this.deleteContainerHeaderSelector = 'th.grid-remove';
 	this.deleteButtonsSelector = '[rel=remove_row]';
+	this.insertButtonsSelector = '[rel=insert_row]';
 	this.sortableParams = {};
 
 	this.settings = (settings !== undefined) ? settings : EE.grid_field_settings[field.id];
@@ -93,6 +94,7 @@ Grid.MiniField = function(field, settings) {
 	this.reorderHandleContainerSelector = 'ul.toolbar:has(li.reorder)';
 	this.deleteContainerHeaderSelector = null;
 	this.deleteButtonsSelector = 'ul.toolbar:has(li.remove)';
+	this.insertButtonsSelector = null;
 	this.sortableParams = {
 		sortableContainer: '.keyvalue-item-container',
 		handle: 'li.reorder',
@@ -128,6 +130,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		this._hideToolbarRowForVerticalLayout();
 		this._bindSortable();
 		this._bindAddButton();
+		this._bindInsertButton();
 		this._bindDeleteButton();
 		this._toggleRowManipulationButtons();
 		this._fieldDisplay();
@@ -295,6 +298,16 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 			}
 		}
 
+		// Show insert buttons in each row unless the max rows setting is reached;
+		// File Grid rows are added by uploading files
+		if (this.insertButtonsSelector) {
+			var canInsert = ! this.isFileGrid;
+			if (typeof(this.settings) !== 'undefined' && this.settings.grid_max_rows !== '') {
+				canInsert = canInsert && rowCount < this.settings.grid_max_rows;
+			}
+			$(this.insertButtonsSelector, this.root).toggle(canInsert);
+		}
+
 		// Do not allow sortable to run when there is only one row, otherwise
 		// the row becomes detached from the table and column headers change
 		// width in a fluid-column-width table
@@ -348,9 +361,28 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 	},
 
 	/**
-	 * Inserts new row at the bottom of our field
+	 * Binds click listener to Insert button in each row to insert a new row
+	 * directly below that row
 	 */
-	_addRow: function() {
+	_bindInsertButton: function() {
+		var that = this;
+
+		if ( ! this.insertButtonsSelector) {
+			return;
+		}
+
+		this.root.on('click', this.insertButtonsSelector, function(event) {
+			event.preventDefault();
+			that._addRow($(this).closest(that.rowSelector));
+		});
+	},
+
+	/**
+	 * Inserts new row at the bottom of our field, or below a given row
+	 *
+	 * @param	{jQuery Object}	insertAfter	Optional row to insert the new row after
+	 */
+	_addRow: function(insertAfter) {
 		// Keep the row insertion and the auto-layout measurement in one hidden
 		// update so a new row cannot briefly paint in horizontal layout.
 		var autoLayoutGrid = this.root.hasClass('entry-grid');
@@ -384,8 +416,11 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		// Enable inputs
 		el.find(':input').removeAttr('disabled');
 
-		// Append the row to the end of the row container
-		if (this.tableActions && this.tableActions.length) {
+		// Insert the row below the given row, or append it to the end of the
+		// row container
+		if (insertAfter && insertAfter.length) {
+			insertAfter.after(el);
+		} else if (this.tableActions && this.tableActions.length) {
 			this.tableActions.before(el);
 		} else {
 			this.rowContainer.append(el);
@@ -396,6 +431,8 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		if ($('> '+this.cellSelector, el).hasClass('js-row-counter-column')) {
 			el.find('.js-row-counter-column > span').text(this._getRows().length);
 			el.attr('data-row-counter', this._getRows().length);
+			// Renumber in case the row was inserted above other rows
+			this._updateRowCounter();
 		}
 
 		// Make sure empty field message is hidden
