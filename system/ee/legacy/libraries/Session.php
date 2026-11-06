@@ -426,14 +426,12 @@ class EE_Session
      */
     protected function _restore_remembered_mfa()
     {
-        if ($this->sdata['mfa_flag'] !== 'show' || !ee()->remember->is_mfa_verified($this->sdata['member_id'])) {
-            return;
+        if (
+            $this->sdata['mfa_flag'] === 'show'
+            && ee()->remember->restore_mfa($this->sdata['member_id'], $this->sdata['session_id'])
+        ) {
+            $this->sdata['mfa_flag'] = 'skip';
         }
-
-        $this->sdata['mfa_flag'] = 'skip';
-
-        ee()->db->where('session_id', $this->sdata['session_id'])
-            ->update('sessions', ['mfa_flag' => 'skip']);
     }
 
     /**

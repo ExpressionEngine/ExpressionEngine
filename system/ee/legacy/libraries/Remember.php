@@ -127,7 +127,7 @@ class Remember
     }
 
     /**
-     * Check whether a remembered login can reuse its MFA verification.
+     * Check cached MFA verification; use restore_mfa() to authorize a session.
      *
      * @param int $member_id The member whose session is being restored.
      * @return bool
@@ -144,6 +144,37 @@ class Remember
         $now = ee()->localize->now;
 
         return $verified_at > 0 && $verified_at <= $now && ($now - $verified_at) < $ttl;
+    }
+
+    /**
+     * Approve a recreated session only while its remembered token is still valid.
+     *
+     * @param int $member_id The member whose session is being restored.
+     * @param string $session_id The newly created session.
+     * @return bool Whether MFA approval was persisted.
+     */
+    public function restore_mfa($member_id, $session_id)
+    {
+        if (!$this->is_mfa_verified($member_id)) {
+            return false;
+        }
+
+        // Check the current row in the approval write, not only the request cache.
+        $sessions = ee()->db->dbprefix('sessions');
+        $remember = ee()->db->dbprefix($this->table);
+        $updated = ee()->db->query("UPDATE {$sessions} SET mfa_flag = 'skip'
+            WHERE session_id = ? AND member_id = ? AND mfa_flag = 'show'
+            AND EXISTS (
+                SELECT 1 FROM {$remember}
+                WHERE remember_me_id = ? AND member_id = ? AND site_id = ?
+                AND user_agent = ? AND expiration > ? AND mfa_verified_at = ?
+            )", [
+                $session_id, $member_id, $this->cookie_value, $member_id,
+                ee()->config->item('site_id'), $this->user_agent,
+                ee()->localize->now, $this->data('mfa_verified_at')
+            ]);
+
+        return $updated && ee()->db->affected_rows() === 1;
     }
 
     /**
@@ -287,19 +318,23 @@ class Remember
             // push the expiration date ahead by as much as we've lost
             $adjust_expire = ee()->localize->now - $this->data['last_refresh'];
 
-            $this->data['last_refresh'] = ee()->localize->now;
-            $this->data['remember_me_id'] = $id;
-            $this->data['expiration'] += $adjust_expire;
+            $changes = [
+                'last_refresh' => ee()->localize->now,
+                'remember_me_id' => $id,
+                'expiration' => $this->data['expiration'] + $adjust_expire
+            ];
 
             // Write only rotating fields so a concurrent MFA revocation stays cleared.
             ee()->db->where('remember_me_id', $this->cookie_value)
-                ->set([
-                    'last_refresh' => $this->data['last_refresh'],
-                    'remember_me_id' => $this->data['remember_me_id'],
-                    'expiration' => $this->data['expiration']
-                ])
-                ->update($this->table);
+                ->update($this->table, $changes);
 
+            if (ee()->db->affected_rows() !== 1) {
+                // Leave the winning request's cookie alone and discard stale data.
+                $this->data = [];
+                return;
+            }
+
+            $this->data = array_merge($this->data, $changes);
             $expiration = $this->data['expiration'] - ee()->localize->now;
             $this->_set_cookie($id, $expiration);
         }

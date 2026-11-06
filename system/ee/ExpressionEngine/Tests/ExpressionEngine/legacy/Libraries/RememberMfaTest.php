@@ -414,6 +414,262 @@ class RememberMfaTest extends TestCase
     }
 
     /**
+     * Restore only the requested session without renewing MFA or setting a cookie.
+     */
+    public function testRestorationApprovesOnlyTheMatchingSession()
+    {
+        $this->prepareRestoration();
+        $token = $this->db->tables['remember_me'][0];
+        $this->input->expects($this->never())->method('set_cookie');
+        $this->input->expects($this->never())->method('delete_cookie');
+
+        $this->assertTrue($this->remember->restore_mfa(42, 'new-session'));
+        $this->assertSame('skip', $this->db->tables['sessions'][0]['mfa_flag']);
+        $this->assertSame('show', $this->db->tables['sessions'][1]['mfa_flag']);
+        $this->assertSame($token, $this->db->tables['remember_me'][0]);
+    }
+
+    /**
+     * An approved row cached before revocation cannot authorize a new session.
+     */
+    public function testRestorationRejectsCachedApprovalAfterRevocation()
+    {
+        $this->prepareRestoration();
+        $restoringRequest = new \Remember();
+        $this->assertTrue((bool) $restoringRequest->exists());
+        $this->remember->clear_mfa(42);
+        $replacement = $this->cookieValue;
+        $this->input->expects($this->never())->method('set_cookie');
+        $this->input->expects($this->never())->method('delete_cookie');
+
+        $this->assertFalse($restoringRequest->restore_mfa(42, 'new-session'));
+        $this->assertSame('show', $this->db->tables['sessions'][0]['mfa_flag']);
+        $this->assertSame($replacement, $this->cookieValue);
+    }
+
+    /**
+     * Validate persisted authorization in the same operation that approves MFA.
+     *
+     * @dataProvider changedRestorationStateProvider
+     */
+    public function testRestorationRejectsChangesImmediatelyBeforeApproval($table, array $changes)
+    {
+        $this->prepareRestoration();
+        $this->assertTrue($this->remember->is_mfa_verified(42));
+        $this->db->beforeQuery = function () use ($table, $changes) {
+            $this->db->tables[$table][0] = array_merge($this->db->tables[$table][0], $changes);
+        };
+
+        $this->assertFalse($this->remember->restore_mfa(42, 'new-session'));
+        $this->assertNotSame('skip', $this->db->tables['sessions'][0]['mfa_flag']);
+    }
+
+    public static function changedRestorationStateProvider()
+    {
+        return [
+            'rotated token' => ['remember_me', ['remember_me_id' => 'replacement-token']],
+            'revoked approval' => ['remember_me', ['mfa_verified_at' => 0]],
+            'expired approval' => ['remember_me', ['mfa_verified_at' => 1395200]],
+            'future approval' => ['remember_me', ['mfa_verified_at' => 2000001]],
+            'expired token' => ['remember_me', ['expiration' => 2000000]],
+            'different token member' => ['remember_me', ['member_id' => 43]],
+            'different site' => ['remember_me', ['site_id' => 2]],
+            'different browser' => ['remember_me', ['user_agent' => 'other-browser']],
+            'deleted session' => ['sessions', ['session_id' => 'removed-session']],
+            'different session member' => ['sessions', ['member_id' => 43]],
+            'session awaiting enrollment' => ['sessions', ['mfa_flag' => 'setup']]
+        ];
+    }
+
+    public function testRestorationRejectsRevocationBetweenValidationAndApproval()
+    {
+        $this->prepareRestoration();
+        $revokingRequest = new \Remember();
+        $this->assertTrue((bool) $revokingRequest->exists());
+        $this->db->beforeQuery = function () use ($revokingRequest) {
+            $revokingRequest->clear_mfa(42);
+        };
+
+        $this->assertFalse($this->remember->restore_mfa(42, 'new-session'));
+        $this->assertSame('show', $this->db->tables['sessions'][0]['mfa_flag']);
+        $this->assertSame(0, $this->db->tables['remember_me'][0]['mfa_verified_at']);
+    }
+
+    public function testFailedRestorationWriteDoesNotApproveMfa()
+    {
+        $this->prepareRestoration();
+        $this->db->failQuery = true;
+
+        $this->assertFalse($this->remember->restore_mfa(42, 'new-session'));
+        $this->assertSame('show', $this->db->tables['sessions'][0]['mfa_flag']);
+    }
+
+    private function prepareRestoration()
+    {
+        $db = new RememberMfaSqlDatabase();
+        $db->tables = $this->db->tables;
+        $db->tables['sessions'] = [
+            ['session_id' => 'new-session', 'member_id' => 42, 'mfa_flag' => 'show'],
+            ['session_id' => 'other-session', 'member_id' => 42, 'mfa_flag' => 'show']
+        ];
+        $this->db = $db;
+        ee()->setMock('db', $db);
+        $this->remember->remember_mfa(42);
+    }
+
+    /**
+     * A losing refresh must not overwrite the winning request's cookie.
+     *
+     * @dataProvider overlappingRefreshProvider
+     */
+    public function testLosingRefreshPreservesReplacementCookie($operation, array $arguments)
+    {
+        $this->remember->remember_mfa(42);
+        $refreshingRequest = new \Remember();
+        $this->assertTrue((bool) $refreshingRequest->exists());
+
+        $this->remember->$operation(...$arguments);
+        $replacement = $this->cookieValue;
+        $expires = $this->cookieExpiration;
+        $this->input->expects($this->never())->method('set_cookie');
+        $this->input->expects($this->never())->method('delete_cookie');
+
+        $refreshingRequest->refresh();
+
+        $this->assertSame($replacement, $this->cookieValue);
+        $this->assertSame($expires, $this->cookieExpiration);
+        if ($operation === 'delete') {
+            $this->assertSame([], $this->db->tables['remember_me']);
+        } else {
+            $this->assertSame($replacement, $this->db->tables['remember_me'][0]['remember_me_id']);
+        }
+        $this->assertFalse((bool) $refreshingRequest->exists());
+        $this->assertFalse($refreshingRequest->is_mfa_verified(42));
+    }
+
+    public static function overlappingRefreshProvider()
+    {
+        return [
+            'revocation wins' => ['clear_mfa', [42]],
+            'daily refresh wins' => ['refresh', []],
+            'code verification wins' => ['remember_mfa', [42]],
+            'logout wins' => ['delete', []]
+        ];
+    }
+
+    /**
+     * Revocation must win whether the daily refresh rotates before or after it.
+     *
+     * @dataProvider refreshRevocationOrderProvider
+     */
+    public function testRevocationPreventsRestorationAfterOverlappingRefresh($refreshFirst)
+    {
+        $this->prepareRestoration();
+        $refreshingRequest = new \Remember();
+        $this->assertTrue((bool) $refreshingRequest->exists());
+
+        if ($refreshFirst) {
+            $refreshingRequest->refresh();
+        }
+        $this->remember->clear_mfa(42);
+        if (!$refreshFirst) {
+            $refreshingRequest->refresh();
+        }
+
+        // A stale current token makes revocation discard its replacement too.
+        $this->assertCount($refreshFirst ? 0 : 1, $this->db->tables['remember_me']);
+        foreach ($this->db->tables['remember_me'] as $row) {
+            $this->assertSame(0, $row['mfa_verified_at']);
+        }
+        $this->assertFalse($refreshingRequest->restore_mfa(42, 'new-session'));
+        $this->assertSame('show', $this->db->tables['sessions'][0]['mfa_flag']);
+    }
+
+    /**
+     * A competing refresh cannot confer MFA on a token issued before the code.
+     *
+     * @dataProvider verificationRefreshOrderProvider
+     */
+    public function testOverlappingVerificationAndRefreshRespectTokenOwnership($verificationFirst)
+    {
+        $this->remember->exists();
+        $refreshingRequest = new \Remember();
+        $this->assertTrue((bool) $refreshingRequest->exists());
+
+        if ($verificationFirst) {
+            $this->remember->remember_mfa(42);
+        }
+        $refreshingRequest->refresh();
+        if (!$verificationFirst) {
+            $winner = $this->cookieValue;
+            $this->input->expects($this->never())->method('set_cookie');
+            $this->input->expects($this->never())->method('delete_cookie');
+            $this->remember->remember_mfa(42);
+            $this->assertSame($winner, $this->cookieValue);
+        }
+
+        $this->assertCount(1, $this->db->tables['remember_me']);
+        $this->assertSame($this->cookieValue, $this->db->tables['remember_me'][0]['remember_me_id']);
+        $this->assertNotSame('token-a', $this->cookieValue);
+        $this->assertSame($verificationFirst ? $this->clock->now : 0, $this->db->tables['remember_me'][0]['mfa_verified_at']);
+        $this->assertSame($verificationFirst, (new \Remember())->is_mfa_verified(42));
+    }
+
+    public static function refreshRevocationOrderProvider()
+    {
+        return ['refresh first' => [true], 'revocation first' => [false]];
+    }
+
+    public static function verificationRefreshOrderProvider()
+    {
+        return ['verification first' => [true], 'refresh first' => [false]];
+    }
+
+    /**
+     * Restoring during a refresh must reject the old token and accept its successor.
+     */
+    public function testRestorationDuringRefreshDoesNotExtendVerification()
+    {
+        $this->prepareRestoration();
+        $verifiedAt = $this->remember->data('mfa_verified_at');
+        $refreshingRequest = new \Remember();
+        $this->assertTrue((bool) $refreshingRequest->exists());
+        $this->clock->now += 86401;
+        $this->db->beforeQuery = function () use ($refreshingRequest) {
+            $refreshingRequest->refresh();
+        };
+
+        $this->assertFalse($this->remember->restore_mfa(42, 'new-session'));
+        $this->assertSame('show', $this->db->tables['sessions'][0]['mfa_flag']);
+        $this->assertSame($verifiedAt, $this->db->tables['remember_me'][0]['mfa_verified_at']);
+        $this->input->expects($this->never())->method('set_cookie');
+        $this->input->expects($this->never())->method('delete_cookie');
+        $this->assertTrue((new \Remember())->restore_mfa(42, 'new-session'));
+        $this->assertSame('skip', $this->db->tables['sessions'][0]['mfa_flag']);
+
+        $this->clock->now = $verifiedAt + 604800;
+        $this->assertFalse((new \Remember())->restore_mfa(42, 'other-session'));
+        $this->assertSame('show', $this->db->tables['sessions'][1]['mfa_flag']);
+    }
+
+    /**
+     * Ordinary remembered logins retain their rolling expiration without MFA.
+     */
+    public function testDailyRefreshWithoutMfaStillExtendsRememberedLogin()
+    {
+        $this->config->setItem('mfa_remember_ttl', 0);
+        $before = $this->db->tables['remember_me'][0];
+        $this->remember->refresh();
+
+        $this->assertNotSame($before['remember_me_id'], $this->cookieValue);
+        $this->assertSame($this->cookieValue, $this->remember->data('remember_me_id'));
+        $this->assertSame($before['expiration'] + 86401, $this->remember->data('expiration'));
+        $this->assertSame($this->clock->now, $this->remember->data('last_refresh'));
+        $this->assertSame(0, $this->remember->data('mfa_verified_at'));
+        $this->assertTrue((bool) (new \Remember())->exists());
+    }
+
+    /**
      * Token rotation neither renews verification nor restores concurrent revocations.
      *
      * @dataProvider revocationProvider
@@ -570,7 +826,7 @@ class RememberMfaDatabase
     public $updates = [];
     private $where = [];
     private $changes = [];
-    private $affectedRows = 0;
+    protected $affectedRows = 0;
 
     /**
      * Restrict the next write to matching fixture rows.
@@ -718,5 +974,57 @@ class RememberMfaDatabase
             return (bool) array_diff_assoc($where, $row) || $row['remember_me_id'] === $except;
         }));
         $this->where = [];
+    }
+}
+
+/**
+ * Execute the approval SQL against real temporary tables instead of emulating
+ * its predicates. Ordinary token operations use the shared fixture adapter.
+ */
+class RememberMfaSqlDatabase extends RememberMfaDatabase
+{
+    public $beforeQuery;
+    public $failQuery = false;
+
+    public function dbprefix($table)
+    {
+        return 'test_' . $table;
+    }
+
+    public function query($sql, $binds)
+    {
+        if ($this->beforeQuery) {
+            $callback = $this->beforeQuery;
+            $this->beforeQuery = null;
+            $callback();
+        }
+        if ($this->failQuery) {
+            return false;
+        }
+
+        $pdo = new \PDO('sqlite::memory:');
+        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $pdo->exec('CREATE TABLE test_remember_me (
+            remember_me_id TEXT PRIMARY KEY, member_id INTEGER, site_id INTEGER,
+            admin_sess INTEGER, user_agent TEXT, expiration INTEGER,
+            last_refresh INTEGER, mfa_verified_at INTEGER
+        )');
+        $pdo->exec('CREATE TABLE test_sessions (
+            session_id TEXT PRIMARY KEY, member_id INTEGER, mfa_flag TEXT
+        )');
+        foreach (['remember_me', 'sessions'] as $table) {
+            foreach ($this->tables[$table] as $row) {
+                $columns = implode(', ', array_keys($row));
+                $placeholders = implode(', ', array_fill(0, count($row), '?'));
+                $pdo->prepare("INSERT INTO test_{$table} ({$columns}) VALUES ({$placeholders})")
+                    ->execute(array_values($row));
+            }
+        }
+
+        $query = $pdo->prepare($sql);
+        $result = $query->execute($binds);
+        $this->affectedRows = $query->rowCount();
+        $this->tables['sessions'] = $pdo->query('SELECT * FROM test_sessions')->fetchAll(\PDO::FETCH_ASSOC);
+        return $result;
     }
 }
