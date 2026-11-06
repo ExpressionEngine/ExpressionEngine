@@ -48,10 +48,11 @@ class File_upload_preferences_model extends CI_Model
 
         $this->db->from('upload_prefs');
 
-        // By default, we will return upload destinations for the current site
+        // By default, we will return upload destinations for the current site,
+        // including those shared across all sites (site_id 0),
         // unless we are to ignore the site ID and return all
         if (! $ignore_site_id) {
-            $this->db->where('site_id', $this->config->item('site_id'));
+            $this->db->where_in('site_id', [0, $this->config->item('site_id')]);
         }
 
         // Check for order_by parameters
