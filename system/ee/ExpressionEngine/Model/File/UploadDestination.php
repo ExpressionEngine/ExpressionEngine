@@ -415,6 +415,14 @@ class UploadDestination extends StructureModel
             $fileName = array_pop($pathInfo);
             $isDir = $this->getFilesystem()->isDir($filePath);
 
+            //! BUG / WORKAROUND:
+            //! During sync, files in subfolders are incorrectly treated as being in the current directory.
+            //! This causes duplicate database records and false "not found" warnings.
+            //! Temporarily skipping subfolder files to prevent this issue.
+            if (count($pathInfo) > 0) {
+                continue;
+            }
+
             if (empty(trim($fileName, '.'))) {
                 continue;
             }
@@ -466,7 +474,13 @@ class UploadDestination extends StructureModel
         $directoryMap = $this->getDirectoryMap();
         $flatDirectoryMap = [];
         $this->flattenDirectoryMap($flatDirectoryMap, $directoryMap);
-        $files = array_keys($flatDirectoryMap);
+
+        //! BUG / WORKAROUND:
+        //! Directories in the file list are incorrectly processed as regular files,
+        //! resulting in unwanted database records.
+        //! We use `array_filter` to exclude these entries (where the key is a folder and the value is empty).
+        $files = array_keys(array_filter($flatDirectoryMap));
+
         return $files;
     }
 
