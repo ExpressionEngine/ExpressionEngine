@@ -54,6 +54,187 @@ $(document).ready(function () {
 		});
 	}
 
+	// Persist publish scroll position across Save when enabled via
+	// Hidden Configuration Variable - publish_persist_scroll => y/n
+	// Uses a Fluid-item anchor + offset (not bare Y) and re-applies until
+	// layout height settles, so late-loading Grid/RTE/images do not shift the viewport.
+	if (EE.publish.persist_scroll && EE.publish.entry_id) {
+		var getPublishScrollKey = function() {
+			var userId = (typeof EE.user_id !== 'undefined' && EE.user_id) ? String(EE.user_id) : 'anon';
+			return ['ee:publishScroll', userId, String(EE.publish.entry_id)].join(':');
+		};
+
+		var getScrollY = function() {
+			return (typeof window.scrollY === 'number') ? window.scrollY : window.pageYOffset;
+		};
+
+		var getPublishFluidItems = function() {
+			return publishForm.find('.fluid .js-sorting-container .fluid__item').filter(function() {
+				return ! $(this).closest('.fluid-field-templates').length;
+			});
+		};
+
+		var getFluidItemIdFromEl = function($item) {
+			var name = $item.find(':input[name*="[fields]"]').first().attr('name') || '';
+			var match = name.match(/\[(field_\d+|new_field_\d+)\]/);
+			return match ? match[1] : null;
+		};
+
+		var capturePublishScrollAnchor = function() {
+			var y = getScrollY();
+			var anchor = {
+				y: Math.max(0, Math.round(y)),
+				itemId: null,
+				offset: null
+			};
+
+			getPublishFluidItems().each(function() {
+				var $item = $(this);
+				var top = $item.offset().top;
+				var bottom = top + $item.outerHeight();
+
+				// Prefer the item that contains the viewport top
+				if (top <= y + 8 && bottom > y) {
+					anchor.itemId = getFluidItemIdFromEl($item);
+					anchor.offset = Math.max(0, Math.round(y - top));
+					return false;
+				}
+
+				// Fallback: last item that starts above the viewport
+				if (top <= y) {
+					anchor.itemId = getFluidItemIdFromEl($item);
+					anchor.offset = Math.max(0, Math.round(y - top));
+				}
+			});
+
+			return anchor;
+		};
+
+		var persistPublishScroll = function() {
+			if (typeof localStorage === 'undefined') {
+				return;
+			}
+
+			try {
+				localStorage.setItem(getPublishScrollKey(), JSON.stringify(capturePublishScrollAnchor()));
+			} catch (err) {}
+		};
+
+		var readPublishScrollAnchor = function() {
+			var raw = localStorage.getItem(getPublishScrollKey());
+
+			if (raw === null || raw === '') {
+				return null;
+			}
+
+			try {
+				var data = JSON.parse(raw);
+
+				if (data && typeof data.y === 'number') {
+					return data;
+				}
+			} catch (err) {}
+
+			return null;
+		};
+
+		var applyPublishScrollAnchor = function(anchor) {
+			if ( ! anchor) {
+				return;
+			}
+
+			if (anchor.itemId) {
+				var $match = null;
+
+				getPublishFluidItems().each(function() {
+					if (getFluidItemIdFromEl($(this)) === anchor.itemId) {
+						$match = $(this);
+						return false;
+					}
+				});
+
+				if ($match && $match.length) {
+					var target = Math.max(0, Math.round($match.offset().top + (anchor.offset || 0)));
+					window.scrollTo(0, target);
+					return;
+				}
+			}
+
+			if (typeof anchor.y === 'number' && anchor.y > 0) {
+				window.scrollTo(0, anchor.y);
+			}
+		};
+
+		var restorePublishScroll = function() {
+			if (typeof localStorage === 'undefined') {
+				return;
+			}
+
+			try {
+				var anchor = readPublishScrollAnchor();
+
+				if ( ! anchor || ! (anchor.y > 0 || anchor.itemId)) {
+					return;
+				}
+
+				var started = Date.now();
+				var lastHeight = 0;
+				var stableFor = 0;
+				var maxWait = 6000;
+				var stableNeed = 400;
+				var pollEvery = 100;
+				var done = false;
+
+				var tick = function() {
+					if (done) {
+						return;
+					}
+
+					var height = document.documentElement.scrollHeight;
+
+					applyPublishScrollAnchor(anchor);
+
+					if (height === lastHeight) {
+						stableFor += pollEvery;
+					} else {
+						stableFor = 0;
+						lastHeight = height;
+					}
+
+					if (stableFor >= stableNeed || (Date.now() - started) >= maxWait) {
+						done = true;
+						applyPublishScrollAnchor(anchor);
+						return;
+					}
+
+					setTimeout(tick, pollEvery);
+				};
+
+				// Allow Fluid collapse restore a chance to run first
+				if (typeof window.requestAnimationFrame === 'function') {
+					window.requestAnimationFrame(function() {
+						window.requestAnimationFrame(tick);
+					});
+				} else {
+					setTimeout(tick, 0);
+				}
+
+				$(window).one('load', function() {
+					if ( ! done) {
+						applyPublishScrollAnchor(anchor);
+					} else {
+						setTimeout(function() {
+							applyPublishScrollAnchor(anchor);
+						}, 50);
+					}
+				});
+			} catch (err) {}
+		};
+
+		publishForm.on('submit', persistPublishScroll);
+		restorePublishScroll();
+	}
+
 	// Emoji
 	if (EE.publish.smileys === true) {
 		$('body').on('click', '.format-options .toolbar .emoji a', function(e) {
