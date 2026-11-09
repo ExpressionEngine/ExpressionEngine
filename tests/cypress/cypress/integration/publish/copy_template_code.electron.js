@@ -356,13 +356,13 @@ context('Copy template code from channel entries, fields, channels, and field gr
         cy.hasNoErrors()
 
         // Copy each field and assert the copied value
-        cy.copyFieldAndAssert('A Date', '{a_date format="%F %d %Y"}', true);
+        cy.copyFieldAndAssert('A Date', '{a_date format="%F %d %Y"}');
         cy.copyFieldAndAssert('Checkboxes', '{checkboxes}\
             {item:label}: {item:value}\
         {/checkboxes}', true);
 
-        cy.copyFieldAndAssert('Electronic-Mail Address', '{electronic_mail_address}', true);
-        cy.copyFieldAndAssert('Home Page', '{home_page}', true);
+        cy.copyFieldAndAssert('Electronic-Mail Address', '{electronic_mail_address}');
+        cy.copyFieldAndAssert('Home Page', '{home_page}');
 
         cy.copyFieldAndAssert('Corpse', '{corpse}\
               {corpse:a_date}\
