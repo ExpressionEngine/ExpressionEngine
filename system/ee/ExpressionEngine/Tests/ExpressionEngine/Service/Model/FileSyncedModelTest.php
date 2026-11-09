@@ -70,6 +70,47 @@ class FileSyncedModelTest extends TestCase
         $this->assertSame(1, $model->save_calls);
     }
 
+    public function testOnAfterLoadIgnoresEmptyNewerFileWhenModelHasContent()
+    {
+        $filesystem = new FileSyncedModelFilesystemStub();
+        $filesystem->exists_map['/tmp/template.html'] = true;
+        $filesystem->mtime_map['/tmp/template.html'] = 20;
+        $filesystem->read_map['/tmp/template.html'] = "  \n";
+        ee()->setMock('Filesystem', $filesystem);
+
+        $model = new FileSyncedModelStub();
+        $model->path = '/tmp/template.html';
+        $model->modification_time = 10;
+        $model->serialized_data = 'saved-partial';
+
+        $model->onAfterLoad();
+
+        $this->assertNull($model->unserialized_data);
+        $this->assertSame(10, $model->modification_time);
+        $this->assertSame(0, $model->save_calls);
+        $this->assertSame('saved-partial', $model->serialized_data);
+    }
+
+    public function testOnAfterLoadImportsNonEmptyFileWhenTimestampsMatchAndModelIsEmpty()
+    {
+        $filesystem = new FileSyncedModelFilesystemStub();
+        $filesystem->exists_map['/tmp/template.html'] = true;
+        $filesystem->mtime_map['/tmp/template.html'] = 20;
+        $filesystem->read_map['/tmp/template.html'] = 'restored-partial';
+        ee()->setMock('Filesystem', $filesystem);
+
+        $model = new FileSyncedModelStub();
+        $model->path = '/tmp/template.html';
+        $model->modification_time = 20;
+        $model->serialized_data = '';
+
+        $model->onAfterLoad();
+
+        $this->assertSame('restored-partial', $model->unserialized_data);
+        $this->assertSame(20, $model->modification_time);
+        $this->assertSame(1, $model->save_calls);
+    }
+
     public function testOnAfterSaveSkipsThenWrites()
     {
         $filesystem = new FileSyncedModelFilesystemStub();
