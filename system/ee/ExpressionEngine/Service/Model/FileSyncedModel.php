@@ -101,7 +101,16 @@ abstract class FileSyncedModel extends Model
         $mtime = ee('Filesystem')->mtime($path);
 
         if ($mtime > $this->getModificationTime()) {
-            $this->unserializeFileData(ee('Filesystem')->read($path));
+            $data = ee('Filesystem')->read($path);
+
+            // Preserve authoritative database content during a blank file read.
+            // Keep its timestamp so a completed write in the same second can sync.
+            // Intentional empty saves still write to disk through onAfterSave().
+            if ($data === false || (trim($data) === '' && trim((string) $this->serializeFileData()) !== '')) {
+                return;
+            }
+
+            $this->unserializeFileData($data);
             $this->setModificationTime($mtime);
 
             $this->_skip_next_write = true;
