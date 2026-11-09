@@ -308,7 +308,7 @@ class File_field
                 ->with('UploadDestination')
                 ->filter('file_name', $file_name)
                 ->filter('upload_location_id', $dir_id)
-                ->filter('site_id', ee()->config->item('site_id'))
+                ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
                 ->first(true);
         }
 
