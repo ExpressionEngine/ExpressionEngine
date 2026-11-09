@@ -529,6 +529,55 @@ context('Publish Entry', () => {
         cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("quatro")').should('not.have.class', 'active')
         cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("cinco")').should('have.class', 'active')
 
+        cy.viewport(1400, 900)
+        cy.get('label:contains("Grid with Buttons")').parents('.fieldset-faux').find('.grid-field.entry-grid').as('autoLayoutGrid')
+        cy.get('@autoLayoutGrid').should('not.have.class', 'overwidth')
+        cy.wait(500)
+        cy.get('@autoLayoutGrid').then($grid => {
+          const grid = $grid[0]
+          const win = grid.ownerDocument.defaultView
+          const container = $grid.parents('.field-control')[0]
+          const originalHeight = container.style.height
+          const input = $grid.find('input[type=text]:visible')[0]
+          let mutations = 0
+          const observer = new win.MutationObserver(records => { mutations += records.length })
+
+          input.focus()
+          observer.observe(grid, { attributes: true, attributeFilter: ['class'] })
+          // Editor reflow changes height without changing the available width.
+          container.style.height = `${parseFloat(win.getComputedStyle(container).height) + 40}px`
+
+          return new Cypress.Promise(resolve => win.setTimeout(resolve, 650)).then(() => {
+            observer.disconnect()
+            container.style.height = originalHeight
+            expect(mutations, 'no remeasurement after a height-only resize').to.equal(0)
+            expect(grid.ownerDocument.activeElement, 'Grid input retains focus').to.equal(input)
+          })
+        })
+
+        cy.get('@autoLayoutGrid').then($grid => {
+          const table = $grid.find('.grid-field__table')[0]
+          const container = $grid.parents('.field-control')[0]
+          const originalTableStyle = table.getAttribute('style')
+          const originalContainerStyle = container.getAttribute('style')
+
+          table.style.minWidth = '900px'
+          container.style.width = '880px'
+          cy.get('@autoLayoutGrid').should('have.class', 'overwidth')
+          cy.then(() => { container.style.width = '916px' })
+          // A scrollbar-sized gain must not switch back and restart the loop.
+          cy.wait(500)
+          cy.get('@autoLayoutGrid').should('have.class', 'overwidth')
+          cy.then(() => { container.style.width = '940px' })
+          cy.get('@autoLayoutGrid').should('not.have.class', 'overwidth')
+          cy.then(() => { container.style.width = '880px' })
+          cy.get('@autoLayoutGrid').should('have.class', 'overwidth')
+          cy.then(() => {
+            originalTableStyle === null ? table.removeAttribute('style') : table.setAttribute('style', originalTableStyle)
+            originalContainerStyle === null ? container.removeAttribute('style') : container.setAttribute('style', originalContainerStyle)
+          })
+        })
+
         cy.get('body').type('{ctrl}', {release: false}).type('s')
         cy.get('p').contains('has been updated')
         cy.get('.grid-field tbody tr:visible td:visible').eq(0).find('input').invoke('attr', 'value').then((val) => {

@@ -1104,21 +1104,33 @@ $(document).ready(function () {
 var gridAutoLayoutObserver = null;
 var gridAutoLayoutUpdateTimer = null;
 var gridAutoLayoutResizeDelay = 150;
+var gridAutoLayoutHysteresis = 24;
 
-function getGridAutoLayoutWidths(grid) {
+function getGridAutoLayoutWidths(grid, hysteresis) {
 	var table = grid.find('.grid-field__table').first();
 	var tableContainer = table.closest('.table-responsive');
 	var fieldControl = grid.parents('.field-control').first();
-	var tableWidth = table.outerWidth();
 	var containerWidth = fieldControl.length ? fieldControl.width() : tableContainer.width();
+	var originalWidth = grid[0].style.width;
+
+	// Tables fill the available width, so measure in a narrower space to leave room for a scrollbar.
+	if (hysteresis) {
+		grid.width(Math.max(0, grid.width() - hysteresis));
+	}
+
+	var tableWidth = table.outerWidth();
 
 	if (tableContainer.length && tableContainer[0].scrollWidth > tableWidth) {
 		tableWidth = tableContainer[0].scrollWidth;
 	}
 
+	if (hysteresis) {
+		grid[0].style.width = originalWidth;
+	}
+
 	return {
 		tableWidth: tableWidth,
-		containerWidth: containerWidth
+		containerWidth: containerWidth - hysteresis
 	};
 }
 
@@ -1136,12 +1148,13 @@ function updateGridAutoLayout(grid) {
 
 	var itemFieldsets = grid.find('.grid-field__item-fieldset');
 	var originalVisibility = grid[0].style.visibility;
+	var wasOverwidth = grid.hasClass('overwidth');
 
 	grid[0].style.visibility = 'hidden';
 	grid.removeClass('overwidth').addClass('horizontal-layout');
 	itemFieldsets.hide();
 
-	var widths = getGridAutoLayoutWidths(grid);
+	var widths = getGridAutoLayoutWidths(grid, wasOverwidth ? gridAutoLayoutHysteresis : 0);
 	// Keep row controls accessible when collapsed or forced vertical by Live Preview.
 	var isOverwidth = widths.tableWidth > widths.containerWidth
 		|| grid.find('.grid__item--collapsed').length > 0
@@ -1183,8 +1196,22 @@ function observeGridAutoLayout(grid) {
 	}
 
 	if (!gridAutoLayoutObserver) {
-		gridAutoLayoutObserver = new ResizeObserver(function() {
-			scheduleGridAutoLayoutUpdate();
+		gridAutoLayoutObserver = new ResizeObserver(function(entries) {
+			var widthChanged = false;
+
+			entries.forEach(function(entry) {
+				var width = Math.round(entry.contentRect.width);
+
+				// Layout and editor height changes must not trigger another measurement.
+				if ($.data(entry.target, 'gridAutoLayoutWidth') !== width) {
+					$.data(entry.target, 'gridAutoLayoutWidth', width);
+					widthChanged = true;
+				}
+			});
+
+			if (widthChanged) {
+				scheduleGridAutoLayoutUpdate();
+			}
 		});
 	}
 
