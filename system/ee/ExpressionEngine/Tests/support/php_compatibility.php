@@ -337,6 +337,7 @@ if (extension_loaded('curl') && PHP_VERSION_ID >= 80100) {
     $skipped[] = 'HTTP query enums (requires curl and PHP 8.1+)';
 }
 
+$cases += require __DIR__ . '/php86_cases.php';
 $failed = array();
 foreach ($cases as $name => $case) {
     try { $case(); } catch (Throwable $error) {

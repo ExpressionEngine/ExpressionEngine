@@ -10,6 +10,8 @@
 
 namespace ExpressionEngine\Service\Model;
 
+use ExpressionEngine\Library\Compat\ObjectHash;
+
 use Closure;
 use InvalidArgumentException;
 
@@ -219,7 +221,7 @@ class Collection extends CoreCollection
 
     public function __toString()
     {
-        return spl_object_hash($this);
+        return ObjectHash::get($this);
     }
 }
 
