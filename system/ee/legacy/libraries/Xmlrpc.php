@@ -610,7 +610,7 @@ class XML_RPC_Message extends EE_Xmlrpc
         //-------------------------------------
 
         $parser = xml_parser_create($this->xmlrpc_defencoding);
-        $parser_name = is_php(8) ? spl_object_hash($parser) : (string) $parser;
+        $parser_name = is_php(8) ? spl_object_id($parser) : (string) $parser;
 
         $this->xh[$parser_name] = array();
         $this->xh[$parser_name]['isf'] = 0;
@@ -657,11 +657,17 @@ class XML_RPC_Message extends EE_Xmlrpc
             );
             //error_log($errstr);
             $r = new XML_RPC_Response(0, $this->xmlrpcerr['invalid_return'], $this->xmlrpcstr['invalid_return']);
-            xml_parser_free($parser);
+            if (PHP_VERSION_ID < 80000) {
+                xml_parser_free($parser);
+            }
+            unset($parser);
 
             return $r;
         }
-        xml_parser_free($parser);
+        if (PHP_VERSION_ID < 80000) {
+            xml_parser_free($parser);
+        }
+        unset($parser);
 
         // ---------------------------------------
         //  Got Ourselves Some Badness, It Seems
@@ -751,7 +757,7 @@ class XML_RPC_Message extends EE_Xmlrpc
 
     public function open_tag($the_parser, $name, $attrs)
     {
-        $parser_name = is_php(8) ? spl_object_hash($the_parser) : (string) $the_parser;
+        $parser_name = is_php(8) ? spl_object_id($the_parser) : (string) $the_parser;
 
         // If invalid nesting, then return
         if ($this->xh[$parser_name]['isf'] > 1) {
@@ -862,7 +868,7 @@ class XML_RPC_Message extends EE_Xmlrpc
 
     public function closing_tag($the_parser, $name)
     {
-        $parser_name = is_php(8) ? spl_object_hash($the_parser) : (string) $the_parser;
+        $parser_name = is_php(8) ? spl_object_id($the_parser) : (string) $the_parser;
 
         if ($this->xh[$parser_name]['isf'] > 1) {
             return;
@@ -991,7 +997,7 @@ class XML_RPC_Message extends EE_Xmlrpc
 
     public function character_data($the_parser, $data)
     {
-        $parser_name = is_php(8) ? spl_object_hash($the_parser) : (string) $the_parser;
+        $parser_name = is_php(8) ? spl_object_id($the_parser) : (string) $the_parser;
 
         if ($this->xh[$parser_name]['isf'] > 1) {
             return;

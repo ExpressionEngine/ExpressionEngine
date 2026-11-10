@@ -29,9 +29,11 @@ spl_autoload_register(function ($class) use ($eeRoot) {
 });
 
 require BASEPATH . 'helpers/text_helper.php';
+require BASEPATH . 'libraries/Xmlparser.php';
 require BASEPATH . 'libraries/Image_lib.php';
 
 class CompatibilityCurl extends ExpressionEngine\Library\Curl\Request {}
+class CompatibilityXml extends EE_XMLparser { public function __construct() {} }
 
 class CompatibilityRoute { protected $title = 'Route'; }
 class CompatibilitySidebar extends ExpressionEngine\Service\Addon\Controllers\Mcp\AbstractSidebar
@@ -195,6 +197,29 @@ if (function_exists('imagejpeg') && function_exists('imagettftext')) {
 }
 $cases['Protected sidebar properties'] = function () {
     compatibility_assert('Route', (new CompatibilitySidebar())->readTitle());
+};
+$cases['XML success and failure cleanup'] = function () {
+    $parser = new CompatibilityXml();
+    compatibility_assert(true, $parser->parse_into_struct('<root><item>value</item></root>'));
+    compatibility_assert(false, $parser->parse_into_struct('<root>'));
+};
+$cases['SimplePie RSS parsing'] = function () {
+    require_once BASEPATH . 'libraries/simplepie/SimplePieAutoloader.php';
+    $feed = new SimplePie();
+    $feed->enable_cache(false);
+    $feed->set_raw_data('<?xml version="1.0"?><rss version="2.0"><channel><title>Compatibility</title><link>https://example.invalid/</link><description>Feed</description></channel></rss>');
+    compatibility_assert(true, $feed->init());
+    compatibility_assert('Compatibility', $feed->get_title());
+};
+$cases['SimplePie relative URL normalization'] = function () {
+    require_once BASEPATH . 'libraries/simplepie/SimplePieAutoloader.php';
+    foreach (array('', '../feed.xml', '//example.test/feed', '?query=value', '#fragment') as $url) {
+        $iri = new SimplePie_IRI($url);
+        compatibility_assert(null, $iri->scheme);
+        compatibility_assert($url, $iri->get_iri());
+    }
+    $iri = new SimplePie_IRI('http://example.test:80/feed');
+    compatibility_assert('http://example.test/feed', $iri->get_iri());
 };
 if (extension_loaded('curl')) {
     $cases['Curl request and callback'] = function () use ($temporary) {
