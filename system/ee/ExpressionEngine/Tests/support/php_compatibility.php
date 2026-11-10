@@ -28,12 +28,39 @@ spl_autoload_register(function ($class) use ($eeRoot) {
     }
 });
 
+require BASEPATH . 'libraries/Image_lib.php';
+
 class CompatibilityCurl extends ExpressionEngine\Library\Curl\Request {}
 
 $temporary = sys_get_temp_dir() . '/ee-php-compatibility-' . uniqid();
 mkdir($temporary);
 $cases = array();
 $skipped = array();
+if (function_exists('imagejpeg') && function_exists('imagettftext')) {
+    $cases['Legacy CAPTCHA bitmap and TrueType geometry'] = function () use ($temporary) {
+        require_once BASEPATH . 'helpers/captcha_helper.php';
+        $folder = $temporary . '/captcha/';
+        mkdir($folder);
+        try {
+            foreach (array('', BASEPATH . 'fonts/texb.ttf') as $font) {
+                $captcha = create_captcha(array('word' => 'example', 'img_path' => $folder,
+                    'img_url' => '/captcha/', 'font_path' => $font, 'img_width' => 153, 'img_height' => 31));
+                compatibility_assert('example', $captcha['word']);
+                preg_match('~src="/captcha/([^"/]+)"~', $captcha['image'], $match);
+                $path = $folder . $match[1];
+                compatibility_assert(array(153, 31, IMAGETYPE_JPEG), array_slice(getimagesize($path), 0, 3));
+                $image = imagecreatefromjpeg($path);
+                compatibility_assert(153, imagesx($image));
+                if (PHP_VERSION_ID < 80000) { imagedestroy($image); }
+            }
+        } finally {
+            foreach (glob($folder . '*') as $file) { unlink($file); }
+            rmdir($folder);
+        }
+    };
+} else {
+    $skipped[] = 'Legacy CAPTCHA (GD JPEG/TrueType support unavailable)';
+}
 if (extension_loaded('curl')) {
     $cases['Curl request and callback'] = function () use ($temporary) {
         $path = $temporary . '/response.txt';
@@ -43,6 +70,25 @@ if (extension_loaded('curl')) {
     };
 } else {
     $skipped[] = 'Curl request (curl extension unavailable)';
+}
+if (extension_loaded('gd')) {
+    $cases['Image resize, crop, rotate, and mirror'] = function () use ($temporary) {
+        $source = $temporary . '/source.png';
+        $image = imagecreatetruecolor(20, 20);
+        imagepng($image, $source);
+        if (PHP_VERSION_ID < 80000) { imagedestroy($image); }
+        unset($image);
+        foreach (array('resize', 'crop', 'rotate', 'mirror') as $operation) {
+            $destination = $temporary . '/' . $operation . '.png';
+            $lib = new EE_Image_lib(array('source_image' => $source, 'new_image' => $destination, 'width' => 10, 'height' => 10, 'rotation_angle' => $operation === 'mirror' ? 'hor' : '90'));
+            $method = $operation === 'mirror' ? 'rotate' : $operation;
+            compatibility_assert(true, $lib->$method());
+            $size = getimagesize($destination);
+            compatibility_assert($operation === 'resize' || $operation === 'crop' ? 10 : 20, $size[0]);
+        }
+    };
+} else {
+    $skipped[] = 'Image processing (gd extension unavailable)';
 }
 if (extension_loaded('curl')) {
     $cases['HTTP query objects preserve public properties and scalar encoding'] = function () {

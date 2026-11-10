@@ -193,9 +193,9 @@ class Captcha
 
         if ($use_font == false or ! function_exists('imagettftext')) {
             $font_size = 5;
-            ImageString($im, $font_size, $x_axis, $img_height / 3.8, $word, $text_color);
+            ImageString($im, $font_size, $x_axis, (int) ($img_height / 3.8), $word, $text_color);
         } else {
-            imagettftext($im, $font_size, $angle, $x_axis, $img_height / 1.5, $text_color, $font_path, $word);
+            imagettftext($im, $font_size, $angle, $x_axis, (int) ($img_height / 1.5), $text_color, $font_path, $word);
         }
 
         // Create the border
@@ -208,7 +208,9 @@ class Captcha
 
         $img = "<img src=\"$img_url$img_name\" width=\"$img_width\" height=\"$img_height\" style=\"border:0;\" alt=\" \" />";
 
-        ImageDestroy($im);
+        if (PHP_VERSION_ID < 80000) {
+            ImageDestroy($im);
+        }
 
         return $img;
     }
