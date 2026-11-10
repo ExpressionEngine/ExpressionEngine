@@ -27,7 +27,6 @@ spl_autoload_register(function ($class) use ($eeRoot) {
         }
     }
 });
-
 require BASEPATH . 'helpers/text_helper.php';
 require BASEPATH . 'libraries/Xmlparser.php';
 require BASEPATH . 'libraries/Image_lib.php';
@@ -35,7 +34,6 @@ require BASEPATH . 'database/drivers/mysqli/mysqli_connection.php';
 
 class CompatibilityCurl extends ExpressionEngine\Library\Curl\Request {}
 class CompatibilityXml extends EE_XMLparser { public function __construct() {} }
-
 class CompatibilityRoute { protected $title = 'Route'; }
 class CompatibilitySidebar extends ExpressionEngine\Service\Addon\Controllers\Mcp\AbstractSidebar
 {
@@ -66,6 +64,31 @@ $cases['Missing and present file dimensions'] = function () {
     compatibility_assert('', $column->renderTableCell(null, null, (object) array('file_hw_original' => null)));
     compatibility_assert('640x480', $column->renderTableCell(null, null, (object) array('file_hw_original' => '480 640')));
 };
+if (function_exists('imagejpeg') && function_exists('imagettftext')) {
+    $cases['Legacy CAPTCHA bitmap and TrueType geometry'] = function () use ($temporary) {
+        require_once BASEPATH . 'helpers/captcha_helper.php';
+        $folder = $temporary . '/captcha/';
+        mkdir($folder);
+        try {
+            foreach (array('', BASEPATH . 'fonts/texb.ttf') as $font) {
+                $captcha = create_captcha(array('word' => 'example', 'img_path' => $folder,
+                    'img_url' => '/captcha/', 'font_path' => $font, 'img_width' => 153, 'img_height' => 31));
+                compatibility_assert('example', $captcha['word']);
+                preg_match('~src="/captcha/([^"/]+)"~', $captcha['image'], $match);
+                $path = $folder . $match[1];
+                compatibility_assert(array(153, 31, IMAGETYPE_JPEG), array_slice(getimagesize($path), 0, 3));
+                $image = imagecreatefromjpeg($path);
+                compatibility_assert(153, imagesx($image));
+                if (PHP_VERSION_ID < 80000) { imagedestroy($image); }
+            }
+        } finally {
+            foreach (glob($folder . '*') as $file) { unlink($file); }
+            rmdir($folder);
+        }
+    };
+} else {
+    $skipped[] = 'Legacy CAPTCHA (GD JPEG/TrueType support unavailable)';
+}
 $cases['Unicode entities and named-entity preservation'] = function () {
     $examples = array(
         '&#0;' => "\0", '&#127;' => "\x7f", '&#128;' => "\xc2\x80",
@@ -171,31 +194,6 @@ $cases['Unsaved upload directory overrides'] = function () {
         compatibility_assert($id, $directory->originalId());
     }
 };
-if (function_exists('imagejpeg') && function_exists('imagettftext')) {
-    $cases['Legacy CAPTCHA bitmap and TrueType geometry'] = function () use ($temporary) {
-        require_once BASEPATH . 'helpers/captcha_helper.php';
-        $folder = $temporary . '/captcha/';
-        mkdir($folder);
-        try {
-            foreach (array('', BASEPATH . 'fonts/texb.ttf') as $font) {
-                $captcha = create_captcha(array('word' => 'example', 'img_path' => $folder,
-                    'img_url' => '/captcha/', 'font_path' => $font, 'img_width' => 153, 'img_height' => 31));
-                compatibility_assert('example', $captcha['word']);
-                preg_match('~src="/captcha/([^"/]+)"~', $captcha['image'], $match);
-                $path = $folder . $match[1];
-                compatibility_assert(array(153, 31, IMAGETYPE_JPEG), array_slice(getimagesize($path), 0, 3));
-                $image = imagecreatefromjpeg($path);
-                compatibility_assert(153, imagesx($image));
-                if (PHP_VERSION_ID < 80000) { imagedestroy($image); }
-            }
-        } finally {
-            foreach (glob($folder . '*') as $file) { unlink($file); }
-            rmdir($folder);
-        }
-    };
-} else {
-    $skipped[] = 'Legacy CAPTCHA (GD JPEG/TrueType support unavailable)';
-}
 $cases['Protected sidebar properties'] = function () {
     compatibility_assert('Route', (new CompatibilitySidebar())->readTitle());
 };

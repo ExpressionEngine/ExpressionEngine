@@ -43,7 +43,7 @@ jobs:
           - name: Setup PHP
             uses: shivammathur/setup-php@v2
             with:
-                php-version: '8.3'
+                php-version: '8.2'
                 extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
                 coverage: none
                 ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
@@ -125,7 +125,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.3, 7.4, 8.0, 8.1, 8.2, 8.3, 8.4]
+                php: [7.3, 7.4, 8.0, 8.1, 8.2, 8.3, 8.4, 8.5, 8.6]
                 os: [ubuntu-latest]
                 include:
                   - php: 8.2
@@ -189,3 +189,44 @@ jobs:
             - name: Run PHPUnit Tests
               working-directory: system/ee/ExpressionEngine/Tests/
               run: vendor/bin/phpunit --testdox --configuration=phpunit.xml
+
+    php-compatibility:
+        if: github.event.pull_request.draft == false
+        needs: [cancel-running-tests, build-for-testing]
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                php: ['7.2', '7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4', '8.5', '8.6']
+        name: PHP compatibility, php${{ matrix.php }}
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+            - name: Use cached EE build
+              uses: actions/cache@v4
+              with:
+                path: build-tools/builds/ExpressionEngine
+                key: cache-ee-build-${{ github.sha }}
+                fail-on-cache-miss: true
+                enableCrossOsArchive: true
+            - name: Copy bundled dependencies
+              run: cp -R build-tools/builds/ExpressionEngine/system/ee/vendor-build ./system/ee/
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                php-version: ${{ matrix.php }}
+                extensions: curl, dom, ftp, gd, mbstring, pdo_mysql, xml
+                coverage: none
+            - name: Check runtime PHP syntax
+              run: |
+                find system/ee -name '*.php' \
+                  ! -path '*/Service/Generator/stubs/*' \
+                  ! -path '*/installer/config/config_tmpl.php' \
+                  ! -path '*/vendor-build/symfony/polyfill-mbstring/bootstrap80.php' \
+                  -print0 | xargs -0 -n 1 php -d error_reporting=-1 -d display_errors=1 -l > /tmp/ee-php-lint.log 2>&1 || { cat /tmp/ee-php-lint.log; exit 1; }
+                if grep -E '(Deprecated|Warning|Notice|Fatal error|Parse error):' /tmp/ee-php-lint.log; then exit 1; fi
+            - name: Check runtime compatibility with warnings enabled
+              run: php system/ee/ExpressionEngine/Tests/support/php_compatibility.php
+            - name: Check the minimum PHP 7.2.5 runtime
+              if: matrix.php == '7.2'
+              run: docker run --rm --volume "$PWD:/app:ro" --workdir /app php:7.2.5-cli php system/ee/ExpressionEngine/Tests/support/php_compatibility.php
