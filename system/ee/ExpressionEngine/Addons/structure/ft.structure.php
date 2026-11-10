@@ -43,7 +43,7 @@ class Structure_ft extends \EE_Fieldtype
         $this->sql = new Sql_structure();
 
         if (! $this->sql->module_is_installed()) {
-            return false;
+            return;
         }
 
         $this->site_pages = $this->sql->get_site_pages();

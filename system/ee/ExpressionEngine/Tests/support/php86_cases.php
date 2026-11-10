@@ -113,4 +113,10 @@ return array(
             $first->clearSharedStore();
         }
     },
+    'IDNA constructor preserves option initialization' => function () {
+        require_once BASEPATH . 'libraries/simplepie/idn/idna_convert.class.php';
+        $idna = new idna_convert(array('encoding' => 'utf8', 'strict' => true));
+        compatibility_assert('xn--bcher-kva', $idna->encode('bücher'));
+        compatibility_assert(true, $idna->_strict_mode);
+    },
 );

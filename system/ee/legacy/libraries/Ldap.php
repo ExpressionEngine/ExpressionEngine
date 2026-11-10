@@ -42,19 +42,19 @@ class EE_LDAP
     public function __construct()
     {
         if (ee()->config->item('ldap_enabled') === false or ee()->config->item('ldap_enabled') != 'y') {
-            return false;
+            return;
         }
 
         if (! function_exists('ldap_connect')) {
             $this->output_error('LDAP Support is Unavailable');
 
-            return false;
+            return;
         }
 
         if (ee()->config->item('ldap_server') === false or ee()->config->item('ldap_server') == '') {
             $this->output_error('Missing LDAP Settings');
 
-            return false;
+            return;
         }
     }
 

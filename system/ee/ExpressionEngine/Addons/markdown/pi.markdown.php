@@ -27,8 +27,6 @@ class Markdown
             $tagdata,
             compact('smartypants')
         );
-
-        return $this->return_data;
     }
 }
 // END CLASS

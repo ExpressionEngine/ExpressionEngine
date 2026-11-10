@@ -30,8 +30,6 @@ class LayoutTab
         $this->id = $id;
         $this->title = $title;
         $this->fields = $fields;
-
-        return $this;
     }
 
     public function setFields($fields)

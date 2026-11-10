@@ -145,7 +145,8 @@ class Member
             if (!ee('Config')->getFile()->getBoolean('legacy_member_templates')) {
                 ee()->logger->developer('Someone tried to access legacy member template, but those are not enabled in config.php', true, 60 * 60 * 24 * 30);
 
-                return ee()->output->show_user_error('general', lang('legacy_member_templates_not_enabled'));
+                ee()->output->show_user_error('general', lang('legacy_member_templates_not_enabled'));
+                return;
             }
         }
     }

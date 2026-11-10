@@ -66,7 +66,7 @@ class EE_Upload
     {
         if (count($props) > 0) {
             $this->initialize($props);
-            return true;
+            return;
         }
 
         ee()->load->helper('xss');

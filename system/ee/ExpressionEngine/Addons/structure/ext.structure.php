@@ -39,7 +39,7 @@ class Structure_ext
         $this->sql = new Sql_structure();
 
         if (!ee()->addons_model->module_installed('structure')) {
-            return false;
+            return;
         }
 
         $this->site_pages = $this->sql->get_site_pages();

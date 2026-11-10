@@ -105,10 +105,8 @@ class idna_convert
         }
         // If parameters are given, pass these to the respective method
         if (is_array($options)) {
-            return $this->set_parameter($options);
+            $this->set_parameter($options);
         }
-
-        return true;
     }
 
     /**
