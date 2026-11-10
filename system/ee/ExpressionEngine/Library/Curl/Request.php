@@ -48,6 +48,56 @@ abstract class Request
         }
     }
 
+    /**
+     * Convert public object properties before PHP 8.6 query encoding.
+     * Circular references are rejected on this path; earlier PHP stays native.
+     *
+     * @throws \InvalidArgumentException When PHP 8.6 query data is circular.
+     */
+    protected function buildQuery($data)
+    {
+        if (PHP_VERSION_ID < 80600) {
+            return http_build_query($data);
+        }
+
+        return http_build_query($this->queryData($data));
+    }
+
+    private function queryData($data, array $parents = array(), $identity = null)
+    {
+        // Native encoding accepts nested backed enums and rejects unit enums.
+        if ($data instanceof \UnitEnum || (!is_array($data) && !is_object($data))) {
+            return $data;
+        }
+
+        if (is_object($data)) {
+            $identity = 'object:' . spl_object_id($data);
+        }
+        if ($identity !== null) {
+            if (isset($parents[$identity])) {
+                throw new \InvalidArgumentException('Query data cannot contain circular references.');
+            }
+            $parents[$identity] = true;
+        }
+
+        if (is_object($data)) {
+            // Exclude Request's visibility privileges and internal virtual state.
+            $publicProperties = \Closure::bind(static function ($object) {
+                return get_object_vars($object);
+            }, null, null);
+            $data = $publicProperties($data);
+        }
+
+        $result = array();
+        foreach ($data as $key => $value) {
+            // This method only runs on PHP 8.6, where ReflectionReference exists.
+            $reference = is_array($value) ? \ReflectionReference::fromArrayElement($data, $key) : null;
+            $identity = $reference === null ? null : 'array:' . $reference->getId();
+            $result[$key] = $this->queryData($value, $parents, $identity);
+        }
+        return $result;
+    }
+
     public function exec()
     {
         $curl = curl_init();
@@ -63,7 +113,10 @@ abstract class Request
 
         $this->setHeaders($headers, $curl);
 
-        curl_close($curl);
+        if (PHP_VERSION_ID < 80000) {
+            curl_close($curl);
+        }
+        unset($curl);
 
         if (! empty($this->callback)) {
             return call_user_func($this->callback, $data);

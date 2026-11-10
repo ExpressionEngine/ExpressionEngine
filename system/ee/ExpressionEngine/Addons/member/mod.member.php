@@ -1411,7 +1411,10 @@ class Member
         curl_setopt($curl, CURLOPT_URL, 'https://www.google.com/recaptcha/api/siteverify');
         curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
         $response = curl_exec($curl);
-        curl_close($curl);
+        if (PHP_VERSION_ID < 80000) {
+            curl_close($curl);
+        }
+        unset($curl);
 
         return is_string($response) ? json_decode($response, true) : null;
     }
