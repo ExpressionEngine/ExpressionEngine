@@ -595,9 +595,10 @@ class DragAndDropUpload extends React.Component {
     // Existing files remain selectable even if a directory's upload policy changed.
     let browseDirectoriesForDropdown = uploadDirectoriesForDropdown;
     if (this.props.contentType == 'image') {
+      let imageTypes = EE.dragAndDrop.imageTypes || ['img'];
       uploadDirectoriesForDropdown = uploadDirectoriesForDropdown.filter(directory => {
         let allowedTypes = (EE.dragAndDrop.allowedDirectoryTypes || {})[directory.upload_location_id];
-        return !allowedTypes || allowedTypes.includes('all') || allowedTypes.includes('img');
+        return !allowedTypes || allowedTypes.includes('all') || imageTypes.some(type => allowedTypes.includes(type));
       });
     }
 

@@ -91,6 +91,8 @@ function build_load_drag_drop_upload_pref(int $id, int $siteId, int $moduleId, s
  */
 function install_load_drag_drop_collaborators(bool $canAccessFiles): void
 {
+    ee()->setMock('config', new \ExpressionEngine\Tests\ExpressionEngine\legacy\Libraries\FileFieldConfigMock());
+
     ee()->setMock('Permission', new class($canAccessFiles) {
         /** @var bool */
         private $canAccessFiles;

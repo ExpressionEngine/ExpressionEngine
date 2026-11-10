@@ -572,9 +572,12 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
       var browseDirectoriesForDropdown = uploadDirectoriesForDropdown;
 
       if (this.props.contentType == 'image') {
+        var imageTypes = EE.dragAndDrop.imageTypes || ['img'];
         uploadDirectoriesForDropdown = uploadDirectoriesForDropdown.filter(function (directory) {
           var allowedTypes = (EE.dragAndDrop.allowedDirectoryTypes || {})[directory.upload_location_id];
-          return !allowedTypes || allowedTypes.includes('all') || allowedTypes.includes('img');
+          return !allowedTypes || allowedTypes.includes('all') || imageTypes.some(function (type) {
+            return allowedTypes.includes(type);
+          });
         });
       }
 

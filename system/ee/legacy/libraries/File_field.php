@@ -998,7 +998,9 @@ class File_field
     }
 
     /**
-     * Loads proper JavaScript for drag and drop uploading
+     * Load JavaScript dependencies and upload directory configuration.
+     *
+     * @return void
      */
     public function loadDragAndDropAssets()
     {
@@ -1053,6 +1055,9 @@ class File_field
                 'lang.file_dnd_no_directories_desc' => !ee('Permission')->has('can_access_files') ? lang('file_dnd_no_directory_permissions') : lang('file_dnd_no_directories_desc'),
 
                 'dragAndDrop.allowedDirectoryTypes' => (object) $allowed_directory_types,
+                'dragAndDrop.imageTypes' => array_keys(array_filter(ee()->config->loadFile('mimes'), function ($types) {
+                    return is_array($types) && preg_grep('/^image\//', $types);
+                })),
                 'dragAndDrop.uploadDesinations' => ee('View/Helpers')->normalizedChoices($upload_destinations),
                 'dragAndDrop.endpoint' => ee('CP/URL')->make('addons/settings/filepicker/ajax-upload')->compile(),
                 'dragAndDrop.resolveConflictEndpoint' => ee('CP/URL')->make('addons/settings/filepicker/ajax-overwrite-or-rename')->compile(),

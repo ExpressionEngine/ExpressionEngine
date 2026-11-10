@@ -7,6 +7,23 @@ require_once SYSPATH . 'ee/legacy/libraries/File_field.php';
 
 use PHPUnit\Framework\TestCase;
 
+class FileFieldConfigMock extends \eeSingletonConfigMock
+{
+    /** @var array<string|int, mixed> */
+    public $mimeTypes = [];
+
+    /**
+     * Return configured MIME groups for upload directory filtering.
+     *
+     * @param string $file
+     * @return array<string|int, mixed>
+     */
+    public function loadFile($file)
+    {
+        return $this->mimeTypes;
+    }
+}
+
 class FileFieldFieldHarness extends \File_field
 {
     /** @var mixed */
@@ -1889,6 +1906,8 @@ class FileFieldFieldTest extends TestCase
      */
     private function setLoadDragAndDropCollaborators(bool $canAccessFiles): array
     {
+        ee()->setMock('config', new FileFieldConfigMock());
+
         $permission = new class($canAccessFiles) {
             /** @var array<int, string> */
             public $hasCalls = [];
@@ -4303,6 +4322,15 @@ class FileFieldFieldTest extends TestCase
 
         $collaborators = $this->setLoadDragAndDropCollaborators(true);
 
+        ee()->config->mimeTypes = [
+            'img' => ['image/png'],
+            'doc' => ['application/pdf'],
+            'heic' => ['image/heic'],
+            'mixed' => ['application/pdf', 'image/heif'],
+            'empty' => [],
+            'image/jpeg',
+        ];
+
         $this->subject->loadDragAndDropAssets();
 
         $this->assertSame(['can_access_files', 'can_access_files'], $collaborators['permission']->hasCalls);
@@ -4331,6 +4359,7 @@ class FileFieldFieldTest extends TestCase
         $this->assertSame('file_dnd_no_directories_desc', $globals['lang.file_dnd_no_directories_desc']);
         $this->assertSame($expectedDestinations, $globals['dragAndDrop.uploadDesinations']);
         $this->assertSame([1 => ['all'], 2 => ['doc', 'img']], (array) $globals['dragAndDrop.allowedDirectoryTypes']);
+        $this->assertSame(['img', 'heic', 'mixed'], $globals['dragAndDrop.imageTypes']);
         $this->assertSame('compiled://addons/settings/filepicker/ajax-upload', $globals['dragAndDrop.endpoint']);
         $this->assertSame(
             'compiled://addons/settings/filepicker/ajax-overwrite-or-rename',
