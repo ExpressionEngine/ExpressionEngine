@@ -1028,6 +1028,12 @@ class File_field
         }
 
         if (REQ == 'CP') {
+            $mimes = ee()->config->loadFile('mimes');
+            $extra_mimes = ee()->config->item('mime_whitelist_additions');
+            if (is_array($extra_mimes)) {
+                $mimes = array_merge_recursive($mimes, $extra_mimes);
+            }
+
             ee()->javascript->set_global([
                 'lang.file_dnd_choose_directory' => lang('file_dnd_choose_directory'),
                 'lang.file_dnd_choose_file_directory' => lang('file_dnd_choose_file_directory'),
@@ -1055,9 +1061,11 @@ class File_field
                 'lang.file_dnd_no_directories_desc' => !ee('Permission')->has('can_access_files') ? lang('file_dnd_no_directory_permissions') : lang('file_dnd_no_directories_desc'),
 
                 'dragAndDrop.allowedDirectoryTypes' => (object) $allowed_directory_types,
-                'dragAndDrop.imageTypes' => array_keys(array_filter(ee()->config->loadFile('mimes'), function ($types) {
-                    return is_array($types) && preg_grep('/^image\//', $types);
-                })),
+                'dragAndDrop.imageTypes' => array_keys(array_filter($mimes, function ($types, $kind) {
+                    return is_array($types) && array_filter(preg_grep('/^image\//', $types), function ($mime) use ($kind) {
+                        return ee('MimeType')->isOfKind($mime, $kind);
+                    });
+                }, ARRAY_FILTER_USE_BOTH)),
                 'dragAndDrop.uploadDesinations' => ee('View/Helpers')->normalizedChoices($upload_destinations),
                 'dragAndDrop.endpoint' => ee('CP/URL')->make('addons/settings/filepicker/ajax-upload')->compile(),
                 'dragAndDrop.resolveConflictEndpoint' => ee('CP/URL')->make('addons/settings/filepicker/ajax-overwrite-or-rename')->compile(),

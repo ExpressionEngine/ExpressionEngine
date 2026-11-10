@@ -5,6 +5,7 @@ namespace ExpressionEngine\Tests\ExpressionEngine\legacy\Libraries;
 require_once __DIR__ . '/../../../eeObjectMock.php';
 require_once SYSPATH . 'ee/legacy/libraries/File_field.php';
 
+use ExpressionEngine\Library\Mime\MimeType;
 use PHPUnit\Framework\TestCase;
 
 class FileFieldConfigMock extends \eeSingletonConfigMock
@@ -4330,6 +4331,9 @@ class FileFieldFieldTest extends TestCase
             'empty' => [],
             'image/jpeg',
         ];
+        $mimeTypes = new MimeType();
+        $mimeTypes->whitelistMimesFromConfig();
+        ee()->setMock('MimeType', $mimeTypes);
 
         $this->subject->loadDragAndDropAssets();
 
@@ -4389,6 +4393,56 @@ class FileFieldFieldTest extends TestCase
             ]],
             $this->cpMock->scripts
         );
+    }
+
+    /**
+     * Include grouped MIME additions while preserving configured image groups.
+     *
+     * @dataProvider additionalMimeTypesProvider
+     * @param mixed $additions
+     * @param array $expectedTypes
+     * @return void
+     */
+    public function testLoadDragAndDropAssetsIncludesAdditionalImageTypes($additions, array $expectedTypes): void
+    {
+        $this->setUploadPreferenceCache(new \ArrayObject([]));
+        $this->setLoadDragAndDropCollaborators(true);
+        ee()->config->mimeTypes = [
+            'img' => ['image/png'],
+            'doc' => ['application/pdf'],
+        ];
+        ee()->config->setItem('mime_whitelist_additions', $additions);
+        $mimeTypes = new MimeType();
+        $mimeTypes->whitelistMimesFromConfig();
+        ee()->setMock('MimeType', $mimeTypes);
+
+        $this->subject->loadDragAndDropAssets();
+
+        $this->assertSame($expectedTypes, $this->javascriptMock->globals[0]['dragAndDrop.imageTypes']);
+    }
+
+    /**
+     * Provide supported MIME addition formats and their image groups.
+     *
+     * @return array
+     */
+    public function additionalMimeTypesProvider(): array
+    {
+        return [
+            'unset' => [false, ['img']],
+            'empty' => [[], ['img']],
+            'flat array' => [['image/heic'], ['img']],
+            'pipe-delimited string' => ['image/heic|image/heif', ['img']],
+            'already registered image' => [['doc' => ['image/png']], ['img']],
+            'duplicate additions' => [['doc' => ['image/heic'], 'heic' => ['image/heic']], ['img', 'doc']],
+            'grouped additions' => [[
+                'img' => ['application/x-photoshop'],
+                'doc' => ['image/heic'],
+                'heif' => ['image/heif'],
+                'audio' => ['audio/flac'],
+                'image/jpeg',
+            ], ['img', 'doc', 'heif']],
+        ];
     }
 
     /**
