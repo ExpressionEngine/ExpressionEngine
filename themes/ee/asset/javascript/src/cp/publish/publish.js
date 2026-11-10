@@ -55,16 +55,22 @@ $(document).ready(function () {
 	}
 
 	if (EE.publish.which == 'edit') {
-		publishForm.find("input[name=url_title]").parent().css('position', 'relative');
-		publishForm.find("input[name=url_title]").after('<i class="fa-light fa-rotate-right js-update-url-title" title="'+EE.lang.update_url_title+'" aria-label="'+EE.lang.update_url_title+'"></i>');
+		var urlTitleInput = publishForm.find("input[name=url_title]").not('[readonly], :disabled');
+		urlTitleInput.parent().css('position', 'relative');
+		urlTitleInput.after('<button type="button" class="js-update-url-title" title="'+EE.lang.update_url_title+'" aria-label="'+EE.lang.update_url_title+'"><i class="fa-light fa-rotate-right" aria-hidden="true"></i></button>');
 
-		if (publishForm.find("input[name=structure__uri]").length) {
-			publishForm.find("input[name=structure__uri]").parent().css('position', 'relative');
-			publishForm.find("input[name=structure__uri]").after('<i class="fa-light fa-rotate-right js-update-url-title" title="'+EE.lang.update_structure_url+'" aria-label="'+EE.lang.update_structure_url+'"></i>');
+		var structureUrlInput = publishForm.find("input[name=structure__uri]").not('[readonly], :disabled');
+		if (structureUrlInput.length) {
+			structureUrlInput.parent().css('position', 'relative');
+			structureUrlInput.after('<button type="button" class="js-update-url-title" title="'+EE.lang.update_structure_url+'" aria-label="'+EE.lang.update_structure_url+'"><i class="fa-light fa-rotate-right" aria-hidden="true"></i></button>');
 		}
 
 		$('body').on('click', '.js-update-url-title', function(){
-			var inputField = $(this).parent().find("input");
+			var inputField = $(this).prev('input');
+			if (inputField.is('[readonly], :disabled')) {
+				return;
+			}
+
 			publishForm.find('input[name=title]').ee_url_title(inputField);
 		});
 	}

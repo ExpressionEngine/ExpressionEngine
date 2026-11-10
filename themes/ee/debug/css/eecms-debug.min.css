@@ -14111,7 +14111,7 @@ body[data-theme=dark] .hljs .apache .hljs-attribute {
   margin-right: -15px;
   font-size: 0;
 }
-.ee-debugger .panel-body__publish .fa-rotate-right {
+.ee-debugger .panel-body__publish .js-update-url-title {
   position: absolute;
   right: 15px;
   top: 0;
@@ -14120,6 +14120,18 @@ body[data-theme=dark] .hljs .apache .hljs-attribute {
   display: flex;
   align-items: center;
   cursor: pointer;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+.ee-debugger .panel-body__publish .js-update-url-title:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--ee-accent-medium);
+}
+.ee-debugger .panel-body__publish .js-update-url-title:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
 }
 .ee-debugger .tab-open {
   display: block;
