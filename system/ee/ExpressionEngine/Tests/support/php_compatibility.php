@@ -32,6 +32,13 @@ require BASEPATH . 'libraries/Image_lib.php';
 
 class CompatibilityCurl extends ExpressionEngine\Library\Curl\Request {}
 
+class CompatibilityRoute { protected $title = 'Route'; }
+class CompatibilitySidebar extends ExpressionEngine\Service\Addon\Controllers\Mcp\AbstractSidebar
+{
+    public function __construct() {}
+    public function readTitle() { return $this->getProperty(CompatibilityRoute::class, 'title'); }
+}
+
 $temporary = sys_get_temp_dir() . '/ee-php-compatibility-' . uniqid();
 mkdir($temporary);
 $cases = array();
@@ -61,6 +68,9 @@ if (function_exists('imagejpeg') && function_exists('imagettftext')) {
 } else {
     $skipped[] = 'Legacy CAPTCHA (GD JPEG/TrueType support unavailable)';
 }
+$cases['Protected sidebar properties'] = function () {
+    compatibility_assert('Route', (new CompatibilitySidebar())->readTitle());
+};
 if (extension_loaded('curl')) {
     $cases['Curl request and callback'] = function () use ($temporary) {
         $path = $temporary . '/response.txt';

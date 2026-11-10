@@ -280,7 +280,7 @@ class GroupTest extends TestCase
 
         $controller = $this->makeController();
         $assignedGroups = new ReflectionProperty($controller, 'assigned_template_groups');
-        $assignedGroups->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($assignedGroups);
         $assignedGroups->setValue($controller, array(42));
 
         $controller->remove();

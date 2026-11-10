@@ -199,7 +199,7 @@ function run_load_drag_drop_scenario(int $siteId, string $compatibilityMode, boo
 
     $subject = new \ExpressionEngine\Tests\ExpressionEngine\legacy\Libraries\FileFieldFieldHarness();
     $uploadPrefsProperty = new ReflectionProperty(File_field::class, '_upload_prefs');
-    $uploadPrefsProperty->setAccessible(true);
+    \TestReflectionHelper::makeAccessible($uploadPrefsProperty);
     $uploadPrefsProperty->setValue($subject, $uploadPrefs);
 
     $subject->loadDragAndDropAssets();

@@ -23,9 +23,9 @@ if (! $outputFile) {
 }
 
 $setUp = new ReflectionMethod(StructureDebugTest::class, 'setUp');
-$setUp->setAccessible(true);
+\TestReflectionHelper::makeAccessible($setUp);
 $structureProperty = new ReflectionProperty(StructureTestBase::class, 'structure');
-$structureProperty->setAccessible(true);
+\TestReflectionHelper::makeAccessible($structureProperty);
 $returned = false;
 $output = '';
 $target = realpath(PATH_ADDONS . 'structure/mod.structure.php');
