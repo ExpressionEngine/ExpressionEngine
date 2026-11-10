@@ -1,6 +1,9 @@
 <?php
 
 // Shared by PHPUnit and the standalone suite, including exact PHP 7.2.5.
+defined('SYSPATH') || define('SYSPATH', dirname(__DIR__, 4) . '/');
+require_once dirname(__DIR__, 3) . '/ExpressionEngine/Boot/boot.common.php';
+
 $nativeHash = function ($object) {
     if (PHP_VERSION_ID < 80600) {
         return spl_object_hash($object);
@@ -120,6 +123,14 @@ return array(
         $second->storeSafely('key', 'second');
         compatibility_assert('first', $first->retrieveSafely('key'));
         compatibility_assert('second', $second->retrieveSafely('key'));
+    },
+    'Invalid file paths retain false results' => function () {
+        require_once BASEPATH . 'helpers/file_helper.php';
+        foreach (array('read_file', 'get_file_info', 'delete_files') as $function) {
+            compatibility_assert(false, $function(__FILE__ . "\0suffix"));
+        }
+        compatibility_assert(file_get_contents(__FILE__), read_file(__FILE__));
+        compatibility_assert(basename(__FILE__), get_file_info(__FILE__)['name']);
     },
     'IDNA constructor preserves option initialization' => function () {
         require_once BASEPATH . 'libraries/simplepie/idn/idna_convert.class.php';

@@ -109,7 +109,7 @@ class Pro_search_words
             isset($rules[$lang])
         ) {
             $this->_rules = $rules[$lang];
-        } elseif (file_exists($file)) {
+        } elseif (file_exists_safe($file)) {
             // Check our own location
             $this->_rules = include $file;
         } else {
@@ -168,7 +168,7 @@ class Pro_search_words
 
         $ok = false; // Initiate cache value
 
-        if (file_exists($file)) {
+        if (file_exists_safe($file)) {
             include $file;
 
             if (class_exists($class) && is_callable(array($class, $method))) {

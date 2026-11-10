@@ -363,7 +363,7 @@ class Set
      */
     private function load()
     {
-        if (! file_exists($this->path . '/channel_set.json')) {
+        if (! file_exists_safe($this->path . '/channel_set.json')) {
             $this->result->addError(lang('channel_set_invalid'));
 
             return;

@@ -54,7 +54,7 @@ class ValidPassword extends ValidationRule
         if (ee()->config->item('allow_dictionary_pw') != 'y') {
             $file = !empty(ee()->config->item('name_of_dictionary_file')) ? ee()->config->item('name_of_dictionary_file') : 'dictionary.txt';
             $path = reduce_double_slashes(PATH_DICT . $file);
-            if (file_exists($path)) {
+            if (file_exists_safe($path)) {
                 $word_file = file($path);
                 foreach ($word_file as $word) {
                     if (trim(strtolower($word)) == $lc_pass) {

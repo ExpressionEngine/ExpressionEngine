@@ -46,7 +46,7 @@ if (! function_exists('create_captcha')) {
             return false;
         }
 
-        if (! @is_dir($img_path)) {
+        if (strpos((string) $img_path, "\0") !== false || ! @is_dir($img_path)) {
             return false;
         }
 
@@ -157,7 +157,7 @@ if (! function_exists('create_captcha')) {
         //  Write the text
         // -----------------------------------
 
-        $use_font = ($font_path != '' and file_exists($font_path) and function_exists('imagettftext')) ? true : false;
+        $use_font = ($font_path != '' and file_exists_safe($font_path) and function_exists('imagettftext')) ? true : false;
 
         if ($use_font == false) {
             $font_size = 5;

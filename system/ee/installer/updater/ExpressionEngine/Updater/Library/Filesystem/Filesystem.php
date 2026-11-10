@@ -397,7 +397,7 @@ class Filesystem
     public function exists($path)
     {
         if ($path = $this->normalize($path)) {
-            return file_exists($path);
+            return file_exists_safe($path);
         }
 
         return false;
@@ -445,7 +445,9 @@ class Filesystem
      */
     public function isDir($path)
     {
-        return is_dir($this->normalize($path));
+        $path = $this->normalize($path);
+
+        return strpos((string) $path, "\0") === false && is_dir($path);
     }
 
     /**
@@ -456,7 +458,9 @@ class Filesystem
      */
     public function isFile($path)
     {
-        return is_file($this->normalize($path));
+        $path = $this->normalize($path);
+
+        return strpos((string) $path, "\0") === false && is_file($path);
     }
 
     /**
@@ -467,7 +471,9 @@ class Filesystem
      */
     public function isReadable($path)
     {
-        return is_readable($this->normalize($path));
+        $path = $this->normalize($path);
+
+        return strpos((string) $path, "\0") === false && is_readable($path);
     }
 
     /**
@@ -491,9 +497,14 @@ class Filesystem
      */
     public function isWritable($path)
     {
+        $path = $this->normalize($path);
+        if (strpos((string) $path, "\0") !== false) {
+            return false;
+        }
+
         // If we're on a Unix server with safe_mode off we call is_writable
         if (DIRECTORY_SEPARATOR == '/') {
-            return is_writable($this->normalize($path));
+            return is_writable($path);
         }
 
         // For windows servers and safe_mode "on" installations we'll actually

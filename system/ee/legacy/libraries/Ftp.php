@@ -200,7 +200,7 @@ class EE_FTP
             return false;
         }
 
-        if (! file_exists($locpath)) {
+        if (! file_exists_safe($locpath)) {
             $this->_error('ftp_no_source_file');
 
             return false;

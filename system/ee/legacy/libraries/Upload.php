@@ -817,7 +817,7 @@ class EE_Upload
     {
         $file = $this->file_temp;
 
-        if (filesize($file) == 0) {
+        if (strpos((string) $file, "\0") !== false || filesize($file) == 0) {
             return false;
         }
 
@@ -878,7 +878,7 @@ class EE_Upload
     {
         $file = $this->file_temp;
 
-        if (filesize($file) == 0) {
+        if (strpos((string) $file, "\0") !== false || filesize($file) == 0) {
             return false;
         }
 

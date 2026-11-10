@@ -44,7 +44,7 @@ class EE_Cache_file extends CI_Driver
     {
         $key = $this->_namespaced_key($key, $scope);
 
-        if (! file_exists($this->_cache_path . $key)) {
+        if (! file_exists_safe($this->_cache_path . $key)) {
             return false;
         }
 
@@ -85,6 +85,9 @@ class EE_Cache_file extends CI_Driver
 
         // Build file path to this key
         $path = $this->_cache_path . $key;
+        if (strpos($path, "\0") !== false) {
+            return false;
+        }
 
         // Remove the cache item name to get the path by looking backwards
         // for the directory separator
@@ -136,6 +139,10 @@ class EE_Cache_file extends CI_Driver
     public function delete($key, $scope = Cache::LOCAL_SCOPE)
     {
         $path = $this->_cache_path . $this->_namespaced_key($key, $scope);
+
+        if (strpos($path, "\0") !== false) {
+            return false;
+        }
 
         // If we are deleting contents of a namespace
         if (strrpos($key, Cache::NAMESPACE_SEPARATOR, strlen($key) - 1) !== false) {
@@ -204,7 +211,7 @@ class EE_Cache_file extends CI_Driver
     {
         $key = $this->_namespaced_key($key, $scope);
 
-        if (! file_exists($this->_cache_path . $key)) {
+        if (! file_exists_safe($this->_cache_path . $key)) {
             return false;
         }
 
@@ -247,7 +254,7 @@ class EE_Cache_file extends CI_Driver
     public function is_writable($key, $scope = Cache::LOCAL_SCOPE)
     {
         $path = $this->_cache_path . $this->_namespaced_key($key, $scope);
-        return is_really_writable($path);
+        return strpos($path, "\0") === false && is_really_writable($path);
     }
 
     /**

@@ -985,7 +985,7 @@ class EE_Form_validation
         $file = !empty(ee()->config->item('name_of_dictionary_file')) ? ee()->config->item('name_of_dictionary_file') : 'dictionary.txt';
         $path = reduce_double_slashes(PATH_DICT . $file);
 
-        if (! file_exists($path)) {
+        if (! file_exists_safe($path)) {
             return false;
         }
 

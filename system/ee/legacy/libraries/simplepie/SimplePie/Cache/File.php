@@ -101,6 +101,10 @@ class SimplePie_Cache_File implements SimplePie_Cache_Base
      */
     public function save($data)
     {
+        if (strpos($this->name, "\0") !== false) {
+            return false;
+        }
+
         if (file_exists($this->name) && is_writeable($this->name) || file_exists($this->location) && is_writeable($this->location)) {
             if ($data instanceof SimplePie) {
                 $data = $data->data;
@@ -121,6 +125,10 @@ class SimplePie_Cache_File implements SimplePie_Cache_Base
      */
     public function load()
     {
+        if (strpos($this->name, "\0") !== false) {
+            return false;
+        }
+
         if (file_exists($this->name) && is_readable($this->name)) {
             return unserialize(file_get_contents($this->name));
         }
@@ -135,6 +143,10 @@ class SimplePie_Cache_File implements SimplePie_Cache_Base
      */
     public function mtime()
     {
+        if (strpos($this->name, "\0") !== false) {
+            return false;
+        }
+
         return @filemtime($this->name);
     }
 
@@ -145,6 +157,10 @@ class SimplePie_Cache_File implements SimplePie_Cache_Base
      */
     public function touch()
     {
+        if (strpos($this->name, "\0") !== false) {
+            return false;
+        }
+
         return @touch($this->name);
     }
 
@@ -155,6 +171,10 @@ class SimplePie_Cache_File implements SimplePie_Cache_Base
      */
     public function unlink()
     {
+        if (strpos($this->name, "\0") !== false) {
+            return false;
+        }
+
         if (file_exists($this->name)) {
             return unlink($this->name);
         }

@@ -40,6 +40,14 @@ namespace {
         }
     }
 
+    // Stand-in for the shared bootstrap helper in isolated installer fixtures.
+    if (! function_exists('file_exists_safe')) {
+        function file_exists_safe($path)
+        {
+            return file_exists($path);
+        }
+    }
+
     if (! function_exists('is_really_writable')) {
         function is_really_writable($path)
         {

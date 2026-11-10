@@ -1010,7 +1010,7 @@ class EE_Image_lib
             return false;
         }
 
-        if ($this->wm_use_truetype == true and ! file_exists($this->wm_font_path)) {
+        if ($this->wm_use_truetype == true and ! file_exists_safe($this->wm_font_path)) {
             $this->set_error('imglib_missing_font');
 
             return false;
@@ -1431,7 +1431,7 @@ class EE_Image_lib
             $path = $this->full_src_path;
         }
 
-        if (! file_exists($path)) {
+        if (! file_exists_safe($path)) {
             $this->set_error('imglib_invalid_path');
 
             return false;

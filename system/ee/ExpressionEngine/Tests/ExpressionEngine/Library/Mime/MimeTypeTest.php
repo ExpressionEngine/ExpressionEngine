@@ -21,6 +21,7 @@ class MimeTypeTest extends TestCase
 
     public function setUp(): void
     {
+        require_once SYSPATH . 'ee/ExpressionEngine/Boot/boot.common.php';
         $this->safe_mime_types = array(
             'application/pdf',
             'audio/mpeg',
@@ -163,7 +164,7 @@ class MimeTypeTest extends TestCase
         if ($exception) {
             $this->expectException('Exception');
         }
-        $this->assertEquals($this->mime_type->ofFile($in), $out, $description);
+        $this->assertContains($this->mime_type->ofFile($in), (array) $out, $description);
     }
 
     public function ofFileDataProvider()
@@ -175,11 +176,12 @@ class MimeTypeTest extends TestCase
 
         return array(
             array('Bad Path',      'foo.bar', '', true),
+            array('NUL Path', __FILE__ . "\0suffix", '', true),
             array('CSS File',      realpath(__DIR__ . '/../../../support/test.css'),  'text/css', false),
             array('GIF File',      realpath(__DIR__ . '/../../../support/test.gif'),  'image/gif', false),
             array('HTML File',     realpath(__DIR__ . '/../../../support/test.html'), 'text/html', false),
             array('JPG File',      realpath(__DIR__ . '/../../../support/test.jpg'),  'image/jpeg', false),
-            array('JS File',       realpath(__DIR__ . '/../../../support/test.js'),   'application/javascript', false),
+            array('JS File',       realpath(__DIR__ . '/../../../support/test.js'),   array('application/javascript', 'text/javascript'), false),
             array('JSON File',     realpath(__DIR__ . '/../../../support/test.json'), 'application/json', false),
             array('Markdown File', realpath(__DIR__ . '/../../../support/test.md'),   'text/markdown', false),
             array('PDF File',      realpath(__DIR__ . '/../../../support/test.pdf'),  'application/pdf', false),

@@ -89,6 +89,7 @@ class Captcha
 
         if ($img_path == '' or
             $img_url == '' or
+            strpos((string) $img_path, "\0") !== false or
             ! @is_dir($img_path) or
             ! is_really_writable($img_path) or
             ! extension_loaded('gd')) {
