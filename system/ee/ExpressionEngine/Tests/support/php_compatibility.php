@@ -28,6 +28,7 @@ spl_autoload_register(function ($class) use ($eeRoot) {
     }
 });
 
+require BASEPATH . 'helpers/text_helper.php';
 require BASEPATH . 'libraries/Image_lib.php';
 
 class CompatibilityCurl extends ExpressionEngine\Library\Curl\Request {}
@@ -61,6 +62,24 @@ $cases['Missing and present file dimensions'] = function () {
     $column = new ExpressionEngine\Library\CP\FileManager\Columns\Dimensions('dimensions');
     compatibility_assert('', $column->renderTableCell(null, null, (object) array('file_hw_original' => null)));
     compatibility_assert('640x480', $column->renderTableCell(null, null, (object) array('file_hw_original' => '480 640')));
+};
+$cases['Unicode entities and named-entity preservation'] = function () {
+    $examples = array(
+        '&#0;' => "\0", '&#127;' => "\x7f", '&#128;' => "\xc2\x80",
+        '&#2047;' => "\xdf\xbf", '&#2048;' => "\xe0\xa0\x80",
+        '&#55295;' => "\xed\x9f\xbf", '&#57344;' => "\xee\x80\x80",
+        '&#65535;' => "\xef\xbf\xbf", '&#65536;' => "\xf0\x90\x80\x80",
+        '&#128512;' => "\xf0\x9f\x98\x80", '&#131072;' => "\xf0\xa0\x80\x80",
+        '&#1114111;' => "\xf4\x8f\xbf\xbf", '&#55296;' => '&#55296;',
+        '&#57343;' => '&#57343;', '&#1114112;' => '&#1114112;',
+        '&#999999999999999999999999;' => '&#999999999999999999999999;',
+        '&#0000131072;' => "\xf0\xa0\x80\x80",
+    );
+    foreach ($examples as $input => $expected) {
+        compatibility_assert($expected, entities_to_ascii($input));
+    }
+    compatibility_assert('&amp;A', entities_to_ascii('&amp;&#65;', false));
+    compatibility_assert('&A', entities_to_ascii('&amp;&#65;', true));
 };
 $cases['Pro Search nullable result keys'] = function () use ($eeRoot) {
     require $eeRoot . '/ExpressionEngine/Addons/pro_search/helpers/pro_search_helper.php';
