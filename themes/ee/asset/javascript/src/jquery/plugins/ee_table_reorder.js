@@ -85,6 +85,7 @@ $.fn.eeTableReorder = function(params) {
 						$helper.addClass('ee-table-reorder-helper--flex');
 					} else {
 						$helper.css({
+							position: 'absolute',
 							display: 'table',
 							tableLayout: 'fixed'
 						});
