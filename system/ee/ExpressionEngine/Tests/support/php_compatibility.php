@@ -100,6 +100,20 @@ $cases['Pro Search optional prefixes'] = function () {
     compatibility_assert(array('id' => '10'), pro_array_get_prefixed($params, 'form_', true));
     compatibility_assert(array('id' => 'zero'), pro_array_get_prefixed($params, '0', true));
 };
+$cases['Channel Form missing field and entry data'] = function () use ($eeRoot) {
+    if (!defined('PATH_ADDONS')) {
+        define('PATH_ADDONS', $eeRoot . '/ExpressionEngine/Addons/');
+    }
+    require_once PATH_ADDONS . 'channel/libraries/channel_form/Channel_form_lib.php';
+    $form = (new ReflectionClass('Channel_form_lib'))->newInstanceWithoutConstructor();
+    $form->custom_fields = array();
+    compatibility_assert(array(), $form->get_field_options('unknown_field'));
+    $form->channel = (object) array('deft_category' => 7);
+    foreach (array(null, false) as $entry) {
+        $form->entry = $entry;
+        compatibility_assert(array(), $form->get_selected_cats());
+    }
+};
 $cases['Unsaved channel field settings and handler'] = function () {
     require_once BASEPATH . 'libraries/Api.php';
     require_once BASEPATH . 'libraries/api/Api_channel_fields.php';

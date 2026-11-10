@@ -89,17 +89,17 @@ class ChannelFormLibGetSelectedCatsTest extends ChannelFormLibTestBase
 
     public function testGetSelectedCatsReturnsEmptyArrayWhenNoEntrySet()
     {
-        $this->channelFormLib->entry = null;
-
-        // This test expects the method to handle null entry gracefully
-        // The current implementation tries to access entry_id on null
+        $this->channelFormLib->channel = $this->createMockChannel(['deft_category' => 7]);
+        set_error_handler(function ($severity, $message, $file, $line) {
+            throw new \ErrorException($message, 0, $severity, $file, $line);
+        });
         try {
-            $result = $this->channelFormLib->get_selected_cats();
-            $this->assertEquals([], $result);
-        } catch (Throwable $e) {
-            // If an exception is thrown due to null entry, that's acceptable
-            // This documents the current behavior limitation
-            $this->assertTrue(true);
+            foreach ([null, false] as $entry) {
+                $this->channelFormLib->entry = $entry;
+                $this->assertSame([], $this->channelFormLib->get_selected_cats());
+            }
+        } finally {
+            restore_error_handler();
         }
     }
 }
