@@ -4,6 +4,95 @@ require_once __DIR__ . '/ChannelTestBase.php';
 
 class ChannelBuildSqlQueryTest extends ChannelTestBase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->setMock('db', new class extends FakeDb {
+            public $queries = [];
+            public $hiddenFieldRows = [];
+            private $table;
+
+            public function query($sql)
+            {
+                $this->queries[] = $sql;
+                return parent::query($sql);
+            }
+
+            public function from($table)
+            {
+                $this->table = $table;
+                return parent::from($table);
+            }
+
+            public function get($table = null)
+            {
+                $entryRows = $this->rows;
+                if (($table ?: $this->table) === 'channel_entry_hidden_fields') {
+                    $this->rows = $this->hiddenFieldRows;
+                }
+
+                try {
+                    // Apply filters and reset query conditions for either table.
+                    return parent::get($table);
+                } finally {
+                    $this->rows = $entryRows;
+                    $this->table = null;
+                }
+            }
+        });
+    }
+
+    public function testBuildSqlQueryLoadsHiddenFieldsForSelectedEntries()
+    {
+        $entries = [
+            ['entry_id' => 1, 'channel_id' => 1],
+            ['entry_id' => 2, 'channel_id' => 1],
+            ['entry_id' => 3, 'channel_id' => 1],
+        ];
+        $this->setDbRows($entries);
+        ee()->db->hiddenFieldRows = [
+            ['entry_id' => 1, 'field_id' => 101],
+            ['entry_id' => 1, 'field_id' => 102],
+            ['entry_id' => 2, 'field_id' => 201],
+            ['entry_id' => 99, 'field_id' => 999],
+        ];
+
+        $this->channel->build_sql_query();
+
+        $this->assertSame([1 => [101, 102], 2 => [201]], $this->channel->hidden_fields);
+        $this->assertSame($entries, ee()->db->rows);
+    }
+
+    public function testHiddenFieldQueriesDoNotAffectFollowingQueries()
+    {
+        $entries = [
+            ['entry_id' => 1, 'channel_id' => 1],
+            ['entry_id' => 2, 'channel_id' => 1],
+        ];
+        $hiddenFields = [
+            ['entry_id' => 1, 'field_id' => 101],
+            ['entry_id' => 1, 'field_id' => 102],
+            ['entry_id' => 2, 'field_id' => 201],
+        ];
+        $db = ee()->db;
+        $this->setDbRows($entries);
+
+        foreach ([[], $hiddenFields] as $rows) {
+            $db->hiddenFieldRows = $rows;
+            $result = $db->select('entry_id, field_id')
+                ->from('channel_entry_hidden_fields')
+                ->where('entry_id', 1)
+                ->where_in('field_id', [101, 102])
+                ->limit(1)
+                ->get();
+
+            $this->assertSame($rows ? [$hiddenFields[0]] : [], $result->result_array());
+            $this->assertSame($entries, $db->from('channel_titles')->get()->result_array());
+            $this->assertSame($rows, $db->get('channel_entry_hidden_fields')->result_array());
+            $this->assertSame($entries, $db->rows);
+        }
+    }
+
     public function testBuildSqlQueryReturnsEmptyStringWhenNoSql()
     {
         // Set sql to empty
@@ -518,19 +607,11 @@ class ChannelBuildSqlQueryTest extends ChannelTestBase
             ['entry_id' => 1, 'channel_id' => 1, 'title' => 'Test Entry', 'entry_date' => time()]
         ]);
 
-        // The build_sql_query method may fail due to database mock limitations
-        try {
-            $result = $this->channel->build_sql_query();
-            $this->assertEquals('', $result);
-            $this->assertIsString($this->channel->sql);
-            // Should include category group filtering in SQL
-            // NOTE: Current implementation may not generate expected SQL with empty data
-            // This appears to be a limitation of the test setup
-            $this->assertStringContainsString('exp_category_posts', $this->channel->sql);
-        } catch (Throwable $e) {
-            // Accept exceptions due to mock limitations
-            $this->assertTrue(true);
-        }
+        $result = $this->channel->build_sql_query();
+        $this->assertEquals('', $result);
+        $this->assertIsString($this->channel->sql);
+        $this->assertNotEmpty($this->channel->sql);
+        $this->assertStringContainsString('exp_category_posts', implode("\n", ee()->db->queries));
     }
 
     public function testHandlesShowPagesOnlyLogic()
@@ -594,9 +675,8 @@ class ChannelBuildSqlQueryTest extends ChannelTestBase
         $this->channel->sql = '';
         $this->channel->query_string = 'sample-article'; // Set a query string to trigger SQL generation
         $this->setTemplateParams(['orderby' => 'custom_field']);
-        // Set up mock database rows for categories and entries to prevent early returns
+        // Return the entry selected by the query.
         $this->setDbRows([
-            ['cat_id' => '5', 'cat_url_title' => 'sample-category'],
             ['entry_id' => '123', 'url_title' => 'sample-article', 'channel_id' => '1', 'count' => '1']
         ]);
 
@@ -627,17 +707,10 @@ class ChannelBuildSqlQueryTest extends ChannelTestBase
             }
         });
 
-        // Test that the method completes without throwing an exception
-        // Custom field ordering is a complex feature that requires extensive mocking
-        try {
-            $result = $this->channel->build_sql_query();
-            $this->assertEquals('', $result);
-            $this->assertIsString($this->channel->sql);
-        } catch (Throwable $e) {
-            // If an exception occurs, it's likely due to mock limitations
-            // The important thing is that the method was called with custom field ordering
-            $this->assertTrue(true, 'Custom field ordering test completed (mock limitations may cause exceptions)');
-        }
+        $result = $this->channel->build_sql_query();
+        $this->assertEquals('', $result);
+        $this->assertIsString($this->channel->sql);
+        $this->assertNotEmpty($this->channel->sql);
     }
 
     // ===== SQL CONSTRUCTION TESTS =====
@@ -645,26 +718,17 @@ class ChannelBuildSqlQueryTest extends ChannelTestBase
     public function testBuildsDistinctQueries()
     {
         $this->channel->sql = '';
-        $this->setTemplateParams(['category' => 'news']);
-        // Set up mock database rows for category lookup
+        $this->setTemplateParams(['category' => '1']);
+        // Return an entry matching the category filter.
         $this->setDbRows([
-            ['cat_id' => '1', 'cat_url_title' => 'news']
+            ['entry_id' => 1, 'channel_id' => 1]
         ]);
 
-        // Test that the method completes without error when categories are involved
-        // DISTINCT behavior depends on complex database conditions that may not be
-        // fully reproducible in our test environment
-        try {
-            $result = $this->channel->build_sql_query();
-            $this->assertEquals('', $result);
-            $this->assertIsString($this->channel->sql);
-
-            // Check that SQL was generated (basic functionality test)
-            $this->assertNotEmpty($this->channel->sql);
-        } catch (Throwable $e) {
-            // If an exception occurs, it's likely due to mock limitations
-            $this->assertTrue(true, 'Distinct query test completed (mock limitations may cause exceptions)');
-        }
+        $result = $this->channel->build_sql_query();
+        $this->assertEquals('', $result);
+        $this->assertIsString($this->channel->sql);
+        $this->assertNotEmpty($this->channel->sql);
+        $this->assertStringContainsString('DISTINCT(t.entry_id)', $this->channel->sql);
     }
 
     public function testHandlesMultipleJoins()
@@ -672,28 +736,17 @@ class ChannelBuildSqlQueryTest extends ChannelTestBase
         $this->channel->sql = '';
         $this->setTemplateParams([
             'orderby' => 'username',
-            'category' => 'news'
+            'category' => '1'
         ]);
-        // Set up mock database rows for category and member lookup
+        // Return an entry matching the category and member joins.
         $this->setDbRows([
-            ['cat_id' => '1', 'cat_url_title' => 'news'],
-            ['member_id' => '1', 'username' => 'testuser']
+            ['entry_id' => 1, 'channel_id' => 1],
         ]);
 
-        // Test that the method completes without error when multiple joins are needed
-        // Multiple JOIN behavior depends on complex database conditions that may not be
-        // fully reproducible in our test environment
-        try {
-            $result = $this->channel->build_sql_query();
-            $this->assertEquals('', $result);
-            $this->assertIsString($this->channel->sql);
-
-            // Check that SQL was generated (basic functionality test)
-            $this->assertNotEmpty($this->channel->sql);
-        } catch (Throwable $e) {
-            // If an exception occurs, it's likely due to mock limitations
-            $this->assertTrue(true, 'Multiple joins test completed (mock limitations may cause exceptions)');
-        }
+        $result = $this->channel->build_sql_query();
+        $this->assertEquals('', $result);
+        $this->assertIsString($this->channel->sql);
+        $this->assertNotEmpty($this->channel->sql);
     }
 
     public function testAppliesDateFiltersCorrectly()
@@ -710,19 +763,10 @@ class ChannelBuildSqlQueryTest extends ChannelTestBase
             ['entry_id' => '123', 'url_title' => 'sample-article', 'channel_id' => '1', 'count' => '1']
         ]);
 
-        // Test that the method completes without throwing an exception
-        // Date filtering is a complex feature that requires extensive mocking
-        try {
-            $result = $this->channel->build_sql_query();
-            $this->assertEquals('', $result);
-            $this->assertIsString($this->channel->sql);
-
-            // Check that SQL was generated (basic functionality test)
-            $this->assertNotEmpty($this->channel->sql);
-        } catch (Throwable $e) {
-            // If an exception occurs, it's likely due to mock limitations
-            $this->assertTrue(true, 'Date filtering test completed (mock limitations may cause exceptions)');
-        }
+        $result = $this->channel->build_sql_query();
+        $this->assertEquals('', $result);
+        $this->assertIsString($this->channel->sql);
+        $this->assertNotEmpty($this->channel->sql);
     }
 
     public function testHandlesStickyEntryFiltering()
@@ -735,19 +779,10 @@ class ChannelBuildSqlQueryTest extends ChannelTestBase
             ['entry_id' => '123', 'url_title' => 'sample-article', 'channel_id' => '1', 'count' => '1']
         ]);
 
-        // Test that the method completes without throwing an exception
-        // Sticky entry filtering is a complex feature that requires extensive mocking
-        try {
-            $result = $this->channel->build_sql_query();
-            $this->assertEquals('', $result);
-            $this->assertIsString($this->channel->sql);
-
-            // Check that SQL was generated (basic functionality test)
-            $this->assertNotEmpty($this->channel->sql);
-        } catch (Throwable $e) {
-            // If an exception occurs, it's likely due to mock limitations
-            $this->assertTrue(true, 'Sticky entry filtering test completed (mock limitations may cause exceptions)');
-        }
+        $result = $this->channel->build_sql_query();
+        $this->assertEquals('', $result);
+        $this->assertIsString($this->channel->sql);
+        $this->assertNotEmpty($this->channel->sql);
     }
 
     // ===== EDGE CASES AND ERROR HANDLING =====
@@ -933,19 +968,10 @@ class ChannelBuildSqlQueryTest extends ChannelTestBase
             ['entry_id' => '123', 'url_title' => 'sample-article', 'channel_id' => '1', 'count' => '1']
         ]);
 
-        // Test that the method completes without throwing an exception
-        // Random ordering is a complex feature that requires extensive mocking
-        try {
-            $result = $this->channel->build_sql_query();
-            $this->assertEquals('', $result);
-            $this->assertIsString($this->channel->sql);
-
-            // Check that SQL was generated (basic functionality test)
-            $this->assertNotEmpty($this->channel->sql);
-        } catch (Throwable $e) {
-            // If an exception occurs, it's likely due to mock limitations
-            $this->assertTrue(true, 'Random ordering test completed (mock limitations may cause exceptions)');
-        }
+        $result = $this->channel->build_sql_query();
+        $this->assertEquals('', $result);
+        $this->assertIsString($this->channel->sql);
+        $this->assertNotEmpty($this->channel->sql);
     }
 
     public function testHandlesMultipleOrderingFields()
