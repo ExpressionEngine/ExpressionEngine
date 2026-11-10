@@ -1211,7 +1211,7 @@ class Channels extends AbstractChannelsController
                             'type' => 'radio',
                             'choices' => $author_list,
                             'filter_url' => ee('CP/URL')->make('channels/author-list')->compile(),
-                            'value' => isset($author_list[$channel_form->default_author])
+                            'value' => isset($author_list[$channel_form->default_author ?? ''])
                                 ? $channel_form->default_author
                                 : null,
                             'no_results' => [
