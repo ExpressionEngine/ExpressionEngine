@@ -199,6 +199,9 @@ if (function_exists('imagejpeg') && function_exists('imagettftext')) {
 $cases['Protected sidebar properties'] = function () {
     compatibility_assert('Route', (new CompatibilitySidebar())->readTitle());
 };
+$cases['File iterator class loading'] = function () {
+    compatibility_assert(true, class_exists('ExpressionEngine\\Service\\File\\Iterator'));
+};
 $cases['XML success and failure cleanup'] = function () {
     $parser = new CompatibilityXml();
     compatibility_assert(true, $parser->parse_into_struct('<root><item>value</item></root>'));

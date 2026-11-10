@@ -30,7 +30,7 @@ class Link
 
         $base = ee('CP/URL')->make('')->compile();
 
-        if (is_a($url, 'ExpressionEngine\Library\CP\URL')) {
+        if ($url instanceof \ExpressionEngine\Library\CP\URL) {
             $url = $url->compile();
         } elseif (strpos($url, '://') === false && strpos($url, $base) !== 0) {
             $url = ee('CP/URL')->make($url)->compile();
