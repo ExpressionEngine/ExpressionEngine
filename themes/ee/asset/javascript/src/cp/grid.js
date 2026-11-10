@@ -1067,6 +1067,7 @@ $(document).ready(function () {
 			$(this).parents('tr').find('td:not(.grid-field__item-fieldset)').each(function() {
 				$(this).show();
 			});
+			updateGridAutoLayout($(this).closest('.grid-field'));
 		}
 
 		return false;
@@ -1097,6 +1098,7 @@ $(document).ready(function () {
 		// Hide the dropdown menu
 		$('.js-dropdown-toggle.dropdown-open').trigger('click');
 
+		updateGridAutoLayout($(this).closest('.grid-field'));
 		return false;
 	});
 });

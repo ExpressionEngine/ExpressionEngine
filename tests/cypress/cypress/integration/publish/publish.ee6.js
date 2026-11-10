@@ -568,7 +568,11 @@ context('Publish Entry', () => {
           // A scrollbar-sized gain must not switch back and restart the loop.
           cy.wait(500)
           cy.get('@autoLayoutGrid').should('have.class', 'overwidth')
+          cy.get('@autoLayoutGrid').find('.js-toggle-grid-item:visible').first().click()
           cy.then(() => { container.style.width = '940px' })
+          cy.wait(500)
+          cy.get('@autoLayoutGrid').should('have.class', 'overwidth')
+          cy.get('@autoLayoutGrid').find('.js-toggle-grid-item:visible').first().click()
           cy.get('@autoLayoutGrid').should('not.have.class', 'overwidth')
           cy.then(() => { container.style.width = '880px' })
           cy.get('@autoLayoutGrid').should('have.class', 'overwidth')
