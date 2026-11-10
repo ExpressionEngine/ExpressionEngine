@@ -56,12 +56,12 @@ $(document).ready(function () {
 
 	if (EE.publish.which == 'edit') {
 		var urlTitleInput = publishForm.find("input[name=url_title]").not('[readonly], :disabled');
-		urlTitleInput.parent().css('position', 'relative');
+		urlTitleInput.wrap('<div class="url-title-input-group"></div>');
 		urlTitleInput.after('<button type="button" class="js-update-url-title" title="'+EE.lang.update_url_title+'" aria-label="'+EE.lang.update_url_title+'"><i class="fa-light fa-rotate-right" aria-hidden="true"></i></button>');
 
 		var structureUrlInput = publishForm.find("input[name=structure__uri]").not('[readonly], :disabled');
 		if (structureUrlInput.length) {
-			structureUrlInput.parent().css('position', 'relative');
+			structureUrlInput.wrap('<div class="url-title-input-group"></div>');
 			structureUrlInput.after('<button type="button" class="js-update-url-title" title="'+EE.lang.update_structure_url+'" aria-label="'+EE.lang.update_structure_url+'"><i class="fa-light fa-rotate-right" aria-hidden="true"></i></button>');
 		}
 

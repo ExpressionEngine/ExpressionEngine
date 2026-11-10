@@ -28726,19 +28726,32 @@ input[type=button].btn-block {
   margin-right: -15px;
   font-size: 0;
 }
+.panel-body__publish .url-title-input-group {
+  display: flex;
+}
+.panel-body__publish .url-title-input-group > input {
+  flex: 1;
+  min-width: 0;
+  border-start-end-radius: 0;
+  border-end-end-radius: 0;
+}
 .panel-body__publish .js-update-url-title {
-  position: absolute;
-  right: 15px;
-  top: 0;
-  width: 15px;
-  height: 100%;
+  flex: 0 0 42px;
   display: flex;
   align-items: center;
+  justify-content: center;
   cursor: pointer;
   padding: 0;
-  border: 0;
-  background: transparent;
-  color: inherit;
+  margin-inline-start: -1px;
+  border: 1px solid var(--ee-button-default-border);
+  border-start-end-radius: 5px;
+  border-end-end-radius: 5px;
+  background-color: var(--ee-button-default-bg);
+  color: var(--ee-button-default-color);
+}
+.panel-body__publish .js-update-url-title:hover {
+  background-color: var(--ee-button-default-hover-bg);
+  border-color: var(--ee-button-default-hover-border);
 }
 .panel-body__publish .js-update-url-title:focus {
   outline: none;
@@ -46180,19 +46193,32 @@ tr.missing .ee-debugger td:not(.reorder-col):first-child:before,
   margin-right: -15px;
   font-size: 0;
 }
+.ee-debugger .panel-body__publish .url-title-input-group {
+  display: flex;
+}
+.ee-debugger .panel-body__publish .url-title-input-group > input {
+  flex: 1;
+  min-width: 0;
+  border-start-end-radius: 0;
+  border-end-end-radius: 0;
+}
 .ee-debugger .panel-body__publish .js-update-url-title {
-  position: absolute;
-  right: 15px;
-  top: 0;
-  width: 15px;
-  height: 100%;
+  flex: 0 0 42px;
   display: flex;
   align-items: center;
+  justify-content: center;
   cursor: pointer;
   padding: 0;
-  border: 0;
-  background: transparent;
-  color: inherit;
+  margin-inline-start: -1px;
+  border: 1px solid var(--ee-button-default-border);
+  border-start-end-radius: 5px;
+  border-end-end-radius: 5px;
+  background-color: var(--ee-button-default-bg);
+  color: var(--ee-button-default-color);
+}
+.ee-debugger .panel-body__publish .js-update-url-title:hover {
+  background-color: var(--ee-button-default-hover-bg);
+  border-color: var(--ee-button-default-hover-border);
 }
 .ee-debugger .panel-body__publish .js-update-url-title:focus {
   outline: none;
