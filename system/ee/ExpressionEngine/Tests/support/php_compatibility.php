@@ -222,6 +222,21 @@ $cases['SimplePie relative URL normalization'] = function () {
     $iri = new SimplePie_IRI('http://example.test:80/feed');
     compatibility_assert('http://example.test/feed', $iri->get_iri());
 };
+$cases['Patched dependency declarations'] = function () {
+    foreach (array(
+        'League\\Flysystem\\FileExistsException', 'League\\Flysystem\\FileNotFoundException',
+        'League\\Flysystem\\Cached\\Storage\\PhpRedis', 'League\\Flysystem\\Cached\\Storage\\Predis',
+    ) as $class) {
+        compatibility_assert(true, class_exists('ExpressionEngine\\Dependency\\' . $class));
+    }
+};
+if (extension_loaded('ftp')) {
+    $cases['FTP adapter compilation'] = function () {
+        compatibility_assert(true, class_exists('ExpressionEngine\\Dependency\\League\\Flysystem\\Adapter\\Ftp'));
+    };
+} else {
+    $skipped[] = 'FTP adapter (ftp extension unavailable; covered by lint)';
+}
 if (extension_loaded('curl')) {
     $cases['Curl request and callback'] = function () use ($temporary) {
         $path = $temporary . '/response.txt';
@@ -248,8 +263,17 @@ if (extension_loaded('gd')) {
             compatibility_assert($operation === 'resize' || $operation === 'crop' ? 10 : 20, $size[0]);
         }
     };
+    $cases['GD QR rendering and object release'] = function () {
+        $renderer = new ExpressionEngine\Dependency\BaconQrCode\Renderer\GDLibRenderer(120);
+        $writer = new ExpressionEngine\Dependency\BaconQrCode\Writer($renderer);
+        foreach (array('first', 'second') as $value) {
+            $png = $writer->writeString($value);
+            compatibility_assert("\x89PNG\r\n\x1a\n", substr($png, 0, 8));
+            compatibility_assert(120, getimagesizefromstring($png)[0]);
+        }
+    };
 } else {
-    $skipped[] = 'Image processing (gd extension unavailable)';
+    $skipped[] = 'Image and QR processing (gd extension unavailable)';
 }
 if (extension_loaded('pdo_mysql')) {
     $cases['Custom PDO options before connection'] = function () {

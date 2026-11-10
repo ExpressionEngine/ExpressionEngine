@@ -113,6 +113,14 @@ return array(
             $first->clearSharedStore();
         }
     },
+    'Flysystem storage isolates live objects' => function () {
+        $first = new ExpressionEngine\Dependency\League\Flysystem\SafeStorage();
+        $second = new ExpressionEngine\Dependency\League\Flysystem\SafeStorage();
+        $first->storeSafely('key', 'first');
+        $second->storeSafely('key', 'second');
+        compatibility_assert('first', $first->retrieveSafely('key'));
+        compatibility_assert('second', $second->retrieveSafely('key'));
+    },
     'IDNA constructor preserves option initialization' => function () {
         require_once BASEPATH . 'libraries/simplepie/idn/idna_convert.class.php';
         $idna = new idna_convert(array('encoding' => 'utf8', 'strict' => true));
