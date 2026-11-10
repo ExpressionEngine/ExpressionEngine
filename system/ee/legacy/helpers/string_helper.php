@@ -35,7 +35,7 @@ if (! defined('BASEPATH')) {
 if (! function_exists('trim_slashes')) {
     function trim_slashes($str)
     {
-        return trim($str, '/');
+        return trim((string) $str, '/');
     }
 }
 
@@ -130,7 +130,7 @@ if (! function_exists('ee_html_escape')) {
 if (! function_exists('reduce_double_slashes')) {
     function reduce_double_slashes($str)
     {
-        return preg_replace("#([^/:])/+#", "\\1/", $str);
+        return preg_replace("#([^/:])/+#", "\\1/", $str ?? '');
     }
 }
 
@@ -154,7 +154,7 @@ if (! function_exists('reduce_double_slashes')) {
 if (! function_exists('reduce_multiples')) {
     function reduce_multiples($str, $character = ',', $trim = false)
     {
-        $str = preg_replace('#' . preg_quote($character, '#') . '{2,}#', $character, $str);
+        $str = preg_replace('#' . preg_quote($character, '#') . '{2,}#', $character, $str ?? '');
 
         if ($trim === true) {
             $str = trim($str, $character);
@@ -263,7 +263,7 @@ if (! function_exists('alternator')) {
 if (! function_exists('repeater')) {
     function repeater($data, $num = 1)
     {
-        return (($num > 0) ? str_repeat($data, $num) : '');
+        return (($num > 0) ? str_repeat((string) $data, $num) : '');
     }
 }
 

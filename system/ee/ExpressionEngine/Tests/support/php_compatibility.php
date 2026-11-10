@@ -43,6 +43,98 @@ $temporary = sys_get_temp_dir() . '/ee-php-compatibility-' . uniqid();
 mkdir($temporary);
 $cases = array();
 $skipped = array();
+$cases['Nullable string and size helpers'] = function () {
+    require_once BASEPATH . 'helpers/string_helper.php';
+    require_once BASEPATH . 'helpers/number_helper.php';
+    compatibility_assert('', trim_slashes(null));
+    compatibility_assert('example', trim_slashes('/example/'));
+    compatibility_assert('', repeater(null, 3));
+    compatibility_assert('000', repeater('0', 3));
+    compatibility_assert('', reduce_double_slashes(null));
+    compatibility_assert(array('a/b', 'c/d'), reduce_double_slashes(array('a//b', 'c///d')));
+    compatibility_assert('', reduce_multiples(null));
+    compatibility_assert(array('a,b', 'c,d'), reduce_multiples(array('a,,b', 'c,,,d')));
+    compatibility_assert(0, get_bytes(null));
+    compatibility_assert(1048576, get_bytes('1M'));
+};
+$cases['Missing and present file dimensions'] = function () {
+    $column = new ExpressionEngine\Library\CP\FileManager\Columns\Dimensions('dimensions');
+    compatibility_assert('', $column->renderTableCell(null, null, (object) array('file_hw_original' => null)));
+    compatibility_assert('640x480', $column->renderTableCell(null, null, (object) array('file_hw_original' => '480 640')));
+};
+$cases['Pro Search nullable result keys'] = function () use ($eeRoot) {
+    require $eeRoot . '/ExpressionEngine/Addons/pro_search/helpers/pro_search_helper.php';
+    $rows = array(array('id' => null, 'value' => 'first'), array('id' => null, 'value' => 'last'), array('id' => 0, 'value' => 'zero'));
+    compatibility_assert(array('' => 'last', 0 => 'zero'), pro_flatten_results($rows, 'value', 'id'));
+    compatibility_assert(array('' => $rows[0], 0 => $rows[2]), pro_associate_results($rows, 'id'));
+};
+$cases['Pro Search missing result key preserves its diagnostic'] = function () {
+    $diagnostics = array();
+    set_error_handler(function ($severity, $message) use (&$diagnostics) {
+        $diagnostics[] = array($severity, $message);
+        return true;
+    });
+    try {
+        $result = pro_flatten_results(array(array('value' => 'alpha')), 'value', 'id');
+    } finally {
+        restore_error_handler();
+    }
+    compatibility_assert(array('' => 'alpha'), $result);
+    compatibility_assert(array(array(
+        PHP_VERSION_ID < 80000 ? E_NOTICE : E_WARNING,
+        PHP_VERSION_ID < 80000 ? 'Undefined index: id' : 'Undefined array key "id"'
+    )), $diagnostics);
+};
+$cases['Pro Search nullable field-name arguments'] = function () {
+    $rows = array(array('' => 'first', 'value' => 0), array('' => 'last', 'value' => false));
+    compatibility_assert(array('first' => 0, 'last' => false), pro_flatten_results($rows, 'value', null));
+    compatibility_assert(array('first', 'last'), pro_flatten_results($rows, null));
+    compatibility_assert(array('first' => 'first', 'last' => 'last'), pro_flatten_results($rows, null, null));
+    compatibility_assert(array('first' => $rows[0], 'last' => $rows[1]), pro_associate_results($rows, null));
+};
+$cases['Pro Search optional prefixes'] = function () {
+    $params = array('form_id' => '10', '0id' => 'zero');
+    foreach (array(null, false, '') as $prefix) {
+        compatibility_assert(array(), pro_array_get_prefixed($params, $prefix, true));
+    }
+    compatibility_assert(array('id' => '10'), pro_array_get_prefixed($params, 'form_', true));
+    compatibility_assert(array('id' => 'zero'), pro_array_get_prefixed($params, '0', true));
+};
+$cases['Unsaved channel field settings and handler'] = function () {
+    require_once BASEPATH . 'libraries/Api.php';
+    require_once BASEPATH . 'libraries/api/Api_channel_fields.php';
+    $api = new Api_channel_fields();
+    $handler = new class {
+        public $config;
+        public function _init($config) { $this->config = $config; }
+    };
+    $api->field_types['compatibility'] = $handler;
+    $api->global_settings = array('compatibility' => array());
+    foreach (array(null, 0, 7, 'member_field_2') as $id) {
+        $settings = array('field_type' => 'compatibility', 'field_name' => 'test');
+        $api->set_settings($id, $settings);
+        compatibility_assert($settings, $api->get_settings($id));
+        compatibility_assert($handler, $api->setup_handler($id, true));
+        compatibility_assert($id, $handler->config['field_id']);
+    }
+    compatibility_assert(false, (new Api_channel_fields())->setup_handler(null, true));
+};
+$cases['Unsaved upload directory overrides'] = function () {
+    $directory = new class extends ExpressionEngine\Model\File\UploadDestination {
+        public function __construct() {}
+        public function configure($id, $overrides) { $this->id = $id; $this->_property_overrides = $overrides; }
+        public function originalId() { return $this->id; }
+    };
+    $fetch = new ReflectionMethod(ExpressionEngine\Model\File\UploadDestination::class, 'fetchOverride');
+    if (PHP_VERSION_ID < 80100) { $fetch->setAccessible(true); }
+    foreach (array(null, 0, 7) as $id) {
+        $directory->configure($id, array());
+        compatibility_assert('default', $fetch->invoke($directory, 'name', 'default', true));
+        $directory->configure($id, array(($id ?? '') => array('name' => 'override')));
+        compatibility_assert('override', $fetch->invoke($directory, 'name', 'default', true));
+        compatibility_assert($id, $directory->originalId());
+    }
+};
 if (function_exists('imagejpeg') && function_exists('imagettftext')) {
     $cases['Legacy CAPTCHA bitmap and TrueType geometry'] = function () use ($temporary) {
         require_once BASEPATH . 'helpers/captcha_helper.php';

@@ -3,6 +3,7 @@
 namespace ExpressionEngine\Tests\legacy\Libraries;
 
 use ExpressionEngine\Library\Captcha;
+use ExpressionEngine\Library\CP\FileManager\Columns\Dimensions;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -17,8 +18,11 @@ class PhpCompatibilityBackportTest extends TestCase
     protected function setUp(): void
     {
         require_once SYSPATH . 'ee/ExpressionEngine/Boot/boot.common.php';
+        require_once BASEPATH . 'helpers/string_helper.php';
+        require_once BASEPATH . 'helpers/number_helper.php';
         require_once BASEPATH . 'helpers/captcha_helper.php';
         require_once BASEPATH . 'libraries/Image_lib.php';
+        require_once PATH_ADDONS . 'grid/libraries/Grid_lib.php';
         ee()->resetMocks();
         $this->reporting = error_reporting(E_ALL);
         set_error_handler(function ($severity, $message, $file, $line) {
@@ -39,6 +43,37 @@ class PhpCompatibilityBackportTest extends TestCase
                 unlink($file);
             }
             rmdir($this->directory);
+        }
+    }
+
+    /** @dataProvider helperValues */
+    public function testHelpersPreserveNullScalarAndArrayResults($function, array $arguments, $expected)
+    {
+        $this->assertSame($expected, call_user_func_array($function, $arguments));
+    }
+
+    public function helperValues()
+    {
+        return [
+            ['trim_slashes', [null], ''],
+            ['trim_slashes', ['/example/'], 'example'],
+            ['repeater', [null, 3], ''],
+            ['repeater', ['0', 3], '000'],
+            ['reduce_double_slashes', [null], ''],
+            ['reduce_double_slashes', [['a//b', 'c///d']], ['a/b', 'c/d']],
+            ['reduce_multiples', [null], ''],
+            ['reduce_multiples', [['a,,b', 'c,,,d']], ['a,b', 'c,d']],
+            ['get_bytes', [null], 0],
+            ['get_bytes', ['1M'], 1048576],
+            ['get_bytes', [-1], -1],
+        ];
+    }
+
+    public function testFileDimensionsPreserveMissingAndPresentValues()
+    {
+        $column = new Dimensions('dimensions');
+        foreach ([[null, ''], ['', ''], ['480 640', '640x480']] as list($value, $expected)) {
+            $this->assertSame($expected, $column->renderTableCell(null, null, (object) ['file_hw_original' => $value]));
         }
     }
 
@@ -107,6 +142,22 @@ class PhpCompatibilityBackportTest extends TestCase
         $this->assertSame([2, 2], [imagesx($image), imagesy($image)]);
         $this->assertSame(127, imagecolorsforindex($image, imagecolorat($image, 0, 0))['alpha']);
         if (PHP_VERSION_ID < 80000) { imagedestroy($image); }
+    }
+
+    public function testGridPreservesEmptyNamedAndMissingValidationKeys()
+    {
+        ee()->setMock('grid_parser', new class {
+            public function instantiate_fieldtype(...$arguments) {}
+            public function call($method, $settings) { return $settings; }
+        });
+        $grid = new class extends \Grid_lib {
+            public function __construct() { $this->error_objects = ['' => 'default', 'column' => 'named']; }
+            protected function _view_for_col_settings($type, $settings, $id = null, $errors = null) { return $errors; }
+        };
+        $this->assertSame('default', $grid->get_settings_form('text'));
+        $this->assertSame('default', $grid->get_settings_form('text', ''));
+        $this->assertSame('named', $grid->get_settings_form('text', 'column'));
+        $this->assertNull($grid->get_settings_form('text', 'missing'));
     }
 
     private function temporaryDirectory()
