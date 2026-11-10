@@ -27,6 +27,7 @@ class DBConfig extends ConfigWithDefaults
         'password' => '',
         'database' => '',
         'dbdriver' => 'mysqli',
+        // PHP 8.6 persistent connections require MySQL 5.7.3+ or MariaDB 10.2.4+.
         'pconnect' => false,
         'dbprefix' => 'exp_',
         'swap_pre' => 'exp_',

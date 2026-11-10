@@ -31,6 +31,7 @@ spl_autoload_register(function ($class) use ($eeRoot) {
 require BASEPATH . 'helpers/text_helper.php';
 require BASEPATH . 'libraries/Xmlparser.php';
 require BASEPATH . 'libraries/Image_lib.php';
+require BASEPATH . 'database/drivers/mysqli/mysqli_connection.php';
 
 class CompatibilityCurl extends ExpressionEngine\Library\Curl\Request {}
 class CompatibilityXml extends EE_XMLparser { public function __construct() {} }
@@ -249,6 +250,25 @@ if (extension_loaded('gd')) {
     };
 } else {
     $skipped[] = 'Image processing (gd extension unavailable)';
+}
+if (extension_loaded('pdo_mysql')) {
+    $cases['Custom PDO options before connection'] = function () {
+        $config = array('hostname' => '127.0.0.1', 'username' => 'audit', 'password' => '', 'database' => 'audit', 'char_set' => 'utf8mb4', 'pconnect' => false, 'dbcollat' => 'utf8mb4_unicode_ci', 'port' => 1,
+            'MYSQL_ATTR_INIT_COMMAND' => 'SET NAMES utf8mb4', 'MYSQL_ATTR_SSL_VERIFY_SERVER_CERT' => false, 'MYSQL_ATTR_COMPRESS' => false);
+        try {
+            (new CI_DB_mysqli_connection($config))->open();
+        } catch (PDOException $e) {
+            return; // No server is needed: option evaluation must be warning-free.
+        }
+        throw new RuntimeException('Expected unused local port to refuse connection');
+    };
+    $cases['SimplePie MySQL cache option before connection'] = function () {
+        require_once BASEPATH . 'libraries/simplepie/SimplePieAutoloader.php';
+        $cache = new SimplePie_Cache_MySQL('mysql://audit:@127.0.0.1:1/audit', 'audit', 'rss');
+        compatibility_assert(false, $cache->load());
+    };
+} else {
+    $skipped[] = 'MySQL options (pdo_mysql extension unavailable)';
 }
 if (extension_loaded('curl')) {
     $cases['HTTP query objects preserve public properties and scalar encoding'] = function () {

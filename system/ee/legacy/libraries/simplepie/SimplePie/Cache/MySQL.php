@@ -102,8 +102,12 @@ class SimplePie_Cache_MySQL extends SimplePie_Cache_DB
         // Path is prefixed with a "/"
         $this->options['dbname'] = substr($this->options['path'], 1);
 
+        $init_command = defined('Pdo\\Mysql::ATTR_INIT_COMMAND')
+            ? constant('Pdo\\Mysql::ATTR_INIT_COMMAND')
+            : PDO::MYSQL_ATTR_INIT_COMMAND;
+
         try {
-            $this->mysql = new PDO("mysql:dbname={$this->options['dbname']};host={$this->options['host']};port={$this->options['port']}", $this->options['user'], $this->options['pass'], array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
+            $this->mysql = new PDO("mysql:dbname={$this->options['dbname']};host={$this->options['host']};port={$this->options['port']}", $this->options['user'], $this->options['pass'], array($init_command => 'SET NAMES utf8'));
         } catch (PDOException $e) {
             $this->mysql = null;
 
