@@ -87,7 +87,10 @@ class MysqliDriverTest extends TestCase
      */
     public function testEngineAndNumericVersion($rawVersion, $engine, $numericVersion): void
     {
-        $this->driver->serverVersion = $rawVersion;
+        $native = $this->createMock(PDO::class);
+        $native->method('getAttribute')
+            ->willReturnMap([[PDO::ATTR_SERVER_VERSION, $rawVersion]]);
+        $this->connection->native = $native;
 
         $this->assertSame($engine, $this->driver->engine());
         $this->assertSame($numericVersion, $this->driver->version_number());
@@ -263,18 +266,18 @@ class MysqliDriverTest extends TestCase
 class MysqliDriverTestable extends CI_DB_mysqli_driver
 {
     public $connection;
-    public $serverVersion;
-
-    public function version()
-    {
-        return $this->serverVersion;
-    }
 }
 
 class MysqliDriverConnectionStub
 {
     public $lastQuery;
     public $closed = false;
+    public $native;
+
+    public function getNative()
+    {
+        return $this->native;
+    }
 
     public function query($sql)
     {

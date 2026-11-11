@@ -101,13 +101,14 @@ class CI_DB_mysqli_driver extends CI_DB
     }
 
     /**
-     * Database engine name, inferred from the server's reported version.
+     * Database engine name, inferred from connection metadata without a query.
      *
      * @return string mysql or mariadb, or an empty string if the version is unavailable
      */
     public function engine()
     {
-        $version = $this->version();
+        $native = $this->connection->getNative();
+        $version = $native ? $native->getAttribute(PDO::ATTR_SERVER_VERSION) : '';
 
         if (! is_string($version) || $version === '') {
             return '';
@@ -117,14 +118,15 @@ class CI_DB_mysqli_driver extends CI_DB
     }
 
     /**
-     * Database version as major.minor.patch, without vendor or build suffixes.
+     * Database version as major.minor.patch from connection metadata, without a query.
      * Use version() when the full server version string is needed.
      *
      * @return string The numeric version, or an empty string if it cannot be parsed
      */
     public function version_number()
     {
-        $version = $this->version();
+        $native = $this->connection->getNative();
+        $version = $native ? $native->getAttribute(PDO::ATTR_SERVER_VERSION) : '';
 
         if (! is_string($version)) {
             return '';
