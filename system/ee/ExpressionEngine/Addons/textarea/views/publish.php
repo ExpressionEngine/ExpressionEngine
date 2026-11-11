@@ -19,6 +19,10 @@ if (isset($settings['field_disabled']) && $settings['field_disabled'] == 'y') {
     $attributes['disabled'] = 'disabled';
 }
 
+if (isset($settings['field_placeholder']) && $settings['field_placeholder'] != '') {
+    $attributes['placeholder'] = $settings['field_placeholder'];
+}
+
 ?>
 <?=form_textarea($attributes);?>
 <?php if ($toolbar || (! $toolbar && isset($settings['field_show_fmt']) && $settings['field_show_fmt'] == 'y')): ?>
