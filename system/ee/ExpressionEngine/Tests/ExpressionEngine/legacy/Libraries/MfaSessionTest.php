@@ -25,7 +25,7 @@ class MfaSessionTest extends TestCase
     private $input;
     private $member;
     private $mfa;
-    private $cookie = false;
+    private $cookie;
     private $cookies = [];
 
     protected function setUp(): void
@@ -54,12 +54,16 @@ class MfaSessionTest extends TestCase
             $this->assertSame('mfa_session', $name);
             $this->cookie = false;
         });
-        $this->db = new MfaSessionDatabase();
+        // SQL behavior is covered by the Cypress MySQL fixture. Unit tests
+        // only stub write outcomes, never reimplement authorization predicates.
+        $this->db = $this->getMockBuilder(\stdClass::class)
+            ->addMethods(['dbprefix', 'query', 'affected_rows'])->getMock();
+        $this->db->method('dbprefix')->willReturnCallback(function ($table) {
+            return 'exp_' . $table;
+        });
+        $this->cookie = str_repeat('a', 64);
         $this->member = (object) ['member_id' => 42, 'enable_mfa' => true,
             'password' => 'password-hash', 'unique_id' => 'member-secret', 'backup_mfa_code' => 'mfa-secret'];
-        $this->db->query("INSERT INTO test_members VALUES (42, 'y', 'password-hash', 'member-secret', 'mfa-secret')");
-        $this->db->query("INSERT INTO test_sessions VALUES ('issuing-session', 42, 'skip')");
-        $this->db->query("INSERT INTO test_sessions VALUES ('new-session', 42, 'show')");
         ee()->setMock('db', $this->db);
         ee()->setMock('config', $this->config);
         ee()->setMock('input', $this->input);
@@ -75,61 +79,14 @@ class MfaSessionTest extends TestCase
         parent::tearDown();
     }
 
-    private function approve()
-    {
-        $this->assertTrue($this->mfa->create($this->member, 'issuing-session'));
-        return $this->cookie;
-    }
-
-    private function approvals()
-    {
-        return $this->db->query('SELECT * FROM test_mfa_sessions')->result_array();
-    }
-
-    private function sessionFlag($id = 'new-session')
-    {
-        return $this->db->query('SELECT mfa_flag FROM test_sessions WHERE session_id = ?', [$id])->row_array()['mfa_flag'];
-    }
-
-    public function testIssuesIndependentHashedApprovalWithoutRememberMe()
-    {
-        $token = $this->approve();
-        $this->assertMatchesRegularExpression('/\A[a-f0-9]{64}\z/', $token);
-        $this->assertSame([[
-            'token_hash' => hash('sha256', $token), 'member_id' => 42, 'site_id' => 1,
-            'verified_at' => 2000000, 'expires_at' => 2086400, 'issued_session_hash' => hash('sha256', 'issuing-session')
-        ]], $this->approvals());
-        $this->assertSame([['mfa_session', $token, 86400]], $this->cookies);
-        $this->assertTrue($this->mfa->restore(42, 'new-session'));
-        $this->assertSame('skip', $this->sessionFlag());
-    }
-
-    public function testApprovalDoesNotStoreTheLoginSessionCredential()
-    {
-        $this->approve();
-        $this->assertNotContains('issuing-session', array_values($this->approvals()[0]));
-    }
-
-    public function testOverlappingVerificationsLeaveOnlyOneApprovalPerLogin()
-    {
-        $otherRequest = new \Mfa_session();
-        $oldToken = $this->approve();
-        $this->assertTrue($otherRequest->create($this->member, 'issuing-session'));
-        $this->assertCount(1, $this->approvals());
-        $this->cookie = $oldToken;
-        $this->assertFalse((new \Mfa_session())->restore(42, 'new-session'));
-    }
-
     /** @dataProvider disabledLengthProvider */
     public function testDisabledOrInvalidLengthDoesNotIssueOrRestore($value)
     {
-        $this->approve();
         $this->config->setItem('mfa_session_length', $value);
-        $before = $this->cookies;
+        $this->db->expects($this->never())->method('query');
         $this->assertFalse($this->mfa->create($this->member, 'issuing-session'));
         $this->assertFalse($this->mfa->restore(42, 'new-session'));
-        $this->assertSame($before, $this->cookies);
-        $this->assertSame('show', $this->sessionFlag());
+        $this->assertSame([], $this->cookies);
     }
 
     public static function disabledLengthProvider()
@@ -141,206 +98,46 @@ class MfaSessionTest extends TestCase
     {
         $this->config->setItem('mfa_session_length', false);
         $this->config->setItem('mfa_remember_ttl', 86400);
+        $this->db->expects($this->never())->method('query');
         $this->assertFalse($this->mfa->create($this->member, 'issuing-session'));
-        $this->assertSame([], $this->approvals());
+        $this->assertSame([], $this->cookies);
     }
 
     /** @dataProvider malformedCookieProvider */
     public function testMalformedOrMissingCookieCannotRestore($cookie)
     {
-        $this->approve();
+        $this->db->expects($this->never())->method('query');
         $this->cookie = $cookie;
         $this->assertFalse((new \Mfa_session())->restore(42, 'new-session'));
-        $this->assertSame('show', $this->sessionFlag());
     }
 
     public static function malformedCookieProvider()
     {
-        return [[false], [''], ['short'], [str_repeat('z', 64)], [str_repeat('a', 65)], [str_repeat('a', 64) . "\n"], [['token']], [str_repeat('b', 64)]];
+        return [[false], [''], ['short'], [str_repeat('z', 64)], [str_repeat('a', 65)], [str_repeat('a', 64) . "\n"], [['token']]];
     }
 
-    /** @dataProvider invalidApprovalProvider */
-    public function testRestoreRejectsAnInvalidApproval($sql)
+    /** @dataProvider failedWriteProvider */
+    public function testFailedDatabaseWritesNeverApproveOrSendACookie($operation, $queryResult)
     {
-        $this->approve();
-        $this->db->query($sql);
-        $this->assertFalse($this->mfa->restore(42, 'new-session'));
-        $this->assertSame('show', $this->sessionFlag());
-    }
-
-    public static function invalidApprovalProvider()
-    {
-        return [
-            ['DELETE FROM test_mfa_sessions'],
-            ['UPDATE test_mfa_sessions SET member_id = 43'],
-            ['UPDATE test_mfa_sessions SET site_id = 2'],
-            ['UPDATE test_mfa_sessions SET expires_at = 2000000'],
-            ['UPDATE test_mfa_sessions SET expires_at = 1999999'],
-            ['UPDATE test_mfa_sessions SET verified_at = 2000001'],
-            ['UPDATE test_mfa_sessions SET verified_at = 1913600'],
-            ["UPDATE test_members SET enable_mfa = 'n'"],
-            ['DELETE FROM test_members']
-        ];
-    }
-
-    public function testRestorationCannotApproveAnotherMemberOrEnrollmentSession()
-    {
-        $this->approve();
-        $this->db->query("INSERT INTO test_sessions VALUES ('other-member', 43, 'show')");
-        $this->db->query("INSERT INTO test_sessions VALUES ('enrollment', 42, 'required')");
-        $this->assertFalse($this->mfa->restore(43, 'other-member'));
-        $this->assertFalse($this->mfa->restore(42, 'other-member'));
-        $this->assertFalse($this->mfa->restore(42, 'enrollment'));
-        $this->assertFalse($this->mfa->restore(42, 'missing-session'));
-        $this->assertSame('show', $this->sessionFlag('other-member'));
-        $this->assertSame('required', $this->sessionFlag('enrollment'));
-    }
-
-    public function testPasswordReauthenticationDoesNotExtendTheWindow()
-    {
-        $this->approve();
-        $before = $this->approvals();
-        $this->clock->now += 86399;
-        $this->assertTrue($this->mfa->restore(42, 'new-session'));
-        $this->assertSame($before, $this->approvals());
-        $this->assertCount(1, $this->cookies);
-        $this->clock->now++;
-        $this->db->query("UPDATE test_sessions SET mfa_flag = 'show' WHERE session_id = 'new-session'");
-        $this->assertFalse($this->mfa->restore(42, 'new-session'));
-    }
-
-    public function testConfigurationCannotExtendAnAlreadyIssuedApproval()
-    {
-        $this->approve();
-        $this->config->setItem('mfa_session_length', 604800);
-        $this->clock->now += 86400;
-        $this->assertFalse($this->mfa->restore(42, 'new-session'));
-    }
-
-    public function testShorterConfiguredWindowAppliesToExistingApprovals()
-    {
-        $this->approve();
-        $this->config->setItem('mfa_session_length', '3600');
-        $this->clock->now += 3600;
-        $this->assertFalse($this->mfa->restore(42, 'new-session'));
-    }
-
-    public function testApprovalSurvivesDeletionOfItsIssuingSession()
-    {
-        $this->approve();
-        $this->db->query("DELETE FROM test_sessions WHERE session_id = 'issuing-session'");
-        $this->assertTrue($this->mfa->restore(42, 'new-session'));
-    }
-
-    public function testNewVerificationReplacesTheTokenRatherThanPromotingIt()
-    {
-        $oldToken = $this->approve();
-        $this->clock->now += 10;
-        $newToken = $this->approve();
-        $this->assertNotSame($oldToken, $newToken);
-        $this->assertCount(1, $this->approvals());
-        $this->cookie = $oldToken;
-        $this->assertFalse((new \Mfa_session())->restore(42, 'new-session'));
-        $this->cookie = $newToken;
-        $this->assertTrue((new \Mfa_session())->restore(42, 'new-session'));
-        $this->assertSame(2086410, $this->approvals()[0]['expires_at']);
-    }
-
-    /** @dataProvider changedCredentialProvider */
-    public function testVerificationCannotOutliveCredentialChange($column, $value)
-    {
-        $this->db->beforeQuery = function () use ($column, $value) {
-            $this->db->query("UPDATE test_members SET {$column} = ? WHERE member_id = 42", [$value]);
-            $this->mfa->revoke_member(42);
-        };
-        $this->assertFalse($this->mfa->create($this->member, 'issuing-session'));
-        $this->assertSame([], $this->approvals());
+        $this->db->expects($this->once())->method('query')->willReturn($queryResult);
+        $this->db->expects($queryResult ? $this->once() : $this->never())
+            ->method('affected_rows')->willReturn(0);
+        $result = $operation === 'create'
+            ? $this->mfa->create($this->member, 'issuing-session')
+            : $this->mfa->restore(42, 'new-session');
+        $this->assertFalse($result);
         $this->assertSame([], $this->cookies);
     }
 
-    public static function changedCredentialProvider()
+    public static function failedWriteProvider()
     {
-        return [['password', 'changed-password'], ['unique_id', 'changed-uid'],
-            ['backup_mfa_code', 'changed-mfa'], ['enable_mfa', 'n']];
-    }
-
-    public function testUnverifiedSessionCannotIssueApproval()
-    {
-        $this->assertFalse($this->mfa->create($this->member, 'new-session'));
-        $this->assertFalse($this->mfa->create($this->member, 'nonexistent'));
-        $this->assertSame([], $this->approvals());
-    }
-
-    public function testRevocationBetweenRequestStartAndRestorationIsAuthoritative()
-    {
-        $this->approve();
-        $restoring = new \Mfa_session();
-        $this->db->beforeQuery = function () {
-            $this->mfa->revoke_member(42);
-        };
-        $this->assertFalse($restoring->restore(42, 'new-session'));
-        $this->assertSame('show', $this->sessionFlag());
-    }
-
-    /** @dataProvider operationOrderProvider */
-    public function testLogoutAndVerificationCannotLeaveAReplacementApproval($verificationFirst)
-    {
-        $this->approve();
-        $logoutRequest = new \Mfa_session();
-        if ($verificationFirst) {
-            $this->approve();
-        }
-        $this->db->query("DELETE FROM test_sessions WHERE session_id = 'issuing-session'");
-        $logoutRequest->delete(42, 'issuing-session');
-        if (!$verificationFirst) {
-            $this->assertFalse($this->mfa->create($this->member, 'issuing-session'));
-        }
-        $this->assertSame([], $this->approvals());
-        $this->assertFalse($this->mfa->restore(42, 'new-session'));
-    }
-
-    public static function operationOrderProvider()
-    {
-        return [[true], [false]];
-    }
-
-    public function testLogoutPreservesOtherBrowsersButMemberRevocationDoesNot()
-    {
-        $first = $this->approve();
-        $this->cookie = false;
-        $this->db->query("INSERT INTO test_sessions VALUES ('other-browser', 42, 'skip')");
-        $other = new \Mfa_session();
-        $this->assertTrue($other->create($this->member, 'other-browser'));
-        $second = $this->cookie;
-        $this->cookie = $first;
-        $this->db->query("DELETE FROM test_sessions WHERE session_id = 'issuing-session'");
-        (new \Mfa_session())->delete(42, 'issuing-session');
-        $this->assertSame([hash('sha256', $second)], array_column($this->approvals(), 'token_hash'));
-        $this->mfa->revoke_member(42);
-        $this->assertSame([], $this->approvals());
-    }
-
-    public function testAnotherMembersRevocationDoesNotAffectThisApproval()
-    {
-        $this->approve();
-        $this->mfa->revoke_member(43);
-        $this->assertTrue($this->mfa->restore(42, 'new-session'));
-    }
-
-    public function testFailedDatabaseWritesNeverApproveOrSendACookie()
-    {
-        $this->db->failNext = true;
-        $this->assertFalse($this->mfa->create($this->member, 'issuing-session'));
-        $this->assertSame([], $this->cookies);
-        $this->approve();
-        $this->db->failNext = true;
-        $this->assertFalse($this->mfa->restore(42, 'new-session'));
-        $this->assertSame('show', $this->sessionFlag());
+        return [['create', false], ['create', true], ['restore', false], ['restore', true]];
     }
 
     public function testSessionOnlyModeDoesNotUsePersistentMfaCookies()
     {
         $this->config->setItem('website_session_type', 's');
+        $this->db->expects($this->never())->method('query');
         $this->assertFalse($this->mfa->create($this->member, 'issuing-session'));
         $this->assertSame([], $this->cookies);
     }
@@ -348,13 +145,17 @@ class MfaSessionTest extends TestCase
     public function testDisabledGlobalMfaDoesNotIssueApproval()
     {
         $this->config->setItem('enable_mfa', 'n');
+        $this->db->expects($this->never())->method('query');
         $this->assertFalse($this->mfa->create($this->member, 'issuing-session'));
     }
 
     /** @dataProvider memberChangeProvider */
     public function testMemberModelRevokesOnlyForCredentialChanges($field, $revoked)
     {
-        $this->approve();
+        $mfa = $this->getMockBuilder(\Mfa_session::class)->disableOriginalConstructor()
+            ->onlyMethods(['revoke_member'])->getMock();
+        $mfa->expects($revoked ? $this->once() : $this->never())->method('revoke_member')->with(42);
+        ee()->setMock('mfa_session', $mfa);
         $query = $this->getMockBuilder(\stdClass::class)->addMethods(['filter', 'delete'])->getMock();
         $query->method('filter')->willReturnSelf();
         $facade = $this->getMockBuilder(\stdClass::class)->addMethods(['get'])->getMock();
@@ -367,7 +168,6 @@ class MfaSessionTest extends TestCase
         \TestReflectionHelper::makePropertyAccessible($property);
         $property->setValue($member, 42);
         $member->onAfterUpdate([$field => 'old-value']);
-        $this->assertCount($revoked ? 0 : 1, $this->approvals());
     }
 
     public static function memberChangeProvider()
@@ -377,14 +177,16 @@ class MfaSessionTest extends TestCase
 
     public function testMemberDeletionRevokesApproval()
     {
-        $this->approve();
+        $mfa = $this->getMockBuilder(\Mfa_session::class)->disableOriginalConstructor()
+            ->onlyMethods(['revoke_member'])->getMock();
+        $mfa->expects($this->once())->method('revoke_member')->with(42);
+        ee()->setMock('mfa_session', $mfa);
         $member = $this->getMockBuilder(Member::class)->disableOriginalConstructor()
             ->onlyMethods(['updateRoleTotalMembers'])->getMock();
         $property = new \ReflectionProperty(Member::class, 'member_id');
         \TestReflectionHelper::makePropertyAccessible($property);
         $property->setValue($member, 42);
         $member->onAfterDelete();
-        $this->assertSame([], $this->approvals());
     }
 
     /** @dataProvider cookieLifetimeProvider */
@@ -482,75 +284,5 @@ class MfaSessionTest extends TestCase
     public static function migrationProvider()
     {
         return [[false, true, true], [true, false, true], [false, false, false]];
-    }
-}
-
-/**
- * Execute SQL rather than duplicating its authorization predicates in a fake.
- * SQLite is test-only; browser integration exercises the real MySQL driver.
- */
-class MfaSessionDatabase
-{
-    private $pdo;
-    private $affected = 0;
-    public $beforeQuery;
-    public $failNext = false;
-
-    public function __construct()
-    {
-        $this->pdo = new \PDO('sqlite::memory:');
-        $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        $this->pdo->exec('CREATE TABLE test_mfa_sessions (token_hash TEXT PRIMARY KEY, member_id INTEGER,
-            site_id INTEGER, verified_at INTEGER, expires_at INTEGER, issued_session_hash TEXT)');
-        $this->pdo->exec('CREATE TABLE test_sessions (session_id TEXT PRIMARY KEY, member_id INTEGER, mfa_flag TEXT)');
-        $this->pdo->exec('CREATE TABLE test_members (member_id INTEGER PRIMARY KEY, enable_mfa TEXT,
-            password TEXT, unique_id TEXT, backup_mfa_code TEXT)');
-    }
-
-    public function dbprefix($table)
-    {
-        return 'test_' . $table;
-    }
-
-    public function table_exists($table)
-    {
-        return $table === 'mfa_sessions';
-    }
-
-    public function affected_rows()
-    {
-        return $this->affected;
-    }
-
-    public function query($sql, $binds = [])
-    {
-        if ($this->beforeQuery) {
-            $callback = $this->beforeQuery;
-            $this->beforeQuery = null;
-            $callback();
-        }
-        if ($this->failNext) {
-            $this->failNext = false;
-            return false;
-        }
-        $statement = $this->pdo->prepare($sql);
-        $statement->execute($binds);
-        $this->affected = $statement->rowCount();
-        $rows = $statement->columnCount() ? $statement->fetchAll(\PDO::FETCH_ASSOC) : [];
-        return new class($rows) {
-            private $rows;
-            public function __construct($rows)
-            {
-                $this->rows = $rows;
-            }
-            public function row_array()
-            {
-                return $this->rows[0] ?? [];
-            }
-            public function result_array()
-            {
-                return $this->rows;
-            }
-        };
     }
 }

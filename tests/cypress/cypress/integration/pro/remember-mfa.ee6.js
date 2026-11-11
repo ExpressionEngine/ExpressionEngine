@@ -34,8 +34,56 @@ context('Independent MFA sessions', () => {
                 cy.clearCookie(cookie.name);
             });
         });
-        cy.task('db:query', `DELETE FROM exp_sessions WHERE member_id = ${memberId}`);
+        return cy.task('db:query', `DELETE FROM exp_sessions WHERE member_id = ${memberId}`);
     };
+
+    const ageSession = () => cy.task('db:query',
+        `SELECT session_id, fingerprint FROM exp_sessions WHERE member_id = ${memberId}`
+    ).then(([rows]) => {
+        expect(rows).to.have.length(1);
+        const session = rows[0];
+        expect(session.fingerprint).to.match(/^[a-f0-9]{32}$/);
+        cy.task('db:query', `UPDATE exp_sessions SET last_activity = 1 WHERE session_id = '${session.session_id}'`);
+        cy.getCookies().then(cookies => {
+            const cookie = cookies.find(item => item.name.endsWith('sessionid'));
+            expect(cookie, 'stale session cookie is retained').to.exist;
+            expect(cookie.value).to.eq(session.session_id);
+        });
+        return cy.task('db:query', `SELECT last_activity FROM exp_sessions WHERE session_id = '${session.session_id}'`)
+            .then(([aged]) => {
+                expect(aged).to.have.length(1);
+                expect(Number(aged[0].last_activity)).to.eq(1);
+                return session.fingerprint;
+            });
+    });
+
+    const openIdleModal = () => {
+        cy.intercept('POST', '**/authenticate*').as('unlock');
+        cy.intercept('GET', '**/refresh_csrf_token*').as('csrfRefresh');
+        cy.window().then(win => {
+            return win.jQuery.get(win.EE.BASE + '/login/lock_cp')
+                .then(() => win.EE.cp.broadcastEvents.modal());
+        });
+        cy.get('#idle-modal').should('be.visible');
+        // Finish the modal's pre-login token refresh before submitting it.
+        cy.get('#idle-modal form').trigger('interact');
+        cy.wait('@csrfRefresh').its('response.body.message').should('eq', 'refresh');
+    };
+
+    const submitUnlock = password => {
+        cy.get('#idle-modal').within(() => {
+            cy.get('input[name=password]').clear().type(password, { log: false });
+            cy.get('form').submit();
+        });
+        return cy.wait('@unlock');
+    };
+
+    const mfaApproval = () => cy.task('db:query',
+        `SELECT token_hash, verified_at, expires_at FROM exp_mfa_sessions WHERE member_id = ${memberId}`
+    ).then(([rows]) => {
+        expect(rows).to.have.length(1);
+        return rows[0];
+    });
 
     const verificationTime = () => cy.task('db:query',
         `SELECT verified_at FROM exp_mfa_sessions WHERE member_id = ${memberId} AND token_hash != REPEAT('c', 64)`
@@ -244,22 +292,57 @@ context('Independent MFA sessions', () => {
         cy.get('h1').should('contain', 'Getting to Know ExpressionEngine');
     });
 
-    it('reuses MFA in the real idle password-unlock modal', () => {
+    it('rejects an incorrect idle-unlock password before reusing valid MFA', () => {
         login(false);
         verifyCode();
-        verificationTime().then(verifiedAt => {
-            cy.window().then(win => {
-                cy.request({ url: win.EE.BASE + '/login/lock_cp', headers: { 'X-Requested-With': 'XMLHttpRequest' } });
-                win.EE.cp.broadcastEvents.modal();
-            });
-            cy.get('#idle-modal').should('be.visible').within(() => {
-                cy.get('input[name=password]').type(Cypress.env('USER_PASSWORD'), { log: false });
-                cy.get('form').submit();
-            });
+        mfaApproval().then(before => {
+            openIdleModal();
+            submitUnlock('incorrect-password').its('response.body.messageType').should('eq', 'failure');
+            cy.get('#idle-modal').should('be.visible');
+            cy.task('db:query', `SELECT session_id FROM exp_sessions WHERE member_id = ${memberId} AND admin_sess = 1`)
+                .then(([rows]) => expect(rows).to.have.length(0));
+            mfaApproval().should('deep.eq', before);
+
+            submitUnlock(Cypress.env('USER_PASSWORD')).its('response.body.messageType').should('eq', 'success');
+            cy.wait('@csrfRefresh').its('response.body.message').should('eq', 'refresh');
             cy.get('#idle-modal').should('not.be.visible');
             cy.visit('admin.php');
+            cy.get('.main-header__account').should('be.visible');
             cy.get('input[name=mfa_code]').should('not.exist');
-            verificationTime().should('eq', verifiedAt);
+            // Neither the failed nor successful password attempt renews MFA.
+            mfaApproval().should('deep.eq', before);
+        });
+    });
+
+    it('requires a new code when MFA expires while the idle-unlock popup is open', () => {
+        login(false);
+        verifyCode();
+        openIdleModal();
+        cy.task('db:query', `UPDATE exp_mfa_sessions SET expires_at = UNIX_TIMESTAMP() - 1 WHERE member_id = ${memberId}`);
+        mfaApproval().then(expired => {
+            submitUnlock(Cypress.env('USER_PASSWORD')).its('response.body.messageType').should('eq', 'success');
+            cy.wait('@csrfRefresh').its('response.body.message').should('eq', 'refresh');
+            cy.get('#idle-modal').should('not.be.visible');
+            cy.visit('admin.php');
+            cy.get('input[name=mfa_code]').should('be.visible');
+            cy.get('input[name=username]').should('not.exist');
+            mfaApproval().should('deep.eq', expired);
+
+            // Cypress can retain the old cookie after a response sets it twice
+            // (cypress-io/cypress#25495). Restore the browser's current cookie
+            // unchanged; direct Chrome testing needs no repair.
+            cy.getCookies().then(cookies => {
+                const { name, value, ...options } = cookies.find(cookie => cookie.name.endsWith('sessionid'));
+                cy.clearCookie(name);
+                cy.setCookie(name, value, options);
+            });
+            verifyCode();
+            cy.get('.main-header__account').should('be.visible');
+            mfaApproval().then(fresh => {
+                expect(fresh.token_hash).not.to.eq(expired.token_hash);
+                expect(Number(fresh.verified_at)).to.be.greaterThan(Number(expired.expires_at));
+                expect(Number(fresh.expires_at) - Number(fresh.verified_at)).to.eq(86400);
+            });
         });
     });
 
@@ -312,40 +395,64 @@ context('Independent MFA sessions', () => {
         cy.get('input[name=mfa_code]').should('be.visible');
     });
 
-    it('revokes the current MFA cookie on explicit logout', () => {
-        login(false);
-        verifyCode();
-        mfaCookie().then(before => {
-            cy.visit('admin.php?/cp/login/logout');
-            cy.getCookie(before.name).should('be.null');
-            cy.task('db:query', `SELECT * FROM exp_mfa_sessions WHERE member_id = ${memberId}`)
-                .then(([rows]) => expect(rows).to.have.length(0));
-            cy.setCookie(before.name, before.value);
-            login(false);
-            cy.get('input[name=mfa_code]').should('be.visible');
+    [false, true].forEach(remember => {
+        it(`revokes MFA on explicit logout with Remember me ${remember ? 'enabled' : 'disabled'}`, () => {
+            login(remember);
+            verifyCode();
+            cy.getCookies().then(cookies => {
+                expect(cookies.filter(cookie => cookie.name.endsWith('remember'))).to.have.length(remember ? 1 : 0);
+            });
+            mfaCookie().then(before => {
+                cy.visit('admin.php?/cp/login/logout');
+                cy.get('input[name=username]').should('be.visible');
+                cy.get('input[name=password]').should('be.visible');
+                cy.getCookie(before.name).should('be.null');
+                cy.getCookies().then(cookies => {
+                    expect(cookies.filter(cookie => cookie.name.endsWith('remember'))).to.have.length(0);
+                });
+                cy.task('db:query', `SELECT token_hash FROM exp_mfa_sessions WHERE member_id = ${memberId}`)
+                    .then(([rows]) => expect(rows).to.have.length(0));
+                cy.task('db:query', `SELECT member_id FROM exp_remember_me WHERE member_id = ${memberId}`)
+                    .then(([rows]) => expect(rows).to.have.length(0));
+                cy.setCookie(before.name, before.value);
+                login(false);
+                cy.get('input[name=mfa_code]').should('be.visible');
+            });
         });
     });
 
     ['CP', 'frontend'].forEach(entryPoint => {
-        it(`revokes MFA on ${entryPoint} logout after the login session expires`, () => {
-            login(false);
-            verifyCode();
-            seedOtherMfaSession();
-            mfaCookie().then(before => {
-                expireSession();
-                if (entryPoint === 'CP') {
-                    cy.visit('admin.php?/cp/login/logout');
-                } else {
-                    // Render a fresh logout form so the expired login's CSRF token is not reused.
-                    cy.visit('index.php/members/logout');
-                    cy.get('.result form').submit();
+        [false, true].forEach(retainStaleCookie => {
+            it(`revokes MFA on ${entryPoint} logout with ${retainStaleCookie ? 'an aged session and stale cookie' : 'a removed session'}`, () => {
+                if (retainStaleCookie) {
+                    // Database timestamps enforce expiry in cs mode. Retain the
+                    // matching cookie AND fingerprint so missing credentials do
+                    // not accidentally turn this into the removed-session case.
+                    cy.eeConfig({ item: 'cp_session_type', value: 'cs' });
+                    cy.eeConfig({ item: 'website_session_type', value: 'cs' });
                 }
-                cy.getCookie(before.name).should('be.null');
-                cy.task('db:query', `SELECT token_hash FROM exp_mfa_sessions WHERE member_id = ${memberId}`)
-                    .then(([rows]) => expect(rows.map(row => row.token_hash)).to.deep.eq(['c'.repeat(64)]));
-                cy.setCookie(before.name, before.value);
                 login(false);
-                cy.get('input[name=mfa_code]').should('be.visible');
+                verifyCode();
+                cy.get('.main-header__account').should('be.visible');
+                seedOtherMfaSession();
+                mfaCookie().then(before => {
+                    const expiry = retainStaleCookie ? ageSession() : expireSession();
+                    expiry.then(fingerprint => {
+                        if (entryPoint === 'CP') {
+                            cy.visit('admin.php?/cp/login/logout' + (retainStaleCookie ? `&S=${fingerprint}` : ''));
+                        } else {
+                            // Render a fresh logout form so the expired login's CSRF token is not reused.
+                            cy.visit('index.php/members/logout' + (retainStaleCookie ? `?S=${fingerprint}` : ''));
+                            cy.get('.result form').submit();
+                        }
+                        cy.getCookie(before.name).should('be.null');
+                        cy.task('db:query', `SELECT token_hash FROM exp_mfa_sessions WHERE member_id = ${memberId}`)
+                            .then(([rows]) => expect(rows.map(row => row.token_hash)).to.deep.eq(['c'.repeat(64)]));
+                        cy.setCookie(before.name, before.value);
+                        login(false);
+                        cy.get('input[name=mfa_code]').should('be.visible');
+                    });
+                });
             });
         });
     });
