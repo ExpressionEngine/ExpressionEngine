@@ -15,12 +15,13 @@
  */
 class Mfa_session
 {
-    private $cookie = 'mfa_session';
+    private $cookie;
     private $token;
 
     /** Read the incoming credential without caching its approval. */
     public function __construct()
     {
+        $this->cookie = 'mfa_session_' . (int) ee()->config->item('site_id');
         $token = ee()->input->cookie($this->cookie);
         $this->token = is_string($token) && preg_match('/\A[a-f0-9]{64}\z/', $token) ? $token : false;
     }
@@ -46,12 +47,13 @@ class Mfa_session
         $sessions = ee()->db->dbprefix('sessions');
         $members = ee()->db->dbprefix('members');
         $created = ee()->db->query("INSERT INTO {$approvals}
-            (token_hash, member_id, site_id, verified_at, expires_at, issued_session_hash)
-            SELECT ?, m.member_id, ?, ?, ?, ?
+            (token_hash, member_id, site_id, verified_at, expires_at, issued_session_hash, credential_hash)
+            SELECT ?, m.member_id, ?, ?, ?, ?,
+                SHA2(CONCAT(m.password, ':', m.unique_id, ':', m.backup_mfa_code), 256)
             FROM {$members} m JOIN {$sessions} s ON s.member_id = m.member_id
             WHERE m.member_id = ? AND s.session_id = ? AND s.mfa_flag = 'skip'
-                AND m.enable_mfa = 'y' AND m.password = ?
-                AND m.unique_id = ? AND m.backup_mfa_code = ?", [
+                AND m.enable_mfa = 'y' AND BINARY m.password = ?
+                AND BINARY m.unique_id = ? AND BINARY m.backup_mfa_code = ?", [
                 hash('sha256', $token), ee()->config->item('site_id'), $now, $now + $length,
                 hash('sha256', $session_id), $member->member_id, $session_id, $member->password,
                 $member->unique_id, $member->backup_mfa_code
@@ -61,14 +63,13 @@ class Mfa_session
             return false;
         }
 
-        // Replace both the previous cookie and any approval issued by an
-        // overlapping verification of this login. Old tokens never gain trust.
-        ee()->db->query("DELETE FROM {$approvals} WHERE member_id = ? AND site_id = ?
-            AND (token_hash = ? OR issued_session_hash = ?) AND token_hash != ?", [
-                $member->member_id, ee()->config->item('site_id'),
-                $this->token ? hash('sha256', $this->token) : '',
-                hash('sha256', $session_id), hash('sha256', $token)
-            ]);
+        // Replace only the incoming approval. Concurrent successful verifications
+        // each need a usable token regardless of response order. Logout still
+        // revokes all approvals created by this login via issued_session_hash.
+        ee()->db->query("DELETE FROM {$approvals} WHERE member_id = ? AND site_id = ? AND token_hash = ?", [
+            $member->member_id, ee()->config->item('site_id'),
+            $this->token ? hash('sha256', $this->token) : ''
+        ]);
         ee()->db->query("DELETE FROM {$approvals} WHERE expires_at <= ?", [$now]);
         $this->token = $token;
         ee()->input->set_cookie($this->cookie, $token, $length);
@@ -78,7 +79,8 @@ class Mfa_session
 
     /**
      * Restore MFA at an authentication boundary, never on ordinary activity.
-     * Approval and revocation are checked in the same write, without a cache.
+     * Approval, current credentials and revocation are checked in one write.
+     * Credential binding also covers the gap before the member revocation hook.
      *
      * @param int $member_id The authenticated member.
      * @param string $session_id The new password or remembered-login session.
@@ -102,6 +104,7 @@ class Mfa_session
                 WHERE a.token_hash = ? AND a.member_id = ? AND a.site_id = ?
                     AND a.expires_at > ? AND a.verified_at <= ? AND a.verified_at > ?
                     AND m.enable_mfa = 'y'
+                    AND a.credential_hash = SHA2(CONCAT(m.password, ':', m.unique_id, ':', m.backup_mfa_code), 256)
             )", [
                 $session_id, $member_id,
                 hash('sha256', $this->token), $member_id, ee()->config->item('site_id'),
@@ -123,9 +126,16 @@ class Mfa_session
     {
         if (ee()->db->table_exists('mfa_sessions')) {
             $table = ee()->db->dbprefix('mfa_sessions');
+            $token_hash = $this->token ? hash('sha256', $this->token) : '';
+            // The approval can outlive its issuing login. Recover that login's
+            // identity so logout also removes overlapping approvals after expiry.
+            $approval = $this->token ? ee()->db->select('member_id, issued_session_hash')
+                ->get_where('mfa_sessions', ['token_hash' => $token_hash])->row_array() : [];
             ee()->db->query("DELETE FROM {$table}
-                WHERE token_hash = ? OR (member_id = ? AND issued_session_hash = ?)", [
-                    $this->token ? hash('sha256', $this->token) : '', (int) $member_id, hash('sha256', (string) $session_id)
+                WHERE token_hash = ? OR (member_id = ? AND issued_session_hash = ?)
+                    OR (member_id = ? AND issued_session_hash = ?)", [
+                    $token_hash, (int) $member_id, hash('sha256', (string) $session_id),
+                    $approval['member_id'] ?? 0, $approval['issued_session_hash'] ?? ''
                 ]);
         }
         $this->token = false;

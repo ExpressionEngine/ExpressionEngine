@@ -145,10 +145,11 @@ class EE_Input
 
         // check the cookie setting for expiration date
         if (is_numeric($data['expire'])) {
-            $loadedCookieSettings = ee('CookieRegistry')->getCookieSettings($name);
+            $settings_name = \ExpressionEngine\Service\Consent\CookieRegistry::getCanonicalName($data['name']);
+            $loadedCookieSettings = ee('CookieRegistry')->getCookieSettings($settings_name);
             if (!empty($loadedCookieSettings)) {
                 if ($loadedCookieSettings['cookie_lifetime'] === null) {
-                    $cookieSettings = ee('Model')->get('CookieSetting')->filter('cookie_name', $name)->first();
+                    $cookieSettings = ee('Model')->get('CookieSetting')->filter('cookie_name', $settings_name)->first();
                     $cookieSettings->cookie_lifetime = $data['expire'];
                     $cookieSettings->save();
                     ee('CookieRegistry')->registerCookieSettings($cookieSettings);
@@ -156,7 +157,7 @@ class EE_Input
                     // MFA's default lifetime follows the current verification window.
                     // Still honor an administrator's explicit cookie lifetime override.
                     if (is_numeric($loadedCookieSettings['cookie_lifetime'])
-                        && ($data['name'] !== 'mfa_session' || $loadedCookieSettings['cookie_enforced_lifetime'] !== null)) {
+                        && ($settings_name !== 'mfa_session' || $loadedCookieSettings['cookie_enforced_lifetime'] !== null)) {
                         $data['expire'] = ($loadedCookieSettings['cookie_enforced_lifetime'] !== null) ? $loadedCookieSettings['cookie_enforced_lifetime'] : $loadedCookieSettings['cookie_lifetime'];
                     }
                 }
@@ -302,7 +303,7 @@ class EE_Input
         }
 
         // MFA approval is a server-only credential, scoped to this host.
-        if (isset($data['name']) && $data['name'] === 'mfa_session') {
+        if (isset($data['name']) && \ExpressionEngine\Service\Consent\CookieRegistry::getCanonicalName($data['name']) === 'mfa_session') {
             $data['httponly'] = true;
             $data['domain'] = '';
             $data['samesite'] = $data['samesite'] === 'Strict' ? 'Strict' : 'Lax';

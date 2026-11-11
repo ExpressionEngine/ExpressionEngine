@@ -18,9 +18,18 @@ context('Independent MFA sessions', () => {
         }
     };
 
+    const generateCode = secret => cy.then(() => {
+        // EE validates the current 30-second TOTP period without leeway. Do not
+        // generate a code just before it expires while the form is submitted.
+        const remaining = 30000 - (Date.now() % 30000);
+        if (remaining < 5000) {
+            cy.wait(remaining + 100);
+        }
+    }).then(() => cy.task('generateOTP', secret));
+
     const verifyCode = (code = backupCode) => {
         cy.exec(`cd support/fixtures && php base32.php --uid ${uniqueId} --code ${code}`).then(result => {
-            cy.task('generateOTP', result.stdout).then(token => {
+            generateCode(result.stdout).then(token => {
                 cy.get('input[name=mfa_code]').type(token);
                 cy.get('.button--primary').first().click();
             });
@@ -99,7 +108,7 @@ context('Independent MFA sessions', () => {
     `);
 
     const mfaCookie = () => cy.getCookies().then(cookies => {
-        const cookie = cookies.find(item => item.name.endsWith('mfa_session'));
+        const cookie = cookies.find(item => item.name.endsWith('mfa_session_1'));
         expect(cookie, 'independent MFA cookie').to.exist;
         return cookie;
     });
@@ -261,7 +270,7 @@ context('Independent MFA sessions', () => {
         cy.get('[data-toggle-for="enable_mfa"]').click();
         cy.get('input[name=backup_mfa_code]').invoke('val').then(code => {
             cy.exec(`cd support/fixtures && php base32.php --uid ${uniqueId} --code ${code}`).then(result => {
-                cy.task('generateOTP', result.stdout).then(token => {
+                generateCode(result.stdout).then(token => {
                     cy.get('input[name=mfa_code]').type(token);
                     cy.get('.button--primary').first().click();
                 });

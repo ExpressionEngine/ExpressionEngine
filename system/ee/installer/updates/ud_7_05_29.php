@@ -52,7 +52,8 @@ class Updater
                 'site_id' => ['type' => 'int', 'constraint' => 4, 'null' => false],
                 'verified_at' => ['type' => 'bigint', 'constraint' => 10, 'unsigned' => true, 'null' => false],
                 'expires_at' => ['type' => 'bigint', 'constraint' => 10, 'unsigned' => true, 'null' => false],
-                'issued_session_hash' => ['type' => 'char', 'constraint' => 64, 'null' => false]
+                'issued_session_hash' => ['type' => 'char', 'constraint' => 64, 'null' => false],
+                'credential_hash' => ['type' => 'char', 'constraint' => 64, 'null' => false, 'default' => '']
             ]);
             ee()->dbforge->add_key('token_hash', true);
             ee()->dbforge->add_key('member_id');

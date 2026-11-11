@@ -1580,6 +1580,7 @@ class EE_Schema
             verified_at bigint(10) unsigned NOT NULL,
             expires_at bigint(10) unsigned NOT NULL,
             issued_session_hash char(64) NOT NULL,
+            credential_hash char(64) NOT NULL DEFAULT '',
             PRIMARY KEY (token_hash),
             KEY member_id (member_id),
             KEY expires_at (expires_at)

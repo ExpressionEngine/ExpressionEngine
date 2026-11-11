@@ -43,15 +43,15 @@ class MfaSessionTest extends TestCase
         $this->config->setItem('site_id', 1);
         $this->input = $this->getMockBuilder(\stdClass::class)
             ->addMethods(['cookie', 'set_cookie', 'delete_cookie'])->getMock();
-        $this->input->method('cookie')->with('mfa_session')->willReturnCallback(function () {
-            return $this->cookie;
+        $this->input->method('cookie')->willReturnCallback(function ($name) {
+            return $name === 'mfa_session_1' ? $this->cookie : false;
         });
         $this->input->method('set_cookie')->willReturnCallback(function ($name, $value, $length) {
             $this->cookies[] = [$name, $value, $length];
             $this->cookie = $value;
         });
         $this->input->method('delete_cookie')->willReturnCallback(function ($name) {
-            $this->assertSame('mfa_session', $name);
+            $this->assertSame('mfa_session_1', $name);
             $this->cookie = false;
         });
         // SQL behavior is covered by the Cypress MySQL fixture. Unit tests
@@ -216,11 +216,14 @@ class MfaSessionTest extends TestCase
 
     public static function cookieLifetimeProvider()
     {
-        return [['mfa_session', null, 172800], ['mfa_session', 3600, 3600], ['ordinary', null, 86400]];
+        return [['mfa_session', null, 172800], ['mfa_session', 3600, 3600],
+            ['mfa_session_1', null, 172800], ['mfa_session_1', 3600, 3600],
+            ['mfa_session_27', null, 172800], ['mfa_session_27', 3600, 3600],
+            ['ordinary', null, 86400]];
     }
 
     /** @dataProvider cookiePolicyProvider */
-    public function testMfaCookiePolicyProtectsTheCredential($encrypted, $sameSite, $secure, $expectedSameSite)
+    public function testMfaCookiePolicyProtectsTheCredential($encrypted, $sameSite, $secure, $expectedSameSite, $name)
     {
         require_once BASEPATH . 'core/Input.php';
         $request = $this->getMockBuilder(\stdClass::class)->addMethods(['isEncrypted'])->getMock();
@@ -231,7 +234,7 @@ class MfaSessionTest extends TestCase
         $method = $reflection->getMethod('validateCookieData');
         \TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invoke($reflection->newInstanceWithoutConstructor(), [
-            'name' => 'mfa_session', 'domain' => '.example.test',
+            'name' => $name, 'domain' => '.example.test',
             'httponly' => false, 'secure_cookie' => $secure
         ]);
         $this->assertTrue($result['httponly']);
@@ -242,9 +245,35 @@ class MfaSessionTest extends TestCase
 
     public static function cookiePolicyProvider()
     {
-        return [[true, 'Lax', false, 'Lax'], [true, 'Strict', false, 'Strict'],
-            [true, 'None', false, 'Lax'], [false, 'Lax', true, 'Lax'],
-            [false, 'Lax', false, 'Lax']];
+        $cases = [];
+        foreach (['mfa_session', 'mfa_session_1', 'mfa_session_27'] as $name) {
+            foreach ([[true, 'Lax', false, 'Lax'], [true, 'Strict', false, 'Strict'],
+                [true, 'None', false, 'Lax'], [false, 'Lax', true, 'Lax'],
+                [false, 'Lax', false, 'Lax']] as $policy) {
+                $cases[] = array_merge($policy, [$name]);
+            }
+        }
+        return $cases;
+    }
+
+    public function testSiteCookiesUseTheRegisteredMfaPolicy()
+    {
+        $registry = new \ExpressionEngine\Service\Consent\CookieRegistry();
+        $registry->registerNecessary('mfa_session');
+        $setting = $this->getMockBuilder(\ExpressionEngine\Model\Cookie\CookieSetting::class)
+            ->disableOriginalConstructor()->onlyMethods(['__get'])->getMock();
+        $setting->method('__get')->willReturnMap([
+            ['cookie_name', 'mfa_session'], ['cookie_lifetime', 86400], ['cookie_enforced_lifetime', 3600]
+        ]);
+        $registry->registerCookieSettings($setting);
+        foreach (['mfa_session_1', 'mfa_session_27'] as $name) {
+            $this->assertTrue($registry->isRegistered($name));
+            $this->assertTrue($registry->isNecessary($name));
+            $this->assertSame($registry::NECESSARY, $registry->getType($name));
+            $this->assertSame(['cookie_lifetime' => 86400, 'cookie_enforced_lifetime' => 3600], $registry->getCookieSettings($name));
+        }
+        $this->assertFalse($registry->isRegistered('mfa_session_invalid'));
+        $this->assertNull($registry->getCookieSettings('mfa_session_invalid'));
     }
 
     public function testOrdinaryCookiePolicyIsUnchanged()
