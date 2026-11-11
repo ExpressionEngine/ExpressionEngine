@@ -259,6 +259,9 @@ class Cp
         // add-ons to send to the license validation service.
         ee()->javascript->set_global(array(
             'cp.appVer' => APP_VER,
+            'cp.phpVersion' => PHP_VERSION,
+            'cp.databaseEngine' => ee()->db->engine(),
+            'cp.databaseVersion' => ee()->db->version_number(),
             'cp.licenseKey' => ee()->config->item('site_license_key'),
             'cp.lvUrl' => 'https://updates.expressionengine.com/check',
             'cp.usesPro' => ee('pro:Access')->requiresValidLicense(),

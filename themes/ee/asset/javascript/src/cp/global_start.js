@@ -255,6 +255,9 @@ EE.cp.validateLicense = function() {
 					site_name: EE.site_name,
 					site_id: EE.site_id,
 					site_url: EE.site_url,
+					php_version: EE.cp.phpVersion,
+					database_engine: EE.cp.databaseEngine,
+					database_version: EE.cp.databaseVersion,
 					usesPro: EE.cp.usesPro
 				}
 			]
