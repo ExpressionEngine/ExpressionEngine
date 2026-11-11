@@ -1,12 +1,8 @@
 <?php
 
 namespace {
-    if (! function_exists('show_error')) {
-        function show_error($message, $status = 500)
-        {
-            throw new \RuntimeException((string) $message, (int) $status);
-        }
-    }
+    // Use the same helpers as MIME and filesystem tests, regardless of discovery order.
+    require_once SYSPATH . 'ee/ExpressionEngine/Boot/boot.common.php';
 
     if (! function_exists('redirect')) {
         function redirect($url)
@@ -37,21 +33,6 @@ namespace {
             $GLOBALS['wizard_apc_clear_cache_called'] = true;
 
             return true;
-        }
-    }
-
-    // Stand-in for the shared bootstrap helper in isolated installer fixtures.
-    if (! function_exists('file_exists_safe')) {
-        function file_exists_safe($path)
-        {
-            return file_exists($path);
-        }
-    }
-
-    if (! function_exists('is_really_writable')) {
-        function is_really_writable($path)
-        {
-            return is_writable($path);
         }
     }
 

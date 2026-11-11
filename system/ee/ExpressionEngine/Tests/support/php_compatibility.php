@@ -18,6 +18,17 @@ function compatibility_assert($expected, $actual)
         throw new RuntimeException('Expected ' . var_export($expected, true) . ', got ' . var_export($actual, true));
     }
 }
+// PHPUnit 9 cannot run on PHP 7.2. Check this before loading today's bootstrap.
+if (PHP_VERSION_ID < 70300) {
+    compatibility_assert(false, function_exists('file_exists_safe'));
+    require $eeRoot . '/installer/updater/ExpressionEngine/Updater/Library/Filesystem/Filesystem.php';
+    $filesystem = new ExpressionEngine\Updater\Library\Filesystem\Filesystem();
+    compatibility_assert(true, $filesystem->exists(__FILE__));
+    compatibility_assert(true, $filesystem->exists(__DIR__));
+    compatibility_assert(false, $filesystem->exists(''));
+    compatibility_assert(false, $filesystem->exists(__FILE__ . '.missing'));
+    compatibility_assert(false, $filesystem->exists(__FILE__ . "\0suffix"));
+}
 require $eeRoot . '/vendor-build/autoload.php';
 spl_autoload_register(function ($class) use ($eeRoot) {
     if (strpos($class, 'ExpressionEngine\\') === 0) {

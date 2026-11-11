@@ -397,7 +397,7 @@ class Filesystem
     public function exists($path)
     {
         if ($path = $this->normalize($path)) {
-            return file_exists_safe($path);
+            return strpos((string) $path, "\0") === false && file_exists($path);
         }
 
         return false;

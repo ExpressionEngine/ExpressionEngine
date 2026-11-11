@@ -13,6 +13,8 @@ namespace ExpressionEngine\Tests\Library\Mime;
 use ExpressionEngine\Library\Mime\MimeType;
 use PHPUnit\Framework\TestCase;
 
+require_once SYSPATH . 'ee/ExpressionEngine/Boot/boot.common.php';
+
 class MimeTypeTest extends TestCase
 {
     protected $mime_type;
@@ -21,7 +23,6 @@ class MimeTypeTest extends TestCase
 
     public function setUp(): void
     {
-        require_once SYSPATH . 'ee/ExpressionEngine/Boot/boot.common.php';
         $this->safe_mime_types = array(
             'application/pdf',
             'audio/mpeg',
