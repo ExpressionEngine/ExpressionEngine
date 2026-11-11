@@ -132,6 +132,8 @@ jobs:
                     os: windows-latest
 
         name: PHPUnit, php${{ matrix.php }} - ${{ matrix.os }}
+        env:
+            EE_SHOW_DEPRECATIONS: '1'
 
         steps:
             - name: Install locales
@@ -170,6 +172,9 @@ jobs:
                   php-version: ${{ matrix.php }}
                   extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
                   coverage: none
+                  ini-values: >-
+                      error_reporting=E_ALL, display_errors=Off, display_startup_errors=Off, log_errors=On,
+                      error_log=${{ runner.temp }}/phpunit-errors.log
 
             - name: Copy config.php
               run: php -r "file_exists('system/user/config/config.php') || copy('tests/cypress/support/config/config.php', 'system/user/config/config.php');"
@@ -188,7 +193,25 @@ jobs:
 
             - name: Run PHPUnit Tests
               working-directory: system/ee/ExpressionEngine/Tests/
+              env:
+                  EE_PHP_ERROR_LOG: ${{ runner.temp }}/phpunit-errors.log
               run: vendor/bin/phpunit --testdox --configuration=phpunit.xml
+
+            - name: Summarize PHP deprecations
+              if: always()
+              run: >-
+                  php tests/ci/report-deprecations.php
+                  "${{ runner.temp }}/phpunit-deprecations.md"
+                  "${{ runner.temp }}/phpunit-errors.log"
+
+            - name: Archive PHP diagnostics
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: phpunit-diagnostics-PHP${{ matrix.php }}-${{ runner.os }}
+                  path: |
+                      ${{ runner.temp }}/phpunit-errors.log
+                      ${{ runner.temp }}/phpunit-deprecations.md
 
     php-compatibility:
         if: github.event.pull_request.draft == false
