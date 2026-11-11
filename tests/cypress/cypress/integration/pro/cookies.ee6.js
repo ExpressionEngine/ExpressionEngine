@@ -46,10 +46,11 @@ context('Pro Cookie Features', () => {
             cy.visit('index.php/consents/cookies')
             cy.logFrontendPerformance()
             cy.get('#all-cookies li').should(($lis) => {
-                expect($lis, '21 items').to.have.length(21)
+                expect($lis, '22 items').to.have.length(22)
                 expect($lis).to.contain('exp_csrf_token')
                 expect($lis).to.contain('exp_flash')
                 expect($lis).to.contain('exp_remember')
+                expect($lis).to.contain('exp_mfa_session')
                 expect($lis).to.contain('exp_sessionid')
                 expect($lis).to.contain('exp_visitor_consents')
                 expect($lis).to.contain('exp_anon')
@@ -77,6 +78,7 @@ context('Pro Cookie Features', () => {
             cy.visit('index.php/consents/cookies')
             cy.get('#not-necessary-ee-cookies li').should(($lis) => {
                 expect($lis, '4 items').to.have.length(4)
+                expect($lis).to.not.contain('exp_mfa_session')
                 expect($lis).to.contain('exp_anon')
                 expect($lis).to.contain('exp_last_activity')
                 expect($lis).to.contain('exp_last_visit')
@@ -87,10 +89,11 @@ context('Pro Cookie Features', () => {
         it('lists all cookies that are not CP', ()=>{
             cy.visit('index.php/consents/cookies')
             cy.get('#not-cp-cookies li').should(($lis) => {
-                expect($lis, '16 items').to.have.length(16)
+                expect($lis, '17 items').to.have.length(17)
                 expect($lis).to.contain('exp_csrf_token')
                 expect($lis).to.contain('exp_flash')
                 expect($lis).to.contain('exp_remember')
+                expect($lis).to.contain('exp_mfa_session')
                 expect($lis).to.contain('exp_sessionid')
                 expect($lis).to.contain('exp_visitor_consents')
                 expect($lis).to.contain('exp_anon')
@@ -118,6 +121,7 @@ context('Pro Cookie Features', () => {
                 expect($lis).to.not.contain('exp_csrf_token')
                 expect($lis).to.not.contain('exp_flash')
                 expect($lis).to.not.contain('exp_remember')
+                expect($lis).to.not.contain('exp_mfa_session')
                 expect($lis).to.not.contain('exp_sessionid')
                 expect($lis).to.not.contain('exp_visitor_consents')
                 expect($lis).to.not.contain('exp_anon')
