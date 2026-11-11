@@ -25,6 +25,12 @@ Copy the configuration file into place and then start the standalone PHP server
 
 `cp tests/cypress/support/config/config.php system/user/config/config.php && php -S localhost:8888`
 
+The RSS compatibility test fetches a local feed while ExpressionEngine renders a page. Start a separate feed server from the repository root in another terminal:
+
+`php -S 127.0.0.1:8889 -t .`
+
+The feed URL defaults to `http://127.0.0.1:8889/`. If your setup uses a different address, override `PHP_COMPATIBILITY_FEED_BASE_URL` in `tests/cypress/cypress.env.json`.
+
 Open Cypress to run tests (GUI)
 
 `cd tests/cypress && npm run cypress:open`

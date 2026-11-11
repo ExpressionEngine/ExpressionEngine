@@ -176,10 +176,10 @@ if (function_exists('posix_geteuid') && posix_geteuid() === 0) {
 if (PHP_VERSION_ID < 80000) { imagedestroy($image); }
 unset($image);
 $destination = compatibilityModel('UploadDestination', 'name', 'Compatibility', array(
-    'site_id' => 1, 'adapter' => 'local', 'server_path' => '{base_path}images/uploads/php-compatibility/',
+    'site_id' => 1, 'adapter' => 'local', 'server_path' => $folder,
     'url' => '{base_url}images/uploads/php-compatibility/', 'allowed_types' => 'img'
 ));
-$destination->server_path = '{base_path}images/uploads/php-compatibility/';
+$destination->server_path = $folder;
 $destination->url = '{base_url}images/uploads/php-compatibility/';
 $destination->save();
 $file = ee('Model')->get('File')->filter('upload_location_id', $destination->id)->filter('file_name', 'browser.png')->first();

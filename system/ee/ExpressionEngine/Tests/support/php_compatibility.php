@@ -64,6 +64,20 @@ $cases['Missing and present file dimensions'] = function () {
     compatibility_assert('', $column->renderTableCell(null, null, (object) array('file_hw_original' => null)));
     compatibility_assert('640x480', $column->renderTableCell(null, null, (object) array('file_hw_original' => '480 640')));
 };
+$cases['Layout status null and empty-string keys'] = function () {
+    foreach (array(null, '', 'open') as $status) {
+        $field = new class($status) {
+            private $status;
+            public function __construct($status) { $this->status = $status; }
+            public function getId() { return 'status'; }
+            public function getData() { return $this->status; }
+            public function get($key) { return array('' => null, 'open' => 'Open'); }
+        };
+        $tab = new ExpressionEngine\Model\Content\Display\LayoutTab('publish', 'Publish');
+        compatibility_assert($tab, $tab->addField($field));
+        compatibility_assert(array($field), $tab->getFields());
+    }
+};
 if (function_exists('imagejpeg') && function_exists('imagettftext')) {
     $cases['Legacy CAPTCHA bitmap and TrueType geometry'] = function () use ($temporary) {
         require_once BASEPATH . 'helpers/captcha_helper.php';

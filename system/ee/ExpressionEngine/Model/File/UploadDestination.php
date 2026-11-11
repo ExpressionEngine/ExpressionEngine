@@ -185,6 +185,7 @@ class UploadDestination extends StructureModel
             // grab fresh list
             $existingManipulations = ee('Model')->get('FileDimension')->filter('upload_location_id', $this->getId())->all()->indexBy('id');
             foreach ($manipulationsToKeep as $manipulationId) {
+                $manipulationId = $manipulationId ?? '';
                 if (isset($existingManipulations[$manipulationId])) {
                     unset($existingManipulations[$manipulationId]);
                 }

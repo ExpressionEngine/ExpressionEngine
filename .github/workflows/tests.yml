@@ -188,7 +188,10 @@ jobs:
               run: composer install
 
             - name: Start PHP Server
-              run: php tests/serve.php &
+              run: |
+                php tests/serve.php &
+                # RSS fixtures must not request the busy, single-process application server.
+                php -S 127.0.0.1:8889 -t . > /tmp/ee-compatibility-feed.log 2>&1 &
 
             - name: Start SMTP Server
               run: |
