@@ -846,6 +846,7 @@ $setup = [
         'csrf_token',
         'flash',
         'remember',
+        'mfa_session',
         'sessionid',
         'visitor_consents',
     ],
@@ -869,6 +870,9 @@ $setup = [
         ],
         'remember' => [
             'description' => 'lang:cookie_remember_desc',
+        ],
+        'mfa_session' => [
+            'description' => 'lang:cookie_mfa_session_desc',
         ],
         'sessionid' => [
             'description' => 'lang:cookie_sessionid_desc',

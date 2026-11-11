@@ -153,7 +153,10 @@ class EE_Input
                     $cookieSettings->save();
                     ee('CookieRegistry')->registerCookieSettings($cookieSettings);
                 } else {
-                    if (is_numeric($loadedCookieSettings['cookie_lifetime'])) {
+                    // MFA's default lifetime follows the current verification window.
+                    // Still honor an administrator's explicit cookie lifetime override.
+                    if (is_numeric($loadedCookieSettings['cookie_lifetime'])
+                        && ($data['name'] !== 'mfa_session' || $loadedCookieSettings['cookie_enforced_lifetime'] !== null)) {
                         $data['expire'] = ($loadedCookieSettings['cookie_enforced_lifetime'] !== null) ? $loadedCookieSettings['cookie_enforced_lifetime'] : $loadedCookieSettings['cookie_lifetime'];
                     }
                 }
@@ -296,6 +299,14 @@ class EE_Input
         // Cookies with SameSite=None must also specify Secure, meaning they require a secure context.
         if ($data['samesite'] === 'None') {
             $data['secure_cookie'] = true;
+        }
+
+        // MFA approval is a server-only credential, scoped to this host.
+        if (isset($data['name']) && $data['name'] === 'mfa_session') {
+            $data['httponly'] = true;
+            $data['domain'] = '';
+            $data['samesite'] = $data['samesite'] === 'Strict' ? 'Strict' : 'Lax';
+            $data['secure_cookie'] = $data['secure_cookie'] || ee('Request')->isEncrypted();
         }
 
         return $data;

@@ -77,7 +77,7 @@ class Pro
                         $session->save();
                     }
 
-                    ee()->remember->remember_mfa($member->member_id);
+                    ee()->mfa_session->create($member, ee()->session->userdata('session_id'));
                     $this->redirectBack();
                 }
             }
@@ -260,7 +260,7 @@ class Pro
                         $session->mfa_flag = 'skip';
                         $session->save();
                     }
-                    ee()->remember->remember_mfa(ee()->session->userdata('member_id'));
+                    ee()->mfa_session->create(ee()->session->getMember(), ee()->session->userdata('session_id'));
                     $this->redirectBack();
                 }
             }

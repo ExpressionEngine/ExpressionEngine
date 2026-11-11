@@ -41,7 +41,7 @@ class Remember
     }
 
     /**
-     * Create a new remembered login without inheriting MFA verification.
+     * Create a new remembered login.
      *
      * @return void
      */
@@ -66,8 +66,7 @@ class Remember
             'admin_sess' => ee()->session->userdata('admin_sess'),
             'site_id' => ee()->config->item('site_id'),
             'expiration' => ee()->localize->now + $this->expiry,
-            'last_refresh' => ee()->localize->now,
-            'mfa_verified_at' => 0
+            'last_refresh' => ee()->localize->now
         );
 
         ee()->db->set($this->data);
@@ -112,155 +111,6 @@ class Remember
     }
 
     /**
-     * Remember successful MFA for the current member and site.
-     *
-     * @param int $member_id The member whose one-time code was verified.
-     * @return void
-     */
-    public function remember_mfa($member_id)
-    {
-        if (!$this->_mfa_ttl() || !$this->_matches_mfa_member($member_id)) {
-            return;
-        }
-
-        $this->_rotate_mfa_token(ee()->localize->now);
-    }
-
-    /**
-     * Check cached MFA verification; use restore_mfa() to authorize a session.
-     *
-     * @param int $member_id The member whose session is being restored.
-     * @return bool
-     */
-    public function is_mfa_verified($member_id)
-    {
-        $ttl = $this->_mfa_ttl();
-
-        if (!$ttl || !$this->_matches_mfa_member($member_id)) {
-            return false;
-        }
-
-        $verified_at = (int) $this->data('mfa_verified_at');
-        $now = ee()->localize->now;
-
-        return $verified_at > 0 && $verified_at <= $now && ($now - $verified_at) < $ttl;
-    }
-
-    /**
-     * Approve a recreated session only while its remembered token is still valid.
-     *
-     * @param int $member_id The member whose session is being restored.
-     * @param string $session_id The newly created session.
-     * @return bool Whether MFA approval was persisted.
-     */
-    public function restore_mfa($member_id, $session_id)
-    {
-        if (!$this->is_mfa_verified($member_id)) {
-            return false;
-        }
-
-        // Check the current row in the approval write, not only the request cache.
-        $sessions = ee()->db->dbprefix('sessions');
-        $remember = ee()->db->dbprefix($this->table);
-        $updated = ee()->db->query("UPDATE {$sessions} SET mfa_flag = 'skip'
-            WHERE session_id = ? AND member_id = ? AND mfa_flag = 'show'
-            AND EXISTS (
-                SELECT 1 FROM {$remember}
-                WHERE remember_me_id = ? AND member_id = ? AND site_id = ?
-                AND user_agent = ? AND expiration > ? AND mfa_verified_at = ?
-            )", [
-                $session_id, $member_id, $this->cookie_value, $member_id,
-                ee()->config->item('site_id'), $this->user_agent,
-                ee()->localize->now, $this->data('mfa_verified_at')
-            ]);
-
-        return $updated && ee()->db->affected_rows() === 1;
-    }
-
-    /**
-     * Revoke remembered MFA after a member's authentication settings change.
-     *
-     * @param int $member_id The member whose remembered logins must be cleared.
-     * @return void
-     */
-    public function clear_mfa($member_id)
-    {
-        // Rotate first so an overlapping request cannot approve the old token.
-        if ($this->_matches_mfa_member($member_id) && $this->_rotate_mfa_token(0)) {
-            $this->delete_others($member_id);
-            return;
-        }
-
-        // If the current token was already replaced, revoke its replacement too.
-        ee()->db->where('member_id', $member_id)->delete($this->table);
-
-        if ((int) $this->data('member_id') === (int) $member_id) {
-            $this->data = array();
-            $this->_delete_cookie();
-        }
-    }
-
-    /**
-     * Change MFA approval only on a new token, preserving its expiration.
-     *
-     * @param int $verified_at Verification time, or zero to revoke approval.
-     * @return bool Whether the current token was successfully rotated.
-     */
-    protected function _rotate_mfa_token($verified_at)
-    {
-        $id = $this->_generate_id();
-
-        ee()->db->where('remember_me_id', $this->cookie_value)
-            ->update($this->table, [
-                'remember_me_id' => $id,
-                'mfa_verified_at' => $verified_at
-            ]);
-
-        // Another request may have revoked or rotated the token after validation.
-        if (ee()->db->affected_rows() !== 1) {
-            $this->data['mfa_verified_at'] = 0;
-            return false;
-        }
-
-        $this->data['remember_me_id'] = $id;
-        $this->data['mfa_verified_at'] = $verified_at;
-        $this->_set_cookie($id, $this->data('expiration') - ee()->localize->now);
-
-        return true;
-    }
-
-    /**
-     * Get the configured MFA reuse period, treating invalid values as disabled.
-     *
-     * @return int
-     */
-    protected function _mfa_ttl()
-    {
-        $ttl = ee()->config->item('mfa_remember_ttl');
-
-        if (!is_int($ttl) && !is_string($ttl)) {
-            return 0;
-        }
-
-        return filter_var($ttl, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) ?: 0;
-    }
-
-    /**
-     * Require a valid remembered login belonging to this member and site.
-     *
-     * @param int $member_id The member being authenticated.
-     * @return bool
-     */
-    protected function _matches_mfa_member($member_id)
-    {
-        return $member_id > 0
-            && $this->exists()
-            && (int) $this->data('member_id') === (int) $member_id
-            && (int) $this->data('site_id') === (int) ee()->config->item('site_id')
-            && $this->data('expiration') > ee()->localize->now;
-    }
-
-    /**
      * Clear the current remember me
      *
      * @return void
@@ -300,7 +150,7 @@ class Remember
     }
 
     /**
-     * Refresh the remembered login without extending its MFA verification.
+     * Refresh the remembered login.
      *
      * @return void
      */
@@ -324,7 +174,7 @@ class Remember
                 'expiration' => $this->data['expiration'] + $adjust_expire
             ];
 
-            // Write only rotating fields so a concurrent MFA revocation stays cleared.
+            // Only a successful rotation may replace the browser cookie.
             ee()->db->where('remember_me_id', $this->cookie_value)
                 ->update($this->table, $changes);
 

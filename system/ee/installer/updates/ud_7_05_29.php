@@ -15,29 +15,53 @@ class Updater
     public $version_suffix = '';
 
     /**
-     * Add verification timestamps to remembered logins without trusting old tokens.
+     * Create independent MFA approvals. Old remembered tokens confer no approval.
      *
      * @return bool
      */
     public function do_update()
     {
-        // A retry can retain field metadata from before the column was added.
-        unset(ee()->db->data_cache['field_names']['remember_me']);
-
-        if (ee()->db->field_exists('mfa_verified_at', 'remember_me')) {
-            return true;
-        }
-
         ee()->load->library('smartforge');
 
-        return ee()->smartforge->add_column('remember_me', [
-            'mfa_verified_at' => [
-                'type' => 'bigint',
-                'constraint' => 10,
-                'unsigned' => true,
-                'null' => false,
-                'default' => 0
-            ]
+        $steps = new \ProgressIterator([
+            'addMfaSessionsTable',
         ]);
+
+        foreach ($steps as $step) {
+            if ($this->$step() === false) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Create independent MFA approvals without trusting old remembered tokens.
+     *
+     * @return bool
+     */
+    private function addMfaSessionsTable()
+    {
+        unset(ee()->db->data_cache['table_names']);
+
+        if (!ee()->db->table_exists('mfa_sessions')) {
+            ee()->dbforge->add_field([
+                'token_hash' => ['type' => 'char', 'constraint' => 64, 'null' => false],
+                'member_id' => ['type' => 'int', 'constraint' => 10, 'null' => false],
+                'site_id' => ['type' => 'int', 'constraint' => 4, 'null' => false],
+                'verified_at' => ['type' => 'bigint', 'constraint' => 10, 'unsigned' => true, 'null' => false],
+                'expires_at' => ['type' => 'bigint', 'constraint' => 10, 'unsigned' => true, 'null' => false],
+                'issued_session_hash' => ['type' => 'char', 'constraint' => 64, 'null' => false]
+            ]);
+            ee()->dbforge->add_key('token_hash', true);
+            ee()->dbforge->add_key('member_id');
+            ee()->dbforge->add_key('expires_at');
+            if (!ee()->smartforge->create_table('mfa_sessions')) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

@@ -114,7 +114,7 @@ class Mfa extends Profile\Pro
                         $session->save();
                     }
 
-                    ee()->remember->remember_mfa($this->member->member_id);
+                    ee()->mfa_session->create($this->member, ee()->session->userdata('session_id'));
 
                     ee('CP/Alert')->makeInline('shared-form')
                         ->asSuccess()

@@ -105,6 +105,7 @@ class EE_Session
         // If they load this library manually we need to make sure our
         // dependencies are all here. This can happen in the cp_js_end hook.
         ee()->load->library('remember');
+        ee()->load->library('mfa_session');
         ee()->load->library('localize');
 
         if (ee()->config->item('website_session_length')) {
@@ -193,7 +194,7 @@ class EE_Session
             } else {
                 if ($this->validation == 'c') {
                     $this->create_new_session($this->userdata['member_id']);
-                    $this->_restore_remembered_mfa();
+                    $this->restore_mfa();
                 } else {
                     $this->fetch_guest_data();
                 }
@@ -420,17 +421,19 @@ class EE_Session
     }
 
     /**
-     * Restore verified MFA only when recreating a remembered login's session.
+     * Restore verified MFA after password authentication or remembered login.
      *
      * @return void
      */
-    protected function _restore_remembered_mfa()
+    public function restore_mfa()
     {
         if (
             $this->sdata['mfa_flag'] === 'show'
-            && ee()->remember->restore_mfa($this->sdata['member_id'], $this->sdata['session_id'])
+            && ee()->mfa_session->restore($this->sdata['member_id'], $this->sdata['session_id'])
         ) {
             $this->sdata['mfa_flag'] = 'skip';
+            $this->userdata['mfa_flag'] = 'skip';
+            $this->mfa_flag = 'skip';
         }
     }
 
@@ -528,6 +531,7 @@ class EE_Session
     public function destroy()
     {
         if ($this->userdata['session_id'] === 0) {
+            ee()->mfa_session->delete(0, '');
             // just to be sure
             $this->fetch_guest_data();
 
@@ -536,6 +540,7 @@ class EE_Session
 
         ee()->db->where('session_id', $this->userdata['session_id']);
         ee()->db->delete(array('sessions', 'security_hashes'));
+        ee()->mfa_session->delete($this->userdata['member_id'], $this->userdata['session_id']);
 
         // Really should redirect after calling this
         // method, but if someone doesn't - we're safe

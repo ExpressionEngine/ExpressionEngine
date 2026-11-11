@@ -709,6 +709,7 @@ class Auth_result
                 $this->member('member_id'),
                 $cp_sess
             );
+            ee()->session->restore_mfa();
         }
 
         if (ee()->config->item($sess_type) != 's') {

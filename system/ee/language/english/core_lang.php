@@ -462,6 +462,8 @@ If you made these changes, please accept the modifications on the Control Panel 
     'cookie_flash' => 'Flash data',
     'cookie_flash_desc' => 'User feedback messages, encrypted for security.',
 
+    'cookie_mfa_session' => 'MFA Session',
+    'cookie_mfa_session_desc' => 'Remembers a successful multi-factor verification for a limited period without keeping the user logged in.',
     'cookie_remember' => 'Remember Me',
     'cookie_remember_desc' => 'Determines whether a user is automatically logged in upon visiting the site.',
 

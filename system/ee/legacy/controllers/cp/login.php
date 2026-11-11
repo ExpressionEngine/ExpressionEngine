@@ -112,7 +112,7 @@ class Login extends CP_Controller
                     $session->mfa_flag = 'skip';
                     $session->save();
                 }
-                ee()->remember->remember_mfa(ee()->session->userdata('member_id'));
+                ee()->mfa_session->create(ee()->session->getMember(), ee()->session->userdata('session_id'));
                 $this->functions->redirect($return_path);
             }
         }
@@ -713,6 +713,7 @@ class Login extends CP_Controller
     public function logout()
     {
         if ($this->session->userdata('group_id') == 3) {
+            $this->session->destroy();
             $this->functions->redirect(ee('CP/URL', 'login')->compile());
         }
 

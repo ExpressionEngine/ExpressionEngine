@@ -465,6 +465,7 @@ class Member_auth extends Member
 
         // If they are already logged out then send them away.
         if (ee()->session->userdata('member_id') === 0) {
+            ee()->session->destroy();
             return ee()->functions->redirect($return_link);
         }
 
