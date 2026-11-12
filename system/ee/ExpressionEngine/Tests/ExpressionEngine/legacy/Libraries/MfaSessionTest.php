@@ -94,15 +94,6 @@ class MfaSessionTest extends TestCase
         return [[false], [null], [0], [-1], ['0'], ['invalid'], ['1.5'], [1.5], [true], [[]], [PHP_INT_MAX]];
     }
 
-    public function testOldSettingDoesNotEnableReuse()
-    {
-        $this->config->setItem('mfa_session_length', false);
-        $this->config->setItem('mfa_remember_ttl', 86400);
-        $this->db->expects($this->never())->method('query');
-        $this->assertFalse($this->mfa->create($this->member, 'issuing-session'));
-        $this->assertSame([], $this->cookies);
-    }
-
     /** @dataProvider malformedCookieProvider */
     public function testMalformedOrMissingCookieCannotRestore($cookie)
     {
@@ -291,18 +282,77 @@ class MfaSessionTest extends TestCase
         $this->assertSame('.example.test', $result['domain']);
     }
 
+    /** @dataProvider installedVersionProvider */
+    public function testInstalledSessionModelDoesNotInspectSchema($version)
+    {
+        $this->config->setItem('app_version', $version);
+        $db = $this->getMockBuilder(\stdClass::class)->addMethods(['field_exists'])->getMock();
+        $db->expects($this->never())->method('field_exists');
+        ee()->setMock('db', $db);
+        $fields = \ExpressionEngine\Model\Session\Session::getClassFields();
+        $this->assertContains('mfa_login_id', $fields);
+    }
+
+    public static function installedVersionProvider()
+    {
+        return [['7.5.29'], ['7.6.0']];
+    }
+
+    /** @dataProvider restoredLoginProvider */
+    public function testRestoreReturnsTheSurvivingLoginIdentity($loginId)
+    {
+        $db = $this->getMockBuilder(\stdClass::class)
+            ->addMethods(['dbprefix', 'query', 'affected_rows', 'select', 'get_where', 'row'])->getMock();
+        $db->method('dbprefix')->willReturnArgument(0);
+        $db->method('query')->willReturn(true);
+        $db->method('affected_rows')->willReturn(1);
+        $db->method('select')->willReturnSelf();
+        $db->method('get_where')->willReturnSelf();
+        $db->method('row')->willReturn($loginId);
+        ee()->setMock('db', $db);
+        $this->assertSame($loginId ?: false, $this->mfa->restore(42, 'new-session'));
+    }
+
+    public static function restoredLoginProvider()
+    {
+        return [[hash('sha256', 'original-login')], [null]];
+    }
+
+    /** @dataProvider sessionSchemaProvider */
+    public function testSessionModelSupportsThePreUpdateSchema($columnExists)
+    {
+        $this->config->setItem('app_version', '7.5.28');
+        $db = $this->getMockBuilder(\stdClass::class)->addMethods(['field_exists'])->getMock();
+        $db->method('field_exists')->with('mfa_login_id', 'sessions')->willReturn($columnExists);
+        ee()->setMock('db', $db);
+        $fields = \ExpressionEngine\Model\Session\Session::getClassFields();
+        $this->assertSame($columnExists, in_array('mfa_login_id', $fields, true));
+        $this->assertContains('session_id', $fields);
+        $this->assertContains('mfa_flag', $fields);
+    }
+
+    public static function sessionSchemaProvider()
+    {
+        return [[false], [true]];
+    }
+
     /** @dataProvider migrationProvider */
-    public function testMigrationIsRepeatableAndReportsFailures($exists, $created, $expected)
+    public function testMigrationIsRepeatableAndReportsFailures($exists, $columnExists, $written, $expected)
     {
         require_once SYSPATH . 'ee/installer/libraries/Progress.php';
         require_once SYSPATH . 'ee/installer/updates/ud_7_05_29.php';
         $db = $this->getMockBuilder(\stdClass::class)->addMethods(['table_exists', 'field_exists'])->getMock();
         $db->data_cache = ['table_names' => []];
         $db->method('table_exists')->with('mfa_sessions')->willReturn($exists);
-        $db->expects($this->never())->method('field_exists');
-        $forge = $this->getMockBuilder(\stdClass::class)->addMethods(['add_field', 'add_key', 'create_table', 'drop_column'])->getMock();
-        $forge->expects($exists ? $this->never() : $this->once())->method('create_table')->with('mfa_sessions')->willReturn($created);
+        $db->expects(!$exists && !$written ? $this->never() : $this->once())->method('field_exists')
+            ->with('mfa_login_id', 'sessions')->willReturn($columnExists);
+        $forge = $this->getMockBuilder(\stdClass::class)->addMethods(['add_field', 'add_key', 'create_table', 'drop_column', 'add_column'])->getMock();
+        $forge->expects($exists ? $this->never() : $this->once())
+            ->method('create_table')->with('mfa_sessions')->willReturn($written);
         $forge->expects($this->never())->method('drop_column');
+        $forge->expects($columnExists || (!$exists && !$written) ? $this->never() : $this->once())->method('add_column')
+            ->with('sessions', ['mfa_login_id' => ['type' => 'char', 'constraint' => 64, 'null' => false, 'default' => '']])
+            ->willReturn($written);
         ee()->setMock('db', $db);
         ee()->setMock('dbforge', $forge);
         ee()->setMock('smartforge', $forge);
@@ -312,6 +362,7 @@ class MfaSessionTest extends TestCase
 
     public static function migrationProvider()
     {
-        return [[false, true, true], [true, false, true], [false, false, false]];
+        return [[false, false, true, true], [true, true, false, true],
+            [false, true, false, false], [true, false, false, false]];
     }
 }

@@ -25,6 +25,7 @@ class Updater
 
         $steps = new \ProgressIterator([
             'addMfaSessionsTable',
+            'addMfaLoginId',
         ]);
 
         foreach ($steps as $step) {
@@ -34,6 +35,19 @@ class Updater
         }
 
         return true;
+    }
+
+    /** Add a stable login identifier to the existing, released sessions table. */
+    private function addMfaLoginId()
+    {
+        unset(ee()->db->data_cache['field_names']['sessions']);
+        if (ee()->db->field_exists('mfa_login_id', 'sessions')) {
+            return true;
+        }
+
+        return ee()->smartforge->add_column('sessions', [
+            'mfa_login_id' => ['type' => 'char', 'constraint' => 64, 'null' => false, 'default' => '']
+        ]) !== false;
     }
 
     /**
@@ -52,7 +66,7 @@ class Updater
                 'site_id' => ['type' => 'int', 'constraint' => 4, 'null' => false],
                 'verified_at' => ['type' => 'bigint', 'constraint' => 10, 'unsigned' => true, 'null' => false],
                 'expires_at' => ['type' => 'bigint', 'constraint' => 10, 'unsigned' => true, 'null' => false],
-                'issued_session_hash' => ['type' => 'char', 'constraint' => 64, 'null' => false],
+                'mfa_login_id' => ['type' => 'char', 'constraint' => 64, 'null' => false],
                 'credential_hash' => ['type' => 'char', 'constraint' => 64, 'null' => false, 'default' => '']
             ]);
             ee()->dbforge->add_key('token_hash', true);

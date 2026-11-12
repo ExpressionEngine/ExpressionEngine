@@ -21,7 +21,7 @@ function checkMfaSession($condition, $message)
 $db = ee()->db;
 $memberRow = $db->get('members')->row_array();
 checkMfaSession(!empty($memberRow), 'The fixture requires a seeded member.');
-foreach (['members', 'sessions', 'mfa_sessions'] as $table) {
+foreach (['members', 'sessions', 'mfa_sessions', 'security_hashes'] as $table) {
     $name = $db->dbprefix($table);
     $schema = $db->query("SHOW CREATE TABLE {$name}")->row_array();
     $sql = preg_replace('/^CREATE TABLE /', 'CREATE TEMPORARY TABLE ', $schema['Create Table'], 1);
@@ -47,6 +47,8 @@ ee()->localize->now = 2000000;
 $input = new class {
     public $cookies = ['mfa_session_1' => false];
     public $sent = [];
+    public function ip_address() { return '127.0.0.1'; }
+    public function user_agent() { return 'MFA regression fixture'; }
     public function cookie($name)
     {
         return $this->cookies[$name] ?? false;
@@ -77,6 +79,19 @@ $flag = function ($id = 'new-session') use ($db) {
 $reject = function ($request = null) use ($mfa, $flag) {
     checkMfaSession(($request ?: $mfa)->restore(42, 'new-session') === false, 'Invalid approval was accepted.');
     checkMfaSession($flag() === 'show', 'Rejected restore changed the session.');
+};
+// Exercise the actual model hydration as well as the production lifecycle.
+$loadSession = function ($id) {
+    $runtime = new class extends EE_Session {
+        public function __construct() {}
+        public function fetch_guest_data() {}
+    };
+    $runtime->sdata = ['session_id' => $id, 'fingerprint' => ''];
+    $runtime->validation = 'c';
+    $runtime->session_length = 60;
+    checkMfaSession($runtime->fetch_session_data(), 'Session could not be loaded.');
+    $runtime->userdata = $runtime->sdata;
+    return $runtime;
 };
 $scenario = $argv[1] ?? '';
 $invalidApprovals = [
@@ -115,7 +130,7 @@ if (array_key_exists($scenario, $invalidApprovals)) {
         $currentMember->$field = $changedCredentials[$field];
         $fresh = new Mfa_session();
         checkMfaSession($fresh->create($currentMember, 'issuing-session') === true, 'Fresh credentials could not issue approval.');
-        checkMfaSession($fresh->restore(42, 'new-session') === true, 'Fresh credentials could not restore approval.');
+        checkMfaSession($fresh->restore(42, 'new-session') !== false, 'Fresh credentials could not restore approval.');
     }
 } elseif (array_key_exists($scenario, $changedCredentials)) {
     // The request still holds the previously verified credential snapshot.
@@ -125,8 +140,44 @@ if (array_key_exists($scenario, $invalidApprovals)) {
     checkMfaSession($approvals() === [] && $input->sent === [], 'Rejected issuance left approval or a cookie.');
 } else {
     switch ($scenario) {
+        case 'session-query-budget':
+            ee()->config->set_item('app_version', '7.5.29');
+            $queryLog = ee('Database')->getLog();
+            $queryLog->saveQueries();
+            $db->where('session_id', 'issuing-session')->update('sessions', [
+                'sess_start' => ee()->localize->now, 'last_activity' => ee()->localize->now
+            ]);
+            unset($db->data_cache['field_names']['sessions']);
+            foreach (['skip', 'show'] as $mfaFlag) {
+                $db->where('session_id', 'issuing-session')->update('sessions', ['mfa_flag' => $mfaFlag]);
+                $start = count($queryLog->getQueries());
+                $runtime = $loadSession('issuing-session');
+                $runtime->update_session();
+                $queries = array_column(array_slice($queryLog->getQueries(), $start), 0);
+                checkMfaSession(count($queries) === 2, 'Ordinary activity added queries: ' . json_encode($queries));
+                checkMfaSession(!preg_match('/mfa_sessions|SHOW COLUMNS/i', implode("\n", $queries)), 'Ordinary activity queried MFA approval or schema.');
+            }
+            break;
+        case 'logout-query-budget':
+            $loginId = hash('sha256', 'issuing-session');
+            $db->where('session_id', 'issuing-session')->update('sessions', ['mfa_login_id' => $loginId]);
+            $approve();
+            $queryLog = ee('Database')->getLog();
+            $queryLog->saveQueries();
+            unset($db->data_cache['table_names']);
+            $start = count($queryLog->getQueries());
+            $mfa->delete(42, 'issuing-session', $loginId);
+            $queries = array_column(array_slice($queryLog->getQueries(), $start), 0);
+            checkMfaSession(count($queries) === 3, 'Logout made unnecessary schema queries: ' . json_encode($queries));
+            checkMfaSession($db->get_where('sessions', ['session_id' => 'issuing-session'])->num_rows() === 0, 'Logout kept the login.');
+            checkMfaSession($approvals() === [], 'Logout kept approval.');
+            break;
         case 'issue':
+            $queryLog = ee('Database')->getLog();
+            $queryLog->saveQueries();
+            $start = count($queryLog->getQueries());
             $token = $approve();
+            checkMfaSession(count($queryLog->getQueries()) - $start === 2, 'First verification made unnecessary cleanup queries.');
             $rows = $approvals();
             checkMfaSession(preg_match('/\A[a-f0-9]{64}\z/', $token) === 1, 'Invalid token shape.');
             checkMfaSession(count($rows) === 1, 'Expected one approval.');
@@ -134,10 +185,10 @@ if (array_key_exists($scenario, $invalidApprovals)) {
             checkMfaSession($row['token_hash'] === hash('sha256', $token), 'Raw or incorrect token stored.');
             checkMfaSession((int) $row['member_id'] === 42 && (int) $row['site_id'] === 1, 'Incorrect owner/site.');
             checkMfaSession((int) $row['verified_at'] === 2000000 && (int) $row['expires_at'] === 2086400, 'Incorrect lifetime.');
-            checkMfaSession($row['issued_session_hash'] === hash('sha256', 'issuing-session'), 'Incorrect issuing session hash.');
+            checkMfaSession($row['mfa_login_id'] === hash('sha256', 'issuing-session'), 'Incorrect issuing session hash.');
             checkMfaSession(!in_array('issuing-session', $row, true) && !in_array($token, $row, true), 'Raw credential stored.');
             checkMfaSession($input->sent === [['mfa_session_1', $token, 86400]], 'Incorrect cookie lifetime.');
-            checkMfaSession($mfa->restore(42, 'new-session') === true && $flag() === 'skip', 'Approval was not restored.');
+            checkMfaSession($mfa->restore(42, 'new-session') === $row['mfa_login_id'] && $flag() === 'skip', 'Approval did not restore its stable login identity.');
             break;
         case 'overlapping-verifications':
         case 'overlapping-responses':
@@ -155,13 +206,13 @@ if (array_key_exists($scenario, $invalidApprovals)) {
                     public $beforeCleanup;
                     public function __construct($db) { $this->db = $db; }
                     public function __call($method, $arguments) { return $this->db->$method(...$arguments); }
-                    public function query($sql, $binds = []) {
-                        if ($this->beforeCleanup && preg_match('/^DELETE FROM .*mfa_sessions WHERE member_id/', $sql)) {
+                    public function delete($table, $where = '', $limit = null, $reset_data = true) {
+                        if ($this->beforeCleanup && $table === 'mfa_sessions' && isset($where['member_id'])) {
                             $callback = $this->beforeCleanup;
                             $this->beforeCleanup = null;
                             $callback();
                         }
-                        return $this->db->query($sql, $binds);
+                        return $this->db->delete($table, $where, $limit, $reset_data);
                     }
                 };
                 $interleavedDb->beforeCleanup = function () use ($otherRequest, $member) {
@@ -189,7 +240,7 @@ if (array_key_exists($scenario, $invalidApprovals)) {
             $reject(new Mfa_session());
             foreach ($tokens as $token) {
                 $input->cookies['mfa_session_1'] = $token;
-                checkMfaSession((new Mfa_session())->restore(42, 'new-session') === true, 'Response delivered an unusable cookie.');
+                checkMfaSession((new Mfa_session())->restore(42, 'new-session') !== false, 'Response delivered an unusable cookie.');
                 $db->where('session_id', 'new-session')->update('sessions', ['mfa_flag' => 'show']);
             }
             $db->where('session_id', 'issuing-session')->delete('sessions');
@@ -208,6 +259,176 @@ if (array_key_exists($scenario, $invalidApprovals)) {
                 $reject(new Mfa_session());
             }
             break;
+        case 'session-schema-upgrade':
+            ee()->config->set_item('app_version', '7.5.28');
+            // Simulate the released sessions schema during the one-click update.
+            $db->query('ALTER TABLE ' . $db->dbprefix('sessions') . ' DROP COLUMN mfa_login_id');
+            unset($db->data_cache['field_names']['sessions']);
+            ee()->config->set_item('mfa_session_length', 0);
+            ee()->remove('remember');
+            ee()->set('remember', new class { public function delete() {} });
+            ee()->remove('mfa_session');
+            ee()->set('mfa_session', new Mfa_session());
+            checkMfaSession(ee('Model')->get('Session')->filter('member_id', 42)->all()->count() === 2, 'Pre-update MFA session query failed.');
+            $runtime = $loadSession('issuing-session');
+            $runtime->update_session();
+            $runtime->userdata = $runtime->sdata;
+            $runtime->destroy();
+            $runtime = $loadSession('new-session');
+            $beforeId = $runtime->create_new_session(42);
+            checkMfaSession($db->get_where('sessions', ['session_id' => $beforeId])->num_rows() === 1, 'Pre-update login failed.');
+            require_once SYSPATH . 'ee/installer/libraries/Progress.php';
+            require_once SYSPATH . 'ee/installer/updates/ud_7_05_29.php';
+            $updater = new \ExpressionEngine\Updater\Version_7_5_29\Updater();
+            checkMfaSession($updater->do_update() === true, 'Session column migration failed.');
+            checkMfaSession($updater->do_update() === true, 'Repeated migration failed.');
+            checkMfaSession($db->get_where('sessions', ['session_id' => $beforeId])->num_rows() === 1, 'Migration removed an existing login.');
+            $afterId = $runtime->create_new_session(42);
+            checkMfaSession($db->get_where('sessions', ['session_id' => $afterId])->row('mfa_login_id') === hash('sha256', $afterId), 'New login has no stable MFA association.');
+            break;
+        case 'restored-rotated-site-logout':
+        case 'restored-rotated-host-logout':
+        case 'rotated-shared-site-logout':
+        case 'rotated-shared-host-logout':
+        case 'logout-during-rotation-before-write':
+        case 'logout-during-rotation-after-write':
+        case 'restore-during-rotated-logout':
+        case 'verification-after-rotation-logout':
+            // Use the production rotation and logout methods. Only guest-profile
+            // loading and Remember Me are outside this MFA persistence scenario.
+            ee()->remove('remember');
+            ee()->set('remember', new class {
+                public function delete() {}
+            });
+            $db->where('session_id', 'issuing-session')->update('sessions', [
+                'sess_start' => ee()->localize->now, 'last_activity' => ee()->localize->now
+            ]);
+            $initial = $loadSession('issuing-session');
+            $initial->update_session();
+            $token = $approve();
+            $originalApproval = $approvals()[0];
+            $restoring = new Mfa_session(); // Another request holds the valid cookie.
+            $issuingId = 'issuing-session';
+            if (strpos($scenario, 'restored-rotated-') === 0) {
+                // The original session expired; a password/remembered login has
+                // reused its MFA approval before the browser ID rotates again.
+                ee()->remove('mfa_session');
+                ee()->set('mfa_session', new Mfa_session());
+                $restored = $loadSession('new-session');
+                $restored->restore_mfa();
+                checkMfaSession($restored->sdata['mfa_flag'] === 'skip', 'MFA was not restored.');
+                $db->where('session_id', 'issuing-session')->delete('sessions');
+                $db->where('session_id', 'new-session')->update('sessions', ['sess_start' => ee()->localize->now]);
+                $issuingId = 'new-session';
+            }
+            // Same member and browser metadata, but an independent device login.
+            $input->cookies = [];
+            $session('other-browser', 42, 'skip');
+            $other = new Mfa_session();
+            checkMfaSession($other->create($member, 'other-browser'), 'Other device could not verify.');
+            $otherToken = end($input->sent)[1];
+            $input->cookies = []; // Another host cannot send the original host-only cookie.
+            if (in_array($scenario, ['rotated-shared-site-logout', 'restored-rotated-site-logout'], true)) {
+                $input->cookies['mfa_session_1'] = $token;
+                ee()->config->set_item('site_id', 2); // This site reads its own cookie.
+            }
+            ee()->remove('mfa_session');
+            ee()->set('mfa_session', new Mfa_session());
+            $rotating = $loadSession($issuingId);
+            $logout = $loadSession($issuingId);
+            ee()->localize->now += 61;
+            $concurrent = strpos($scenario, 'logout-during-rotation-') === 0;
+            if ($concurrent) {
+                $interleavedDb = new class($db, $logout, $scenario) {
+                    private $db;
+                    private $logout;
+                    private $after;
+                    public $ran = false;
+                    public function __construct($db, $logout, $scenario) {
+                        $this->db = $db;
+                        $this->logout = $logout;
+                        $this->after = $scenario === 'logout-during-rotation-after-write';
+                    }
+                    public function __call($method, $arguments) { return $this->db->$method(...$arguments); }
+                    public function query($sql, $binds = []) {
+                        if (!$this->ran && preg_match('/^UPDATE .*sessions`? SET /', $sql)) {
+                            $this->ran = true;
+                            if (!$this->after) { $this->logout->destroy(); }
+                            $result = $this->db->query($sql, $binds);
+                            if ($this->after) { $this->logout->destroy(); }
+                            return $result;
+                        }
+                        return $this->db->query($sql, $binds);
+                    }
+                };
+                ee()->remove('db');
+                ee()->set('db', $interleavedDb);
+                try {
+                    $rotating->update_session();
+                    checkMfaSession($interleavedDb->ran, 'Concurrent logout did not run.');
+                } finally {
+                    ee()->remove('db');
+                    ee()->set('db', $db);
+                }
+            } else {
+                $rotating->update_session();
+                $rotatedId = $rotating->sdata['session_id'];
+                checkMfaSession($rotatedId !== $issuingId, 'Session did not rotate.');
+                if ($scenario === 'verification-after-rotation-logout') {
+                    checkMfaSession((new Mfa_session())->create($member, $rotatedId), 'Rotated login could not verify.');
+                    $input->cookies = [];
+                    ee()->remove('mfa_session');
+                    ee()->set('mfa_session', new Mfa_session());
+                } else {
+                    $row = $db->get_where('mfa_sessions', ['token_hash' => hash('sha256', $token)])->row_array();
+                    checkMfaSession($row['expires_at'] === $originalApproval['expires_at'], 'Rotation extended MFA lifetime.');
+                }
+                // Multiple rotations must retain the same logout association.
+                ee()->localize->now += 61;
+                $rotating = $loadSession($rotatedId);
+                $rotating->update_session();
+                if ($scenario === 'restore-during-rotated-logout') {
+                    $interleavedDb = new class($db, $restoring) {
+                        private $db;
+                        private $restoring;
+                        public $ran = false;
+                        public function __construct($db, $restoring) { $this->db = $db; $this->restoring = $restoring; }
+                        public function __call($method, $arguments) { return $this->db->$method(...$arguments); }
+                        public function where($key, $value = null, $escape = true, $binary = false) {
+                            // Interleave before building the final cleanup query,
+                            // while the shared builder has no pending conditions.
+                            if (!$this->ran && $key === 'token_hash') {
+                                $this->ran = true;
+                                checkMfaSession($this->restoring->restore(42, 'new-session') === false, 'Concurrent restore reused approval after the login was deleted.');
+                            }
+                            return $this->db->where($key, $value, $escape, $binary);
+                        }
+                    };
+                    ee()->remove('db');
+                    ee()->set('db', $interleavedDb);
+                    try {
+                        $loadSession($rotating->sdata['session_id'])->destroy();
+                        checkMfaSession($interleavedDb->ran, 'Concurrent restore did not run.');
+                    } finally {
+                        ee()->remove('db');
+                        ee()->set('db', $db);
+                    }
+                } else {
+                    $loadSession($rotating->sdata['session_id'])->destroy();
+                }
+            }
+            checkMfaSession(array_column($approvals(), 'token_hash') === [hash('sha256', $otherToken)], 'Logout left approval for the shared login or revoked another device.');
+            checkMfaSession($db->get_where('sessions', ['session_id' => $rotating->sdata['session_id']])->num_rows() === 0, 'Concurrent logout left the rotated login active.');
+            checkMfaSession($db->get_where('sessions', ['session_id' => 'other-browser'])->num_rows() === 1, 'Logout removed another device login.');
+            ee()->config->set_item('site_id', 1);
+            $db->where('session_id', 'new-session')->delete('sessions');
+            $session('new-session'); // A later password login must ask for MFA.
+            $input->cookies = ['mfa_session_1' => $token];
+            $reject(new Mfa_session());
+            $input->cookies = ['mfa_session_1' => $otherToken];
+            checkMfaSession((new Mfa_session())->restore(42, 'new-session'), 'Other device approval was revoked.');
+            checkMfaSession((new Mfa_session())->create($member, $rotating->sdata['session_id']) === false, 'Logged-out rotated session issued a new approval.');
+            break;
         case 'multisite-cookie-isolation':
             $siteOneToken = $approve();
             $session('site-two-issuing', 42, 'skip');
@@ -217,17 +438,17 @@ if (array_key_exists($scenario, $invalidApprovals)) {
             checkMfaSession($siteTwo->create($member, 'site-two-issuing') === true, 'Site two could not verify.');
             checkMfaSession(isset($input->cookies['mfa_session_1'], $input->cookies['mfa_session_2']), 'Sites overwrote the same cookie.');
             checkMfaSession($input->cookies['mfa_session_1'] === $siteOneToken, 'Site two replaced site one approval.');
-            checkMfaSession($siteTwo->restore(42, 'new-session') === true, 'Site two approval rejected.');
+            checkMfaSession($siteTwo->restore(42, 'new-session') !== false, 'Site two approval rejected.');
             $db->where('session_id', 'new-session')->update('sessions', ['mfa_flag' => 'show']);
             ee()->config->set_item('site_id', 1);
             $siteOne = new Mfa_session();
-            checkMfaSession($siteOne->restore(42, 'new-session') === true, 'Returning to site one lost approval.');
+            checkMfaSession($siteOne->restore(42, 'new-session') !== false, 'Returning to site one lost approval.');
             $db->where('session_id', 'issuing-session')->delete('sessions');
             $siteOne->delete(42, 'issuing-session');
             checkMfaSession(!isset($input->cookies['mfa_session_1']) && isset($input->cookies['mfa_session_2']), 'Logout removed another site cookie.');
             $db->where('session_id', 'new-session')->update('sessions', ['mfa_flag' => 'show']);
             ee()->config->set_item('site_id', 2);
-            checkMfaSession((new Mfa_session())->restore(42, 'new-session') === true, 'Site one logout revoked site two login.');
+            checkMfaSession((new Mfa_session())->restore(42, 'new-session') !== false, 'Site one logout revoked site two login.');
             break;
         case 'case-sensitive-credentials':
             $approve();
@@ -267,7 +488,7 @@ if (array_key_exists($scenario, $invalidApprovals)) {
             $approve();
             $before = $approvals();
             ee()->localize->now += 86399;
-            checkMfaSession($mfa->restore(42, 'new-session') === true, 'Approval expired too soon.');
+            checkMfaSession($mfa->restore(42, 'new-session') !== false, 'Approval expired too soon.');
             checkMfaSession($approvals() === $before && count($input->sent) === 1, 'Restore extended approval.');
             ee()->localize->now++;
             $db->where('session_id', 'new-session')->update('sessions', ['mfa_flag' => 'show']);
@@ -284,7 +505,7 @@ if (array_key_exists($scenario, $invalidApprovals)) {
         case 'expired-login-session':
             $approve();
             $db->where('session_id', 'issuing-session')->delete('sessions');
-            checkMfaSession($mfa->restore(42, 'new-session') === true, 'Login expiration revoked MFA approval.');
+            checkMfaSession($mfa->restore(42, 'new-session') !== false, 'Login expiration revoked MFA approval.');
             break;
         case 'rotation':
             $old = $approve();
@@ -294,7 +515,7 @@ if (array_key_exists($scenario, $invalidApprovals)) {
             $input->cookies['mfa_session_1'] = $old;
             $reject(new Mfa_session());
             $input->cookies['mfa_session_1'] = $new;
-            checkMfaSession((new Mfa_session())->restore(42, 'new-session') === true, 'Replacement token rejected.');
+            checkMfaSession((new Mfa_session())->restore(42, 'new-session') !== false, 'Replacement token rejected.');
             checkMfaSession((int) $approvals()[0]['expires_at'] === 2086410, 'Replacement lifetime incorrect.');
             break;
         case 'unverified-session':
@@ -342,7 +563,7 @@ if (array_key_exists($scenario, $invalidApprovals)) {
         case 'other-member-revocation':
             $approve();
             $mfa->revoke_member(43);
-            checkMfaSession($mfa->restore(42, 'new-session') === true, 'Revocation affected another member.');
+            checkMfaSession($mfa->restore(42, 'new-session') !== false, 'Revocation affected another member.');
             break;
         default:
             throw new InvalidArgumentException('Unknown MFA scenario: ' . $scenario);

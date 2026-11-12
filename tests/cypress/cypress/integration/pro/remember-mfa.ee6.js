@@ -103,7 +103,7 @@ context('Independent MFA sessions', () => {
 
     const seedOtherMfaSession = () => cy.task('db:query', `
         INSERT INTO exp_mfa_sessions
-            (token_hash, member_id, site_id, verified_at, expires_at, issued_session_hash)
+            (token_hash, member_id, site_id, verified_at, expires_at, mfa_login_id)
         VALUES (REPEAT('c', 64), ${memberId}, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP() + 86400, SHA2('other-browser', 256))
     `);
 

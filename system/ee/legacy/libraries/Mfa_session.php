@@ -47,15 +47,16 @@ class Mfa_session
         $sessions = ee()->db->dbprefix('sessions');
         $members = ee()->db->dbprefix('members');
         $created = ee()->db->query("INSERT INTO {$approvals}
-            (token_hash, member_id, site_id, verified_at, expires_at, issued_session_hash, credential_hash)
-            SELECT ?, m.member_id, ?, ?, ?, ?,
+            (token_hash, member_id, site_id, verified_at, expires_at, mfa_login_id, credential_hash)
+            SELECT ?, m.member_id, ?, ?, ?,
+                COALESCE(NULLIF(s.mfa_login_id, ''), SHA2(s.session_id, 256)),
                 SHA2(CONCAT(m.password, ':', m.unique_id, ':', m.backup_mfa_code), 256)
             FROM {$members} m JOIN {$sessions} s ON s.member_id = m.member_id
             WHERE m.member_id = ? AND s.session_id = ? AND s.mfa_flag = 'skip'
                 AND m.enable_mfa = 'y' AND BINARY m.password = ?
                 AND BINARY m.unique_id = ? AND BINARY m.backup_mfa_code = ?", [
                 hash('sha256', $token), ee()->config->item('site_id'), $now, $now + $length,
-                hash('sha256', $session_id), $member->member_id, $session_id, $member->password,
+                $member->member_id, $session_id, $member->password,
                 $member->unique_id, $member->backup_mfa_code
             ]);
 
@@ -65,12 +66,15 @@ class Mfa_session
 
         // Replace only the incoming approval. Concurrent successful verifications
         // each need a usable token regardless of response order. Logout still
-        // revokes all approvals created by this login via issued_session_hash.
-        ee()->db->query("DELETE FROM {$approvals} WHERE member_id = ? AND site_id = ? AND token_hash = ?", [
-            $member->member_id, ee()->config->item('site_id'),
-            $this->token ? hash('sha256', $this->token) : ''
-        ]);
-        ee()->db->query("DELETE FROM {$approvals} WHERE expires_at <= ?", [$now]);
+        // revokes all approvals created by this login via mfa_login_id.
+        if ($this->token) {
+            ee()->db->delete('mfa_sessions', [
+                'member_id' => $member->member_id,
+                'site_id' => ee()->config->item('site_id'),
+                'token_hash' => hash('sha256', $this->token)
+            ]);
+        }
+        ee()->db->delete('mfa_sessions', ['expires_at <=' => $now]);
         $this->token = $token;
         ee()->input->set_cookie($this->cookie, $token, $length);
 
@@ -84,7 +88,7 @@ class Mfa_session
      *
      * @param int $member_id The authenticated member.
      * @param string $session_id The new password or remembered-login session.
-     * @return bool Whether MFA approval was persisted on that session.
+     * @return string|false Stable login identity, or false when approval failed.
      */
     public function restore($member_id, $session_id)
     {
@@ -97,46 +101,75 @@ class Mfa_session
         $approvals = ee()->db->dbprefix('mfa_sessions');
         $sessions = ee()->db->dbprefix('sessions');
         $members = ee()->db->dbprefix('members');
-        $updated = ee()->db->query("UPDATE {$sessions} SET mfa_flag = 'skip'
-            WHERE session_id = ? AND member_id = ? AND mfa_flag = 'show'
-            AND EXISTS (
-                SELECT 1 FROM {$approvals} a JOIN {$members} m ON m.member_id = a.member_id
-                WHERE a.token_hash = ? AND a.member_id = ? AND a.site_id = ?
-                    AND a.expires_at > ? AND a.verified_at <= ? AND a.verified_at > ?
-                    AND m.enable_mfa = 'y'
-                    AND a.credential_hash = SHA2(CONCAT(m.password, ':', m.unique_id, ':', m.backup_mfa_code), 256)
-            )", [
-                $session_id, $member_id,
-                hash('sha256', $this->token), $member_id, ee()->config->item('site_id'),
+        $updated = ee()->db->query("UPDATE {$sessions} s
+            JOIN {$approvals} a ON a.member_id = s.member_id
+            JOIN {$members} m ON m.member_id = a.member_id
+            SET s.mfa_flag = 'skip', s.mfa_login_id = a.mfa_login_id
+            WHERE s.session_id = ? AND s.member_id = ? AND s.mfa_flag = 'show'
+                AND a.token_hash = ? AND a.site_id = ?
+                AND a.expires_at > ? AND a.verified_at <= ? AND a.verified_at > ?
+                AND m.enable_mfa = 'y'
+                AND a.credential_hash = SHA2(CONCAT(m.password, ':', m.unique_id, ':', m.backup_mfa_code), 256)", [
+                $session_id, $member_id, hash('sha256', $this->token), ee()->config->item('site_id'),
                 $now, $now, $now - $length
             ]);
 
-        return $updated && ee()->db->affected_rows() === 1;
+        if (!$updated || ee()->db->affected_rows() !== 1) {
+            return false;
+        }
+
+        // Keep the in-memory session attached to the same login as the approval.
+        // A concurrent logout may already have removed it after the UPDATE.
+        return ee()->db->select('mfa_login_id')
+            ->get_where('sessions', ['session_id' => $session_id])->row('mfa_login_id') ?: false;
     }
 
     /**
-     * Called after deleting the login session. Also remove approvals issued by
-     * an overlapping verification request which used the previous cookie.
+     * Delete the login and its MFA approvals, including after session expiry.
+     * Live sessions and approvals are removed atomically to prevent reuse during logout.
      *
      * @param int $member_id The member being logged out, or zero for a guest.
      * @param string $session_id The login session being destroyed.
+     * @param string|null $login_id Stable login identity across session ID rotation.
      * @return void
      */
-    public function delete($member_id, $session_id)
+    public function delete($member_id, $session_id, $login_id = null)
     {
-        if (ee()->db->table_exists('mfa_sessions')) {
-            $table = ee()->db->dbprefix('mfa_sessions');
+        if ($login_id) {
+            // A concurrent request may already have rotated the browser ID.
+            // Delete the login and its MFA approval in the same write so a
+            // concurrent restore cannot reuse approval between the deletions.
+            $sessions = ee()->db->dbprefix('sessions');
+            $hashes = ee()->db->dbprefix('security_hashes');
+            $approvals = ee()->db->dbprefix('mfa_sessions');
+            ee()->db->query("DELETE s, h, a FROM {$sessions} s
+                LEFT JOIN {$hashes} h ON h.session_id = s.session_id
+                LEFT JOIN {$approvals} a ON a.member_id = s.member_id
+                    AND a.mfa_login_id = s.mfa_login_id
+                WHERE s.member_id = ? AND s.mfa_login_id = ?", [
+                    $member_id, $login_id
+                ]);
+        } elseif ($session_id) {
+            ee()->db->where('session_id', $session_id);
+            ee()->db->delete(array('sessions', 'security_hashes'));
+        }
+
+        if ($login_id || ee()->db->table_exists('mfa_sessions')) {
             $token_hash = $this->token ? hash('sha256', $this->token) : '';
             // The approval can outlive its issuing login. Recover that login's
             // identity so logout also removes overlapping approvals after expiry.
-            $approval = $this->token ? ee()->db->select('member_id, issued_session_hash')
+            $approval = $this->token ? ee()->db->select('member_id, mfa_login_id')
                 ->get_where('mfa_sessions', ['token_hash' => $token_hash])->row_array() : [];
-            ee()->db->query("DELETE FROM {$table}
-                WHERE token_hash = ? OR (member_id = ? AND issued_session_hash = ?)
-                    OR (member_id = ? AND issued_session_hash = ?)", [
-                    $token_hash, (int) $member_id, hash('sha256', (string) $session_id),
-                    $approval['member_id'] ?? 0, $approval['issued_session_hash'] ?? ''
-                ]);
+            ee()->db->where('token_hash', $token_hash)
+                ->or_start_group()
+                    ->where('member_id', (int) $member_id)
+                    ->where('mfa_login_id', $login_id ?: hash('sha256', (string) $session_id))
+                ->end_group()
+                ->or_start_group()
+                    ->where('member_id', $approval['member_id'] ?? 0)
+                    ->where('mfa_login_id', $approval['mfa_login_id'] ?? '')
+                ->end_group()
+                ->delete('mfa_sessions');
         }
         $this->token = false;
         ee()->input->delete_cookie($this->cookie);
@@ -152,8 +185,7 @@ class Mfa_session
     {
         // Member updates can also occur before this table's installer step.
         if (ee()->db->table_exists('mfa_sessions')) {
-            $table = ee()->db->dbprefix('mfa_sessions');
-            ee()->db->query("DELETE FROM {$table} WHERE member_id = ?", [(int) $member_id]);
+            ee()->db->delete('mfa_sessions', ['member_id' => (int) $member_id]);
         }
     }
 

@@ -43,7 +43,26 @@ class Session extends Model
     protected $last_activity;
     protected $can_debug;
     protected $mfa_flag;
+    protected $mfa_login_id;
     protected $pro_banner_seen;
+
+    /** Keep all session queries usable before the one-click schema step runs. */
+    public static function getClassFields()
+    {
+        $fields = parent::getClassFields();
+        if (!self::hasMfaLoginId()) {
+            $fields = array_values(array_diff($fields, ['mfa_login_id']));
+        }
+
+        return $fields;
+    }
+
+    /** Avoid schema queries after installation; inspect only during an upgrade. */
+    public static function hasMfaLoginId()
+    {
+        return version_compare((string) ee()->config->item('app_version'), '7.5.29', '>=')
+            || ee()->db->field_exists('mfa_login_id', 'sessions');
+    }
 
     /**
      * Manage sudo-like timeout for "trust but verify" actions
