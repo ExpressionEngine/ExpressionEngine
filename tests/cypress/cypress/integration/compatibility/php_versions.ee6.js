@@ -20,6 +20,7 @@ describe('Installed PHP compatibility', () => {
   let fixture;
   let allowPhp;
   before(() => {
+    cy.task('db:seed');
     cy.exec('cd support/fixtures && php config.php allow_php').then(result => {
       const value = result.stdout.trim().toLowerCase();
       allowPhp = ['', 'n', 'no', 'false', 'off', '0'].includes(value) ? 'n' : 'y';
