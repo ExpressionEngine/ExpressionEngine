@@ -184,14 +184,11 @@ class MfaSessionTest extends TestCase
     }
 
     /** @dataProvider cookieLifetimeProvider */
-    public function testMfaCookieLifetimeUsesTheNewWindowUnlessExplicitlyOverridden($name, $enforced, $expected)
+    public function testCookieLifetimeKeepsMfaIndependentOfGenericSettings($name, $stored, $enforced, $expected)
     {
-        require_once SYSPATH . 'ee/ExpressionEngine/Boot/boot.common.php';
-        require_once BASEPATH . 'core/Input.php';
         $registry = $this->getMockBuilder(CookieRegistry::class)->onlyMethods(['getCookieSettings'])->getMock();
-        $registry->expects($this->once())->method('getCookieSettings')
-            ->with($name === 'ordinary' ? 'ordinary' : 'mfa_session')->willReturn([
-            'cookie_lifetime' => 86400, 'cookie_enforced_lifetime' => $enforced
+        $registry->method('getCookieSettings')->willReturn([
+            'cookie_lifetime' => $stored, 'cookie_enforced_lifetime' => $enforced
         ]);
         ee()->setMock('CookieRegistry', $registry);
         $input = $this->capturingInput();
@@ -200,15 +197,23 @@ class MfaSessionTest extends TestCase
             $data['policy_name'] = 'mfa_session';
         }
         $input->set_cookie($data);
-        $this->assertSame($this->clock->now + $expected, $input->sent['expire']);
+        $this->assertSame($expected > 0 ? $this->clock->now + $expected : 0, $input->sent['expire']);
     }
 
     public static function cookieLifetimeProvider()
     {
-        return [['mfa_session', null, 172800], ['mfa_session', 3600, 3600],
-            ['mfa_session_1', null, 172800], ['mfa_session_1', 3600, 3600],
-            ['mfa_session_27', null, 172800], ['mfa_session_27', 3600, 3600],
-            ['ordinary', null, 86400]];
+        $cases = [];
+        foreach (['mfa_session', 'mfa_session_1', 'mfa_session_27'] as $name) {
+            foreach ([86400, null] as $stored) {
+                foreach ([3600, 0, 345600, null] as $enforced) {
+                    $cases[] = [$name, $stored, $enforced, 172800];
+                }
+            }
+        }
+        return array_merge($cases, [
+            ['ordinary', 86400, null, 86400], ['ordinary', 86400, 0, 0],
+            ['ordinary', 86400, 3600, 3600], ['ordinary', 86400, 345600, 345600]
+        ]);
     }
 
     /** @dataProvider cookiePolicyProvider */
@@ -251,7 +256,7 @@ class MfaSessionTest extends TestCase
         $this->config->setItem('site_id', $siteId);
         $registry = $this->getMockBuilder(CookieRegistry::class)->onlyMethods(['getCookieSettings'])->getMock();
         $registry->registerNecessary('mfa_session');
-        $registry->expects($this->once())->method('getCookieSettings')->with('mfa_session')
+        $registry->method('getCookieSettings')
             ->willReturn(['cookie_lifetime' => 86400, 'cookie_enforced_lifetime' => 3600]);
         ee()->setMock('CookieRegistry', $registry);
         $input = $this->capturingInput();
@@ -264,7 +269,7 @@ class MfaSessionTest extends TestCase
         $this->assertArrayHasKey('policy_name', $input->sent);
         $this->assertSame('mfa_session', $input->sent['policy_name']);
         $this->assertMatchesRegularExpression('/\A[a-f0-9]{64}\z/', $input->sent['value']);
-        $this->assertSame($this->clock->now + 3600, $input->sent['expire']);
+        $this->assertSame($this->clock->now + 86400, $input->sent['expire']);
     }
 
     /** @dataProvider siteCookieProvider */

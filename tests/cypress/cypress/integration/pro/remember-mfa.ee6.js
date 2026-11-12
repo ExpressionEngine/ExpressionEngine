@@ -478,7 +478,7 @@ context('Independent MFA sessions', () => {
         });
     });
 
-    it('uses the necessary MFA policy for secure cookie creation and deletion', () => {
+    it('uses the MFA window and necessary policy for cookie creation and deletion', () => {
         cy.eeConfig({ item: 'cookie_httponly', value: 'n' });
         cy.eeConfig({ item: 'require_cookie_consent', value: 'y' });
         cy.task('db:query', "UPDATE exp_cookie_settings SET cookie_lifetime = 86400, cookie_enforced_lifetime = 3600 WHERE cookie_name = 'mfa_session'");
@@ -489,11 +489,11 @@ context('Independent MFA sessions', () => {
         mfaCookie().then(cookie => {
             expect(cookie.name).to.eq('exp_mfa_session_1');
             expect(cookie.httpOnly).to.eq(true);
-            expect(cookie.expiry).to.be.closeTo(Date.now() / 1000 + 3600, 10);
             expect(cookie.sameSite).to.eq('lax');
-            cy.task('db:query', `SELECT token_hash FROM exp_mfa_sessions WHERE member_id = ${memberId}`)
+            cy.task('db:query', `SELECT token_hash, expires_at FROM exp_mfa_sessions WHERE member_id = ${memberId}`)
                 .then(([rows]) => {
                     expect(rows).to.have.length(1);
+                    expect(cookie.expiry).to.be.closeTo(Number(rows[0].expires_at), 1);
                     expect(rows[0].token_hash).not.to.eq(cookie.value);
                     expect(rows[0].token_hash).to.match(/^[a-f0-9]{64}$/);
                 });
@@ -503,11 +503,12 @@ context('Independent MFA sessions', () => {
         });
     });
 
-    it('uses a changed MFA window instead of the cookie registry original lifetime', () => {
+    it('uses a changed MFA window despite a stale default and session-cookie override', () => {
         login(false);
         verifyCode();
         cy.visit('admin.php?/cp/login/logout');
         cy.eeConfig({ item: 'mfa_session_length', value: '172800' });
+        cy.task('db:query', "UPDATE exp_cookie_settings SET cookie_lifetime = 86400, cookie_enforced_lifetime = 0 WHERE cookie_name = 'mfa_session'");
         login(false);
         verifyCode();
         mfaCookie().then(cookie => {

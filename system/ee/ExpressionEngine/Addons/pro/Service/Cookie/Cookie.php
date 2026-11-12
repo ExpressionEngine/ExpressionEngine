@@ -70,7 +70,9 @@ class Cookie extends Core\Cookie
                 'cookie_title' => $cookie->cookie_title,
                 'cookie_name' => $cookie_prefix . $cookie->cookie_name,
                 'cookie_description' => $cookie->cookie_description,
-                'cookie_lifetime' => ($cookie->cookie_enforced_lifetime !== null) ? $cookie->cookie_enforced_lifetime : $cookie->cookie_lifetime,
+                'cookie_lifetime' => $cookie->cookie_name === 'mfa_session'
+                    ? (int) ee()->config->item('mfa_session_length')
+                    : (($cookie->cookie_enforced_lifetime !== null) ? $cookie->cookie_enforced_lifetime : $cookie->cookie_lifetime),
                 'cookie_provider' => $cookie->cookie_provider
             ];
         }

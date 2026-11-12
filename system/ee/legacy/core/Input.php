@@ -147,8 +147,9 @@ class EE_Input
         // Clean up the value.
         $data['value'] = stripslashes($data['value']);
 
-        // check the cookie setting for expiration date
-        if (is_numeric($data['expire'])) {
+        // MFA supplies its lifetime from mfa_session_length.
+        // Other cookies can use the lifetime configured in cookie settings.
+        if (is_numeric($data['expire']) && $data['policy_name'] !== 'mfa_session') {
             $cookieRegistry = ee('CookieRegistry');
             $settingsName = $data['policy_name'];
             $loadedCookieSettings = $cookieRegistry->getCookieSettings($settingsName);
@@ -159,10 +160,7 @@ class EE_Input
                     $cookieSettings->save();
                     $cookieRegistry->registerCookieSettings($cookieSettings);
                 } else {
-                    // MFA's default lifetime follows the current verification window.
-                    // Still honor an administrator's explicit cookie lifetime override.
-                    if (is_numeric($loadedCookieSettings['cookie_lifetime'])
-                        && ($settingsName !== 'mfa_session' || $loadedCookieSettings['cookie_enforced_lifetime'] !== null)) {
+                    if (is_numeric($loadedCookieSettings['cookie_lifetime'])) {
                         $data['expire'] = ($loadedCookieSettings['cookie_enforced_lifetime'] !== null) ? $loadedCookieSettings['cookie_enforced_lifetime'] : $loadedCookieSettings['cookie_lifetime'];
                     }
                 }
