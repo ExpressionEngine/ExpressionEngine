@@ -107,6 +107,41 @@ class QueryTest extends TestCase
         ], $inserts);
     }
 
+    /**
+     * Exports JSON values as escaped strings while preserving SQL NULL.
+     *
+     * @return void
+     */
+    public function testGetInsertsForTableWithJsonColumn()
+    {
+        $json = json_encode(['name' => "O'Reilly", 'path' => 'C:\\tmp']);
+        $escaped_json = addslashes($json);
+
+        $this->db_query->shouldReceive('query')->with('DESCRIBE `table`;')->andReturn($this->db_query);
+        $this->db_query->shouldReceive('result_array')->andReturn([
+            ['Field' => 'payload', 'Type' => 'json']
+        ]);
+        $this->db_query->shouldReceive('offset')->with(0)->andReturn($this->db_query);
+        $this->db_query->shouldReceive('limit')->with(50)->andReturn($this->db_query);
+        $this->db_query->shouldReceive('get')->with('table')->andReturn($this->db_query2);
+        $this->db_query2->shouldReceive('result_array')->andReturn([
+            ['payload' => $json],
+            ['payload' => '42'],
+            ['payload' => 'null'],
+            ['payload' => null]
+        ]);
+        $this->db_query->shouldReceive('escape_str')->once()->with($json)->andReturn($escaped_json);
+        $this->db_query->shouldReceive('escape_str')->once()->with('42')->andReturn('42');
+        $this->db_query->shouldReceive('escape_str')->once()->with('null')->andReturn('null');
+
+        $this->query->makeCompactQueries();
+
+        $this->assertSame([
+            'insert_string' => "INSERT INTO `table` (`payload`) VALUES ('{$escaped_json}'), ('42'), ('null'), (NULL);",
+            'rows_exported' => 4
+        ], $this->query->getInsertsForTable('table', 0, 50));
+    }
+
     public function testGetInsertsNoRows()
     {
         $this->db_query->shouldReceive('query')->with('DESCRIBE `table`;')->andReturn($this->db_query);
