@@ -17,6 +17,9 @@ class Smartforge
     {
         ee()->load->dbforge();
         ee()->load->helper('array');
+        if (! isset(ee()->logger)) {
+            ee()->load->library('logger');
+        }
     }
 
     /**
