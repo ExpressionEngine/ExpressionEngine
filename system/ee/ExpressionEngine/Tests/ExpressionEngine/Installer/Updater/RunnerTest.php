@@ -98,7 +98,9 @@ class RunnerTest extends TestCase
             ->onlyMethods(['normalize'])
             ->getMock();
         $filesystem->method('normalize')->willReturnCallback(function ($path) {
-            if (strpos($path, $this->directory) !== 0) {
+            $normalizedPath = str_replace('\\', '/', $path);
+            $normalizedDirectory = str_replace('\\', '/', $this->directory);
+            if (strpos($normalizedPath, $normalizedDirectory) !== 0) {
                 throw new \RuntimeException('Updater path outside its fixture: ' . $path);
             }
             return $path;
