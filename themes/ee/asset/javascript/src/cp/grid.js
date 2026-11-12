@@ -512,6 +512,14 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 				that._fireEvent('display', $(this));
 			});
 
+			// A deferred editor with a custom width can change the table width after initialization.
+			var hasCustomWidthPreview = that.root.hasClass('entry-grid') && that.root.find('iframe.rte').is(function() {
+				return this.style.width && this.style.width !== '100%';
+			});
+			if (hasCustomWidthPreview) {
+				updateGridAutoLayout(that.root);
+			}
+
 			that._addMinimumRows();
 		}, 500);
 	},
@@ -1242,6 +1250,10 @@ $(window).on('load', function() {
 });
 
 $(window).on('resize', function() {
+	scheduleGridAutoLayoutUpdate();
+});
+
+$(document).on('entry:preview-open entry:preview-close', function() {
 	scheduleGridAutoLayoutUpdate();
 });
 
