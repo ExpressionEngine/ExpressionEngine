@@ -726,14 +726,20 @@ class WizardTest extends TestCase
         ee()->setMock('input', new WizardInputStub());
 
         $originalMode = @fileperms(PATH_CACHE) & 0777;
-        @chmod(PATH_CACHE, 0555);
+        try {
+            @chmod(PATH_CACHE, 0555);
+            clearstatcache(true, PATH_CACHE);
+            if (is_really_writable(PATH_CACHE)) {
+                $this->markTestSkipped('This environment cannot make the cache directory unwritable with chmod.');
+            }
 
-        $this->assertFalse($this->invokePrivate($wizard, 'preflight'));
-
-        @chmod(PATH_CACHE, $originalMode ?: 0755);
-        @unlink($wizard->config->config_path);
-        if ($createdSchemaPath) {
-            @rmdir($schemaPath);
+            $this->assertFalse($this->invokePrivate($wizard, 'preflight'));
+        } finally {
+            @chmod(PATH_CACHE, $originalMode ?: 0755);
+            @unlink($wizard->config->config_path);
+            if ($createdSchemaPath) {
+                @rmdir($schemaPath);
+            }
         }
     }
 

@@ -28,6 +28,9 @@ class Runner
 
     public function __construct()
     {
+        // Older CLI commands load a fixed list of updater classes without an autoloader.
+        require_once __DIR__ . '/UpdaterException.php';
+
         $this->setSteps([
             'updateFiles',
             'addLegacyFiles',
@@ -45,7 +48,16 @@ class Runner
      */
     public function updateFiles()
     {
+        if (REQ === 'CLI') {
+            $this->captureUpdateVersions();
+        }
+
         $this->makeUpdaterService()->updateFiles();
+
+        if (REQ === 'CLI') {
+            // The CLI can keep the old application bootstrap loaded after file replacement.
+            require_once SYSPATH . 'ee/updater/compatibility.php';
+        }
     }
 
     /**
@@ -220,9 +232,14 @@ class Runner
             ];
         }
 
-        // When updating from CLI, APP_VER is going to remain the original APP_VER
-        // so we need to set it to the new version, which is stored in the config
-        $app_ver = (REQ == 'CLI') ? $config->get('app_version') : APP_VER;
+        $app_ver = APP_VER;
+        if (REQ === 'CLI') {
+            $state = $this->getUpdateState();
+            $version = $rollback ? 'from_version' : 'to_version';
+            // Recovery may follow a web update, which does not need CLI version state.
+            $app_ver = isset($state[$version]) ? $state[$version]
+                : $this->getCodeVersion(SYSPATH . 'ee/legacy/libraries/Core.php');
+        }
 
         $setToConfig = [
             'is_system_on' => $config->get('is_system_on_before_updater', 'n'),
@@ -235,7 +252,7 @@ class Runner
             ee()->load->library('logger');
         }
 
-        ee()->logger->updater('Update complete. Now running version ' . $app_ver);
+        ee()->logger->updater(($rollback ? 'Update rolled back. Now running version ' : 'Update complete. Now running version ') . $app_ver);
 
         $working_dir = $this->makeUpdaterService()->path();
         $this->logger->log('Deleting updater working directory: ' . $working_dir);
@@ -244,7 +261,8 @@ class Runner
         ee('Filesystem')->deleteDir(SYSPATH . 'ee/updater');
 
         if (REQ == 'CLI') {
-            stdout('Successfully updated to ExpressionEngine ' . $app_ver, CLI_STDOUT_SUCCESS);
+            $this->completeCliUpdate((bool) $rollback);
+            stdout(($rollback ? 'Rolled back to ExpressionEngine ' : 'Successfully updated to ExpressionEngine ') . $app_ver, CLI_STDOUT_SUCCESS);
         } else {
             ee()->config->config['allow_extensions'] = 'n';
 
@@ -319,9 +337,17 @@ class Runner
 
         try {
             $this->runStepParent($step);
-        } catch (\Exception $e) {
-            $this->logger->log($e->getMessage());
-            $this->logger->log($e->getTraceAsString());
+        } catch (\Throwable $e) {
+            // Completion hooks run after the working directory has been removed.
+            if (is_dir(PATH_CACHE . 'ee_update')) {
+                $this->logger->log($e->getMessage());
+                $this->logger->log($e->getTraceAsString());
+            }
+
+            if (REQ === 'CLI' && is_file(SYSPATH . 'ee/updater/recovery.php')) {
+                $command = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(SYSPATH . 'ee/updater/recovery.php');
+                throw new Service\Updater\UpdaterException($e->getMessage() . "\nTo roll back, run: " . $command, (int) $e->getCode(), $e);
+            }
 
             throw $e;
         }
@@ -368,10 +394,88 @@ class Runner
      */
     protected function makeDatabaseUpdaterService()
     {
+        $from_version = $this->getFromVersion();
+
         return new Service\Updater\DatabaseUpdater(
-            ee()->config->item('app_version'),
+            $from_version,
             new Filesystem()
         );
+    }
+
+    /**
+     * Preserve versions before replacement, including handoffs from older CLI commands
+     * that have already written the target version into the site's configuration.
+     */
+    protected function captureUpdateVersions()
+    {
+        $state = $this->getUpdateState();
+        if (! isset($state['from_version'], $state['to_version'])) {
+            $state['from_version'] = function_exists('ee') ? $this->getFromVersion()
+                : $this->getCodeVersion(SYSPATH . 'ee/legacy/libraries/Core.php');
+            $state['to_version'] = $this->getCodeVersion($state['archive_path'] . '/system/ee/legacy/libraries/Core.php');
+            $json = json_encode($state);
+            if (file_put_contents(PATH_CACHE . 'ee_update/configs.json', $json, LOCK_EX) !== strlen($json)) {
+                throw new Service\Updater\UpdaterException('Unable to save the update versions.');
+            }
+        }
+
+        if (function_exists('ee') && ee()->config->item('app_version') !== $state['from_version']) {
+            ee('Config')->getFile()->set('app_version', $state['from_version'], true);
+        }
+    }
+
+    protected function getUpdateState()
+    {
+        $state = json_decode((new Filesystem())->read(PATH_CACHE . 'ee_update/configs.json'), true);
+        if (! is_array($state)) {
+            throw new Service\Updater\UpdaterException('Unable to read the updater state.');
+        }
+        return $state;
+    }
+
+    protected function getFromVersion()
+    {
+        $from_version = ee()->config->item('app_version');
+        if (REQ === 'CLI') {
+            $state = $this->getUpdateState();
+            if (isset($state['from_version'])) {
+                return $state['from_version'];
+            }
+            if (version_compare(APP_VER, $from_version, '<')) {
+                $from_version = APP_VER;
+            }
+        }
+        return $from_version;
+    }
+
+    protected function getCodeVersion($path)
+    {
+        // Read the packaged version without loading a second copy of EE_Core.
+        $source = (new Filesystem())->read($path);
+        if (! preg_match("/define\('APP_VER',\s*'([^']+)'\)/", $source, $match)) {
+            throw new Service\Updater\UpdaterException('Unable to read the ExpressionEngine version from ' . $path);
+        }
+        return $match[1];
+    }
+
+    protected function completeCliUpdate($rollback = false)
+    {
+        if ($rollback) {
+            // Recovery has already reloaded the restored application in a fresh process.
+            // The CP also calls this hook after returning from a rollback.
+            if (ee()->extensions->active_hook('updater_complete') === true) {
+                ee()->extensions->call('updater_complete');
+            }
+            return;
+        }
+
+        // The CP runs its completion hook in a new request after the updater is removed.
+        // Use a fresh application here too; the calling CLI may still have old classes loaded.
+        $command = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(SYSPATH . 'ee/eecli.php') . ' update --complete';
+        passthru($command, $status);
+        if ($status !== 0) {
+            throw new Service\Updater\UpdaterException('ExpressionEngine was updated, but its completion checks failed.');
+        }
     }
 
     /**

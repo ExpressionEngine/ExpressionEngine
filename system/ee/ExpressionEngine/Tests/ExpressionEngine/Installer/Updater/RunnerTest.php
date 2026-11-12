@@ -23,6 +23,8 @@ class RunnerTest extends TestCase
     private $originalFiles;
     private $newFiles;
     private $runner;
+    private $config;
+    private $messages = [];
 
     protected function setUp(): void
     {
@@ -36,6 +38,15 @@ class RunnerTest extends TestCase
         define('ExpressionEngine\Updater\Service\Updater\PATH_CACHE', $this->directory . 'cache/');
         define('REQ', 'CLI');
         define('CLI_VERBOSE', false);
+        require_once BASEPATH . 'helpers/cli_helper.php';
+
+        $this->config = new RunnerConfigStub();
+        ee()->setMock('config', $this->config);
+        ee()->setMock('Config', new class($this->config) {
+            private $config;
+            public function __construct($config) { $this->config = $config; }
+            public function getFile() { return $this->config; }
+        });
 
         // These dependencies are copied into the updater namespace by release packaging.
         foreach ([
@@ -53,6 +64,7 @@ class RunnerTest extends TestCase
 
         $this->originalFiles = [
             'system/ee/core.txt' => 'old core',
+            'system/ee/legacy/libraries/Core.php' => "<?php define('APP_VER', '7.5.28');",
             'system/ee/removed.txt' => 'old file',
             'system/ee/updater/probe.txt' => 'running updater',
             'system/user/config.php' => 'site configuration',
@@ -61,12 +73,15 @@ class RunnerTest extends TestCase
         ];
         $this->newFiles = [
             'system/ee/core.txt' => 'new core',
+            'system/ee/legacy/libraries/Core.php' => "<?php define('APP_VER', '7.5.29');",
             'system/ee/added.txt' => 'new file',
             'themes/ee/theme.txt' => 'new theme',
         ];
         foreach ($this->originalFiles as $path => $contents) {
             $this->writeFile($this->directory . $path, $contents);
         }
+        $this->writeFile($this->directory . 'system/ee/updater/compatibility.php',
+            file_get_contents(SYSPATH . 'ee/installer/updater/compatibility.php'));
         $manifest = [];
         foreach ($this->newFiles as $path => $contents) {
             $this->writeFile($this->archive . $path, $contents);
@@ -92,6 +107,9 @@ class RunnerTest extends TestCase
         $updater = new FileUpdater($filesystem, new Verifier($filesystem), $logger);
         $this->runner = new class($updater) extends Runner {
             private $fileUpdater;
+            public $completions = 0;
+            public $completionError;
+            public $completionRollbacks = [];
 
             public function __construct($fileUpdater)
             {
@@ -103,11 +121,26 @@ class RunnerTest extends TestCase
             {
                 return $this->fileUpdater;
             }
+
+            protected function completeCliUpdate($rollback = false)
+            {
+                $this->completions++;
+                $this->completionRollbacks[] = $rollback;
+                if ($this->completionError) {
+                    throw $this->completionError;
+                }
+            }
+
+            public function makeDatabaseUpdaterService()
+            {
+                return parent::makeDatabaseUpdaterService();
+            }
         };
     }
 
     protected function tearDown(): void
     {
+        ee()->resetMocks();
         if ($this->directory && is_dir($this->directory)) {
             $files = new \RecursiveIteratorIterator(
                 new \RecursiveDirectoryIterator($this->directory, \FilesystemIterator::SKIP_DOTS),
@@ -118,6 +151,11 @@ class RunnerTest extends TestCase
             }
             rmdir($this->directory);
         }
+    }
+
+    public function testLoadsExceptionsForOlderCliCommandsWithoutAnUpdaterAutoloader()
+    {
+        $this->assertTrue(class_exists(UpdaterException::class, false));
     }
 
     public function testInitializesAndLogsWithoutNewApplicationHelpers()
@@ -154,7 +192,15 @@ class RunnerTest extends TestCase
         foreach (['system/ee/updater/probe.txt', 'system/user/config.php', 'themes/user/theme.txt'] as $path) {
             $this->assertSame($this->originalFiles[$path], file_get_contents($this->directory . $path), $path);
         }
-        $this->assertFalse(function_exists('file_exists_safe'));
+        $this->assertTrue(function_exists('file_exists_safe'));
+        $this->assertFalse(file_exists_safe($this->directory . 'system/ee/core.txt' . "\0"));
+    }
+
+    public function testMakesNewHelpersAvailableToLateLoadedCoreClasses()
+    {
+        $this->runner->updateFiles();
+        $mime = new \ExpressionEngine\Library\Mime\MimeType();
+        $this->assertSame('text/plain', $mime->ofFile($this->directory . 'system/ee/core.txt'));
     }
 
     public function testRollsBackAfterInstalledFileVerificationFails()
@@ -175,11 +221,162 @@ class RunnerTest extends TestCase
         $this->assertFalse(function_exists('file_exists_safe'));
     }
 
+    public function testOlderCliHandoffRestoresTheSourceVersionBeforeReplacingFiles()
+    {
+        $this->config->config['app_version'] = '7.5.29';
+        file_put_contents($this->archive . 'system/ee/core.txt', 'damaged core');
+        try {
+            $this->runner->updateFiles();
+            $this->fail('The damaged package was accepted.');
+        } catch (UpdaterException $e) {
+            $this->assertSame(10, $e->getCode());
+        }
+        $state = json_decode(file_get_contents($this->directory . 'cache/ee_update/configs.json'), true);
+        $this->assertSame('7.5.28', $state['from_version']);
+        $this->assertSame('7.5.29', $state['to_version']);
+        $this->assertSame('7.5.28', $this->config->item('app_version'));
+    }
+
+    /** @dataProvider onlineStates */
+    public function testSuccessfulCompletionRecordsTheTargetAndPreservesOnlineState($online)
+    {
+        $this->config->config['is_system_on_before_updater'] = $online;
+        $this->runner->updateFiles();
+        $this->assertSame('7.5.28', $this->config->item('app_version'));
+        $this->mockCompletionServices();
+        $this->runner->selfDestruct();
+        $this->assertSame('7.5.29', $this->config->item('app_version'));
+        $this->assertSame($online, $this->config->item('is_system_on'));
+        $this->assertFalse($this->config->item('is_system_on_before_updater'));
+        $this->assertSame(1, $this->runner->completions);
+        $this->assertSame(['Update complete. Now running version 7.5.29'], $this->messages);
+    }
+
+    public function onlineStates()
+    {
+        return [['y'], ['n']];
+    }
+
+    public function testCompletionFailureKeepsItsMessageAfterCleanup()
+    {
+        $this->runner->updateFiles();
+        $this->mockCompletionServices();
+        ee()->setMock('Filesystem', new class(function ($path) {
+            $this->assertSame(0, strpos($path, $this->directory));
+            $files = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS),
+                \RecursiveIteratorIterator::CHILD_FIRST
+            );
+            foreach ($files as $file) {
+                $file->isDir() ? rmdir($file->getPathname()) : unlink($file->getPathname());
+            }
+            rmdir($path);
+        }) {
+            private $remove;
+            public function __construct($remove) { $this->remove = $remove; }
+            public function deleteDir($path) { ($this->remove)($path); }
+        });
+        $this->runner->completionError = new \RuntimeException('Completion hook failed');
+        try {
+            $this->runner->runStep('selfDestruct');
+            $this->fail('The completion failure was ignored.');
+        } catch (\RuntimeException $e) {
+            $this->assertSame('Completion hook failed', $e->getMessage());
+        }
+        $this->assertSame('7.5.29', $this->config->item('app_version'));
+        $this->assertDirectoryDoesNotExist($this->directory . 'cache/ee_update');
+        $this->assertDirectoryDoesNotExist($this->directory . 'system/ee/updater');
+    }
+
+    public function testRollbackRestoresOriginalVersionWithNewCodeAlreadyLoaded()
+    {
+        $this->runner->updateFiles();
+        define('ExpressionEngine\\Updater\\Service\\Updater\\APP_VER', '7.5.29');
+        $this->runner->rollback();
+        $this->mockCompletionServices();
+        $this->runner->selfDestruct('rollback');
+        $this->assertSame('7.5.28', $this->config->item('app_version'));
+        $this->assertSame('y', $this->config->item('is_system_on'));
+        $this->assertSame(1, $this->runner->completions);
+        $this->assertSame([true], $this->runner->completionRollbacks);
+        $this->assertSame(['Update rolled back. Now running version 7.5.28'], $this->messages);
+        $this->assertSame($this->originalFiles['system/ee/core.txt'], file_get_contents($this->directory . 'system/ee/core.txt'));
+    }
+
+    public function testCliCanFinishRollingBackAWebUpdateWithoutCliVersionMetadata()
+    {
+        define('ExpressionEngine\\Updater\\Service\\Updater\\APP_VER', '7.5.29');
+        $this->mockCompletionServices();
+        $this->runner->selfDestruct('rollback');
+        $this->assertSame('7.5.28', $this->config->item('app_version'));
+        $this->assertSame(1, $this->runner->completions);
+        $this->assertSame([true], $this->runner->completionRollbacks);
+        $this->assertSame(['Update rolled back. Now running version 7.5.28'], $this->messages);
+    }
+
+    private function mockCompletionServices()
+    {
+        ee()->setMock('Filesystem', new class {
+            public function deleteDir($path) { return true; }
+        });
+        ee()->setMock('load', new class {
+            public function is_loaded($name) { return true; }
+        });
+        ee()->setMock('logger', new class(function ($message) { $this->messages[] = $message; }) {
+            private $record;
+            public function __construct($record) { $this->record = $record; }
+            public function updater($message) { ($this->record)($message); }
+        });
+    }
+
+    /** @dataProvider updateVersions */
+    public function testSelectsMigrationsFromTheInstalledVersion($request, $appVersion, $configVersion)
+    {
+        define('ExpressionEngine\\Updater\\Service\\Updater\\REQ', $request);
+        define('ExpressionEngine\\Updater\\Service\\Updater\\APP_VER', $appVersion);
+        ee()->setMock('config', new class($configVersion) {
+            private $version;
+            public function __construct($version) { $this->version = $version; }
+            public function item($key) { return $this->version; }
+        });
+        $this->writeFile($this->directory . 'system/ee/installer/updates/ud_7_05_28.php', '<?php');
+        $this->writeFile($this->directory . 'system/ee/installer/updates/ud_7_05_29.php', '<?php');
+
+        $updater = $this->runner->makeDatabaseUpdaterService();
+        $this->assertTrue($updater->hasUpdatesToRun());
+        $this->assertSame('runUpdateFile[ud_7_05_29.php]', $updater->getFirstStep());
+    }
+
+    public function updateVersions()
+    {
+        return [
+            // CLI writes the target config version while the old application is still running.
+            'CLI' => ['CLI', '7.5.28', '7.5.29'],
+            // External CLI steps reload the new code while config still has the installed version.
+            'CLI new process' => ['CLI', '7.5.29', '7.5.28'],
+            // CP reloads the new application before writing the target config version.
+            'CP' => ['CP', '7.5.29', '7.5.28'],
+        ];
+    }
+
     private function writeFile($path, $contents)
     {
         if (!is_dir(dirname($path))) {
             mkdir(dirname($path), 0700, true);
         }
         file_put_contents($path, $contents);
+    }
+}
+
+class RunnerConfigStub
+{
+    public $config = ['app_version' => '7.5.28', 'is_system_on' => 'n', 'is_system_on_before_updater' => 'y'];
+    public function item($key) { return isset($this->config[$key]) ? $this->config[$key] : false; }
+    public function get($key, $default = null) { return isset($this->config[$key]) ? $this->config[$key] : $default; }
+    public function set($key, $value, $write = false) { $this->config[$key] = $value; }
+    public function _update_config($values, $remove = []) {
+        $this->config = array_merge($this->config, $values);
+        foreach ($remove as $key => $value) { unset($this->config[$key]); }
+        return true;
     }
 }

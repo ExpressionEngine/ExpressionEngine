@@ -410,6 +410,7 @@ $lang = array(
     'command_update_missing_avatar_path_message'                => 'Your update process will fail without a set avatar path.',
     'command_update_enter_full_avatar_path'                     => 'Enter full avatar path',
     // update options
+    'command_update_option_complete'                            => 'Run post-update checks and completion hooks.',
     'command_update_option_rollback'                            => 'Rollback last update',
     'command_update_option_verbose'                             => 'Verbose output',
     'command_update_option_microapp'                            => 'Run as microapp',

@@ -81,11 +81,10 @@ abstract class Request
         }
 
         if (is_object($data)) {
-            // Exclude Request's visibility privileges and internal virtual state.
-            $publicProperties = \Closure::bind(static function ($object) {
-                return get_object_vars($object);
-            }, null, null);
-            $data = $publicProperties($data);
+            // Match native query encoding: use stored public values without invoking hooks.
+            $data = array_filter(get_mangled_object_vars($data), static function ($key) {
+                return strpos((string) $key, "\0") === false;
+            }, ARRAY_FILTER_USE_KEY);
         }
 
         $result = array();
