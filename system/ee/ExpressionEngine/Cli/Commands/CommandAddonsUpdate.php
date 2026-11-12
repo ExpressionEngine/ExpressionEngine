@@ -142,7 +142,10 @@ class CommandAddonsUpdate extends Cli
             if ($addon->hasExtension()) {
                 $class = $addon->getExtensionClass();
                 $EXT = new $class();
-                $EXT->update_extension($version);
+                $extension = ee('Model')->get('Extension')
+                    ->filter('class', ucfirst($addon->getPrefix()) . '_ext')
+                    ->first();
+                $EXT->update_extension($extension ? $extension->version : '');
                 ee()->extensions->version_numbers[ucfirst($addon->getPrefix()) . '_ext'] = $version;
 
                 $model = ee('Model')->get('Extension')
@@ -153,8 +156,12 @@ class CommandAddonsUpdate extends Cli
             }
             if ($addon->hasPlugin()) {
                 $model = ee('Model')->get('Plugin')->filter('plugin_package', $addon->getPrefix())->first();
+                if (! $model) {
+                    $model = ee('Model')->make('Plugin');
+                }
                 $model->set([
                     'plugin_name' => $addon->getName(),
+                    'plugin_package' => $addon->getPrefix(),
                     'plugin_version' => $addon->getVersion(),
                     'is_typography_related' => $addon->get('plugin.typography') ? 'y' : 'n'
                 ]);
