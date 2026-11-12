@@ -218,8 +218,11 @@ class Runner
     }
 
     /**
-     * Cleans up and supporting update files, turns the system back on, and
-     * updates app_version
+     * Restore the site's status, record its version, and clean up the updater.
+     *
+     * @param string|null $rollback The rollback marker from the updater step.
+     * @return void
+     * @throws Service\Updater\UpdaterException If CLI completion fails.
      */
     public function selfDestruct($rollback = null)
     {
@@ -255,13 +258,28 @@ class Runner
         ee()->logger->updater(($rollback ? 'Update rolled back. Now running version ' : 'Update complete. Now running version ') . $app_ver);
 
         $working_dir = $this->makeUpdaterService()->path();
-        $this->logger->log('Deleting updater working directory: ' . $working_dir);
-        ee('Filesystem')->deleteDir($working_dir);
+        $completing_cli_update = REQ === 'CLI' && ! $rollback;
 
-        ee('Filesystem')->deleteDir(SYSPATH . 'ee/updater');
+        if ($completing_cli_update) {
+            // The completion command requires the updater to be gone. Keep its backups until it succeeds.
+            ee('Filesystem')->deleteDir(SYSPATH . 'ee/updater');
+            $this->completeCliUpdate();
+        }
+
+        // A completion hook may have already cleared the cache.
+        if (is_dir($working_dir)) {
+            $this->logger->log('Deleting updater working directory: ' . $working_dir);
+            ee('Filesystem')->deleteDir($working_dir);
+        }
+
+        if (! $completing_cli_update) {
+            ee('Filesystem')->deleteDir(SYSPATH . 'ee/updater');
+        }
 
         if (REQ == 'CLI') {
-            $this->completeCliUpdate((bool) $rollback);
+            if ($rollback) {
+                $this->completeCliUpdate(true);
+            }
             stdout(($rollback ? 'Rolled back to ExpressionEngine ' : 'Successfully updated to ExpressionEngine ') . $app_ver, CLI_STDOUT_SUCCESS);
         } else {
             ee()->config->config['allow_extensions'] = 'n';
@@ -326,7 +344,11 @@ class Runner
     }
 
     /**
-     * Overrides SteppableTrait's runStep to be a catch-all for exceptions
+     * Run an update step and log failures while the working directory exists.
+     *
+     * @param string $step The step name and any arguments.
+     * @return void
+     * @throws \Throwable If the update step fails.
      */
     public function runStep($step)
     {
@@ -338,7 +360,6 @@ class Runner
         try {
             $this->runStepParent($step);
         } catch (\Throwable $e) {
-            // Completion hooks run after the working directory has been removed.
             if (is_dir(PATH_CACHE . 'ee_update')) {
                 $this->logger->log($e->getMessage());
                 $this->logger->log($e->getTraceAsString());
@@ -458,11 +479,18 @@ class Runner
         return $match[1];
     }
 
+    /**
+     * Notify extensions that the CLI update or rollback has completed.
+     *
+     * @param bool $rollback Whether the restored application is already loaded.
+     * @return void
+     * @throws Service\Updater\UpdaterException If the completion process fails.
+     */
     protected function completeCliUpdate($rollback = false)
     {
-        if ($rollback) {
-            // Recovery has already reloaded the restored application in a fresh process.
-            // The CP also calls this hook after returning from a rollback.
+        if ($rollback || ! function_exists('passthru')) {
+            // Recovery already loaded the restored app. Hosts with passthru disabled
+            // use the running application, as older CLI updates did.
             if (ee()->extensions->active_hook('updater_complete') === true) {
                 ee()->extensions->call('updater_complete');
             }
@@ -473,8 +501,15 @@ class Runner
         // Use a fresh application here too; the calling CLI may still have old classes loaded.
         $command = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(SYSPATH . 'ee/eecli.php') . ' update --complete';
         passthru($command, $status);
+        clearstatcache();
+
         if ($status !== 0) {
-            throw new Service\Updater\UpdaterException('ExpressionEngine was updated, but its completion checks failed.');
+            $message = 'ExpressionEngine was updated, but its completion checks failed.';
+            $working_dir = PATH_CACHE . 'ee_update/';
+            if (is_dir($working_dir . 'backups')) {
+                $message .= "\nUpdate backups were retained in " . $working_dir;
+            }
+            throw new Service\Updater\UpdaterException($message);
         }
     }
 
