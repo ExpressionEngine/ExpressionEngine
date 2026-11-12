@@ -1063,6 +1063,19 @@ $(document).ready(function () {
 		EE.grid($('.grid-field', el));
 	});
 
+	$('.fluid').on('click', '.js-toggle-fluid-item, .js-show-all-fluid-items', function() {
+		var context = $(this).hasClass('js-toggle-fluid-item')
+			? $(this).closest('.fluid__item')
+			: $(this).closest('.fluid');
+
+		// Wait for Fluid's click handler to finish updating visibility.
+		setTimeout(function() {
+			if (!context.hasClass('fluid__item--collapsed')) {
+				updateGridAutoLayouts(context);
+			}
+		}, 0);
+	});
+
 	// Toggle grid item
 	$('body').on('click', '.grid-field .js-toggle-grid-item', function() {
 		$(this).parents('tr').toggleClass('grid__item--collapsed');
