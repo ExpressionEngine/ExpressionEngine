@@ -392,10 +392,8 @@ class EE_Session
         }
 
         $this->sdata['session_id'] = ee()->functions->random();
-        if (\ExpressionEngine\Model\Session\Session::hasMfaLoginId()) {
-            $this->sdata['mfa_login_id'] = hash('sha256', $this->sdata['session_id']);
-            $this->userdata['mfa_login_id'] = $this->sdata['mfa_login_id'];
-        }
+        $this->sdata['mfa_login_id'] = hash('sha256', $this->sdata['session_id']);
+        $this->userdata['mfa_login_id'] = $this->sdata['mfa_login_id'];
         $this->sdata['ip_address'] = ee()->input->ip_address();
         $this->sdata['user_agent'] = substr(ee()->input->user_agent(), 0, 120);
         $this->sdata['member_id'] = (int) $member_id;

@@ -53,14 +53,22 @@ $input = new class {
     {
         return $this->cookies[$name] ?? false;
     }
-    public function set_cookie($name, $value, $length)
+    public function set_cookie($name, $value = '', $length = 0)
     {
-        $this->sent[] = [$name, $value, $length];
-        $this->cookies[$name] = $value;
+        $data = is_array($name) ? $name : ['name' => $name, 'value' => $value, 'expire' => $length];
+        if (strpos($data['name'], 'mfa_session_') === 0) {
+            checkMfaSession(($data['policy_name'] ?? null) === 'mfa_session', 'MFA creation did not specify its cookie policy.');
+        }
+        $this->sent[] = [$data['name'], $data['value'], $data['expire']];
+        $this->cookies[$data['name']] = $data['value'];
     }
     public function delete_cookie($name)
     {
-        unset($this->cookies[$name]);
+        $data = is_array($name) ? $name : ['name' => $name];
+        if (strpos($data['name'], 'mfa_session_') === 0) {
+            checkMfaSession(($data['policy_name'] ?? null) === 'mfa_session', 'MFA deletion did not specify its cookie policy.');
+        }
+        unset($this->cookies[$data['name']]);
     }
 };
 ee()->remove('input');
@@ -261,30 +269,35 @@ if (array_key_exists($scenario, $invalidApprovals)) {
             break;
         case 'session-schema-upgrade':
             ee()->config->set_item('app_version', '7.5.28');
-            // Simulate the released sessions schema during the one-click update.
+            ee()->config->set_item('mfa_session_length', 0);
+            // The updater adds the column before normal session operations resume.
             $db->query('ALTER TABLE ' . $db->dbprefix('sessions') . ' DROP COLUMN mfa_login_id');
             unset($db->data_cache['field_names']['sessions']);
-            ee()->config->set_item('mfa_session_length', 0);
-            ee()->remove('remember');
-            ee()->set('remember', new class { public function delete() {} });
-            ee()->remove('mfa_session');
-            ee()->set('mfa_session', new Mfa_session());
-            checkMfaSession(ee('Model')->get('Session')->filter('member_id', 42)->all()->count() === 2, 'Pre-update MFA session query failed.');
-            $runtime = $loadSession('issuing-session');
-            $runtime->update_session();
-            $runtime->userdata = $runtime->sdata;
-            $runtime->destroy();
-            $runtime = $loadSession('new-session');
-            $beforeId = $runtime->create_new_session(42);
-            checkMfaSession($db->get_where('sessions', ['session_id' => $beforeId])->num_rows() === 1, 'Pre-update login failed.');
+            $existingSessions = $db->select('session_id, member_id, mfa_flag')
+                ->order_by('session_id')->get('sessions')->result_array();
+
             require_once SYSPATH . 'ee/installer/libraries/Progress.php';
             require_once SYSPATH . 'ee/installer/updates/ud_7_05_29.php';
             $updater = new \ExpressionEngine\Updater\Version_7_5_29\Updater();
             checkMfaSession($updater->do_update() === true, 'Session column migration failed.');
+            checkMfaSession($db->select('session_id, member_id, mfa_flag')
+                ->order_by('session_id')->get('sessions')->result_array() === $existingSessions,
+                'Migration changed existing logins or their MFA status.');
+
+            $runtime = $loadSession('issuing-session');
+            checkMfaSession($runtime->sdata['mfa_login_id'] === '', 'Migrated login has an unexpected identity.');
+            $runtime->update_session();
+            $loginId = hash('sha256', 'issuing-session');
+            checkMfaSession($runtime->sdata['mfa_login_id'] === $loginId, 'Existing login was not associated on first activity.');
+            checkMfaSession($flag($runtime->sdata['session_id']) === 'skip', 'Existing MFA verification was lost.');
             checkMfaSession($updater->do_update() === true, 'Repeated migration failed.');
-            checkMfaSession($db->get_where('sessions', ['session_id' => $beforeId])->num_rows() === 1, 'Migration removed an existing login.');
-            $afterId = $runtime->create_new_session(42);
-            checkMfaSession($db->get_where('sessions', ['session_id' => $afterId])->row('mfa_login_id') === hash('sha256', $afterId), 'New login has no stable MFA association.');
+            checkMfaSession($db->get_where('sessions', ['session_id' => $runtime->sdata['session_id']])
+                ->row('mfa_login_id') === $loginId, 'Repeated migration changed the login identity.');
+
+            $newId = $runtime->create_new_session(42);
+            checkMfaSession($db->get_where('sessions', ['session_id' => $newId])->row('mfa_login_id') === hash('sha256', $newId),
+                'New login has no stable MFA association.');
+            checkMfaSession($flag($newId) === 'show', 'New login inherited an old MFA verification.');
             break;
         case 'restored-rotated-site-logout':
         case 'restored-rotated-host-logout':

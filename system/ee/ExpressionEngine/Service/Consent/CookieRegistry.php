@@ -48,17 +48,6 @@ class CookieRegistry
     private $cookie_settings = [];
 
     /**
-     * Site-specific MFA cookies share one necessary-cookie policy and lifetime.
-     *
-     * @param string $name Browser cookie name, without the installation prefix.
-     * @return string Registered policy name.
-     */
-    public static function getCanonicalName($name)
-    {
-        return preg_match('/\Amfa_session_[0-9]+\z/', $name) ? 'mfa_session' : $name;
-    }
-
-    /**
      * Register a cookie as Necessary
      *
      * @param  string $name Name of the cookie
@@ -154,7 +143,6 @@ class CookieRegistry
      */
     public function isRegistered($name)
     {
-        $name = self::getCanonicalName($name);
         return (isset($this->cookies[$name]));
     }
 
@@ -165,7 +153,6 @@ class CookieRegistry
      */
     public function getType($name)
     {
-        $name = self::getCanonicalName($name);
         if (! isset($this->cookies[$name])) {
             return false;
         }
@@ -182,7 +169,6 @@ class CookieRegistry
      */
     protected function cookieIsType($name, $type)
     {
-        $name = self::getCanonicalName($name);
         return (isset($this->cookies[$name]) && $this->cookies[$name] === $type);
     }
 
@@ -228,7 +214,6 @@ class CookieRegistry
      */
     public function getCookieSettings($name)
     {
-        $name = self::getCanonicalName($name);
         if (isset($this->cookie_settings[$name]) && !empty($this->cookie_settings[$name])) {
             return $this->cookie_settings[$name];
         }

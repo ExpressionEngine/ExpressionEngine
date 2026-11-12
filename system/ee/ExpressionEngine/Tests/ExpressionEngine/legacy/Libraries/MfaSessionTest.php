@@ -11,6 +11,7 @@
 namespace ExpressionEngine\Tests\ExpressionEngine\legacy\Libraries;
 
 use ExpressionEngine\Model\Member\Member;
+use ExpressionEngine\Service\Consent\CookieRegistry;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -46,18 +47,19 @@ class MfaSessionTest extends TestCase
         $this->input->method('cookie')->willReturnCallback(function ($name) {
             return $name === 'mfa_session_1' ? $this->cookie : false;
         });
-        $this->input->method('set_cookie')->willReturnCallback(function ($name, $value, $length) {
-            $this->cookies[] = [$name, $value, $length];
-            $this->cookie = $value;
+        $this->input->method('set_cookie')->willReturnCallback(function ($data) {
+            $this->cookies[] = $data;
+            $this->cookie = $data['value'];
         });
-        $this->input->method('delete_cookie')->willReturnCallback(function ($name) {
-            $this->assertSame('mfa_session_1', $name);
+        $this->input->method('delete_cookie')->willReturnCallback(function ($data) {
+            $this->assertSame('mfa_session_1', $data['name']);
+            $this->assertSame('mfa_session', $data['policy_name']);
             $this->cookie = false;
         });
         // SQL behavior is covered by the Cypress MySQL fixture. Unit tests
         // only stub write outcomes, never reimplement authorization predicates.
         $this->db = $this->getMockBuilder(\stdClass::class)
-            ->addMethods(['dbprefix', 'query', 'affected_rows'])->getMock();
+            ->addMethods(['dbprefix', 'query', 'affected_rows', 'delete', 'table_exists'])->getMock();
         $this->db->method('dbprefix')->willReturnCallback(function ($table) {
             return 'exp_' . $table;
         });
@@ -67,6 +69,7 @@ class MfaSessionTest extends TestCase
         ee()->setMock('db', $this->db);
         ee()->setMock('config', $this->config);
         ee()->setMock('input', $this->input);
+        ee()->setMock('CookieRegistry', new CookieRegistry());
         ee()->setMock('localize', $this->clock);
         $this->mfa = new \Mfa_session();
         ee()->setMock('mfa_session', $this->mfa);
@@ -185,23 +188,18 @@ class MfaSessionTest extends TestCase
     {
         require_once SYSPATH . 'ee/ExpressionEngine/Boot/boot.common.php';
         require_once BASEPATH . 'core/Input.php';
-        $registry = $this->getMockBuilder(\stdClass::class)->addMethods(['getCookieSettings'])->getMock();
-        $registry->method('getCookieSettings')->willReturn([
+        $registry = $this->getMockBuilder(CookieRegistry::class)->onlyMethods(['getCookieSettings'])->getMock();
+        $registry->expects($this->once())->method('getCookieSettings')
+            ->with($name === 'ordinary' ? 'ordinary' : 'mfa_session')->willReturn([
             'cookie_lifetime' => 86400, 'cookie_enforced_lifetime' => $enforced
         ]);
         ee()->setMock('CookieRegistry', $registry);
-        $input = new class extends \EE_Input {
-            public $sent;
-            public function __construct()
-            {
-            }
-            protected function _set_cookie(array $data)
-            {
-                $this->sent = $data;
-                return true;
-            }
-        };
-        $input->set_cookie($name, str_repeat('a', 64), 172800);
+        $input = $this->capturingInput();
+        $data = ['name' => $name, 'value' => str_repeat('a', 64), 'expire' => 172800];
+        if ($name !== 'ordinary') {
+            $data['policy_name'] = 'mfa_session';
+        }
+        $input->set_cookie($data);
         $this->assertSame($this->clock->now + $expected, $input->sent['expire']);
     }
 
@@ -225,7 +223,7 @@ class MfaSessionTest extends TestCase
         $method = $reflection->getMethod('validateCookieData');
         \TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invoke($reflection->newInstanceWithoutConstructor(), [
-            'name' => $name, 'domain' => '.example.test',
+            'name' => $name, 'policy_name' => 'mfa_session', 'domain' => '.example.test',
             'httponly' => false, 'secure_cookie' => $secure
         ]);
         $this->assertTrue($result['httponly']);
@@ -247,24 +245,102 @@ class MfaSessionTest extends TestCase
         return $cases;
     }
 
-    public function testSiteCookiesUseTheRegisteredMfaPolicy()
+    /** @dataProvider siteCookieProvider */
+    public function testMfaCreationUsesTheSharedPolicyAndSiteCookieName($siteId)
     {
-        $registry = new \ExpressionEngine\Service\Consent\CookieRegistry();
+        $this->config->setItem('site_id', $siteId);
+        $registry = $this->getMockBuilder(CookieRegistry::class)->onlyMethods(['getCookieSettings'])->getMock();
         $registry->registerNecessary('mfa_session');
-        $setting = $this->getMockBuilder(\ExpressionEngine\Model\Cookie\CookieSetting::class)
-            ->disableOriginalConstructor()->onlyMethods(['__get'])->getMock();
-        $setting->method('__get')->willReturnMap([
-            ['cookie_name', 'mfa_session'], ['cookie_lifetime', 86400], ['cookie_enforced_lifetime', 3600]
-        ]);
-        $registry->registerCookieSettings($setting);
-        foreach (['mfa_session_1', 'mfa_session_27'] as $name) {
-            $this->assertTrue($registry->isRegistered($name));
-            $this->assertTrue($registry->isNecessary($name));
-            $this->assertSame($registry::NECESSARY, $registry->getType($name));
-            $this->assertSame(['cookie_lifetime' => 86400, 'cookie_enforced_lifetime' => 3600], $registry->getCookieSettings($name));
+        $registry->expects($this->once())->method('getCookieSettings')->with('mfa_session')
+            ->willReturn(['cookie_lifetime' => 86400, 'cookie_enforced_lifetime' => 3600]);
+        ee()->setMock('CookieRegistry', $registry);
+        $input = $this->capturingInput();
+        ee()->setMock('input', $input);
+        $this->db->method('query')->willReturn(true);
+        $this->db->method('affected_rows')->willReturn(1);
+
+        $this->assertTrue((new \Mfa_session())->create($this->member, 'issuing-session'));
+        $this->assertSame('mfa_session_' . $siteId, $input->sent['name']);
+        $this->assertArrayHasKey('policy_name', $input->sent);
+        $this->assertSame('mfa_session', $input->sent['policy_name']);
+        $this->assertMatchesRegularExpression('/\A[a-f0-9]{64}\z/', $input->sent['value']);
+        $this->assertSame($this->clock->now + 3600, $input->sent['expire']);
+    }
+
+    /** @dataProvider siteCookieProvider */
+    public function testMfaDeletionUsesTheSamePolicyWithoutApplyingLifetimeOverrides($siteId)
+    {
+        $this->config->setItem('site_id', $siteId);
+        $registry = $this->getMockBuilder(CookieRegistry::class)->onlyMethods(['getCookieSettings'])->getMock();
+        $registry->expects($this->never())->method('getCookieSettings');
+        ee()->setMock('CookieRegistry', $registry);
+        $input = $this->capturingInput();
+        ee()->setMock('input', $input);
+
+        (new \Mfa_session())->delete(0, '');
+        $this->assertSame('mfa_session_' . $siteId, $input->sent['name']);
+        $this->assertArrayHasKey('policy_name', $input->sent);
+        $this->assertSame('mfa_session', $input->sent['policy_name']);
+        $this->assertSame('', $input->sent['value']);
+        $this->assertLessThan($this->clock->now, $input->sent['expire']);
+    }
+
+    public static function siteCookieProvider()
+    {
+        return [[1], [27]];
+    }
+
+    /** @dataProvider ordinaryCookieProvider */
+    public function testOrdinaryCookieCreationAndDeletionRemainCompatible($arrayArgument)
+    {
+        $input = $this->capturingInput();
+        $data = ['name' => 'ordinary', 'value' => 'value', 'expire' => 60];
+        if ($arrayArgument) {
+            $input->set_cookie($data);
+        } else {
+            $input->set_cookie('ordinary', 'value', 60);
         }
-        $this->assertFalse($registry->isRegistered('mfa_session_invalid'));
-        $this->assertNull($registry->getCookieSettings('mfa_session_invalid'));
+        $this->assertSame('ordinary', $input->sent['name']);
+        $this->assertSame('value', $input->sent['value']);
+        $this->assertSame($this->clock->now + 60, $input->sent['expire']);
+
+        // Deletion must ignore any value or expiry supplied in the array.
+        $this->assertTrue($input->delete_cookie($arrayArgument ? $data : 'ordinary'));
+        $this->assertSame('ordinary', $input->sent['name']);
+        $this->assertSame('', $input->sent['value']);
+        $this->assertLessThan($this->clock->now, $input->sent['expire']);
+    }
+
+    public static function ordinaryCookieProvider()
+    {
+        return [[false], [true]];
+    }
+
+    public function testCookieRegistryDoesNotInterpretBrowserNames()
+    {
+        $registry = new CookieRegistry();
+        $registry->registerNecessary('mfa_session');
+        $registry->registerFunctionality('mfa_session_1');
+        $this->assertSame($registry::NECESSARY, $registry->getType('mfa_session'));
+        $this->assertSame($registry::FUNCTIONALITY, $registry->getType('mfa_session_1'));
+        $this->assertFalse($registry->isNecessary('mfa_session_1'));
+        $this->assertFalse($registry->isRegistered('mfa_session_27'));
+    }
+
+    private function capturingInput()
+    {
+        require_once SYSPATH . 'ee/ExpressionEngine/Boot/boot.common.php';
+        require_once BASEPATH . 'core/Input.php';
+        return new class extends \EE_Input {
+            public $sent;
+            public function __construct() {}
+            public function cookie($index = '', $xss_clean = false) { return false; }
+            protected function _set_cookie(array $data)
+            {
+                $this->sent = $data;
+                return true;
+            }
+        };
     }
 
     public function testOrdinaryCookiePolicyIsUnchanged()
@@ -280,22 +356,6 @@ class MfaSessionTest extends TestCase
         $this->assertFalse($result['httponly']);
         $this->assertFalse($result['secure_cookie']);
         $this->assertSame('.example.test', $result['domain']);
-    }
-
-    /** @dataProvider installedVersionProvider */
-    public function testInstalledSessionModelDoesNotInspectSchema($version)
-    {
-        $this->config->setItem('app_version', $version);
-        $db = $this->getMockBuilder(\stdClass::class)->addMethods(['field_exists'])->getMock();
-        $db->expects($this->never())->method('field_exists');
-        ee()->setMock('db', $db);
-        $fields = \ExpressionEngine\Model\Session\Session::getClassFields();
-        $this->assertContains('mfa_login_id', $fields);
-    }
-
-    public static function installedVersionProvider()
-    {
-        return [['7.5.29'], ['7.6.0']];
     }
 
     /** @dataProvider restoredLoginProvider */
@@ -316,24 +376,6 @@ class MfaSessionTest extends TestCase
     public static function restoredLoginProvider()
     {
         return [[hash('sha256', 'original-login')], [null]];
-    }
-
-    /** @dataProvider sessionSchemaProvider */
-    public function testSessionModelSupportsThePreUpdateSchema($columnExists)
-    {
-        $this->config->setItem('app_version', '7.5.28');
-        $db = $this->getMockBuilder(\stdClass::class)->addMethods(['field_exists'])->getMock();
-        $db->method('field_exists')->with('mfa_login_id', 'sessions')->willReturn($columnExists);
-        ee()->setMock('db', $db);
-        $fields = \ExpressionEngine\Model\Session\Session::getClassFields();
-        $this->assertSame($columnExists, in_array('mfa_login_id', $fields, true));
-        $this->assertContains('session_id', $fields);
-        $this->assertContains('mfa_flag', $fields);
-    }
-
-    public static function sessionSchemaProvider()
-    {
-        return [[false], [true]];
     }
 
     /** @dataProvider migrationProvider */

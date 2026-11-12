@@ -113,6 +113,15 @@ context('Independent MFA sessions', () => {
         return cookie;
     });
 
+    const checkMfaCookieHeader = ({ response }) => {
+        const headers = [].concat(response.headers['set-cookie'] || []);
+        const header = headers.find(value => value.startsWith('exp_mfa_session_1='));
+        expect(header, 'MFA Set-Cookie header').to.be.a('string');
+        expect(header).not.to.match(/;\s*(domain|policy_name)=/i);
+        expect(header).to.match(/;\s*httponly(?:;|$)/i);
+        expect(header).to.match(/;\s*samesite=lax(?:;|$)/i);
+    };
+
     before(() => {
         cy.task('db:seed');
         // Enrollment is available without a Pro license on a site with one CP member.
@@ -134,6 +143,9 @@ context('Independent MFA sessions', () => {
         cy.eeConfig({ item: 'website_session_type', value: 'c' });
         cy.eeConfig({ item: 'enable_mfa', value: 'y' });
         cy.eeConfig({ item: 'mfa_session_length', value: '86400' });
+        cy.eeConfig({ item: 'cookie_httponly', value: 'y' });
+        cy.eeConfig({ item: 'require_cookie_consent', value: 'n' });
+        cy.task('db:query', "UPDATE exp_cookie_settings SET cookie_enforced_lifetime = NULL WHERE cookie_name = 'mfa_session'");
         cy.task('db:query', `DELETE FROM exp_sessions WHERE member_id = ${memberId}`);
         cy.task('db:query', `DELETE FROM exp_remember_me WHERE member_id = ${memberId}`);
         cy.task('db:query', `DELETE FROM exp_mfa_sessions WHERE member_id = ${memberId}`);
@@ -466,12 +478,18 @@ context('Independent MFA sessions', () => {
         });
     });
 
-    it('sets a server-only cookie and only stores its hash', () => {
+    it('uses the necessary MFA policy for secure cookie creation and deletion', () => {
         cy.eeConfig({ item: 'cookie_httponly', value: 'n' });
+        cy.eeConfig({ item: 'require_cookie_consent', value: 'y' });
+        cy.task('db:query', "UPDATE exp_cookie_settings SET cookie_lifetime = 86400, cookie_enforced_lifetime = 3600 WHERE cookie_name = 'mfa_session'");
         login(false);
+        cy.intercept('POST', /admin\.php/).as('createMfaCookie');
         verifyCode();
+        cy.wait('@createMfaCookie').then(checkMfaCookieHeader);
         mfaCookie().then(cookie => {
+            expect(cookie.name).to.eq('exp_mfa_session_1');
             expect(cookie.httpOnly).to.eq(true);
+            expect(cookie.expiry).to.be.closeTo(Date.now() / 1000 + 3600, 10);
             expect(cookie.sameSite).to.eq('lax');
             cy.task('db:query', `SELECT token_hash FROM exp_mfa_sessions WHERE member_id = ${memberId}`)
                 .then(([rows]) => {
@@ -479,8 +497,10 @@ context('Independent MFA sessions', () => {
                     expect(rows[0].token_hash).not.to.eq(cookie.value);
                     expect(rows[0].token_hash).to.match(/^[a-f0-9]{64}$/);
                 });
+            cy.request({ url: 'admin.php?/cp/login/logout', followRedirect: false })
+                .then(response => checkMfaCookieHeader({ response }));
+            cy.getCookie(cookie.name).should('be.null');
         });
-        cy.eeConfig({ item: 'cookie_httponly', value: 'y' });
     });
 
     it('uses a changed MFA window instead of the cookie registry original lifetime', () => {

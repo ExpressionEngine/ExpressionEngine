@@ -61,15 +61,17 @@ class EE_Input
      * from the configuation file, as will domain and path.  Httponly must be
      * must be equal to the value used when setting the cookie.
      *
-     * @param   string  The name of the cookie to be deleted.
+     * @param   string|array  Cookie name, or an array with name and optional policy_name.
      *
      * @return  boolean FALSE if output has already been sent (and thus the
      *                  cookie not set), TRUE otherwise.
      */
     public function delete_cookie($name)
     {
+        $cookie = is_array($name) ? $name : ['name' => $name];
         $data = array(
-            'name' => $name,
+            'name' => $cookie['name'],
+            'policy_name' => $cookie['policy_name'] ?? $cookie['name'],
             'value' => '',
             'expire' => ee()->localize->now - 86500,
         );
@@ -89,8 +91,9 @@ class EE_Input
      * given a time in seconds to indicate that a cookie should expire that
      * many seconds from the moment it is set.
      *
-     * @param   string  The name to assign the cookie.
-     *                  This will be prefixed with the value from the config file or exp_.
+     * @param   string|array  Cookie name, or an array of cookie parameters.
+     *                  The name is prefixed with the config value or exp_.
+     *                  An optional policy_name selects the registered policy without renaming the cookie.
      * @param   string  The value to assign the cookie.
      *                  This will be automatically URL encoded when set and decoded when retrieved.
      * @param   string  A time in seconds after which the cookie should expire.
@@ -106,10 +109,6 @@ class EE_Input
      */
     public function set_cookie($name = '', $value = '', $expire = '', $domain = '', $path = '/', $prefix = '')
     {
-        if (! $this->cookieIsAllowed($name)) {
-            return;
-        }
-
         $data = array(
             'name' => $name,
             'value' => $value,
@@ -128,11 +127,16 @@ class EE_Input
         // whatever happens to be in the array.  Yes, this is ugly as all get
         // out.
         if (is_array($name)) {
-            foreach (array('value', 'expire', 'name', 'domain', 'path', 'prefix') as $item) {
+            foreach (array('value', 'expire', 'name', 'domain', 'path', 'prefix', 'policy_name') as $item) {
                 if (isset($name[$item])) {
                     $data[$item] = $name[$item];
                 }
             }
+        }
+
+        $data['policy_name'] = $data['policy_name'] ?? $data['name'];
+        if (! $this->cookieIsAllowed($data['policy_name'])) {
+            return;
         }
 
         if ($data['domain'] !== '' || $data['path'] !== '/' || $data['prefix'] !== '') {
@@ -145,19 +149,20 @@ class EE_Input
 
         // check the cookie setting for expiration date
         if (is_numeric($data['expire'])) {
-            $settings_name = \ExpressionEngine\Service\Consent\CookieRegistry::getCanonicalName($data['name']);
-            $loadedCookieSettings = ee('CookieRegistry')->getCookieSettings($settings_name);
+            $cookieRegistry = ee('CookieRegistry');
+            $settingsName = $data['policy_name'];
+            $loadedCookieSettings = $cookieRegistry->getCookieSettings($settingsName);
             if (!empty($loadedCookieSettings)) {
                 if ($loadedCookieSettings['cookie_lifetime'] === null) {
-                    $cookieSettings = ee('Model')->get('CookieSetting')->filter('cookie_name', $settings_name)->first();
+                    $cookieSettings = ee('Model')->get('CookieSetting')->filter('cookie_name', $settingsName)->first();
                     $cookieSettings->cookie_lifetime = $data['expire'];
                     $cookieSettings->save();
-                    ee('CookieRegistry')->registerCookieSettings($cookieSettings);
+                    $cookieRegistry->registerCookieSettings($cookieSettings);
                 } else {
                     // MFA's default lifetime follows the current verification window.
                     // Still honor an administrator's explicit cookie lifetime override.
                     if (is_numeric($loadedCookieSettings['cookie_lifetime'])
-                        && ($settings_name !== 'mfa_session' || $loadedCookieSettings['cookie_enforced_lifetime'] !== null)) {
+                        && ($settingsName !== 'mfa_session' || $loadedCookieSettings['cookie_enforced_lifetime'] !== null)) {
                         $data['expire'] = ($loadedCookieSettings['cookie_enforced_lifetime'] !== null) ? $loadedCookieSettings['cookie_enforced_lifetime'] : $loadedCookieSettings['cookie_lifetime'];
                     }
                 }
@@ -303,7 +308,7 @@ class EE_Input
         }
 
         // MFA approval is a server-only credential, scoped to this host.
-        if (isset($data['name']) && \ExpressionEngine\Service\Consent\CookieRegistry::getCanonicalName($data['name']) === 'mfa_session') {
+        if (($data['policy_name'] ?? $data['name'] ?? null) === 'mfa_session') {
             $data['httponly'] = true;
             $data['domain'] = '';
             $data['samesite'] = $data['samesite'] === 'Strict' ? 'Strict' : 'Lax';

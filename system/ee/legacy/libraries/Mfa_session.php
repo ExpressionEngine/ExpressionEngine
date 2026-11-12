@@ -26,6 +26,12 @@ class Mfa_session
         $this->token = is_string($token) && preg_match('/\A[a-f0-9]{64}\z/', $token) ? $token : false;
     }
 
+    /** Site-specific browser cookies share this registered policy. */
+    public function getCookiePolicyName()
+    {
+        return 'mfa_session';
+    }
+
     /**
      * Issue approval only after a code was verified against this member snapshot.
      * The issuing login must still exist and the credentials must be unchanged.
@@ -76,7 +82,12 @@ class Mfa_session
         }
         ee()->db->delete('mfa_sessions', ['expires_at <=' => $now]);
         $this->token = $token;
-        ee()->input->set_cookie($this->cookie, $token, $length);
+        ee()->input->set_cookie([
+            'name' => $this->cookie,
+            'policy_name' => $this->getCookiePolicyName(),
+            'value' => $token,
+            'expire' => $length
+        ]);
 
         return true;
     }
@@ -172,7 +183,10 @@ class Mfa_session
                 ->delete('mfa_sessions');
         }
         $this->token = false;
-        ee()->input->delete_cookie($this->cookie);
+        ee()->input->delete_cookie([
+            'name' => $this->cookie,
+            'policy_name' => $this->getCookiePolicyName()
+        ]);
     }
 
     /**
