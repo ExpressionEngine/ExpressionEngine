@@ -20,14 +20,14 @@ function registerPlugin() {
     `);
 }
 
-function expectUpdatedHooks() {
+function expectUpdatedHooks(enabled = 'y') {
     cy.task('db:query', `
-        SELECT hook, version FROM exp_extensions
+        SELECT hook, version, enabled FROM exp_extensions
         WHERE class = '${extensionClass}' ORDER BY hook
     `).then(([rows]) => {
         expect(rows).to.deep.equal([
-            {hook: 'cypress_cli_new_one', version: '2.0.0'},
-            {hook: 'cypress_cli_new_two', version: '2.0.0'},
+            {hook: 'cypress_cli_new_one', version: '2.0.0', enabled},
+            {hook: 'cypress_cli_new_two', version: '2.0.0', enabled},
         ]);
     });
 }
@@ -78,6 +78,34 @@ context('CLI add-on update regressions', () => {
                 });
             });
         });
+    });
+
+    it('leaves an absent extension uninstalled when updating a fieldtype', () => {
+        cy.task('filesystem:copy', {
+            from: 'support/cli/ft.cypress_cli_update.php',
+            to: addonPath,
+        });
+        cy.task('db:query', `
+            INSERT INTO exp_fieldtypes (name, version)
+            VALUES ('cypress_cli_update', '1.0.0')
+        `);
+        cy.task('db:query', `DELETE FROM exp_extensions WHERE class = '${extensionClass}'`);
+
+        runCli('addons:update --addon cypress_cli_update');
+
+        cy.task('db:query', "SELECT version FROM exp_fieldtypes WHERE name = 'cypress_cli_update'")
+            .then(([rows]) => expect(rows).to.deep.equal([{version: '2.0.0'}]));
+        cy.task('db:query', `SELECT hook FROM exp_extensions WHERE class = '${extensionClass}'`)
+            .then(([rows]) => expect(rows).to.be.empty);
+    });
+
+    it('keeps replacement hooks disabled when the extension was disabled', () => {
+        registerPlugin();
+        cy.task('db:query', `UPDATE exp_extensions SET enabled = 'n' WHERE class = '${extensionClass}'`);
+
+        runCli('addons:update --addon cypress_cli_update');
+
+        expectUpdatedHooks('n');
     });
 
     it('registers a missing plugin while updating an installed extension', () => {

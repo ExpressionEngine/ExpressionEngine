@@ -4,9 +4,15 @@ class Cypress_cli_update_ext
 {
     public $version = '2.0.0';
 
+    /**
+     * Replace the fixture hooks when the version changes.
+     *
+     * @param string $current
+     * @return bool
+     */
     public function update_extension($current = '')
     {
-        if ($current == '' || $current == $this->version) {
+        if ($current == $this->version) {
             return false;
         }
 
@@ -24,5 +30,7 @@ class Cypress_cli_update_ext
                 'enabled' => 'y',
             ])->save();
         }
+
+        return true;
     }
 }
