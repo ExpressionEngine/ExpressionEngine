@@ -42,7 +42,7 @@ class Channel_form_category_tree_obj
         // Fetch category group ID number
         if ($group_id == '') {
             if (! $group_id = ee()->input->get_post('group_id')) {
-                return false;
+                return;
             }
         }
 
@@ -80,7 +80,7 @@ class Channel_form_category_tree_obj
         $kitty_query = ee()->db->get('categories');
 
         if ($kitty_query->num_rows() == 0) {
-            return false;
+            return;
         }
 
         // Assign the query result to a multi-dimensional array

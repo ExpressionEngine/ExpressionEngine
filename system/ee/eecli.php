@@ -92,6 +92,13 @@ $assign_to_config['disable_csrf_protection'] = 'y';
  * And away we go...
  *
  */
+if (isset($argv[1]) && $argv[1] === 'update' && in_array('--rollback', $argv, true)
+    && is_file(SYSPATH . 'ee/updater/recovery.php')) {
+    $argv = [SYSPATH . 'ee/updater/recovery.php', 'rollback'];
+    require $argv[0];
+    exit;
+}
+
 if (! file_exists(SYSPATH . 'ee/ExpressionEngine/Boot/boot.php')) {
     exit("\033[31mYour system folder path does not appear to be set correctly.\n");
 }

@@ -236,6 +236,42 @@ class ChannelCategoryHeadingAndNameTest extends ChannelTestBase
         $this->assertEquals('15:Second Shared', $out);
     }
 
+    /**
+     * @dataProvider categoryHeadingIdProvider
+     */
+    public function testCategoryHeadingOptionalIdDoesNotEmitWarnings($categoryId, $expected)
+    {
+        $this->setCategoryHeadingRenderingMocks();
+        $this->channel->query_string = 'C12';
+        $this->channel->enable['category_fields'] = false;
+        $this->setTemplateParams(['category_id' => $categoryId]);
+        $this->setTemplateTagdata('{category_id}:{category_name}');
+        $this->setCategoryHeadingRows([], [
+            ['cat_id' => 12, 'group_id' => 2, 'parent_id' => 0, 'cat_name' => 'From URL', 'cat_url_title' => 'from-url'],
+            ['cat_id' => 15, 'group_id' => 2, 'parent_id' => 0, 'cat_name' => 'From Parameter', 'cat_url_title' => 'from-parameter'],
+        ]);
+
+        set_error_handler(function ($severity, $message, $file, $line) {
+            throw new \ErrorException($message, 0, $severity, $file, $line);
+        });
+        try {
+            $this->assertSame($expected, $this->channel->category_heading());
+        } finally {
+            restore_error_handler();
+        }
+    }
+
+    public function categoryHeadingIdProvider()
+    {
+        return [
+            'null uses URL' => [null, '12:From URL'],
+            'false uses URL' => [false, '12:From URL'],
+            'empty string uses URL' => ['', '12:From URL'],
+            'non-numeric uses URL' => ['invalid', '12:From URL'],
+            'numeric string overrides URL' => ['15', '15:From Parameter'],
+        ];
+    }
+
     public function testCategoryHeadingReturnsNoResultsWhenNoCriteria()
     {
         $this->channel->query_string = '';

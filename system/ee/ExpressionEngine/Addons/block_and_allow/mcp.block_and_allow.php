@@ -142,7 +142,7 @@ class Block_and_allow_mcp
 
         $str = parse_config_variables($str);
 
-        if (! file_exists($str) || ! is_file($str)) {
+        if (! file_exists_safe($str) || ! is_file($str)) {
             ee()->form_validation->set_message('_check_path', lang('invalid_htaccess_path'));
 
             return false;

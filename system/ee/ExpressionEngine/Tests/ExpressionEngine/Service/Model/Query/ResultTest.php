@@ -77,6 +77,40 @@ class ResultTest extends TestCase
         $this->assertSame(2, $association->fills[0][0]->getId());
     }
 
+    public function testMissingJoinedRowsPreserveNullIdsAndEmptyAssociations()
+    {
+        $relation = m::mock();
+        $relation->shouldReceive('getName')->times(3)->andReturn('Children');
+        $rows = array(
+            array('root__id' => 1, 'child__id' => null),
+            array('root__id' => 1, 'child__id' => null),
+            array('root__id' => 2, 'child__id' => 0),
+            array('root__id' => 2, 'child__id' => 0),
+            array('root__id' => 3, 'child__id' => 'child-id'),
+        );
+        $result = new Result($rows, array('root' => 'RootModel', 'child' => 'ChildModel'), array('child' => array('root' => $relation)));
+        $facade = new ResultFacadeStub();
+        $result->setFacade($facade);
+        set_error_handler(function ($severity, $message, $file, $line) {
+            throw new \ErrorException($message, 0, $severity, $file, $line);
+        });
+        try {
+            $collection = $result->all();
+        } finally {
+            restore_error_handler();
+        }
+
+        $this->assertCount(3, $collection);
+        $this->assertCount(3, $facade->created['ChildModel']);
+        $this->assertNull($facade->created['ChildModel'][0]->getId());
+        $this->assertSame(array(array()), $facade->created['RootModel'][0]->getAssociation('Children')->fills);
+        $this->assertSame(0, $facade->created['RootModel'][1]->getAssociation('Children')->fills[0][0]->getId());
+        $this->assertSame('child-id', $facade->created['RootModel'][2]->getAssociation('Children')->fills[0][0]->getId());
+        foreach ($facade->created['ChildModel'] as $child) {
+            $this->assertSame(array('beforeLoad', 'afterLoad'), $child->events);
+        }
+    }
+
     public function testFirstReturnsFirstModelWhenRowsExist()
     {
         $rows = array(

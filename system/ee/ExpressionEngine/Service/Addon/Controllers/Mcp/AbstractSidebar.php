@@ -182,7 +182,9 @@ abstract class AbstractSidebar
 
         // Get the property and set it to accessible
         $property = $refClass->getProperty($property);
-        $property->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $property->setAccessible(true);
+        }
 
         // Get the value of the property
         return $property->getValue(new $class());

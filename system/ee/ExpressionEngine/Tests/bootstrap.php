@@ -1,33 +1,16 @@
 <?php
 
-// Keep strict runtime checks without letting vendor deprecations break
-// isolated-process result serialization on newer PHP versions.
+// CI records deprecations without mixing diagnostic output into isolated
+// PHPUnit results. Leave warning/error conversion to PHPUnit's own handler.
 $showDeprecations = getenv('EE_SHOW_DEPRECATIONS') === '1';
 error_reporting($showDeprecations ? E_ALL : (E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED));
-ini_set('display_errors', 1);
+ini_set('display_errors', $showDeprecations ? '0' : '1');
 
 $project_base = realpath(dirname(__FILE__) . '/../../../') . '/';
 
 if ($showDeprecations) {
-    $vendorDeprecationPath = str_replace('\\', '/', realpath(__DIR__ . '/vendor')) . '/';
-    set_error_handler(function ($errno, $errstr, $errfile, $errline) use ($vendorDeprecationPath) {
-        if (($errno & (E_DEPRECATED | E_USER_DEPRECATED)) === 0) {
-            return false;
-        }
-
-        $normalizedPath = str_replace('\\', '/', (string) $errfile);
-        if ($vendorDeprecationPath !== '/' && strpos($normalizedPath, $vendorDeprecationPath) === 0) {
-            return true;
-        }
-
-        $stream = defined('STDERR') ? STDERR : fopen('php://stderr', 'wb');
-        fwrite($stream, "Deprecated: {$errstr} in {$errfile} on line {$errline}\n");
-        if (!defined('STDERR') && is_resource($stream)) {
-            fclose($stream);
-        }
-
-        return true;
-    });
+    ini_set('log_errors', '1');
+    ini_set('error_log', getenv('EE_PHP_ERROR_LOG') ?: sys_get_temp_dir() . '/ee-phpunit-errors.log');
 }
 
 // Path constants

@@ -42,6 +42,22 @@ function is_php($version = '5.0.0')
 }
 
 /**
+ * Check whether a file or directory exists, with consistent NUL-path handling.
+ *
+ * Reject paths containing NUL bytes before calling file_exists(), avoiding
+ * warnings on older PHP versions and ValueError on PHP 8.6 and later.
+ * Other paths retain native file_exists() behavior; paths are not normalized
+ * or modified, and other filesystem errors are not suppressed.
+ *
+ * @param string $path Filesystem path to check
+ * @return bool Whether the file or directory exists
+ */
+function file_exists_safe($path)
+{
+    return strpos((string) $path, "\0") === false && file_exists($path);
+}
+
+/**
  * Tests for file writability
  *
  * is_writable() returns TRUE on Windows servers when you really can't write to

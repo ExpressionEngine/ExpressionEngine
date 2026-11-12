@@ -10,6 +10,8 @@
 
 namespace ExpressionEngine\Service\Model;
 
+use ExpressionEngine\Library\Compat\ObjectHash;
+
 use Closure;
 use OverflowException;
 
@@ -1014,7 +1016,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
      */
     public function __toString()
     {
-        return spl_object_hash($this) . ':' . $this->getName() . ':' . $this->getId();
+        return ObjectHash::get($this) . ':' . $this->getName() . ':' . $this->getId();
     }
 
     /**

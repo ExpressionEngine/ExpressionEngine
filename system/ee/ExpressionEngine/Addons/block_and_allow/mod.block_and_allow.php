@@ -17,7 +17,6 @@ class Block_and_allow
      */
     public function __construct()
     {
-        return $this->return_data;
     }
 }
 // END CLASS

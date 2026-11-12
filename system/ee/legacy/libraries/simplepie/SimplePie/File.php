@@ -123,7 +123,10 @@ class SimplePie_File
                     if ($info = curl_getinfo($fp)) {
                         $this->url = $info['url'];
                     }
-                    curl_close($fp);
+                    if (PHP_VERSION_ID < 80000) {
+                        curl_close($fp);
+                    }
+                    unset($fp);
                     $this->headers = explode("\r\n\r\n", $this->headers, $info['redirect_count'] + 1);
                     $this->headers = array_pop($this->headers);
                     $parser = new SimplePie_HTTP_Parser($this->headers);

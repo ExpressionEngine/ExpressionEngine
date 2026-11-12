@@ -9,10 +9,26 @@ namespace {
         define('IS_CORE', false);
     }
 
-    if (! function_exists('show_error')) {
-        function show_error($message, $status = 500)
-        {
-            throw new \RuntimeException((string) $message, (int) $status);
+    /**
+     * Register the error stub only within isolated error-path tests.
+     *
+     * @return void
+     */
+    function installer_config_stub_show_error()
+    {
+        if (! function_exists('show_error')) {
+            /**
+             * Throw instead of terminating the isolated test process.
+             *
+             * @param string $message The error message.
+             * @param int $status The HTTP status code.
+             * @return void
+             * @throws \RuntimeException
+             */
+            function show_error($message, $status = 500)
+            {
+                throw new \RuntimeException((string) $message, (int) $status);
+            }
         }
     }
 
@@ -420,11 +436,16 @@ class InstallerConfigTest extends TestCase
     }
 
     /**
+     * Reject a missing configuration file in an isolated process.
+     *
+     * @return void
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
     public function testInitializeThrowsWhenConfigFileCannotBeIncludedInSeparateProcess()
     {
+        \installer_config_stub_show_error();
+
         $config = $this->newInstallerConfigWithoutConstructor();
         $config->config_path = sys_get_temp_dir() . '/missing-installer-config-' . uniqid('', true) . '.php';
 
@@ -434,11 +455,15 @@ class InstallerConfigTest extends TestCase
     }
 
     /**
+     * Reject missing site preferences in an isolated process.
+     *
+     * @return void
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
     public function testSitePrefsThrowsWhenNoPreferencesFoundInSeparateProcess()
     {
+        \installer_config_stub_show_error();
         $this->ensureEeAppPathDefined();
 
         $db = new InstallerConfigDbStub();
@@ -455,11 +480,15 @@ class InstallerConfigTest extends TestCase
     }
 
     /**
+     * Reject invalid preference data in an isolated process.
+     *
+     * @return void
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
     public function testSitePrefsThrowsWhenPreferencePayloadIsInvalidInSeparateProcess()
     {
+        \installer_config_stub_show_error();
         $this->ensureEeAppPathDefined();
 
         $db = new InstallerConfigDbStub();

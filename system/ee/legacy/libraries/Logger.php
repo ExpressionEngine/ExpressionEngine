@@ -213,7 +213,7 @@ class EE_Logger
                 if (isset($backtrace[$i + 1])) {
                     $next = $backtrace[$i + 1];
 
-                    if (is_a(element('object', $next, ''), 'EE_Template') && element('function', $next) == 'process_tags') {
+                    if (element('object', $next) instanceof EE_Template && element('function', $next) == 'process_tags') {
                         // found our parent tag
                         $addon_module = element('class', $call, '');
                         $addon_method = element('function', $call, '');

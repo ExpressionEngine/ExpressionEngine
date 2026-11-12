@@ -467,7 +467,7 @@ class Member_images extends Member
         // Is this a valid avatar folder?
         $extensions = array('.gif', '.jpg', '.jpeg', '.png');
 
-        if (! @is_dir($avatar_path) or ! $fp = @opendir($avatar_path)) {
+        if (strpos((string) $avatar_path, "\0") !== false or ! @is_dir($avatar_path) or ! $fp = @opendir($avatar_path)) {
             return array();
         }
 

@@ -51,13 +51,19 @@ try {
         require __DIR__ . '/ExpressionEngine/Updater/Boot/boot.common.php';
     }
 
-    if (file_exists(SYSPATH . 'ee/EllisLab/ExpressionEngine/Config/constants.php')) {
-        $constants = require SYSPATH . 'ee/EllisLab/ExpressionEngine/Config/constants.php';
-    } else {
-        $constants = require SYSPATH . 'ee/ExpressionEngine/Config/constants.php';
-    }
-    foreach ($constants as $k => $v) {
-        defined($k) || define($k, $v);
+    // CLI rollback must restore the application files before loading them.
+    // Requiring the application's constants.php here would prevent recovery if
+    // an interrupted update left it missing or incomplete. This step only needs
+    // the filesystem defaults above; later steps load the restored constants.
+    if (REQ !== 'CLI' || $step !== 'rollback') {
+        if (file_exists(SYSPATH . 'ee/EllisLab/ExpressionEngine/Config/constants.php')) {
+            $constants = require SYSPATH . 'ee/EllisLab/ExpressionEngine/Config/constants.php';
+        } else {
+            $constants = require SYSPATH . 'ee/ExpressionEngine/Config/constants.php';
+        }
+        foreach ($constants as $k => $v) {
+            defined($k) || define($k, $v);
+        }
     }
 
     require SYSPATH . 'ee/updater/ExpressionEngine/Updater/Core/Autoloader.php';

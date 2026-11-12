@@ -33,11 +33,12 @@ class Rss_parser
         try {
             $feed = ee()->rss_parser->create($url, $refresh, $this->cache_name);
         } catch (Exception $e) {
-            return $this->return_data = ee()->TMPL->exclusive_conditional(
+            $this->return_data = ee()->TMPL->exclusive_conditional(
                 ee()->TMPL->tagdata,
                 'feed_error',
                 array(array('feed_error' => $e->getMessage()))
             );
+            return;
         }
 
         // Make sure there's at least one item

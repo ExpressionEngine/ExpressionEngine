@@ -422,11 +422,14 @@ if (! function_exists('pro_prep_in_conditionals')) {
 if (! function_exists('pro_flatten_results')) {
     function pro_flatten_results($resultset, $val, $key = false)
     {
+        $val = $val ?? '';
+        $key = $key ?? '';
         $array = array();
 
         foreach ($resultset as $row) {
             if ($key !== false) {
-                $array[$row[$key]] = $row[$val];
+                $result_key = $row[$key];
+                $array[$result_key ?? ''] = $row[$val];
             } else {
                 $array[] = $row[$val];
             }
@@ -452,11 +455,12 @@ if (! function_exists('pro_flatten_results')) {
 if (! function_exists('pro_associate_results')) {
     function pro_associate_results($resultset, $key, $sort = false)
     {
+        $key = $key ?? '';
         $array = array();
 
         foreach ($resultset as $row) {
-            if (array_key_exists($key, $row) && ! array_key_exists($row[$key], $array)) {
-                $array[$row[$key]] = $row;
+            if (array_key_exists($key, $row) && ! array_key_exists($row[$key] ?? '', $array)) {
+                $array[$row[$key] ?? ''] = $row;
             }
         }
 
@@ -541,7 +545,7 @@ if (! function_exists('pro_array_get_prefixed')) {
         $vals = array();
 
         // Do we have a prefix?
-        if (is_array($array) && $prefix_length = strlen($prefix)) {
+        if (is_array($array) && $prefix_length = strlen($prefix ?? '')) {
             // Loop through array
             foreach ($array as $key => $val) {
                 // Check the prefix

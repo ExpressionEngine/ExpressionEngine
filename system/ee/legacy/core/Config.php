@@ -915,8 +915,9 @@ class EE_Config
 
                 $fp = parse_config_variables($site_prefs[$val]);
 
-                if (! @is_dir($fp)) {
+                if (strpos((string) $fp, "\0") !== false || ! @is_dir($fp)) {
                     $this->_config_path_errors[lang('invalid_path')][$val] = lang($val) . ': ' . $fp;
+                    continue;
                 }
 
                 if ((! is_really_writable($fp)) && ($val != 'theme_folder_path')) {

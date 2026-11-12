@@ -44,7 +44,7 @@ class FileFtProcessImageTest extends FileFtTestBase
             return $source;
         };
         $method = new ReflectionMethod(File_ft::class, 'process_image');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($method);
 
         $result = $method->invoke($fieldtype, 'crop', $data, $params, false, false, $resolveSource);
 
@@ -122,7 +122,7 @@ class FileFtProcessImageTest extends FileFtTestBase
             $this->fail('A failed cache read must not regenerate against stale filesystem metadata.');
         };
         $method = new ReflectionMethod(File_ft::class, 'process_image');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($method);
 
         $fieldtype = $this->makeFieldtype();
         $data = $this->imageData($filesystem);

@@ -253,7 +253,7 @@ abstract class RadioTestBase extends OptionFieldtypeTestBase
     {
         static $configuredFieldtypes = [];
 
-        $mockId = spl_object_hash($fieldtype);
+        $mockId = spl_object_id($fieldtype);
         return isset($configuredFieldtypes[$mockId]);
     }
 
@@ -265,7 +265,7 @@ abstract class RadioTestBase extends OptionFieldtypeTestBase
     {
         static $configuredFieldtypes = [];
 
-        $mockId = spl_object_hash($fieldtype);
+        $mockId = spl_object_id($fieldtype);
         $configuredFieldtypes[$mockId] = true;
     }
 }

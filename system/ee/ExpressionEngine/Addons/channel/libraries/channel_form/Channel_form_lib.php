@@ -1907,6 +1907,10 @@ GRID_FALLBACK;
     {
         $selected = array();
 
+        if (! $this->entry) {
+            return $selected;
+        }
+
         if ($this->entry->entry_id or ! empty($this->channel->deft_category)) {
             $selected = $this->entry->Categories->pluck('cat_id');
         }
@@ -2463,6 +2467,10 @@ GRID_FALLBACK;
      */
     public function get_field_options($field_name)
     {
+        if (! isset($this->custom_fields[$field_name])) {
+            return array();
+        }
+
         $field = $this->get_field($field_name);
         $options = array();
 

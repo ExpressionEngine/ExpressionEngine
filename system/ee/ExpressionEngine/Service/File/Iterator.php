@@ -45,6 +45,7 @@ class Iterator extends FilesystemIterator
         }
     }
 
+    #[\ReturnTypeWillChange]
     public function current()
     {
         if ($this->isDir()) {

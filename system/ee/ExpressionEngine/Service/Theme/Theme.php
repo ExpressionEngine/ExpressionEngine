@@ -75,9 +75,9 @@ class Theme
      */
     public function getPath($path)
     {
-        if (file_exists($this->user_theme_templates_path . $path)) {
+        if (file_exists_safe($this->user_theme_templates_path . $path)) {
             return $this->user_theme_templates_path . $path;
-        } elseif (file_exists($this->user_theme_assets_path . $path)) {
+        } elseif (file_exists_safe($this->user_theme_assets_path . $path)) {
             return $this->user_theme_assets_path . $path;
         }
 
@@ -93,9 +93,9 @@ class Theme
      */
     public function getUserPath($path)
     {
-        if (file_exists($this->user_theme_templates_path . $path)) {
+        if (file_exists_safe($this->user_theme_templates_path . $path)) {
             return $this->user_theme_templates_path . $path;
-        } elseif (file_exists($this->user_theme_assets_path . $path)) {
+        } elseif (file_exists_safe($this->user_theme_assets_path . $path)) {
             return $this->user_theme_assets_path . $path;
         }
 
@@ -112,7 +112,7 @@ class Theme
      */
     public function getUrl($path)
     {
-        if (file_exists($this->user_theme_assets_path . $path)) {
+        if (file_exists_safe($this->user_theme_assets_path . $path)) {
             return $this->user_theme_assets_url . $path;
         }
 
@@ -177,7 +177,7 @@ class Theme
     {
         $files = array();
 
-        if (! file_exists($path)) {
+        if (! file_exists_safe($path)) {
             return $files;
         }
 

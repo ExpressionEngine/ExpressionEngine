@@ -192,6 +192,12 @@ if (! function_exists('entities_to_ascii')) {
             for ($i = 0, $s = count($matches['0']); $i < $s; $i++) {
                 $digits = $matches['1'][$i];
 
+                // Leave invalid Unicode scalar values as entities.
+                if ($digits > 0x10FFFF || ($digits >= 0xD800 && $digits <= 0xDFFF)) {
+                    continue;
+                }
+
+                $digits = (int) $digits;
                 $out = '';
 
                 if ($digits < 128) {
@@ -199,10 +205,15 @@ if (! function_exists('entities_to_ascii')) {
                 } elseif ($digits < 2048) {
                     $out .= chr(192 + (($digits - ($digits % 64)) / 64));
                     $out .= chr(128 + ($digits % 64));
+                } elseif ($digits < 65536) {
+                    $out .= chr(224 | ($digits >> 12));
+                    $out .= chr(128 | (($digits >> 6) & 63));
+                    $out .= chr(128 | ($digits & 63));
                 } else {
-                    $out .= chr(224 + (($digits - ($digits % 4096)) / 4096));
-                    $out .= chr(128 + ((($digits % 4096) - ($digits % 64)) / 64));
-                    $out .= chr(128 + ($digits % 64));
+                    $out .= chr(240 | ($digits >> 18));
+                    $out .= chr(128 | (($digits >> 12) & 63));
+                    $out .= chr(128 | (($digits >> 6) & 63));
+                    $out .= chr(128 | ($digits & 63));
                 }
 
                 $str = str_replace($matches['0'][$i], $out, $str);

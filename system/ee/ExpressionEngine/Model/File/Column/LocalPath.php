@@ -46,7 +46,7 @@ class LocalPath extends SerializedType
     {
         $path = parse_config_variables($this->path);
 
-        if (is_dir($path)) {
+        if (strpos((string) $path, "\0") === false && is_dir($path)) {
             $files = array();
             $directory = ee('Model')->get('UploadDestination')->fields('id')->filter('server_path', $this->path)->first();
             $exclude = array('index.html');

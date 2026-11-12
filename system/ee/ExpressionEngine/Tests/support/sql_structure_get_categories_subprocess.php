@@ -3,6 +3,9 @@
 require __DIR__ . '/../bootstrap.php';
 require_once PATH_ADDONS . 'structure/sql.structure.php';
 
+// This fixture explicitly asserts the method's displayed warning and debug output.
+ini_set('display_errors', '1');
+
 $outputFile = $argv[1] ?? null;
 
 if (! $outputFile) {

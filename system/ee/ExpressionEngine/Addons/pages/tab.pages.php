@@ -37,6 +37,7 @@ class Pages_tab
         $pages_template_id = 0;
         $pages_dropdown = array();
         $pages_uri = '';
+        $entry_id = $entry_id ?? '';
 
         if ($entry_id !== 0) {
             if (isset($pages[$site_id]['uris'][$entry_id])) {
@@ -139,8 +140,9 @@ class Pages_tab
         $uris = $static_pages[ee()->config->item('site_id')]['uris'];
 
         //exclude current page from check
-        if (isset($uris[$entry->entry_id])) {
-            unset($uris[$entry->entry_id]);
+        $entry_id = $entry->entry_id ?? '';
+        if (isset($uris[$entry_id])) {
+            unset($uris[$entry_id]);
         }
         //ensure leading slash is present
         $value = '/' . trim($values['pages_uri'], '/');
@@ -295,8 +297,9 @@ class Pages_tab
             $uris = $static_pages[ee()->config->item('site_id')]['uris'];
 
             //exclude current page from check
-            if (isset($uris[$entry->entry_id])) {
-                unset($uris[$entry->entry_id]);
+            $entry_id = $entry->entry_id ?? '';
+            if (isset($uris[$entry_id])) {
+                unset($uris[$entry_id]);
             }
             //ensure leading slash is present
             $value = '/' . trim($value, '/');

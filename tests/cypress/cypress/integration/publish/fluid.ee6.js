@@ -14,7 +14,6 @@ context('Publish Entry with Fluid', () => {
       Cypress.config('numTestsKeptInMemory', 0)
       cy.task('db:seed')
       cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
-      cy.createEntries({n: 1})
       cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' }).then(() => {
         cy.visit('admin.php?/cp/design')
       })

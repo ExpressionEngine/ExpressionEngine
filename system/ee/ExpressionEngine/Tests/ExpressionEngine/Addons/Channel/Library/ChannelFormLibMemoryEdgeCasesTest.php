@@ -138,26 +138,14 @@ class ChannelFormLibMemoryEdgeCasesTest extends ChannelFormLibTestBase
             public function get() { return $this->query; }
         });
 
-        // The fetch_entry method may fail due to mock setup issues
-        try {
-            $start_memory = memory_get_usage();
-            $this->channelFormLib->fetch_entry(1);
-            $end_memory = memory_get_usage();
+        $this->channelFormLib->channel = $this->createMockChannel(['channel_id' => 1]);
+        $start_memory = memory_get_usage();
+        $this->channelFormLib->fetch_entry(1);
+        $end_memory = memory_get_usage();
 
-            $this->assertEquals(1, $this->channelFormLib->entry('entry_id'));
-        } catch (Throwable $e) {
-            // If fetch_entry fails due to mock setup issues, that's acceptable
-            // The test documents the current limitation
-            $this->assertTrue(true);
-            return; // Skip the rest of the test
-        }
-        // NOTE: Categories may be null in test environment
-        // This documents the current limitation
-        if ($this->channelFormLib->entry->Categories) {
-            $this->assertCount(5000, $this->channelFormLib->entry->Categories->pluck('cat_id'));
-        } else {
-            $this->assertTrue(true); // Categories is null, which is acceptable in test environment
-        }
+        $this->assertSame($mockEntry, $this->channelFormLib->entry);
+        $this->assertEquals(1, $this->channelFormLib->entry('entry_id'));
+        $this->assertCount(5000, $this->channelFormLib->entry->Categories->pluck('cat_id'));
 
         // Memory usage should be reasonable
         $memory_increase = $end_memory - $start_memory;

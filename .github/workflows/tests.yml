@@ -107,7 +107,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.4, 8.0, 8.4]
+                php: [7.4, 8.0, 8.4, 8.5]
                 os: [ubuntu-latest]
                 containers: [0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -175,7 +175,8 @@ jobs:
                   php-version: ${{ matrix.php }}
                   extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
                   coverage: none
-                  ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
+                  ini-values: >-
+                      error_reporting=E_ALL, log_errors=On, error_log=/home/runner/php_errors.log, memory_limit=128M
 
             - name: Configure MySQL
               run: |
@@ -188,7 +189,10 @@ jobs:
               run: composer install
 
             - name: Start PHP Server
-              run: php tests/serve.php &
+              run: |
+                php tests/serve.php &
+                # RSS fixtures must not request the busy, single-process application server.
+                php -S 127.0.0.1:8889 -t . > /tmp/ee-compatibility-feed.log 2>&1 &
 
             - name: Start SMTP Server
               run: |
@@ -267,12 +271,19 @@ jobs:
                 name: cypress-tests-PHP${{ matrix.php }}-${{ matrix.containers }}
                 path: tests/cypress/cypress/screenshots/
 
+            - name: Summarize native PHP deprecations
+              if: always()
+              run: php tests/ci/report-deprecations.php /home/runner/php-deprecations.md /home/runner/php_errors.log
+
             - name: Archive server errors
               uses: actions/upload-artifact@v4
-              if: failure()
+              if: always()
               with:
                 name: error.PHP${{ matrix.php }}-${{ matrix.containers }}.log
-                path: /home/runner/php_errors.log
+                path: |
+                    /home/runner/php_errors.log
+                    /home/runner/php-deprecations.md
+                    system/user/logs/
 
             - name: Archive JS errors
               uses: actions/upload-artifact@v4

@@ -18,7 +18,7 @@ class GetRequest extends Request
     public function __construct($url, $data = array(), $callback = null)
     {
         if (! empty($data)) {
-            $url = trim($url, '/') . '?' . http_build_query($data);
+            $url = trim($url, '/') . '?' . $this->buildQuery($data);
         }
 
         parent::__construct($url, array(), $callback);

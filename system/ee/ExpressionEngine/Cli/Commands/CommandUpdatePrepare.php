@@ -273,7 +273,7 @@ class CommandUpdatePrepare extends Cli
     {
         $customConfig = ($path ? rtrim($path, '/') : SYSPATH) . '/upgrade.config.php';
 
-        if (! file_exists($customConfig)) {
+        if (! file_exists_safe($customConfig)) {
             return false;
         }
 
@@ -394,7 +394,7 @@ class CommandUpdatePrepare extends Cli
     private function checkIfPathAllowed($path)
     {
         // Check if path exists
-        if (! file_exists($path)) {
+        if (! file_exists_safe($path)) {
             $this->fail("{$path} does not exist.");
         }
 

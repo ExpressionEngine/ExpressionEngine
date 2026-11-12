@@ -204,7 +204,7 @@ class MemberImportTest extends TestCase
         ));
 
         $method = new ReflectionMethod(MemberImport::class, 'authorizeImportRoles');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($method);
         $method->invoke($controller);
         $method->invoke($controller);
 
@@ -345,7 +345,7 @@ class MemberImportTest extends TestCase
     private function setControllerProperty(MemberImport $controller, $name, $value)
     {
         $property = (new ReflectionClass(MemberImport::class))->getProperty($name);
-        $property->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($property);
         $property->setValue($controller, $value);
     }
 
@@ -358,7 +358,7 @@ class MemberImportTest extends TestCase
     private function invokeAuthorizedRole($roleId)
     {
         $method = new ReflectionMethod(MemberImport::class, 'getAuthorizedRole');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($method);
 
         return $method->invoke($this->makeController(), $roleId);
     }

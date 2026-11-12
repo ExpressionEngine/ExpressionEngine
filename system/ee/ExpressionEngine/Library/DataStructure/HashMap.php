@@ -10,6 +10,8 @@
 
 namespace ExpressionEngine\Library\DataStructure;
 
+use ExpressionEngine\Library\Compat\ObjectHash;
+
 /**
  * PHP's arrays don't accept objects as keys and SplObjectStorage
  * won't give you access to all keys or all values and is limited
@@ -98,7 +100,7 @@ class HashMap
     protected function hash($element)
     {
         if (is_object($element)) {
-            return spl_object_hash($element);
+            return ObjectHash::get($element);
         }
 
         return $element;

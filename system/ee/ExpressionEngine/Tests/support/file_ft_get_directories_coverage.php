@@ -45,7 +45,7 @@ function file_ft_call_get_directories()
 {
     $fieldtype = new File_ft();
     $method = new ReflectionMethod('File_ft', 'getDirectories');
-    $method->setAccessible(true);
+    \TestReflectionHelper::makeAccessible($method);
 
     return $method->invoke($fieldtype);
 }

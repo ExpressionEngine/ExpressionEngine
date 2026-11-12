@@ -469,7 +469,7 @@ class ProSearchHelperEncodeTest extends TestCase
      */
     public function testArrayGetPrefixedReturnsEmptyArrayWithoutUsableArrayAndPrefix($array, $prefix): void
     {
-        $this->assertSame([], @pro_array_get_prefixed($array, $prefix, true));
+        $this->assertSame([], pro_array_get_prefixed($array, $prefix, true));
     }
 
     /**
@@ -2096,6 +2096,26 @@ class ProSearchHelperEncodeTest extends TestCase
         );
     }
 
+    public function testFlattenResultsPreservesMissingKeyWarning(): void
+    {
+        $diagnostics = [];
+        set_error_handler(function ($severity, $message) use (&$diagnostics) {
+            $diagnostics[] = [$severity, $message];
+            return true;
+        });
+        try {
+            $result = pro_flatten_results([['value' => 'alpha']], 'value', 'id');
+        } finally {
+            restore_error_handler();
+        }
+
+        $this->assertSame(['' => 'alpha'], $result);
+        $this->assertSame([[
+            PHP_VERSION_ID < 80000 ? E_NOTICE : E_WARNING,
+            PHP_VERSION_ID < 80000 ? 'Undefined index: id' : 'Undefined array key "id"',
+        ]], $diagnostics);
+    }
+
     /**
      * pro_flatten_results keeps the last value for duplicate keys.
      *
@@ -2126,7 +2146,7 @@ class ProSearchHelperEncodeTest extends TestCase
      */
     public function testFlattenResultsTreatsOnlyFalseAsIndexedMode($key, array $row, array $expected): void
     {
-        $this->assertSame($expected, @pro_flatten_results([$row], 'value', $key));
+        $this->assertSame($expected, pro_flatten_results([$row], 'value', $key));
     }
 
     /**

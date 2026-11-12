@@ -27,6 +27,26 @@ class RedisDriverTest extends CacheTestBase
      */
     private $redisStub;
 
+    public function testMissingAndEmptyCacheValuesDoNotEmitWarnings()
+    {
+        set_error_handler(function ($severity, $message, $file, $line) {
+            throw new \ErrorException($message, 0, $severity, $file, $line);
+        });
+        try {
+            $this->assertFalse($this->driver->get('missing'));
+            $this->assertFalse($this->driver->get_metadata('missing'));
+            $this->redisStub->set('https://example.com/:empty', '');
+            $this->assertFalse($this->driver->get('empty'));
+            $this->assertFalse($this->driver->get_metadata('empty'));
+            foreach ([false, '', 0, null] as $value) {
+                $this->driver->save('stored', $value);
+                $this->assertSame($value, $this->driver->get('stored'));
+            }
+        } finally {
+            restore_error_handler();
+        }
+    }
+
     public function setUp(): void
     {
         parent::setUp();
