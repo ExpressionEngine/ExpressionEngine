@@ -512,6 +512,14 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 				that._fireEvent('display', $(this));
 			});
 
+			// A deferred editor with a custom width can change the table width after initialization.
+			var hasCustomWidthPreview = that.root.hasClass('entry-grid') && that.root.find('iframe.rte').is(function() {
+				return this.style.width && this.style.width !== '100%';
+			});
+			if (hasCustomWidthPreview) {
+				updateGridAutoLayout(that.root);
+			}
+
 			that._addMinimumRows();
 		}, 500);
 	},
@@ -1055,6 +1063,19 @@ $(document).ready(function () {
 		EE.grid($('.grid-field', el));
 	});
 
+	$('.fluid').on('click', '.js-toggle-fluid-item, .js-show-all-fluid-items', function() {
+		var context = $(this).hasClass('js-toggle-fluid-item')
+			? $(this).closest('.fluid__item')
+			: $(this).closest('.fluid');
+
+		// Wait for Fluid's click handler to finish updating visibility.
+		setTimeout(function() {
+			if (!context.hasClass('fluid__item--collapsed')) {
+				updateGridAutoLayouts(context);
+			}
+		}, 0);
+	});
+
 	// Toggle grid item
 	$('body').on('click', '.grid-field .js-toggle-grid-item', function() {
 		$(this).parents('tr').toggleClass('grid__item--collapsed');
@@ -1067,6 +1088,7 @@ $(document).ready(function () {
 			$(this).parents('tr').find('td:not(.grid-field__item-fieldset)').each(function() {
 				$(this).show();
 			});
+			updateGridAutoLayout($(this).closest('.grid-field'));
 		}
 
 		return false;
@@ -1097,6 +1119,7 @@ $(document).ready(function () {
 		// Hide the dropdown menu
 		$('.js-dropdown-toggle.dropdown-open').trigger('click');
 
+		updateGridAutoLayout($(this).closest('.grid-field'));
 		return false;
 	});
 });
@@ -1104,21 +1127,33 @@ $(document).ready(function () {
 var gridAutoLayoutObserver = null;
 var gridAutoLayoutUpdateTimer = null;
 var gridAutoLayoutResizeDelay = 150;
+var gridAutoLayoutHysteresis = 24;
 
-function getGridAutoLayoutWidths(grid) {
+function getGridAutoLayoutWidths(grid, hysteresis) {
 	var table = grid.find('.grid-field__table').first();
 	var tableContainer = table.closest('.table-responsive');
 	var fieldControl = grid.parents('.field-control').first();
-	var tableWidth = table.outerWidth();
 	var containerWidth = fieldControl.length ? fieldControl.width() : tableContainer.width();
+	var originalWidth = grid[0].style.width;
+
+	// Tables fill the available width, so measure in a narrower space to leave room for a scrollbar.
+	if (hysteresis) {
+		grid.width(Math.max(0, grid.width() - hysteresis));
+	}
+
+	var tableWidth = table.outerWidth();
 
 	if (tableContainer.length && tableContainer[0].scrollWidth > tableWidth) {
 		tableWidth = tableContainer[0].scrollWidth;
 	}
 
+	if (hysteresis) {
+		grid[0].style.width = originalWidth;
+	}
+
 	return {
 		tableWidth: tableWidth,
-		containerWidth: containerWidth
+		containerWidth: containerWidth - hysteresis
 	};
 }
 
@@ -1136,12 +1171,13 @@ function updateGridAutoLayout(grid) {
 
 	var itemFieldsets = grid.find('.grid-field__item-fieldset');
 	var originalVisibility = grid[0].style.visibility;
+	var wasOverwidth = grid.hasClass('overwidth');
 
 	grid[0].style.visibility = 'hidden';
 	grid.removeClass('overwidth').addClass('horizontal-layout');
 	itemFieldsets.hide();
 
-	var widths = getGridAutoLayoutWidths(grid);
+	var widths = getGridAutoLayoutWidths(grid, wasOverwidth ? gridAutoLayoutHysteresis : 0);
 	// Keep row controls accessible when collapsed or forced vertical by Live Preview.
 	var isOverwidth = widths.tableWidth > widths.containerWidth
 		|| grid.find('.grid__item--collapsed').length > 0
@@ -1183,8 +1219,22 @@ function observeGridAutoLayout(grid) {
 	}
 
 	if (!gridAutoLayoutObserver) {
-		gridAutoLayoutObserver = new ResizeObserver(function() {
-			scheduleGridAutoLayoutUpdate();
+		gridAutoLayoutObserver = new ResizeObserver(function(entries) {
+			var widthChanged = false;
+
+			entries.forEach(function(entry) {
+				var width = Math.round(entry.contentRect.width);
+
+				// Layout and editor height changes must not trigger another measurement.
+				if ($.data(entry.target, 'gridAutoLayoutWidth') !== width) {
+					$.data(entry.target, 'gridAutoLayoutWidth', width);
+					widthChanged = true;
+				}
+			});
+
+			if (widthChanged) {
+				scheduleGridAutoLayoutUpdate();
+			}
 		});
 	}
 
@@ -1213,6 +1263,10 @@ $(window).on('load', function() {
 });
 
 $(window).on('resize', function() {
+	scheduleGridAutoLayoutUpdate();
+});
+
+$(document).on('entry:preview-open entry:preview-close', function() {
 	scheduleGridAutoLayoutUpdate();
 });
 
