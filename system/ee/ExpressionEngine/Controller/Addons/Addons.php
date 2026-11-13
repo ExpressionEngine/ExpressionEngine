@@ -14,6 +14,7 @@ use CP_Controller;
 use Michelf\MarkdownExtra;
 use ExpressionEngine\Library\CP\Table;
 use ExpressionEngine\Service\Addon\Mcp;
+use ExpressionEngine\Service\Updater\UpdaterException;
 
 /**
  * Addons Controller
@@ -357,6 +358,27 @@ class Addons extends CP_Controller
             $addons = array($addons);
         }
 
+        $this->updateAddons($addons);
+
+        $return = $this->base_url;
+
+        if (ee()->input->get('return')) {
+            $return = ee('CP/URL')->decodeUrl(ee()->input->get('return'));
+        }
+
+        $return .= '#tab=t-update';
+
+        ee()->functions->redirect($return);
+    }
+
+    /**
+     * Updates add-ons
+     *
+     * @param   array   $addons The name(s) of add-ons to update
+     * @return  void
+     */
+    private function updateAddons($addons)
+    {
         $updated = array(
             'first' => array(),
             'third' => array()
@@ -499,16 +521,6 @@ class Addons extends CP_Controller
                     ->defer();
             }
         }
-
-        $return = $this->base_url;
-
-        if (ee()->input->get('return')) {
-            $return = ee('CP/URL')->decodeUrl(ee()->input->get('return'));
-        }
-
-        $return .= '#tab=t-update';
-
-        ee()->functions->redirect($return);
     }
 
     /**
@@ -820,6 +832,14 @@ class Addons extends CP_Controller
 
                 break;
             case 'update_available':
+                if (ee('Permission')->isSuperAdmin()) {
+                    ee('CP/Alert')->makeBanner('addon-update-available')
+                        ->asTip()
+                        ->canClose()
+                        ->withTitle(lang('license_update_available'))
+                        ->addToBody(sprintf(lang('license_update_available_message'), $info->getName(), ee('CP/URL')->make('addons/download/' . $addon)->compile()))
+                        ->now();
+                }
                 $licenseStatusBadge = '<a class="license-status-badge license-status-update_available" href="https://expressionengine.com/store/licenses#update-available" target="_blank">' . lang('license_update_available') . '</a>';
 
                 break;
@@ -937,6 +957,43 @@ class Addons extends CP_Controller
         ee()->view->body_class = 'add-on-layout';
 
         ee()->cp->render('addons/settings', $vars);
+    }
+
+    public function download($addon)
+    {
+        ee()->lang->loadfile('updater');
+
+        if (!ee('Permission')->can('admin_addons')) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
+        $info = ee('Addon')->get($addon);
+
+        if (empty($info)) {
+            show_404();
+        }
+
+        $downloader = ee('Updater/Downloader');
+        $downloader->setAddonArchivePath();
+        try {
+            $downloader->downloadPackage('https://updates.expressionengine.com/download/' . $addon);
+        } catch (UpdaterException $e) {
+            show_error($e->getMessage());
+        }
+
+        $unpacker = ee('Updater/Unpacker');
+        $unpacker->setAddonArchivePath($addon);
+        $unpacker->unzipPackage();
+
+        try {
+            $unpacker->unpackAndMoveAddon($addon, true);
+        } catch (\Exception $e) {
+            show_error($e->getMessage());
+        }
+
+        $this->updateAddons([$addon]);
+
+        ee()->functions->redirect(ee('CP/URL')->make('addons')->compile());
     }
 
     /**
