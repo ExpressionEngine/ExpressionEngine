@@ -96,13 +96,16 @@ class EE_Session
     private $member_model = null;
 
     /**
-     * Session Class Constructor
+     * Initialize the current request's session and member data.
+     *
+     * @return void
      */
     public function __construct()
     {
         // If they load this library manually we need to make sure our
         // dependencies are all here. This can happen in the cp_js_end hook.
         ee()->load->library('remember');
+        ee()->load->library('mfa_session');
         ee()->load->library('localize');
 
         if (ee()->config->item('website_session_length')) {
@@ -191,6 +194,7 @@ class EE_Session
             } else {
                 if ($this->validation == 'c') {
                     $this->create_new_session($this->userdata['member_id']);
+                    $this->restore_mfa();
                 } else {
                     $this->fetch_guest_data();
                 }
@@ -388,6 +392,8 @@ class EE_Session
         }
 
         $this->sdata['session_id'] = ee()->functions->random();
+        $this->sdata['mfa_login_id'] = hash('sha256', $this->sdata['session_id']);
+        $this->userdata['mfa_login_id'] = $this->sdata['mfa_login_id'];
         $this->sdata['ip_address'] = ee()->input->ip_address();
         $this->sdata['user_agent'] = substr(ee()->input->user_agent(), 0, 120);
         $this->sdata['member_id'] = (int) $member_id;
@@ -414,6 +420,25 @@ class EE_Session
         $this->session_exists = true;
 
         return $this->sdata['session_id'];
+    }
+
+    /**
+     * Restore verified MFA after password authentication or remembered login.
+     *
+     * @return void
+     */
+    public function restore_mfa()
+    {
+        if (
+            $this->sdata['mfa_flag'] === 'show'
+            && ($login_id = ee()->mfa_session->restore($this->sdata['member_id'], $this->sdata['session_id']))
+        ) {
+            $this->sdata['mfa_flag'] = 'skip';
+            $this->userdata['mfa_flag'] = 'skip';
+            $this->mfa_flag = 'skip';
+            $this->sdata['mfa_login_id'] = $login_id;
+            $this->userdata['mfa_login_id'] = $login_id;
+        }
     }
 
     /**
@@ -510,14 +535,16 @@ class EE_Session
     public function destroy()
     {
         if ($this->userdata['session_id'] === 0) {
+            ee()->mfa_session->delete(0, '');
             // just to be sure
             $this->fetch_guest_data();
 
             return;
         }
 
-        ee()->db->where('session_id', $this->userdata['session_id']);
-        ee()->db->delete(array('sessions', 'security_hashes'));
+        ee()->mfa_session->delete(
+            $this->userdata['member_id'], $this->userdata['session_id'], $this->userdata['mfa_login_id'] ?? null
+        );
 
         // Really should redirect after calling this
         // method, but if someone doesn't - we're safe
@@ -753,6 +780,9 @@ class EE_Session
         $this->sdata['can_debug'] = $session->can_debug;
 
         $this->sdata['mfa_flag'] = $session->mfa_flag;
+        if ($session->mfa_login_id !== null) {
+            $this->sdata['mfa_login_id'] = $session->mfa_login_id;
+        }
 
         // Is this an admin session?
         $this->sdata['admin_sess'] = ($session->admin_sess == 1) ? 1 : 0;
@@ -1012,6 +1042,11 @@ class EE_Session
         $this->sdata['last_activity'] = ee()->localize->now;
 
         $cur_session_id = $this->sdata['session_id'];
+        // Keep the logout identity fixed while the browser session ID rotates.
+        // Sessions created before the update receive it on their first activity.
+        if (isset($this->sdata['mfa_login_id']) && $this->sdata['mfa_login_id'] === '') {
+            $this->sdata['mfa_login_id'] = hash('sha256', $cur_session_id);
+        }
 
         // generate a new session ID if they've remained active during the whole
         // TTL but only if the session ID is being transported via a cookie, or

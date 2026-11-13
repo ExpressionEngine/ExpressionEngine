@@ -63,6 +63,7 @@ class MemberLogoutInputMock
 
 class MemberLogoutSessionMock
 {
+    public $destroyCalls = 0;
     private $memberId;
 
     public function __construct($memberId)
@@ -77,6 +78,11 @@ class MemberLogoutSessionMock
         }
 
         return $default;
+    }
+
+    public function destroy()
+    {
+        $this->destroyCalls++;
     }
 }
 
@@ -150,27 +156,31 @@ class MemberLogoutTest extends TestCase
     public function testLoggedOutGetWithoutTokenShowsFormErrorAndDoesNotRedirect()
     {
         ee()->setMock('input', new MemberLogoutInputMock());
-        ee()->setMock('session', new MemberLogoutSessionMock(0));
+        $session = new MemberLogoutSessionMock(0);
+        ee()->setMock('session', $session);
 
         $result = $this->makeMemberAuth()->member_logout();
 
         $this->assertSame(['form_error' => ['general' => 'not_authorized']], $result);
         $this->assertSame([['general' => 'not_authorized']], $this->output->formErrors);
         $this->assertSame([], $this->functions->redirects);
+        $this->assertSame(0, $session->destroyCalls);
     }
 
-    public function testLoggedOutGetWithValidTokenRedirectsToReturnLink()
+    public function testLoggedOutGetWithValidTokenDestroysSessionAndRedirects()
     {
         ee()->setMock('input', new MemberLogoutInputMock([
             'csrf_token' => CSRF_TOKEN,
         ]));
-        ee()->setMock('session', new MemberLogoutSessionMock(0));
+        $session = new MemberLogoutSessionMock(0);
+        ee()->setMock('session', $session);
 
         $result = $this->makeMemberAuth()->member_logout();
 
         $this->assertSame(['redirect' => '/member/logout-complete'], $result);
         $this->assertSame(['/member/logout-complete'], $this->functions->redirects);
         $this->assertSame([], $this->output->formErrors);
+        $this->assertSame(1, $session->destroyCalls);
     }
 
     public function testLoggedInGetWithInvalidTokenShowsFormError()

@@ -74,8 +74,8 @@ class EE_Core
 
         // application constants
         define('APP_NAME', 'ExpressionEngine');
-        define('APP_BUILD', '20261019');
-        define('APP_VER', '7.5.28');
+        define('APP_BUILD', '20261116');
+        define('APP_VER', '7.5.29');
         define('APP_VER_ID', '');
         define('SLASH', '&#47;');
         define('LD', '{');
@@ -555,8 +555,8 @@ class EE_Core
         }
 
         if ((ee()->config->item('enable_mfa') === false || ee()->config->item('enable_mfa') === 'y') && ee()->session->userdata('mfa_flag') != 'skip') {
-            //only allow MFA code page
-            if (!(ee()->uri->segment(2) == 'login' && in_array(ee()->uri->segment(3), ['mfa', 'mfa_reset', 'logout'])) && !(ee()->uri->segment(2) == 'members' && ee()->uri->segment(3) == 'profile' && ee()->uri->segment(4) == 'pro' && ee()->uri->segment(5) == 'mfa')) {
+            // Allow the post-unlock CSRF refresh to return JSON while MFA is pending.
+            if (!(ee()->uri->segment(2) == 'login' && in_array(ee()->uri->segment(3), ['mfa', 'mfa_reset', 'logout', 'refresh_csrf_token'])) && !(ee()->uri->segment(2) == 'members' && ee()->uri->segment(3) == 'profile' && ee()->uri->segment(4) == 'pro' && ee()->uri->segment(5) == 'mfa')) {
                 ee()->functions->redirect(ee('CP/URL')->make('/login/mfa', ['return' => urlencode(ee('Encrypt')->encode(ee()->cp->get_safe_refresh()))]));
             }
         }

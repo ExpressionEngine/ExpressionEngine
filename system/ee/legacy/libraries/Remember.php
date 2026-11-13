@@ -41,7 +41,7 @@ class Remember
     }
 
     /**
-     * Create a new remember me
+     * Create a new remembered login.
      *
      * @return void
      */
@@ -150,7 +150,7 @@ class Remember
     }
 
     /**
-     * Get the remember me data in the db and validate it
+     * Refresh the remembered login.
      *
      * @return void
      */
@@ -168,15 +168,23 @@ class Remember
             // push the expiration date ahead by as much as we've lost
             $adjust_expire = ee()->localize->now - $this->data['last_refresh'];
 
-            // refresh all the data
-            $this->data['last_refresh'] = ee()->localize->now;
-            $this->data['remember_me_id'] = $id;
-            $this->data['expiration'] += $adjust_expire;
+            $changes = [
+                'last_refresh' => ee()->localize->now,
+                'remember_me_id' => $id,
+                'expiration' => $this->data['expiration'] + $adjust_expire
+            ];
 
+            // Only a successful rotation may replace the browser cookie.
             ee()->db->where('remember_me_id', $this->cookie_value)
-                ->set($this->data)
-                ->update($this->table);
+                ->update($this->table, $changes);
 
+            if (ee()->db->affected_rows() !== 1) {
+                // Leave the winning request's cookie alone and discard stale data.
+                $this->data = [];
+                return;
+            }
+
+            $this->data = array_merge($this->data, $changes);
             $expiration = $this->data['expiration'] - ee()->localize->now;
             $this->_set_cookie($id, $expiration);
         }

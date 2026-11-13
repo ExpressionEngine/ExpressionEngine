@@ -226,6 +226,7 @@ class EE_Schema
 			last_activity bigint(10) unsigned DEFAULT '0' NOT NULL,
 			can_debug char(1) NOT NULL DEFAULT 'n',
             mfa_flag ENUM('skip','show','required') NOT NULL DEFAULT 'skip',
+            mfa_login_id char(64) NOT NULL DEFAULT '',
             pro_banner_seen char(1) NOT NULL DEFAULT 'n',
 			PRIMARY KEY `session_id` (`session_id`),
 			KEY `member_id` (`member_id`),
@@ -1571,6 +1572,20 @@ class EE_Schema
 			`hash` char(32) NOT NULL,
 			PRIMARY KEY (`log_id`)
 		)";
+
+        // MFA approval outlives individual password sessions.
+        $Q[] = "CREATE TABLE exp_mfa_sessions (
+            token_hash char(64) NOT NULL,
+            member_id int(10) NOT NULL,
+            site_id int(4) NOT NULL,
+            verified_at bigint(10) unsigned NOT NULL,
+            expires_at bigint(10) unsigned NOT NULL,
+            mfa_login_id char(64) NOT NULL,
+            credential_hash char(64) NOT NULL DEFAULT '',
+            PRIMARY KEY (token_hash),
+            KEY member_id (member_id),
+            KEY expires_at (expires_at)
+        )";
 
         // Remember me table
         $Q[] = "CREATE TABLE `exp_remember_me` (

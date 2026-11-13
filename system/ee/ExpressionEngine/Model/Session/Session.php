@@ -43,6 +43,7 @@ class Session extends Model
     protected $last_activity;
     protected $can_debug;
     protected $mfa_flag;
+    protected $mfa_login_id;
     protected $pro_banner_seen;
 
     /**
