@@ -180,6 +180,42 @@ if (array_key_exists($scenario, $invalidApprovals)) {
             checkMfaSession($db->get_where('sessions', ['session_id' => 'issuing-session'])->num_rows() === 0, 'Logout kept the login.');
             checkMfaSession($approvals() === [], 'Logout kept approval.');
             break;
+        case 'logout-mixed-collations':
+        case 'logout-mixed-collations-with-approval':
+            foreach (['sessions' => 'utf8mb4_unicode_ci', 'security_hashes' => 'utf8mb4_general_ci',
+                'mfa_sessions' => 'utf8mb4_bin'] as $table => $collation) {
+                $db->query('ALTER TABLE ' . $db->dbprefix($table) . ' CONVERT TO CHARACTER SET utf8mb4 COLLATE ' . $collation);
+            }
+            $db->insert('security_hashes', ['date' => ee()->localize->now, 'session_id' => 'issuing-session', 'hash' => 'logout-hash']);
+            $db->where('session_id', 'issuing-session')->update('sessions', [
+                'sess_start' => ee()->localize->now, 'last_activity' => ee()->localize->now
+            ]);
+            $runtime = $loadSession('issuing-session');
+            $runtime->update_session();
+            $runtime->userdata = $runtime->sdata;
+            if ($scenario === 'logout-mixed-collations-with-approval') {
+                $approve();
+            } else {
+                ee()->config->set_item('enable_mfa', 'n');
+                ee()->config->set_item('mfa_session_length', 0);
+            }
+            ee()->remove('remember');
+            ee()->set('remember', new class {
+                /**
+                 * Keep remembered-password storage outside this MFA logout scenario.
+                 *
+                 * @return void
+                 */
+                public function delete() {}
+            });
+            ee()->remove('mfa_session');
+            ee()->set('mfa_session', new Mfa_session());
+            $runtime->destroy();
+            checkMfaSession($db->get_where('sessions', ['session_id' => 'issuing-session'])->num_rows() === 0, 'Mixed collations prevented logout.');
+            checkMfaSession($db->get_where('security_hashes', ['session_id' => 'issuing-session'])->num_rows() === 0, 'Logout left security hashes.');
+            checkMfaSession($approvals() === [], 'Logout left MFA approval.');
+            checkMfaSession($db->get_where('sessions', ['session_id' => 'new-session'])->num_rows() === 1, 'Logout removed a different login.');
+            break;
         case 'issue':
             $queryLog = ee('Database')->getLog();
             $queryLog->saveQueries();

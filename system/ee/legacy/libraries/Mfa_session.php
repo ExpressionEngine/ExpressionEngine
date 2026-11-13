@@ -153,10 +153,11 @@ class Mfa_session
             $sessions = ee()->db->dbprefix('sessions');
             $hashes = ee()->db->dbprefix('security_hashes');
             $approvals = ee()->db->dbprefix('mfa_sessions');
+            // ASCII conversion preserves indexed joins across table collations.
             ee()->db->query("DELETE s, h, a FROM {$sessions} s
-                LEFT JOIN {$hashes} h ON h.session_id = s.session_id
+                LEFT JOIN {$hashes} h ON h.session_id = CONVERT(s.session_id USING ascii)
                 LEFT JOIN {$approvals} a ON a.member_id = s.member_id
-                    AND a.mfa_login_id = s.mfa_login_id
+                    AND a.mfa_login_id = CONVERT(s.mfa_login_id USING ascii)
                 WHERE s.member_id = ? AND s.mfa_login_id = ?", [
                     $member_id, $login_id
                 ]);

@@ -9,6 +9,8 @@ context('MFA session MySQL persistence', () => {
     'issue',
     'session-query-budget',
     'logout-query-budget',
+    'logout-mixed-collations',
+    'logout-mixed-collations-with-approval',
     'overlapping-verifications',
     'overlapping-responses',
     'overlapping-expired-login-logout',
