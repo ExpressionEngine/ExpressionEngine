@@ -312,8 +312,14 @@ if (array_key_exists($scenario, $invalidApprovals)) {
             $existingSessions = $db->select('session_id, member_id, mfa_flag')
                 ->order_by('session_id')->get('sessions')->result_array();
 
-            require_once SYSPATH . 'ee/installer/libraries/Progress.php';
-            require_once SYSPATH . 'ee/installer/updates/ud_7_05_29.php';
+            $installerPath = SYSPATH . 'ee/installer/';
+
+            if (!is_dir($installerPath)) {
+                $installerPath = SYSPATH . 'ee/_installer/';
+            }
+
+            require_once $installerPath . 'libraries/Progress.php';
+            require_once $installerPath . 'updates/ud_7_05_29.php';
             $updater = new \ExpressionEngine\Updater\Version_7_5_29\Updater();
             checkMfaSession($updater->do_update() === true, 'Session column migration failed.');
             checkMfaSession($db->select('session_id, member_id, mfa_flag')
