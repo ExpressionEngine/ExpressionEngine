@@ -67,6 +67,21 @@ class EncryptTest extends TestCase
         $this->assertEquals($encrypt->decode($encoded, $key), $text);
     }
 
+    public function testAuthenticatedTokenValidation()
+    {
+        $encrypt = new Encrypt\Encrypt('default-key');
+        $token = $encrypt->encodeAuthenticated('allowed', 'form:one', 'form-key');
+
+        $this->assertSame('allowed', $encrypt->decodeAuthenticated($token, 'form:one', 'form-key'));
+        $this->assertFalse($encrypt->decodeAuthenticated($token, 'form:two', 'form-key'));
+        $this->assertFalse($encrypt->decodeAuthenticated($token, 'form:one', 'other-key'));
+
+        $bytes = base64_decode($token, true);
+        $bytes[strlen($bytes) - 1] = chr(ord($bytes[strlen($bytes) - 1]) ^ 1);
+        $this->assertFalse($encrypt->decodeAuthenticated(base64_encode($bytes), 'form:one', 'form-key'));
+        $this->assertFalse($encrypt->decodeAuthenticated($encrypt->encode('allowed', 'form-key'), 'form:one', 'form-key'));
+    }
+
     public function testEncryptWithDefaultKey()
     {
         $text = "ExpressionEngine";

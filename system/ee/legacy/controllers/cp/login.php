@@ -388,9 +388,7 @@ class Login extends CP_Controller
         $after = !is_array($this->input->get('after')) ? $this->input->get('after') : '';
 
         $view = 'account/login';
-        if ($this->input->get('BK')) {
-            $this->view->return_path = ee('Encrypt')->encode($this->input->get('BK'));
-        } elseif ($return) {
+        if ($return) {
             $this->view->return_path = ee('Security/XSS')->clean($return);
 
             $return = json_decode(ee('Encrypt')->decode(str_replace(' ', '+', ee()->input->get('return'))));
@@ -1066,12 +1064,13 @@ class Login extends CP_Controller
         $this->session->set_flashdata('message', lang($lang_key));
 
         $redirect = [];
+        $return = ee()->input->get('return');
 
         // If we have a return argument, keep it
         if (ee()->input->post('return_path')) {
             $redirect = ['return' => ee()->input->post('return_path')];
-        } elseif (ee()->input->get('return')) {
-            $redirect = ['return' => ee('Encrypt')->encode(ee()->input->get('return'))];
+        } elseif (is_string($return) && $return !== '') {
+            $redirect = ['return' => $return];
         }
 
         $this->functions->redirect(ee('CP/URL')->make('login', $redirect)->compile());
