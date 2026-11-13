@@ -354,10 +354,8 @@ class CommandUpdate extends Cli
 
     protected function upgradeFromLocalVersion()
     {
-        if (file_exists(FCPATH . '../../.env.php') && (require FCPATH . '../../.env.php') == true) {
-            if (($_ENV['EE_INSTALL_MODE'] ?? false) !== 'TRUE') {
-                throw new \Exception("EE_INSTALL_MODE needs to be set to TRUE in .env.php to run update command");
-            }
+        if (file_exists(FCPATH . '../../.env.php') && ($_ENV['EE_INSTALL_MODE'] ?? false) !== 'TRUE') {
+            throw new \Exception("EE_INSTALL_MODE needs to be set to TRUE in .env.php to run update command");
         }
 
         // We have to initialize differently for local files

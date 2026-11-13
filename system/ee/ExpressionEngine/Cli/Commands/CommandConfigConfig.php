@@ -61,8 +61,12 @@ class CommandConfigConfig extends Cli
         ee()->cache->save('cli/update-config-settings', true);
 
         // Set config item
-        $config = ee('Config')->getFile();
-        $config->set($this->data['config-variable'], $this->data['value'], true);
+        try {
+            $config = ee('Config')->getFile();
+            $config->set($this->data['config-variable'], $this->data['value'], true);
+        } catch (\Throwable $e) {
+            $this->fail($e->getMessage());
+        }
 
         $this->info('command_config_config_config_value_saved');
     }
