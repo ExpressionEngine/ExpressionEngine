@@ -364,11 +364,19 @@ class Member extends ContentModel
     }
 
     /**
-     * Log email and password changes
+     * Revoke MFA sessions and process notifications for member changes.
+     *
+     * @param array $changed The previous values of updated properties.
+     * @return void
      */
     public function onAfterUpdate($changed)
     {
         parent::onAfterUpdate($changed);
+
+        if (isset($changed['password']) || isset($changed['enable_mfa']) || isset($changed['backup_mfa_code']) || isset($changed['unique_id'])) {
+            ee()->load->library('mfa_session');
+            ee()->mfa_session->revoke_member($this->member_id);
+        }
 
         if (REQ == 'CP') {
             if (isset($changed['password'])) {
@@ -445,6 +453,8 @@ class Member extends ContentModel
 
     public function onAfterDelete()
     {
+        ee()->load->library('mfa_session');
+        ee()->mfa_session->revoke_member($this->member_id);
         $this->updateRoleTotalMembers();
     }
 
