@@ -303,7 +303,7 @@ class EE_Exceptions
             foreach ($trace as $stackItem) {
                 echo html_entity_decode($stackItem) . "\n";
             }
-            exit;
+            exit(1);
         }
 
         // Hide sensitive information such as file paths and database information
