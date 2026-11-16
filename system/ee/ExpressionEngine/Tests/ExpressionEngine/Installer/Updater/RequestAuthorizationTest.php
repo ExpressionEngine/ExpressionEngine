@@ -475,7 +475,7 @@ class RequestAuthorizationTest extends TestCase
     public function testDefaultLockSurvivesUpdaterAndWorkingDirectoryCleanup()
     {
         $property = new \ReflectionProperty(RequestAuthorization::class, 'lockPath');
-        $property->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($property);
         $this->assertSame(SYSPATH . 'user/cache/.ee-updater.lock', $property->getValue(new RequestAuthorization()));
 
         $directory = $this->statePath . '-updater';

@@ -154,7 +154,7 @@ class EE_Xmlrpcs extends EE_Xmlrpc
         $parser = xml_parser_create($this->xmlrpc_defencoding);
         $parser_object = new XML_RPC_Message("filler");
 
-        $parser_name = is_php(8) ? spl_object_hash($parser) : (string) $parser;
+        $parser_name = is_php(8) ? spl_object_id($parser) : (string) $parser;
         $parser_object->xh[$parser_name] = array();
         $parser_object->xh[$parser_name]['isf'] = 0;
         $parser_object->xh[$parser_name]['isf_reason'] = '';
@@ -190,6 +190,7 @@ class EE_Xmlrpcs extends EE_Xmlrpc
         if (is_resource($parser)) {
             xml_parser_free($parser);
         }
+        unset($parser);
 
         if ($parsed && $parser_object->xh[$parser_name]['isf']) {
             return new XML_RPC_Response(0, $this->xmlrpcerr['invalid_return'], $this->xmlrpcstr['invalid_return']);

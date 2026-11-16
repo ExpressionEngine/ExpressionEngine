@@ -83,7 +83,7 @@ class License
      */
     public function getRawLicense()
     {
-        if (! is_readable($this->path_to_license)) {
+        if (strpos((string) $this->path_to_license, "\0") !== false || ! is_readable($this->path_to_license)) {
             $this->errors['missing_license'] = "Cannot read your license file: {$this->path_to_license}";
 
             return;

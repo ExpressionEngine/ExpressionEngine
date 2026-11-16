@@ -19,19 +19,20 @@ class Query
     {
         // Extract the query from the tag chunk
         if (($sql = ee()->TMPL->fetch_param('sql')) === false) {
-            return false;
+            return;
         }
 
         // Rudimentary check to see if it's a SELECT query, most definitely not
         // bulletproof
         if (substr(strtolower(trim($sql)), 0, 6) != 'select') {
-            return false;
+            return;
         }
 
         $query = ee()->db->query($sql);
         $results = $query->result_array();
         if ($query->num_rows() == 0) {
-            return $this->return_data = ee()->TMPL->no_results();
+            $this->return_data = ee()->TMPL->no_results();
+            return;
         }
 
         // Start up pagination

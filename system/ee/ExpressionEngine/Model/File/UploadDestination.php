@@ -185,6 +185,7 @@ class UploadDestination extends StructureModel
             // grab fresh list
             $existingManipulations = ee('Model')->get('FileDimension')->filter('upload_location_id', $this->getId())->all()->indexBy('id');
             foreach ($manipulationsToKeep as $manipulationId) {
+                $manipulationId = $manipulationId ?? '';
                 if (isset($existingManipulations[$manipulationId])) {
                     unset($existingManipulations[$manipulationId]);
                 }
@@ -237,7 +238,7 @@ class UploadDestination extends StructureModel
         $value = $default;
 
         if ($this->hasOverride($name)) {
-            $value = $this->_property_overrides[$this->id][$name];
+            $value = $this->_property_overrides[$this->id ?? ''][$name];
         }
 
         if ($config_only) {
@@ -287,9 +288,9 @@ class UploadDestination extends StructureModel
      */
     private function hasOverride($name)
     {
-        return (isset($this->_property_overrides[$this->id])
-            && is_array($this->_property_overrides[$this->id])
-            && array_key_exists($name, $this->_property_overrides[$this->id]));
+        return (isset($this->_property_overrides[$this->id ?? ''])
+            && is_array($this->_property_overrides[$this->id ?? ''])
+            && array_key_exists($name, $this->_property_overrides[$this->id ?? '']));
     }
 
     /**

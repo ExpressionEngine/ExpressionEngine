@@ -623,12 +623,28 @@ class MfaSessionTest extends TestCase
         ];
     }
 
-    /** @dataProvider migrationProvider */
+    /**
+     * Recompile routes only after the MFA migration steps succeed.
+     *
+     * @param bool $exists Whether the MFA approvals table already exists.
+     * @param bool $columnExists Whether sessions already have a login identifier.
+     * @param bool $written Whether schema changes succeed.
+     * @param bool $expected Expected update result.
+     * @return void
+     * @dataProvider migrationProvider
+     */
     public function testMigrationIsRepeatableAndReportsFailures($exists, $columnExists, $written, $expected)
     {
         require_once SYSPATH . 'ee/installer/libraries/Progress.php';
         require_once SYSPATH . 'ee/installer/updates/ud_7_05_29.php';
-        $db = $this->getMockBuilder(\stdClass::class)->addMethods(['table_exists', 'field_exists'])->getMock();
+        require_once BASEPATH . 'libraries/template_router/Route.php';
+        $db = $this->getMockBuilder(\stdClass::class)
+            ->addMethods(['table_exists', 'field_exists', 'select', 'join', 'where', 'get'])->getMock();
+        $db->method('select')->willReturnSelf();
+        $db->method('join')->willReturnSelf();
+        $db->method('where')->willReturnSelf();
+        $db->expects($expected ? $this->once() : $this->never())->method('get')
+            ->with('template_routes')->willReturn(new \eeDbResultMock([]));
         $db->data_cache = ['table_names' => []];
         $db->method('table_exists')->with('mfa_sessions')->willReturn($exists);
         $db->expects(!$exists && !$written ? $this->never() : $this->once())->method('field_exists')

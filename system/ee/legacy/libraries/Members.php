@@ -199,7 +199,7 @@ class Members
             $upload_path = ee()->config->slash_item('sig_img_path');
         }
 
-        if (! @is_dir($upload_path) or ! is_really_writable($upload_path)) {
+        if (strpos((string) $upload_path, "\0") !== false or ! @is_dir($upload_path) or ! is_really_writable($upload_path)) {
             if (REQ == 'CP') {
                 show_error('image_assignment_error');
             }

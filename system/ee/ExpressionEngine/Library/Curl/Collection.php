@@ -61,7 +61,7 @@ class RequestCollection extends Collection
             $collection = $objs;
         }
 
-        return parent::__construct($collection);
+        parent::__construct($collection);
     }
 
     public function exec($callback = null)

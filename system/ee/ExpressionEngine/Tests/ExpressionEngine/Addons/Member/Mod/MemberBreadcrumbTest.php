@@ -79,7 +79,7 @@ class MemberBreadcrumbDbMock
 
     private $result;
 
-    public function __construct(MemberBreadcrumbQueryResultMock $result = null)
+    public function __construct(?MemberBreadcrumbQueryResultMock $result = null)
     {
         $this->result = $result ?: new MemberBreadcrumbQueryResultMock();
     }

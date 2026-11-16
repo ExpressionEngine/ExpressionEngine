@@ -21,7 +21,11 @@ function checkMfaSession($condition, $message)
 $db = ee()->db;
 $memberRow = $db->get('members')->row_array();
 checkMfaSession(!empty($memberRow), 'The fixture requires a seeded member.');
-foreach (['members', 'sessions', 'mfa_sessions', 'security_hashes'] as $table) {
+$tables = ['members', 'sessions', 'mfa_sessions', 'security_hashes'];
+if (($argv[1] ?? '') === 'session-schema-upgrade') {
+    $tables = array_merge($tables, ['template_routes', 'templates', 'template_groups']);
+}
+foreach ($tables as $table) {
     $name = $db->dbprefix($table);
     $schema = $db->query("SHOW CREATE TABLE {$name}")->row_array();
     $sql = preg_replace('/^CREATE TABLE /', 'CREATE TEMPORARY TABLE ', $schema['Create Table'], 1);
@@ -323,6 +327,7 @@ if (array_key_exists($scenario, $invalidApprovals)) {
                 $installerPath = SYSPATH . 'ee/_installer/';
             }
 
+            defined('EE_APPPATH') || define('EE_APPPATH', BASEPATH);
             require_once $installerPath . 'libraries/Progress.php';
             require_once $installerPath . 'updates/ud_7_05_29.php';
             $updater = new \ExpressionEngine\Updater\Version_7_5_29\Updater();

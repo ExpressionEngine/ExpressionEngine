@@ -31,7 +31,11 @@ class EE_Cache_redis extends CI_Driver
      */
     public function get($key, $scope = Cache::LOCAL_SCOPE)
     {
-        $data = unserialize($this->_redis->get($this->unique_key($key, $scope)));
+        $serialized = $this->_redis->get($this->unique_key($key, $scope));
+        if ($serialized === false || $serialized === '') {
+            return false;
+        }
+        $data = unserialize($serialized);
 
         return is_array($data) ? $data[0] : false;
     }
@@ -129,8 +133,12 @@ class EE_Cache_redis extends CI_Driver
      */
     public function get_metadata($key, $scope = Cache::LOCAL_SCOPE)
     {
-        $data = $data = unserialize($this->_redis->get($this->unique_key($key, $scope)));
         $key = $this->unique_key($key, $scope);
+        $serialized = $this->_redis->get($key);
+        if ($serialized === false || $serialized === '') {
+            return false;
+        }
+        $data = unserialize($serialized);
 
         if (is_array($data)) {
             list($data, $time) = $data;

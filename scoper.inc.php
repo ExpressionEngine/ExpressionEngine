@@ -31,7 +31,9 @@ return [
             ])
             ->in('vendor'),
     ],                                      // Finder[]
-    'patchers' => [],                       // callable[]
+    'patchers' => [
+        require __DIR__ . '/build-tools/php85-dependency-patches.php',
+    ],
     // 'exclude-files' => [],      // list<string>
     // 'exclude-namespaces' => [], // list<string|regex>
     // 'exclude-constants' => [],  // list<string|regex>

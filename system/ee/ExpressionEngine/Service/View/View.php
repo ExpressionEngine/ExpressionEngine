@@ -328,7 +328,7 @@ class View
         $old_path = $this->provider->getPath() . '/views';
 
         foreach (array($path, $old_path) as $path) {
-            if (file_exists($path . '/' . $this->path . '.php')) {
+            if (file_exists_safe($path . '/' . $this->path . '.php')) {
                 return $path . '/' . $this->path . '.php';
             }
         }

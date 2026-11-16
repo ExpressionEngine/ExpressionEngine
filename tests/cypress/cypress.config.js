@@ -409,6 +409,7 @@ module.exports = defineConfig({
         "pwa": 25
     },
     "env": {
+        "PHP_COMPATIBILITY_FEED_BASE_URL": "http://127.0.0.1:8889/",
         "USER_EMAIL": "admin",
         "USER_PASSWORD": "password",
         "DB_HOST": "localhost",

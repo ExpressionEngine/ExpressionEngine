@@ -113,7 +113,9 @@ class CI_DB_mysqli_connection
                     continue;
                 }
 
-                $options[constant("PDO::$attr")] = $this->config[$attr];
+                $driver_attr = 'Pdo\\Mysql::' . substr($attr, strlen('MYSQL_'));
+                $option = defined($driver_attr) ? $driver_attr : "PDO::$attr";
+                $options[constant($option)] = $this->config[$attr];
             }
         }
 

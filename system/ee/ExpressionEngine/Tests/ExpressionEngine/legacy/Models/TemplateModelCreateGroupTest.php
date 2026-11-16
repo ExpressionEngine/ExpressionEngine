@@ -2,12 +2,25 @@
 
 use PHPUnit\Framework\TestCase;
 
-require_once __DIR__ . '/../../../eeObjectMock.php';
-require_once BASEPATH . 'core/Model.php';
-require_once BASEPATH . 'models/template_model.php';
-
+/**
+ * Load the real legacy model without other tests' CI_Model stubs.
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 class TemplateModelCreateGroupTest extends TestCase
 {
+    /**
+     * Load the template model in the isolated test process.
+     *
+     * @return void
+     */
+    protected function setUp(): void
+    {
+        require_once BASEPATH . 'core/Model.php';
+        require_once BASEPATH . 'models/template_model.php';
+    }
+
     protected function tearDown(): void
     {
         ee()->resetMocks();
