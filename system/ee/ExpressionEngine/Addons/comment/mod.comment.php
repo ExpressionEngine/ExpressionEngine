@@ -1911,7 +1911,7 @@ class Comment
         $id = ee()->input->get_post('entry_id');
         $hash = ee()->input->get_post('hash');
         $type = (ee()->input->get_post('type')) ? 'unsubscribe' : 'subscribe';
-        $ret = ee()->input->get('ret');
+        $ret = ee()->input->get_post('ret');
 
         // Unsubscribe links in notification emails cannot carry a CSRF token,
         // so a hash matching a subscription to this entry is the authorization
@@ -1974,6 +1974,7 @@ class Comment
                     'entry_id' => $id,
                     'hash' => $hash,
                     'type' => 'unsubscribe',
+                    'ret' => $ret,
                     'csrf_token' => CSRF_TOKEN,
                 ),
                 'secure' => false,
