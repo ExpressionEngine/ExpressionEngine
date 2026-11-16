@@ -396,19 +396,20 @@ class EntryListing
      */
     private function createAuthorFilter($channel = null)
     {
-        // Drive from channel_titles so MySQL can use channel_id/author_id indexes
-        // once, then join the matching members. A correlated COUNT against every
-        // member (used previously) makes the optimizer scan that channel once per
-        // member, which times out on sites with large member lists.
-        $db = ee('db')->distinct()
-            ->select('t.author_id, m.screen_name, m.username')
-            ->from('channel_titles t')
-            ->join('members m', 'm.member_id = t.author_id')
-            ->order_by('screen_name', 'asc');
+        // Distinct author_ids from channel_titles first (uses channel_id), then
+        // join those few rows to members. A correlated COUNT against every member
+        // timed out on large member lists; DISTINCT+JOIN on titles can still
+        // expand to every entry in the channel before uniquing.
+        $authorsSubquery = 'SELECT DISTINCT author_id FROM ' . ee()->db->dbprefix('channel_titles');
 
         if ($channel) {
-            $db->where('t.channel_id', (int) $channel->channel_id);
+            $authorsSubquery .= ' WHERE channel_id = ' . (int) $channel->channel_id;
         }
+
+        $db = ee('db')->select('m.member_id AS author_id, m.screen_name, m.username')
+            ->from('members m')
+            ->join('(' . $authorsSubquery . ')', 'a.author_id = m.member_id', '', 'a')
+            ->order_by('m.screen_name', 'asc');
 
         $authors_query = $db->get();
 
