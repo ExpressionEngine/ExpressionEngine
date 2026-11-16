@@ -56,27 +56,38 @@ class Mfa extends Profile\Pro
     }
 
     /**
-     * Update MFA settings and remember successful enrollment when configured.
+     * Update MFA settings after verifying enrollment or removal.
      *
      * @return void
      */
     public function mfa()
     {
         ee()->lang->load('login');
+        $isSelf = $this->member->member_id == ee()->session->userdata('member_id');
+        $enabling = $this->member->enable_mfa === false && ee('Request')->post('enable_mfa') == 'y';
+        $disabling = $this->member->enable_mfa === true && ee('Request')->post('enable_mfa') == 'n';
+
+        if (!$isSelf && ee()->session->getMember()->enable_mfa === true && ee()->session->userdata('mfa_flag') !== 'skip') {
+            ee()->functions->redirect(ee('CP/URL')->make('login/mfa'));
+            return;
+        }
+
         $rules = [];
-        if ($this->member->enable_mfa === false && ee('Request')->post('enable_mfa') == 'y') {
+        if ($enabling || ($disabling && $isSelf)) {
             $rules[] = [
                 'field' => 'mfa_code',
                 'label' => 'lang:mfa_code',
                 'rules' => 'required|integer|exact_length[6]'
             ];
+        }
+        if ($enabling) {
             $rules[] = [
                 'field' => 'backup_mfa_code',
                 'label' => 'lang:backup_mfa_code',
                 'rules' => 'required|alpha_numeric|exact_length[16]'
             ];
         }
-        if ($this->member->enable_mfa === true && ee('Request')->post('enable_mfa') == 'n' && ! ee('Session')->isWithinAuthTimeout()) {
+        if ($disabling && ! ee('Session')->isWithinAuthTimeout()) {
             $rules[] = [
                 'field' => 'password_confirm',
                 'label' => 'lang:password',
@@ -90,7 +101,7 @@ class Mfa extends Profile\Pro
                 ->get('Session')
                 ->filter('member_id', $this->member->member_id)
                 ->all();
-            if (!empty($_POST['mfa_code'])) {
+            if ($enabling) {
                 $validated = ee('pro:Mfa')->validateOtp(ee('Security/XSS')->clean(ee('Request')->post('mfa_code')), ee()->session->userdata('unique_id') . md5(ee('Security/XSS')->clean(ee('Request')->post('backup_mfa_code'))));
                 if (!$validated) {
                     ee('CP/Alert')->makeInline('shared-form')
@@ -122,20 +133,28 @@ class Mfa extends Profile\Pro
                         ->addToBody(lang('mfa_enabled_desc'))
                         ->now();
                 }
-            } elseif (ee('Request')->post('enable_mfa') == 'n') {
-                $this->member->enable_mfa = false;
-                $this->member->save();
+            } elseif ($disabling) {
+                if ($isSelf && !ee('pro:Mfa')->validateMemberOtp(ee('Request')->post('mfa_code'), $this->member)) {
+                    ee('CP/Alert')->makeInline('shared-form')
+                        ->asIssue()
+                        ->withTitle(lang('mfa_wrong_code'))
+                        ->addToBody(lang('mfa_wrong_code_desc'))
+                        ->now();
+                } else {
+                    $this->member->enable_mfa = false;
+                    $this->member->save();
 
-                foreach ($sessions as $session) {
-                    $session->mfa_flag = 'skip';
-                    $session->save();
+                    foreach ($sessions as $session) {
+                        $session->mfa_flag = 'skip';
+                        $session->save();
+                    }
+
+                    ee('CP/Alert')->makeInline('shared-form')
+                        ->asSuccess()
+                        ->withTitle(lang('mfa_disabled'))
+                        ->addToBody(lang('mfa_disabled_desc'))
+                        ->now();
                 }
-
-                ee('CP/Alert')->makeInline('shared-form')
-                    ->asSuccess()
-                    ->withTitle(lang('mfa_disabled'))
-                    ->addToBody(lang('mfa_disabled_desc'))
-                    ->now();
             }
         } elseif (ee('Request')->isPost() && ee()->form_validation->errors_exist()) {
             ee('CP/Alert')->makeInline('shared-form')
@@ -241,6 +260,21 @@ class Mfa extends Profile\Pro
                     )
                 ),
             ));
+        }
+        if ($this->member->enable_mfa === true && $isSelf) {
+            $vars['sections'][0][] = [
+                'title' => 'mfa_code',
+                'desc' => 'mfa_code_desc',
+                'group' => 'password',
+                'fields' => [
+                    'mfa_code' => [
+                        'type' => 'text',
+                        'required' => true,
+                        'maxlength' => 6,
+                        'attrs' => 'autocomplete="off"'
+                    ]
+                ]
+            ];
         }
         if ($this->member->enable_mfa == true && ! ee('Session')->isWithinAuthTimeout()) {
             $vars['sections']['secure_form_ctrls'] = array(

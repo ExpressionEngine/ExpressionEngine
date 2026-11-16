@@ -27,15 +27,30 @@ context('Independent MFA sessions', () => {
         }
     }).then(() => cy.task('generateOTP', secret));
 
-    const verifyCode = (code = backupCode) => {
-        cy.exec(`cd support/fixtures && php base32.php --uid ${uniqueId} --code ${code}`).then(result => {
-            generateCode(result.stdout).then(token => {
-                cy.get('input[name=mfa_code]').type(token);
-                cy.get('.button--primary').first().click();
+    const fillCode = (code = backupCode, current = true) => {
+        return cy.exec(`cd support/fixtures && php base32.php --uid ${uniqueId} --code ${code}`).then(result => {
+            return generateCode(result.stdout).then(token => {
+                const value = current ? token : String((Number(token) + 1) % 1000000).padStart(6, '0');
+                cy.get('input[name=mfa_code]').clear().type(value, { log: false });
             });
         });
+    };
+
+    const verifyCode = (code = backupCode) => {
+        fillCode(code);
+        cy.get('.button--primary').first().click();
         cy.get('input[name=mfa_code]').should('not.exist');
     };
+
+    const confirmPassword = () => cy.get('body').then(body => {
+        if (body.find('input[name=password_confirm]').length) {
+            cy.get('input[name=password_confirm]').type(Cypress.env('USER_PASSWORD'), { log: false });
+        }
+    });
+
+    const checkMemberMfa = (id, enabled = true) => cy.task('db:query',
+        `SELECT enable_mfa FROM exp_members WHERE member_id = ${id}`
+    ).then(([rows]) => expect(rows[0].enable_mfa).to.eq(enabled ? 'y' : 'n'));
 
     const expireSession = () => {
         cy.getCookies().then(cookies => {
@@ -124,6 +139,9 @@ context('Independent MFA sessions', () => {
 
     before(() => {
         cy.task('db:seed');
+        cy.readFile('../../build-tools/build.json').then(build => {
+            cy.eeConfig({ item: 'app_version', value: build.tag });
+        });
         // Enrollment is available without a Pro license on a site with one CP member.
         cy.task('db:query', 'UPDATE exp_members SET role_id = 5 WHERE member_id != 1');
         cy.task('db:query', 'DELETE FROM exp_members_roles WHERE member_id != 1');
@@ -267,11 +285,135 @@ context('Independent MFA sessions', () => {
         cy.visit('admin.php?/cp/members/profile/pro/mfa');
         cy.get('[data-toggle-for="enable_mfa"]').click();
         cy.get('input[name=password_confirm]').type(Cypress.env('USER_PASSWORD'), { log: false });
+        fillCode();
         cy.get('.button--primary').first().click();
         cy.get('[data-toggle-for="enable_mfa"]').should('not.have.class', 'on');
         cy.get('.app-notice---success').should('be.visible');
         cy.task('db:query', `SELECT * FROM exp_mfa_sessions WHERE member_id = ${memberId}`)
             .then(([rows]) => expect(rows).to.have.length(0));
+    });
+
+    [
+        { recent: false, completed: true, label: 'with password confirmation' },
+        { recent: true, completed: true, label: 'after recent password confirmation' },
+        { recent: true, completed: false, label: 'while login confirmation is pending' }
+    ].forEach(({ recent, completed, label }) => {
+        it(`confirms the current code before updating MFA settings ${label}`, () => {
+            login();
+            if (completed) {
+                verifyCode();
+            }
+            if (recent) {
+                cy.task('db:query', `UPDATE exp_sessions SET auth_timeout = UNIX_TIMESTAMP() + 900 WHERE member_id = ${memberId}`);
+            }
+            const openSettings = () => {
+                cy.visit('admin.php?/cp/members/profile/pro/mfa');
+                cy.get('[data-toggle-for="enable_mfa"]').click();
+                cy.get('input[name=mfa_code]').should('be.visible');
+                confirmPassword();
+            };
+
+            openSettings();
+            if (recent) {
+                cy.get('input[name=password_confirm]').should('not.exist');
+            }
+            cy.get('.button--primary').first().click();
+            checkMemberMfa(memberId);
+
+            openSettings();
+            fillCode(backupCode, false);
+            cy.get('.button--primary').first().click();
+            cy.get('.app-notice---error').should('be.visible');
+            checkMemberMfa(memberId);
+
+            openSettings();
+            fillCode();
+            cy.get('.button--primary').first().click();
+            cy.get('.app-notice---success').should('be.visible');
+            checkMemberMfa(memberId, false);
+        });
+    });
+
+    it('keeps the current enrollment when enabled settings are saved', () => {
+        login();
+        verifyCode();
+        cy.visit('admin.php?/cp/members/profile/pro/mfa');
+        mfaApproval().then(before => {
+            cy.get('input[name=enable_mfa]').closest('form').then(form => {
+                cy.exec(`cd support/fixtures && php base32.php --uid ${uniqueId} --code ${backupCode}`).then(result => {
+                    generateCode(result.stdout).then(token => {
+                        cy.request({
+                            method: 'POST', url: form.attr('action'), form: true,
+                            body: { enable_mfa: 'y', mfa_code: token, backup_mfa_code: backupCode,
+                                csrf_token: form.find('input[name=csrf_token]').val() }
+                        });
+                    });
+                });
+            });
+            checkMemberMfa(memberId);
+            mfaApproval().then(after => expect(after.token_hash).to.eq(before.token_hash));
+        });
+    });
+
+    it('confirms the current code on the frontend disable form', () => {
+        login();
+        verifyCode();
+        const openForm = () => {
+            cy.visit('index.php/pro/mfa');
+            cy.get('#disable_mfa_link').click();
+            cy.get('input[name=mfa_code]').should('be.visible');
+            confirmPassword();
+        };
+        openForm();
+        cy.get('.button--primary').first().click();
+        checkMemberMfa(memberId);
+
+        cy.visit('admin.php');
+        verifyCode();
+        openForm();
+        fillCode(backupCode, false);
+        cy.get('.button--primary').first().click();
+        cy.get('.app-notice---error').should('be.visible');
+        checkMemberMfa(memberId);
+
+        cy.visit('admin.php');
+        verifyCode();
+        openForm();
+        fillCode();
+        cy.get('.button--primary').first().click();
+        cy.get('#enable_mfa_link').should('exist');
+        checkMemberMfa(memberId, false);
+    });
+
+    [
+        { enabled: true, completed: false, label: 'with pending MFA' },
+        { enabled: true, completed: true, label: 'with completed MFA' },
+        { enabled: false, completed: false, label: 'without MFA enabled' }
+    ].forEach(({ enabled, completed, label }) => {
+        it(`handles another member's MFA settings for an administrator ${label}`, () => {
+            cy.task('db:query', `UPDATE exp_members SET enable_mfa = '${enabled ? 'y' : 'n'}' WHERE member_id = ${memberId}`);
+            cy.task('db:query', `SELECT member_id FROM exp_members WHERE member_id != ${memberId} LIMIT 1`).then(([rows]) => {
+                const targetId = Number(rows[0].member_id);
+                cy.task('db:query', `UPDATE exp_members SET enable_mfa = 'y', backup_mfa_code = MD5('member-setting-fixture') WHERE member_id = ${targetId}`);
+                login(false, enabled);
+                if (completed) {
+                    verifyCode();
+                }
+                cy.visit(`admin.php?/cp/members/profile/pro/mfa&id=${targetId}`);
+                if (enabled && !completed) {
+                    cy.url().should('include', '/login/mfa');
+                    checkMemberMfa(targetId);
+                } else {
+                    cy.get('input[name=mfa_code]').should('not.exist');
+                    cy.get('[data-toggle-for="enable_mfa"]').click();
+                    confirmPassword();
+                    cy.get('.button--primary').first().click();
+                    cy.get('.app-notice---success').should('be.visible');
+                    checkMemberMfa(targetId, false);
+                }
+                cy.task('db:query', `UPDATE exp_members SET enable_mfa = 'n', backup_mfa_code = '' WHERE member_id = ${targetId}`);
+            });
+        });
     });
 
     it('remembers successful CP enrollment without Remember me and revokes old approval', () => {

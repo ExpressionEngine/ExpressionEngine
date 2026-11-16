@@ -179,14 +179,17 @@ class Pro
 
                 ee()->lang->load('myaccount');
                 $rules = [
-                    'password_confirm' => 'required|authenticated'
+                    'password_confirm' => 'required|authenticated',
+                    'mfa_code' => 'required|integer|exact_length[6]'
                 ];
                 $validator = ee('Validation')->make($rules);
 
                 $validation = $validator->validate($_POST);
 
-                if ($validation->passed()) {
-                    $member = ee()->session->getMember();
+                $member = ee()->session->getMember();
+                $validCode = ee('pro:Mfa')->validateMemberOtp(ee('Request')->post('mfa_code'), $member);
+
+                if ($validation->passed() && $validCode) {
                     $member->enable_mfa = false;
                     $member->backup_mfa_code = '';
                     $member->save();
@@ -204,7 +207,7 @@ class Pro
                         $session->save();
                     }
                     ee()->lang->load('pro');
-                    ee()->session->set_cache('mfa', 'errors', [lang('existing_password_mfa_reset_desc')]);
+                    ee()->session->set_cache('mfa', 'errors', [lang($validCode ? 'existing_password_mfa_reset_desc' : 'mfa_wrong_code_desc')]);
                     //sync the session
                     ee()->session->mfa_flag = 'show';
                 }
