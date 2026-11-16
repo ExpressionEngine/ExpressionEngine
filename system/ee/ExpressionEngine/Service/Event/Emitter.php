@@ -147,7 +147,7 @@ class Emitter implements Publisher
      */
     protected function hash($object)
     {
-        return spl_object_hash($object);
+        return spl_object_id($object);
     }
 }
 

@@ -119,7 +119,7 @@ class InjectionContainer implements ServiceProvider
      */
     public function singleton(Closure $object)
     {
-        $hash = spl_object_hash($object);
+        $hash = spl_object_id($object);
 
         if (! isset($this->singletonRegistry[$hash])) {
             $this->singletonRegistry[$hash] = $object($this);

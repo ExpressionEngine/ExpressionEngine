@@ -2907,7 +2907,7 @@ class EE_Template
 
         $basepath = PATH_TMPL . ee()->config->item('site_short_name') . '/' . $template_group . '.group';
 
-        if (!is_dir($basepath)) {
+        if (strpos($basepath . '/' . $template, "\0") !== false || !is_dir($basepath)) {
             return false;
         }
 

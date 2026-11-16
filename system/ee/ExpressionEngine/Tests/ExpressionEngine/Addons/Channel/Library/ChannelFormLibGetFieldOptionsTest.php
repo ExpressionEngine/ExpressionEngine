@@ -328,17 +328,14 @@ class ChannelFormLibGetFieldOptionsTest extends ChannelFormLibTestBase
 
     public function testGetFieldOptionsReturnsEmptyArrayForUnknownField()
     {
-        // Ensure custom_fields is initialized but doesn't contain the unknown field
         $this->channelFormLib->custom_fields = [];
-
-        // This test should handle the case where the field doesn't exist
-        // The method should return an empty array when field is null
+        set_error_handler(function ($severity, $message, $file, $line) {
+            throw new \ErrorException($message, 0, $severity, $file, $line);
+        });
         try {
-            $result = $this->channelFormLib->get_field_options('unknown_field');
-            $this->assertEquals([], $result);
-        } catch (Throwable $e) {
-            // If an exception is thrown, that's also acceptable behavior for unknown fields
-            $this->assertTrue(true);
+            $this->assertSame([], $this->channelFormLib->get_field_options('unknown_field'));
+        } finally {
+            restore_error_handler();
         }
     }
 }

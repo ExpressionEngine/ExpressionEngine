@@ -179,7 +179,7 @@ class ContentDesign extends Settings
 
         ee()->form_validation->set_message('_validateResizeLibraryPath', lang('file_exists'));
 
-        return trim($path) == '' || file_exists($path);
+        return strpos((string) $path, "\0") === false && (trim($path) == '' || file_exists($path));
     }
 }
 // END CLASS

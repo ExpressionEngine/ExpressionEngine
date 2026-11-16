@@ -99,7 +99,7 @@ class EE_Channel_preparser
         foreach (array('pair', 'once', 'single') as $fn) {
             foreach ($components->$fn() as $k => $component) {
                 $skip = (bool) $component->disabled($this->_disabledFeatures, $this);
-                $obj_key = spl_object_hash($component);
+                $obj_key = spl_object_id($component);
 
                 $var = '_' . $fn . '_data';
                 $this->_disabled[$obj_key] = $skip;
@@ -141,7 +141,7 @@ class EE_Channel_preparser
      */
     public function pair_data($obj)
     {
-        return $this->_pair_data[spl_object_hash($obj)];
+        return $this->_pair_data[spl_object_id($obj)];
     }
 
     /**
@@ -153,7 +153,7 @@ class EE_Channel_preparser
      */
     public function single_data($obj)
     {
-        return $this->_single_data[spl_object_hash($obj)];
+        return $this->_single_data[spl_object_id($obj)];
     }
 
     /**
@@ -165,7 +165,7 @@ class EE_Channel_preparser
      */
     public function once_data($obj)
     {
-        return $this->_once_data[spl_object_hash($obj)];
+        return $this->_once_data[spl_object_id($obj)];
     }
 
     /**
@@ -178,7 +178,7 @@ class EE_Channel_preparser
      */
     public function set_once_data($obj, $data)
     {
-        return $this->_once_data[spl_object_hash($obj)] = $data;
+        return $this->_once_data[spl_object_id($obj)] = $data;
     }
 
     /**
@@ -237,7 +237,7 @@ class EE_Channel_preparser
      */
     public function is_disabled(EE_Channel_parser_component $obj)
     {
-        return $this->_disabled[spl_object_hash($obj)];
+        return $this->_disabled[spl_object_id($obj)];
     }
 
     /**

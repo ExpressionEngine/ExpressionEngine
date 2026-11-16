@@ -185,11 +185,17 @@ class EE_Xmlrpcs extends EE_Xmlrpc
                     xml_get_current_line_number($parser)
                 )
             );
-            xml_parser_free($parser);
+            if (PHP_VERSION_ID < 80000) {
+                xml_parser_free($parser);
+            }
+            unset($parser);
         } elseif ($parser_object->xh[$parser_name]['isf']) {
             return new XML_RPC_Response(0, $this->xmlrpcerr['invalid_return'], $this->xmlrpcstr['invalid_return']);
         } else {
-            xml_parser_free($parser);
+            if (PHP_VERSION_ID < 80000) {
+                xml_parser_free($parser);
+            }
+            unset($parser);
 
             $m = new XML_RPC_Message($parser_object->xh[$parser_name]['method']);
             $plist = '';

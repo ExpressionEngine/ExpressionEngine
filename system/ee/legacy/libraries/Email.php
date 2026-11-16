@@ -1294,7 +1294,7 @@ class EE_Email
             $file_content = '';
 
             if ($ctype === '') {
-                if (! file_exists($filename)) {
+                if (! file_exists_safe($filename)) {
                     $this->_set_error_message('lang:email_attachment_missing', $filename);
 
                     return false;

@@ -337,7 +337,7 @@ class SecurityPrivacy extends Settings
         if (empty($filename)) {
             $filename = 'dictionary.txt';
         }
-        if (ee('Request')->post('allow_dictionary_pw') == 'n' && !file_exists(reduce_double_slashes(PATH_DICT . $filename))) {
+        if (ee('Request')->post('allow_dictionary_pw') == 'n' && !file_exists_safe(reduce_double_slashes(PATH_DICT . $filename))) {
             ee()->form_validation->set_message('_validateDictionaryPath', lang('invalid_name_of_dictionary_file'));
 
             return false;

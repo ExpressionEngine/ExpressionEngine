@@ -170,7 +170,8 @@ jobs:
                   php-version: ${{ matrix.php }}
                   extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
                   coverage: none
-                  ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
+                  ini-values: >-
+                      error_reporting=E_ALL, log_errors=On, error_log=/home/runner/php_errors.log, memory_limit=128M
 
             - name: Copy config.php
               run: |
@@ -231,7 +232,9 @@ jobs:
 
             - name: Archive server errors
               uses: actions/upload-artifact@v4
-              if: failure()
+              if: always()
               with:
                 name: updater.error.log
-                path: /home/runner/php_errors.log
+                path: |
+                    /home/runner/php_errors.log
+                    system/user/logs/

@@ -885,6 +885,7 @@ var fillUpdaterDependencies = function (path) {
 	path = (typeof path !== 'undefined') ? path : './';
 
 	var filesToCopy = [
+		'legacy/helpers/cli_helper.php',
 		properties.namespaced_path + '/Boot/boot.common.php',
 		properties.namespaced_path + '/Core/Autoloader.php',
 		properties.namespaced_path + '/Service/Logger/File.php',

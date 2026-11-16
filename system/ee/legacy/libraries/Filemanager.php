@@ -233,7 +233,7 @@ class Filemanager
      */
     public function is_editable_image($file_path, $mime)
     {
-        if (!file_exists($file_path)) {
+        if (! file_exists_safe($file_path)) {
             return false;
         }
 
@@ -1544,7 +1544,7 @@ class Filemanager
     {
         $thumb_path = rtrim($dir['server_path'], '/') . '/_thumbs';
 
-        if (! is_dir($thumb_path)) {
+        if (strpos($thumb_path, "\0") !== false || ! is_dir($thumb_path)) {
             return $files;
         }
 
@@ -2509,7 +2509,7 @@ class Filemanager
                 $upload_prefs[$file_data->upload_location_id]['server_path'] . '/' . $file_data->file_name
             );
 
-            if (! file_exists($file_path)) {
+            if (! file_exists_safe($file_path)) {
                 return false;
             }
 

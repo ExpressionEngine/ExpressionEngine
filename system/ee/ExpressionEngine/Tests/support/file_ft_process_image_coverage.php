@@ -25,10 +25,10 @@ $xdebugAvailable = function_exists('xdebug_start_code_coverage') && function_exi
  * @return array<string, mixed>
  */
 function file_ft_process_image_bootstrap(
-    FileFtImageLibStub $imageLib = null,
-    FileFtTemplateStub $template = null,
-    FileFtConfigStub $config = null,
-    FileFtPermissionStub $permission = null
+    ?FileFtImageLibStub $imageLib = null,
+    ?FileFtTemplateStub $template = null,
+    ?FileFtConfigStub $config = null,
+    ?FileFtPermissionStub $permission = null
 ) {
     ee()->resetMocks();
 

@@ -12,7 +12,10 @@ on:
       php_version:
         type: choice
         description: PHP Version
+        default: '8.4'
         options:
+        - '8.6'
+        - '8.5'
         - '8.4'
         - '8.3'
         - '8.2'
@@ -57,7 +60,7 @@ jobs:
           - name: Setup PHP
             uses: shivammathur/setup-php@v2
             with:
-                php-version: '8.3'
+                php-version: '8.2'
                 extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
                 coverage: none
                 ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
@@ -187,7 +190,8 @@ jobs:
                   php-version: ${{ matrix.php }}
                   extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
                   coverage: none
-                  ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
+                  ini-values: >-
+                      error_reporting=E_ALL, log_errors=On, error_log=/home/runner/php_errors.log, memory_limit=128M
 
             - name: Copy config.php
               run: |
@@ -237,7 +241,10 @@ jobs:
               run: composer install
 
             - name: Start PHP Server
-              run: php tests/serve.php &
+              run: |
+                php tests/serve.php &
+                # RSS fixtures must not request the busy, single-process application server.
+                php -S 127.0.0.1:8889 -t . > /tmp/ee-compatibility-feed.log 2>&1 &
 
             - name: Start SMTP Server
               run: |
@@ -320,12 +327,19 @@ jobs:
                 name: cypress-videos-PHP${{ matrix.php }}-${{ matrix.containers }}
                 path: tests/cypress/cypress/videos/
 
+            - name: Summarize native PHP deprecations
+              if: always()
+              run: php tests/ci/report-deprecations.php /home/runner/php-deprecations.md /home/runner/php_errors.log
+
             - name: Archive server errors
               uses: actions/upload-artifact@v4
-              if: failure()
+              if: always()
               with:
                 name: error.PHP${{ matrix.php }}-${{ matrix.containers }}.log
-                path: /home/runner/php_errors.log
+                path: |
+                    /home/runner/php_errors.log
+                    /home/runner/php-deprecations.md
+                    system/user/logs/
 
             - name: Archive JS errors
               uses: actions/upload-artifact@v4

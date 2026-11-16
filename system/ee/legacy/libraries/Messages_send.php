@@ -25,7 +25,7 @@ class EE_Messages_send extends EE_Messages
             return ee()->lang->line('unable_to_recieve_attach');
         }
 
-        if (! @is_dir($this->upload_path) or ! is_really_writable($this->upload_path)) {
+        if (strpos((string) $this->upload_path, "\0") !== false or ! @is_dir($this->upload_path) or ! is_really_writable($this->upload_path)) {
             return ee()->lang->line('unable_to_recieve_attach');
         }
 
@@ -172,7 +172,7 @@ class EE_Messages_send extends EE_Messages
             return ee()->lang->line('unable_to_recieve_attach');
         }
 
-        if (! @is_dir($this->upload_path) or ! is_really_writable($this->upload_path)) {
+        if (strpos((string) $this->upload_path, "\0") !== false or ! @is_dir($this->upload_path) or ! is_really_writable($this->upload_path)) {
             return ee()->lang->line('unable_to_recieve_attach');
         }
 

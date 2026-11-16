@@ -117,6 +117,10 @@ class Pro_variables_sync
 
         $path = $this->_get_var_filepath();
 
+        if (strpos($path, "\0") !== false) {
+            return false;
+        }
+
         if (! @is_dir($path)) {
             if (! @mkdir($path, DIR_WRITE_MODE)) {
                 return false;

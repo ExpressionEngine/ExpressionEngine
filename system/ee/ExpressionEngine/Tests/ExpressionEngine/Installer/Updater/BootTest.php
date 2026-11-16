@@ -57,7 +57,8 @@ class BootTest extends TestCase
         return [['ee/ExpressionEngine/Boot/'], ['ee/EllisLab/ExpressionEngine/Boot/']];
     }
 
-    public function testCliBootstrapDoesNotRequireBrowserAuthorization()
+    /** @dataProvider cliBootstrapStates */
+    public function testCliBootstrapDoesNotRequireBrowserAuthorization($step, $constants)
     {
         $autoloader = 'ee/updater/ExpressionEngine/Updater/Core/';
         mkdir($this->directory . $autoloader, 0700, true);
@@ -67,12 +68,57 @@ class BootTest extends TestCase
             'namespace ExpressionEngine\\Core;', 'namespace ExpressionEngine\\Updater\\Core;', $source
         );
         file_put_contents($this->directory . $autoloader . 'Autoloader.php', $source);
-        mkdir($this->directory . 'ee/ExpressionEngine/Config', 0700, true);
-        file_put_contents($this->directory . 'ee/ExpressionEngine/Config/constants.php', '<?php return [];');
-        $result = $this->runBoot('CLI', null);
+        if ($constants !== null) {
+            mkdir($this->directory . 'ee/ExpressionEngine/Config', 0700, true);
+            file_put_contents($this->directory . 'ee/ExpressionEngine/Config/constants.php', $constants);
+        }
+        $result = $this->runBoot('CLI', $step);
         $this->assertSame('', $result['body']);
         $this->assertFileDoesNotExist($this->directory . 'ee/updater/.authorization.php');
         $this->assertFileDoesNotExist($this->directory . 'user/cache/.ee-updater.lock');
+    }
+
+    public function cliBootstrapStates()
+    {
+        return [
+            'normal bootstrap' => [null, '<?php return [];'],
+            'recovery with missing application' => ['rollback', null],
+            'recovery with partially written application' => ['rollback', '<?php interrupted file'],
+        ];
+    }
+
+    /** @dataProvider cliHelperStates */
+    public function testRecoveryUsesPackagedHelpersWithoutApplicationFiles($preloadHelper)
+    {
+        $updater = $this->directory . 'ee/updater/';
+        mkdir($updater . 'legacy/helpers', 0700, true);
+        $helper = SYSPATH . 'ee/legacy/helpers/cli_helper.php';
+        copy($helper, $updater . 'legacy/helpers/cli_helper.php');
+        copy($this->source . 'recovery.php', $updater . 'recovery.php');
+        // Isolate the recovery entry point from the runner's file and database operations.
+        file_put_contents($updater . 'boot.php', '<?php
+            namespace ExpressionEngine\Updater\Service\Updater;
+            class Runner {
+                public function runStep($step) { stdout($step, CLI_STDOUT_SUCCESS); }
+                public function getNextStep() { return false; }
+            }
+        ');
+
+        $script = '<?php ';
+        if ($preloadHelper) {
+            $script .= 'require ' . var_export($helper, true) . ';';
+        }
+        $script .= 'require ' . var_export($updater . 'recovery.php', true) . ';';
+        $output = $this->runPhp($script);
+        $this->assertSame("==> rollback\n", preg_replace('/\x1b\[[0-9;]*m/', '', $output));
+    }
+
+    public function cliHelperStates()
+    {
+        return [
+            'standalone recovery' => [false],
+            'CLI helper already loaded' => [true],
+        ];
     }
 
     private function runBoot($requestType, $step)
@@ -94,6 +140,15 @@ class BootTest extends TestCase
                 ]);
             });
             require ' . var_export($this->source . 'boot.php', true) . ';';
+        $output = $this->runPhp($script);
+        $result = json_decode($output, true);
+        $this->assertIsArray($result, $output);
+
+        return $result;
+    }
+
+    private function runPhp($script)
+    {
         file_put_contents($this->directory . 'request.php', $script);
         // Retain configured extensions: PHP 7 installations may load JSON through php.ini.
         $command = [PHP_BINARY, $this->directory . 'request.php'];
@@ -106,9 +161,7 @@ class BootTest extends TestCase
         fclose($pipes[1]);
         fclose($pipes[2]);
         $this->assertSame(0, proc_close($process), $errors . $output);
-        $result = json_decode($output, true);
-        $this->assertIsArray($result, $output);
 
-        return $result;
+        return $output;
     }
 }

@@ -59,7 +59,7 @@ class Api_channel_fields extends Api
             $this->field_types[$settings['field_type']] = $this->include_handler($settings['field_type']);
         }
 
-        $this->settings[$field_id] = $settings;
+        $this->settings[$field_id ?? ''] = $settings;
     }
 
     /**
@@ -69,7 +69,7 @@ class Api_channel_fields extends Api
      */
     public function get_settings($field_id)
     {
-        return isset($this->settings[$field_id]) ? $this->settings[$field_id] : array();
+        return $this->settings[$field_id ?? ''] ?? array();
     }
 
     /**
@@ -337,16 +337,18 @@ class Api_channel_fields extends Api
         // is a field_id. We can do a lookup based on some of the
         // other data we have.
 
-        if (isset($this->custom_fields[$field_type])) {
+        $field_key = $field_type ?? '';
+
+        if (isset($this->custom_fields[$field_key])) {
             $frontend = true;
             $field_id = $field_type;
             $settingsKey = $field_id;
-            $field_type = $this->custom_fields[$field_type];
-        } elseif (isset($this->settings[$field_type])) {
+            $field_type = $this->custom_fields[$field_key];
+        } elseif (isset($this->settings[$field_key])) {
             $field_id = $field_type;
             $settingsKey = $field_id;
-            $field_type = $this->settings[$field_id]['field_type'];
-        } elseif (strpos($field_type, 'm_') === 0 && isset($this->custom_member_fields[$field_type])) {
+            $field_type = $this->settings[$field_key]['field_type'];
+        } elseif (strpos($field_key, 'm_') === 0 && isset($this->custom_member_fields[$field_type])) {
             //custom member fields
             $field_id = substr($field_type, 2);
             $settingsKey = 'member_field_' . $field_id;
@@ -355,6 +357,8 @@ class Api_channel_fields extends Api
 
         // Now that we know that we're definitely working
         // with a field_type name. Look for it.
+        $field_type = $field_type ?? '';
+
         if (! isset($this->field_types[$field_type]) or
             $this->field_types[$field_type] === false) {
             return false;

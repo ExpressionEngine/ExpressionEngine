@@ -43,6 +43,7 @@ class CommandUpdate extends Cli
      */
     public $commandOptions = [
         'rollback'             => 'command_update_option_rollback',
+        'complete'             => 'command_update_option_complete',
         'verbose,v'            => 'command_update_option_verbose',
         'microapp'             => 'command_update_option_microapp',
         'step:'                => 'command_update_option_step:',
@@ -70,11 +71,24 @@ class CommandUpdate extends Cli
      */
     public function handle()
     {
+        if ($this->option('--rollback', false)) {
+            return $this->runRecovery();
+        }
+
+        if ($this->hasPendingUpdate()) {
+            $this->fail('An update is still pending. Run update --rollback before starting another update.');
+        }
+
+        if ($this->option('--complete', false)) {
+            $this->completeUpdate();
+            return $this->complete();
+        }
+
         // Preflight checks, download and unpack update
         $this->initUpgrade();
 
         if (version_compare($this->currentVersion, $this->updateVersion, '>=')) {
-            $this->complete('ExpressionEngine ' . $this->currentVersion . lang('command_update_is_already_up_to_date'));
+            return $this->complete('ExpressionEngine ' . $this->currentVersion . lang('command_update_is_already_up_to_date'));
         }
 
         // Advanced param checks
@@ -86,19 +100,44 @@ class CommandUpdate extends Cli
         }
 
         $this->runUpgrade();
-        $this->postFlightCheck();
-
-        // -------------------------------------------
-        // 'updater_complete' hook.
-        //  - added 7.5.16
-        //
-        if (ee()->extensions->active_hook('updater_complete') === true) {
-            ee()->extensions->call('updater_complete');
+        if ($this->updateType === 'local') {
+            $this->completeUpdate();
         }
-        //
-        // -------------------------------------------
 
         $this->complete('command_update_success');
+    }
+
+    /**
+     * Run post-update checks and notify enabled extensions that the update has finished.
+     */
+    protected function completeUpdate()
+    {
+        try {
+            $this->postFlightCheck();
+            if (ee()->extensions->active_hook('updater_complete') === true) {
+                ee()->extensions->call('updater_complete');
+            }
+        } catch (\Throwable $e) {
+            $this->fail($e->getMessage());
+        }
+    }
+
+    protected function hasPendingUpdate()
+    {
+        return is_dir(SYSPATH . 'ee/updater');
+    }
+
+    protected function runRecovery()
+    {
+        $recovery = SYSPATH . 'ee/updater/recovery.php';
+        if (! is_file($recovery)) {
+            $this->fail('No pending update with CLI recovery support was found.');
+        }
+
+        passthru(escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($recovery), $status);
+        if ($status !== 0) {
+            $this->fail('Rollback did not complete. The update backups have been retained.');
+        }
     }
 
     protected function runUpdater($step = null, $microapp = false, $noBootstrap = false, $rollback = false)
@@ -118,7 +157,7 @@ class CommandUpdate extends Cli
             }
 
             $this->runUpdater($step, true, true); //'update --microapp --no-bootstrap');
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->fail("{$e->getCode()}: {$e->getMessage()}");
         }
     }
@@ -158,7 +197,7 @@ class CommandUpdate extends Cli
      * begins upgrade
      * @return null
      */
-    private function initUpgrade()
+    protected function initUpgrade()
     {
         $this->getCurrentVersion();
 
@@ -343,7 +382,7 @@ class CommandUpdate extends Cli
             $result = $this->updateType == 'local'
                     ? $this->upgradeFromLocalVersion()
                     : $this->upgradeFromDownloadedVersion();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->fail([
                 lang('command_update_updater_failed'),
                 $e->getMessage(),
@@ -448,12 +487,7 @@ class CommandUpdate extends Cli
             ee()->cache->save('cli/update-config-settings', true);
 
             ee('Updater/Runner')->run();
-
-            // Update the config version after successful upgrade using proper EE config API
-            $config = ee('Config')->getFile();
-            $config->set('app_version', $this->updateVersion, true);
-
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->fail("{$e->getCode()}: {$e->getMessage()}\n\n\n{$e->getTraceAsString()}");
         }
 
