@@ -19,12 +19,14 @@ context('CP Homepage', () => {
 
     it('uses protected native navigation for external links', function() {
         cy.get('a[rel~="external"]').each(($link) => {
-            expect($link).to.have.attr('target', '_blank')
-            expect($link.attr('rel').split(/\s+/)).to.include.members([
-                'external',
-                'noopener',
-                'noreferrer'
-            ])
+            cy.wrap($link).should(($link) => {
+                expect($link).to.have.attr('target', '_blank')
+                expect($link.attr('rel').split(/\s+/)).to.include.members([
+                    'external',
+                    'noopener',
+                    'noreferrer'
+                ])
+            })
         })
 
         cy.get('body').then(($body) => {
@@ -38,9 +40,11 @@ context('CP Homepage', () => {
             $body[0].addEventListener('click', observeDefault)
             $body.append($dynamicLink)
 
-            cy.wrap($dynamicLink).click().then(() => {
+            // The injected link is outside the CP's scrollable content.
+            cy.wrap($dynamicLink).click({ force: true }).then(() => {
                 expect(wasPrevented).to.be.false
-                expect($dynamicLink).to.have.attr('target', '_blank')
+                // Cypress intercepts target property assignments during clicks.
+                expect($dynamicLink).to.have.prop('target', '_blank')
                 expect($dynamicLink.attr('rel').split(/\s+/)).to.include.members([
                     'external',
                     'noopener',
