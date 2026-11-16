@@ -3507,7 +3507,7 @@ class FileFieldFieldTest extends TestCase
     }
 
     /**
-     * Ensure filedir payloads query by filename, upload directory, and current site id.
+     * Ensure filedir payloads include shared files without allowing files from unrelated sites.
      *
      * @return void
      */
@@ -3520,7 +3520,7 @@ class FileFieldFieldTest extends TestCase
         $filters = [
             ['field' => 'file_name', 'operator' => '=', 'value' => 'spec sheet.pdf'],
             ['field' => 'upload_location_id', 'operator' => '=', 'value' => '9'],
-            ['field' => 'site_id', 'operator' => '=', 'value' => 51],
+            ['field' => 'site_id', 'operator' => 'IN', 'value' => [0, 51]],
         ];
         $this->modelServiceMock->fileResultsByFilterKey[$this->modelServiceMock->buildFileFilterKey($filters)] = $expected;
 
@@ -3546,8 +3546,8 @@ class FileFieldFieldTest extends TestCase
                 'model' => 'File',
                 'id' => null,
                 'field' => 'site_id',
-                'operator' => '=',
-                'value' => 51,
+                'operator' => 'IN',
+                'value' => [0, 51],
             ]],
             $this->modelServiceMock->filterCalls
         );
