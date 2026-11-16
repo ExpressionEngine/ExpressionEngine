@@ -74,6 +74,42 @@ context('Publish Entry with Fluid', () => {
 
       })
 
+      it('refreshes Grid layout when Fluid items are expanded', () => {
+        cy.viewport(1600, 1000)
+        fluid_field.get('actions_menu.fields').eq(available_fields.indexOf('Stupid Grid')).click()
+        fluid_field.add_content(0)
+        fluid_field.get('actions_menu.fields').eq(available_fields.indexOf('Text')).click()
+
+        fluid_field.get('items').eq(0).as('gridItem')
+        fluid_field.get('items').eq(1).as('textItem')
+        cy.get('@gridItem').find('.grid-field.entry-grid').as('fluidGrid')
+        cy.get('@fluidGrid').closest('.field-control').as('gridContainer').invoke('css', 'width', '1100px')
+        cy.get('@fluidGrid').find('td[data-fieldtype]').invoke('css', 'min-width', '400px')
+        cy.wait(500)
+        cy.get('@fluidGrid').should('not.have.class', 'overwidth')
+
+        ;[false, true].forEach(expandAll => {
+          ;[800, 1100].forEach(width => {
+            cy.get('@gridItem').find('.js-toggle-fluid-item:visible').click()
+            cy.get('@fluidGrid').should('not.be.visible')
+            cy.get('@gridContainer').invoke('css', 'width', `${width}px`)
+            // Let the resize debounce finish while the Grid is still hidden.
+            cy.wait(500)
+
+            if (expandAll) {
+              cy.get('@textItem').find('.fluid__item-tools--item-open > .js-dropdown-toggle').first().click()
+              cy.get('@textItem').find('.js-show-all-fluid-items').click()
+            } else {
+              cy.get('@gridItem').find('.js-toggle-fluid-item:visible').click()
+            }
+
+            cy.get('@fluidGrid').should('be.visible')
+              .and(width === 800 ? 'have.class' : 'not.have.class', 'overwidth')
+            cy.get('@fluidGrid').find('input[type=text]:visible').first().should('have.value', 'Lorem0')
+          })
+        })
+      })
+
       it('adds field groups', () => {
 
         cy.authVisit('/admin.php?/cp/fields&group_id=0');
