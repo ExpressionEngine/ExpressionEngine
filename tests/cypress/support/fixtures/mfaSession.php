@@ -231,7 +231,10 @@ if (array_key_exists($scenario, $invalidApprovals)) {
             checkMfaSession((int) $row['verified_at'] === 2000000 && (int) $row['expires_at'] === 2086400, 'Incorrect lifetime.');
             checkMfaSession($row['mfa_login_id'] === hash('sha256', 'issuing-session'), 'Incorrect issuing session hash.');
             checkMfaSession(!in_array('issuing-session', $row, true) && !in_array($token, $row, true), 'Raw credential stored.');
-            checkMfaSession($input->sent === [['mfa_session_1', $token, 86400]], 'Incorrect cookie lifetime.');
+            checkMfaSession($input->sent === [
+                ['mfa_session_logout', hash('sha256', $token), 86400],
+                ['mfa_session_1', $token, 86400]
+            ], 'Incorrect MFA cookie lifetime or logout reference.');
             checkMfaSession($mfa->restore(42, 'new-session') === $row['mfa_login_id'] && $flag() === 'skip', 'Approval did not restore its stable login identity.');
             break;
         case 'overlapping-verifications':
@@ -278,7 +281,9 @@ if (array_key_exists($scenario, $invalidApprovals)) {
                 checkMfaSession($otherRequest->create($member, 'issuing-session') === true, 'Second verification failed.');
             }
             checkMfaSession(count($approvals()) === 2, 'Verified requests deleted each other.');
-            $tokens = array_column($input->sent, 1);
+            $tokens = array_column(array_filter($input->sent, function ($cookie) {
+                return $cookie[0] === 'mfa_session_1';
+            }), 1);
             checkMfaSession(count(array_unique($tokens)) === 2, 'Expected two fresh response tokens.');
             $input->cookies['mfa_session_1'] = $old;
             $reject(new Mfa_session());
@@ -484,6 +489,70 @@ if (array_key_exists($scenario, $invalidApprovals)) {
             checkMfaSession((new Mfa_session())->restore(42, 'new-session'), 'Other device approval was revoked.');
             checkMfaSession((new Mfa_session())->create($member, $rotating->sdata['session_id']) === false, 'Logged-out rotated session issued a new approval.');
             break;
+        case 'expired-shared-site-logout':
+        case 'expired-shared-host-logout':
+        case 'removed-shared-site-logout':
+        case 'removed-shared-host-logout':
+            $db->where('session_id', 'issuing-session')->update('sessions', [
+                'sess_start' => ee()->localize->now, 'last_activity' => ee()->localize->now
+            ]);
+            $runtime = $loadSession('issuing-session');
+            $runtime->update_session();
+            $token = $approve();
+            $sharedCookies = $input->cookies;
+            $sharedCookies['sessionid'] = 'issuing-session';
+
+            // An independent site login must retain its own valid approval.
+            $input->cookies = [];
+            ee()->config->set_item('site_id', 2);
+            $session('independent-site-login', 42, 'skip');
+            checkMfaSession((new Mfa_session())->create($member, 'independent-site-login'), 'Independent site could not verify.');
+            $independentCookies = $input->cookies;
+            $independentToken = $input->cookies['mfa_session_2'];
+
+            $input->cookies = $sharedCookies;
+            if (strpos($scenario, '-host-') !== false) {
+                // Subdomains share the configured login cookies, but not MFA approval.
+                ee()->config->set_item('site_id', 1);
+                unset($input->cookies['mfa_session_1']);
+            }
+            if (strpos($scenario, 'removed-') === 0) {
+                $db->where('session_id', 'issuing-session')->delete('sessions');
+                unset($input->cookies['sessionid']);
+            }
+            ee()->localize->now += 61;
+            $runtime->validation = 'cs';
+            $runtime->sdata['session_id'] = $input->cookie('sessionid') ?: 0;
+            checkMfaSession($runtime->fetch_session_data() === false, 'Expired login did not become a guest.');
+            $runtime->userdata = $runtime->sdata;
+            checkMfaSession($runtime->userdata('session_id') === 0, 'Guest retained the expired session ID.');
+            ee()->remove('mfa_session');
+            ee()->set('mfa_session', new Mfa_session());
+            $runtime->destroy();
+
+            checkMfaSession(array_column($approvals(), 'token_hash') === [hash('sha256', $independentToken)],
+                'Guest logout left the shared approval or revoked an independent site.');
+            checkMfaSession(!isset($input->cookies['mfa_session_logout']), 'Logout retained its reference cookie.');
+            checkMfaSession($db->get_where('sessions', ['session_id' => 'independent-site-login'])->num_rows() === 1,
+                'Guest logout removed an independent site login.');
+            ee()->config->set_item('site_id', 1);
+            $input->cookies = ['mfa_session_1' => $token];
+            $reject(new Mfa_session());
+            ee()->config->set_item('site_id', 2);
+            $input->cookies = $independentCookies;
+            checkMfaSession((new Mfa_session())->restore(42, 'new-session') !== false, 'Independent site approval was revoked.');
+            break;
+        case 'logout-reference-is-not-approval':
+            $token = $approve();
+            $reference = $input->cookies['mfa_session_logout'];
+            checkMfaSession($reference === hash('sha256', $token), 'Logout reference exposed the approval token.');
+            $input->cookies = ['mfa_session_logout' => $reference];
+            $reject(new Mfa_session());
+            $input->cookies['mfa_session_1'] = $reference;
+            $reject(new Mfa_session());
+            $input->cookies['mfa_session_1'] = $token;
+            checkMfaSession((new Mfa_session())->restore(42, 'new-session') !== false, 'Original approval stopped working.');
+            break;
         case 'multisite-cookie-isolation':
             $siteOneToken = $approve();
             $session('site-two-issuing', 42, 'skip');
@@ -543,11 +612,18 @@ if (array_key_exists($scenario, $invalidApprovals)) {
             $approve();
             $before = $approvals();
             ee()->localize->now += 86399;
-            checkMfaSession($mfa->restore(42, 'new-session') !== false, 'Approval expired too soon.');
-            checkMfaSession($approvals() === $before && count($input->sent) === 1, 'Restore extended approval.');
+            unset($input->cookies['mfa_session_logout']);
+            $restoring = new Mfa_session();
+            checkMfaSession($restoring->restore(42, 'new-session') !== false, 'Approval expired too soon.');
+            $approvalCookies = array_filter($input->sent, function ($cookie) {
+                return $cookie[0] === 'mfa_session_1';
+            });
+            checkMfaSession($approvals() === $before && count($approvalCookies) === 1, 'Restore extended approval.');
+            checkMfaSession(end($input->sent) === ['mfa_session_logout', hash('sha256', $input->cookies['mfa_session_1']), 86400],
+                'Restoring MFA did not refresh its logout reference.');
             ee()->localize->now++;
             $db->where('session_id', 'new-session')->update('sessions', ['mfa_flag' => 'show']);
-            $reject();
+            $reject(new Mfa_session());
             break;
         case 'longer-window':
         case 'shorter-window':

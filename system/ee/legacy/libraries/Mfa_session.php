@@ -17,13 +17,20 @@ class Mfa_session
 {
     private $cookie;
     private $token;
+    private $logout_token;
 
-    /** Read the incoming credential without caching its approval. */
+    /**
+     * Read the approval and its separate, revocation-only browser reference.
+     *
+     * @return void
+     */
     public function __construct()
     {
         $this->cookie = 'mfa_session_' . (int) ee()->config->item('site_id');
         $token = ee()->input->cookie($this->cookie);
         $this->token = is_string($token) && preg_match('/\A[a-f0-9]{64}\z/', $token) ? $token : false;
+        $logout_token = ee()->input->cookie('mfa_session_logout');
+        $this->logout_token = is_string($logout_token) && preg_match('/\A[a-f0-9]{64}\z/', $logout_token) ? $logout_token : false;
     }
 
     /** Site-specific browser cookies share this registered policy. */
@@ -82,6 +89,7 @@ class Mfa_session
         }
         ee()->db->delete('mfa_sessions', ['expires_at <=' => $now]);
         $this->token = $token;
+        $this->set_logout_cookie(hash('sha256', $token), $length);
         ee()->input->set_cookie([
             'name' => $this->cookie,
             'policy_name' => $this->getCookiePolicyName(),
@@ -131,8 +139,14 @@ class Mfa_session
 
         // Keep the in-memory session attached to the same login as the approval.
         // A concurrent logout may already have removed it after the UPDATE.
-        return ee()->db->select('mfa_login_id')
+        $login_id = ee()->db->select('mfa_login_id')
             ->get_where('sessions', ['session_id' => $session_id])->row('mfa_login_id') ?: false;
+
+        if ($login_id) {
+            $this->set_logout_cookie(hash('sha256', $this->token), $length);
+        }
+
+        return $login_id;
     }
 
     /**
@@ -161,7 +175,8 @@ class Mfa_session
                 WHERE s.member_id = ? AND s.mfa_login_id = ?", [
                     $member_id, $login_id
                 ]);
-        } elseif ($session_id) {
+        }
+        if (!$login_id && $session_id) {
             ee()->db->where('session_id', $session_id);
             ee()->db->delete(array('sessions', 'security_hashes'));
         }
@@ -172,6 +187,13 @@ class Mfa_session
             // identity so logout also removes overlapping approvals after expiry.
             $approval = $this->token ? ee()->db->select('member_id, mfa_login_id')
                 ->get_where('mfa_sessions', ['token_hash' => $token_hash])->row_array() : [];
+            // An expired shared login may have neither a session nor this host's
+            // approval cookie. This hash can revoke, but never restore MFA.
+            $logout_approval = [];
+            if (!$member_id && $this->logout_token && $this->logout_token !== $token_hash) {
+                $logout_approval = ee()->db->select('member_id, mfa_login_id')
+                    ->get_where('mfa_sessions', ['token_hash' => $this->logout_token])->row_array();
+            }
             ee()->db->where('token_hash', $token_hash)
                 ->or_start_group()
                     ->where('member_id', (int) $member_id)
@@ -180,13 +202,42 @@ class Mfa_session
                 ->or_start_group()
                     ->where('member_id', $approval['member_id'] ?? 0)
                     ->where('mfa_login_id', $approval['mfa_login_id'] ?? '')
-                ->end_group()
-                ->delete('mfa_sessions');
+                ->end_group();
+            if ($logout_approval) {
+                ee()->db->or_start_group()
+                    ->where('member_id', $logout_approval['member_id'])
+                    ->where('mfa_login_id', $logout_approval['mfa_login_id'])
+                    ->end_group();
+            }
+            ee()->db->delete('mfa_sessions');
         }
         $this->token = false;
+        $this->logout_token = false;
+        ee()->input->delete_cookie([
+            'name' => 'mfa_session_logout',
+            'policy_name' => $this->getCookiePolicyName()
+        ]);
         ee()->input->delete_cookie([
             'name' => $this->cookie,
             'policy_name' => $this->getCookiePolicyName()
+        ]);
+    }
+
+    /**
+     * Remember which approval to revoke after a shared login expires.
+     *
+     * @param string $token_hash A one-way reference that cannot authorize MFA.
+     * @param int $length The revocation reference lifetime in seconds.
+     * @return void
+     */
+    private function set_logout_cookie($token_hash, $length)
+    {
+        $this->logout_token = $token_hash;
+        ee()->input->set_cookie([
+            'name' => 'mfa_session_logout',
+            'policy_name' => $this->getCookiePolicyName(),
+            'value' => $token_hash,
+            'expire' => $length
         ]);
     }
 

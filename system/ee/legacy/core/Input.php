@@ -305,10 +305,12 @@ class EE_Input
             $data['secure_cookie'] = true;
         }
 
-        // MFA approval is a server-only credential, scoped to this host.
+        // Only the revocation reference follows the shared session cookie domain.
         if (($data['policy_name'] ?? $data['name'] ?? null) === 'mfa_session') {
             $data['httponly'] = true;
-            $data['domain'] = '';
+            if (($data['name'] ?? null) !== 'mfa_session_logout') {
+                $data['domain'] = '';
+            }
             $data['samesite'] = $data['samesite'] === 'Strict' ? 'Strict' : 'Lax';
             $data['secure_cookie'] = $data['secure_cookie'] || ee('Request')->isEncrypted();
         }
