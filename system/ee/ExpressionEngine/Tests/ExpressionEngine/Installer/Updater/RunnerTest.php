@@ -223,8 +223,14 @@ class RunnerTest extends TestCase
         $this->assertFalse(function_exists('file_exists_safe'));
     }
 
+    /**
+     * Restore the version loaded by the older CLI before replacing its files.
+     *
+     * @return void
+     */
     public function testOlderCliHandoffRestoresTheSourceVersionBeforeReplacingFiles()
     {
+        define('ExpressionEngine\Updater\Service\Updater\APP_VER', '7.5.28');
         $this->config->config['app_version'] = '7.5.29';
         file_put_contents($this->archive . 'system/ee/core.txt', 'damaged core');
         try {
