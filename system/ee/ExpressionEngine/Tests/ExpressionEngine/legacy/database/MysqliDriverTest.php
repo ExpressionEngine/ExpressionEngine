@@ -82,6 +82,38 @@ class MysqliDriverTest extends TestCase
         $this->assertSame('query-result', $this->driver->last_query);
     }
 
+    /**
+     * @dataProvider serverVersions
+     */
+    public function testEngineAndNumericVersion($rawVersion, $engine, $numericVersion): void
+    {
+        $native = $this->createMock(PDO::class);
+        $native->method('getAttribute')
+            ->willReturnMap([[PDO::ATTR_SERVER_VERSION, $rawVersion]]);
+        $this->connection->native = $native;
+
+        $this->assertSame($engine, $this->driver->engine());
+        $this->assertSame($numericVersion, $this->driver->version_number());
+    }
+
+    public function serverVersions(): array
+    {
+        return [
+            'mysql' => ['8.0.46', 'mysql', '8.0.46'],
+            'mysql distribution' => ['8.0.46-0ubuntu0.22.04.1', 'mysql', '8.0.46'],
+            'mysql build' => ['8.4.0-commercial', 'mysql', '8.4.0'],
+            'mariadb' => ['10.11.14-MariaDB-0+deb12u2', 'mariadb', '10.11.14'],
+            'mariadb mixed case' => ['11.4.5-mArIaDb-log', 'mariadb', '11.4.5'],
+            'mariadb compatibility prefix' => ['5.5.5-10.6.23-MariaDB', 'mariadb', '10.6.23'],
+            'mysql 5.5.5' => ['5.5.5-log', 'mysql', '5.5.5'],
+            'unrecognized version' => ['custom-server', 'mysql', ''],
+            'incomplete version' => ['8.0', 'mysql', ''],
+            'empty version' => ['', '', ''],
+            'unavailable version' => [false, '', ''],
+            'null version' => [null, '', ''],
+        ];
+    }
+
     public function testPrepQueryDeleteHackAndPassthrough(): void
     {
         $this->assertSame(
@@ -240,6 +272,12 @@ class MysqliDriverConnectionStub
 {
     public $lastQuery;
     public $closed = false;
+    public $native;
+
+    public function getNative()
+    {
+        return $this->native;
+    }
 
     public function query($sql)
     {

@@ -59,7 +59,11 @@ class CommandConfigEnv extends Cli
         $this->info('command_config_env_updating_config_variable');
 
         // Set Env item
-        $this->setEnv($this->data['env-variable'], $this->data['value']);
+        try {
+            $this->setEnv($this->data['env-variable'], $this->data['value']);
+        } catch (\Throwable $e) {
+            $this->fail($e->getMessage());
+        }
 
         $this->info('command_config_env_config_value_saved');
     }

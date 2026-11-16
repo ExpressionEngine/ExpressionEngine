@@ -78,6 +78,22 @@ class Mfa
     }
 
     /**
+     * Verify a code against the member's existing MFA setup.
+     *
+     * @param mixed $input The submitted six-digit code.
+     * @param \ExpressionEngine\Model\Member\Member $member The enrolled member.
+     * @return bool
+     */
+    public function validateMemberOtp($input, $member)
+    {
+        if (!is_string($input) || !preg_match('/\A[0-9]{6}\z/', $input)) {
+            return false;
+        }
+
+        return $this->validateOtp($input, $member->unique_id . $member->backup_mfa_code);
+    }
+
+    /**
      * Display appropriate MFA dialogs/messages
      *
      * @return void

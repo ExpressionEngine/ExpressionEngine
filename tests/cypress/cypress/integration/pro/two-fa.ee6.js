@@ -11,6 +11,10 @@ context('Multi-Factor Authentication', function() {
         cy.intercept('**/license/handleAccessResponse').as('license')
         
         cy.task('db:seed')
+        cy.readFile('../../build-tools/build.json').then(build => {
+            cy.eeConfig({ item: 'app_version', value: build.tag });
+        });
+        cy.eeConfig({ item: 'mfa_session_length', value: '0' })
         cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
         cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' }).then(() => {
             cy.authVisit('admin.php?/cp/design')
@@ -31,7 +35,7 @@ context('Multi-Factor Authentication', function() {
     })
 
     it('Shows MFA links in template', () => {
-        cy.logout();
+        cy.clearCookies();
         cy.visit('index.php/pro/mfa')
         cy.get('#enable_mfa_link').should('not.exist')
         cy.get('#disable_mfa_link').should('not.exist')
@@ -242,7 +246,10 @@ context('Multi-Factor Authentication', function() {
                     cy.hasNoErrors()
 
                     cy.get('[type=password]').type(Cypress.env("USER_PASSWORD"));
-                    cy.get('.button--primary').first().click()
+                    cy.task("generateOTP", otpSecret).then(disableToken => {
+                        cy.get('[name=mfa_code]').type(disableToken);
+                        cy.get('.button--primary').first().click()
+                    });
 
                     cy.get('#disable_mfa_link').should('not.exist')
                     cy.get('#enable_mfa_link').should('exist')

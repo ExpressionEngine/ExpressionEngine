@@ -188,6 +188,41 @@
     margin-right: -15px;
     font-size: 0; // allow fields side-by-side
   }
+
+  .url-title-input-group {
+    display: flex;
+
+    > input {
+      flex: 1;
+      min-width: 0;
+      border-start-end-radius: 0;
+      border-end-end-radius: 0;
+    }
+  }
+
+  .js-update-url-title {
+    flex: 0 0 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    margin-inline-start: -1px;
+    border: 1px solid color(button-default-border);
+    border-start-end-radius: $border-radius-base;
+    border-end-end-radius: $border-radius-base;
+    background-color: color(button-default-bg);
+    color: color(button-default-color);
+
+    &:hover {
+      background-color: color(button-default-hover-bg);
+      border-color: color(button-default-hover-border);
+    }
+
+    @include focus-visible {
+      @include focus-outline;
+    }
+  }
 }
 
 .tab-open {
@@ -304,3 +339,4 @@
 			}
 	}
 }
+

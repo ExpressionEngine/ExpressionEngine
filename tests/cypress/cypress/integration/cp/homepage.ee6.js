@@ -17,6 +17,42 @@ context('CP Homepage', () => {
         cy.hasNoErrors();
     })
 
+    it('uses protected native navigation for external links', function() {
+        cy.get('a[rel~="external"]').each(($link) => {
+            expect($link).to.have.attr('target', '_blank')
+            expect($link.attr('rel').split(/\s+/)).to.include.members([
+                'external',
+                'noopener',
+                'noreferrer'
+            ])
+        })
+
+        cy.get('body').then(($body) => {
+            let wasPrevented
+            const $dynamicLink = Cypress.$('<a href="https://example.com" rel="external">Test external link</a>')
+            const observeDefault = (event) => {
+                wasPrevented = event.defaultPrevented
+                event.preventDefault()
+            }
+
+            $body[0].addEventListener('click', observeDefault)
+            $body.append($dynamicLink)
+
+            cy.wrap($dynamicLink).click().then(() => {
+                expect(wasPrevented).to.be.false
+                expect($dynamicLink).to.have.attr('target', '_blank')
+                expect($dynamicLink.attr('rel').split(/\s+/)).to.include.members([
+                    'external',
+                    'noopener',
+                    'noreferrer'
+                ])
+
+                $body[0].removeEventListener('click', observeDefault)
+                $dynamicLink.remove()
+            })
+        })
+    })
+
     describe('when spam module is not installed', function() {
         beforeEach(function() {
             page.toggleSpam('off')
