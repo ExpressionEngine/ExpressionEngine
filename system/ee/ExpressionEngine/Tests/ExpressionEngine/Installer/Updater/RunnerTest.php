@@ -223,8 +223,14 @@ class RunnerTest extends TestCase
         $this->assertFalse(function_exists('file_exists_safe'));
     }
 
+    /**
+     * Restore the version loaded by the older CLI before replacing its files.
+     *
+     * @return void
+     */
     public function testOlderCliHandoffRestoresTheSourceVersionBeforeReplacingFiles()
     {
+        define('ExpressionEngine\Updater\Service\Updater\APP_VER', '7.5.28');
         $this->config->config['app_version'] = '7.5.29';
         file_put_contents($this->archive . 'system/ee/core.txt', 'damaged core');
         try {
@@ -259,7 +265,12 @@ class RunnerTest extends TestCase
         return [['y'], ['n']];
     }
 
-    public function testCompletionFailureKeepsItsMessageAfterCleanup()
+    /**
+     * Verify the installed version and backups survive a CLI completion failure.
+     *
+     * @return void
+     */
+    public function testCompletionFailureRetainsTheBackups()
     {
         $this->runner->updateFiles();
         $this->mockCompletionServices();
@@ -286,8 +297,31 @@ class RunnerTest extends TestCase
             $this->assertSame('Completion hook failed', $e->getMessage());
         }
         $this->assertSame('7.5.29', $this->config->item('app_version'));
-        $this->assertDirectoryDoesNotExist($this->directory . 'cache/ee_update');
+        $this->assertSame('old core', file_get_contents($this->directory . 'cache/ee_update/backups/system_ee/core.txt'));
         $this->assertDirectoryDoesNotExist($this->directory . 'system/ee/updater');
+    }
+
+    /**
+     * Verify the CLI completes in the current process when passthru is unavailable.
+     *
+     * @return void
+     */
+    public function testCompletionWorksWithoutPassthru()
+    {
+        // This test runs in its own PHP process so the namespaced stub stays local to it.
+        require SYSPATH . 'ee/ExpressionEngine/Tests/support/updater_without_passthru.php';
+        $this->runner->updateFiles();
+        $this->mockCompletionServices();
+
+        $extensions = $this->getMockBuilder(\stdClass::class)->addMethods(['active_hook', 'call'])->getMock();
+        $extensions->expects($this->once())->method('active_hook')->with('updater_complete')->willReturn(true);
+        $extensions->expects($this->once())->method('call')->with('updater_complete');
+        ee()->setMock('extensions', $extensions);
+
+        (new Runner())->selfDestruct();
+
+        $this->assertSame('7.5.29', $this->config->item('app_version'));
+        $this->assertSame('y', $this->config->item('is_system_on'));
     }
 
     public function testRollbackRestoresOriginalVersionWithNewCodeAlreadyLoaded()

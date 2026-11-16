@@ -101,7 +101,7 @@ class SimplePie_Cache_File implements SimplePie_Cache_Base
      */
     public function save($data)
     {
-        if (strpos($this->name, "\0") !== false) {
+        if ($this->hasNullByteInPath()) {
             return false;
         }
 
@@ -125,7 +125,7 @@ class SimplePie_Cache_File implements SimplePie_Cache_Base
      */
     public function load()
     {
-        if (strpos($this->name, "\0") !== false) {
+        if ($this->hasNullByteInPath()) {
             return false;
         }
 
@@ -143,7 +143,7 @@ class SimplePie_Cache_File implements SimplePie_Cache_Base
      */
     public function mtime()
     {
-        if (strpos($this->name, "\0") !== false) {
+        if ($this->hasNullByteInPath()) {
             return false;
         }
 
@@ -157,7 +157,7 @@ class SimplePie_Cache_File implements SimplePie_Cache_Base
      */
     public function touch()
     {
-        if (strpos($this->name, "\0") !== false) {
+        if ($this->hasNullByteInPath()) {
             return false;
         }
 
@@ -171,7 +171,7 @@ class SimplePie_Cache_File implements SimplePie_Cache_Base
      */
     public function unlink()
     {
-        if (strpos($this->name, "\0") !== false) {
+        if ($this->hasNullByteInPath()) {
             return false;
         }
 
@@ -180,5 +180,15 @@ class SimplePie_Cache_File implements SimplePie_Cache_Base
         }
 
         return false;
+    }
+
+    /**
+     * Determine whether the cache path contains a NUL byte.
+     *
+     * @return bool
+     */
+    private function hasNullByteInPath()
+    {
+        return strpos($this->name, "\0") !== false;
     }
 }

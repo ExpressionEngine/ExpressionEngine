@@ -14,6 +14,100 @@ use PHPUnit\Framework\TestCase;
 
 class FileSyncedModelTest extends TestCase
 {
+    /**
+     * @dataProvider fileSyncContentsProvider
+     */
+    public function testFileSyncPreservesSavedContentUntilACompleteNewerRead($saved, $disk, $mtime, $sync)
+    {
+        $filesystem = new FileSyncedModelFilesystemStub();
+        $filesystem->exists_map['/tmp/template.html'] = true;
+        $filesystem->mtime_map['/tmp/template.html'] = $mtime;
+        $filesystem->read_map['/tmp/template.html'] = $disk;
+        ee()->setMock('Filesystem', $filesystem);
+
+        $model = new FileSyncedModelStub();
+        $model->path = '/tmp/template.html';
+        $model->serialized_data = $saved;
+        $model->modification_time = 10;
+        $model->onAfterLoad();
+
+        $this->assertSame($sync ? $disk : null, $model->unserialized_data);
+        $this->assertSame($sync ? $mtime : 10, $model->modification_time);
+        $this->assertSame($sync ? 1 : 0, $model->save_calls);
+        $this->assertSame($sync, $model->isSkipNextWrite());
+        $this->assertCount(0, $filesystem->writes);
+        $this->assertSame($mtime > 10 ? 1 : 0, $filesystem->read_calls);
+    }
+
+    public function fileSyncContentsProvider()
+    {
+        return array(
+            'newer empty file preserves content' => array('saved', '', 20, false),
+            'newer whitespace preserves content' => array('saved', " \r\n\t ", 20, false),
+            'zero is saved content' => array('0', '', 20, false),
+            'zero is valid file content' => array('saved', '0', 20, true),
+            'normal nonempty edit' => array('saved', 'updated', 20, true),
+            'file content is not trimmed' => array('saved', " updated\n", 20, true),
+            'empty database and empty file' => array('', '', 20, true),
+            'empty database and whitespace file' => array('', " \n", 20, true),
+            'whitespace database and empty file' => array(" \n", '', 20, true),
+            'null database and empty file' => array(null, '', 20, true),
+            'failed read preserves content' => array('saved', false, 20, false),
+            'failed read preserves empty row timestamp' => array('', false, 20, false),
+            'older file is ignored' => array('saved', 'old', 5, false),
+            'equal file is ignored' => array('saved', 'different', 10, false),
+            'equal timestamp does not resurrect intentionally empty data' => array('', 'old', 10, false),
+        );
+    }
+
+    public function rejectedFileReadsProvider()
+    {
+        return array(
+            'empty' => array(''),
+            'whitespace' => array(" \r\n\t "),
+            'failed' => array(false),
+        );
+    }
+
+    /**
+     * @dataProvider rejectedFileReadsProvider
+     */
+    public function testCompletedFileInSameSecondIsImportedAfterRejectedRead($rejected_read)
+    {
+        $filesystem = new FileSyncedModelFilesystemStub();
+        $filesystem->exists_map['/tmp/template.html'] = true;
+        $filesystem->mtime_map['/tmp/template.html'] = 20;
+        $filesystem->read_map['/tmp/template.html'] = $rejected_read;
+        ee()->setMock('Filesystem', $filesystem);
+        $model = new FileSyncedModelStub();
+        $model->path = '/tmp/template.html';
+        $model->serialized_data = 'saved';
+        $model->modification_time = 10;
+        $model->onAfterLoad();
+        $this->assertSame(10, $model->modification_time);
+        $this->assertSame(0, $model->save_calls);
+
+        $filesystem->read_map['/tmp/template.html'] = 'completed';
+        $model->onAfterLoad();
+        $this->assertSame('completed', $model->unserialized_data);
+        $this->assertSame(20, $model->modification_time);
+        $this->assertSame(1, $model->save_calls);
+    }
+
+    public function testExplicitEmptySaveStillWritesEmptyFile()
+    {
+        $filesystem = new FileSyncedModelFilesystemStub();
+        $filesystem->exists_map['/tmp'] = true;
+        $filesystem->writable_map['/tmp'] = true;
+        ee()->setMock('Filesystem', $filesystem);
+        $model = new FileSyncedModelStub();
+        $model->path = '/tmp/template.html';
+        $model->serialized_data = '';
+        $model->onAfterSave();
+        $this->assertCount(1, $filesystem->writes);
+        $this->assertSame('', $filesystem->writes[0]['data']);
+    }
+
     public function tearDown(): void
     {
         ee()->resetMocks();
@@ -199,6 +293,7 @@ class FileSyncedModelFilesystemStub
     public $exists_map = array();
     public $mtime_map = array();
     public $read_map = array();
+    public $read_calls = 0;
     public $writable_map = array();
     public $writes = array();
     public $deleted = array();
@@ -215,6 +310,7 @@ class FileSyncedModelFilesystemStub
 
     public function read($path)
     {
+        $this->read_calls++;
         return isset($this->read_map[$path]) ? $this->read_map[$path] : '';
     }
 

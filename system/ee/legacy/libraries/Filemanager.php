@@ -381,6 +381,13 @@ class Filemanager
                         break;
                     }
                 }
+
+                if ($safeForUpload === false) {
+                    return $this->_save_file_response(false, sprintf(
+                        lang('upload_directory_type_not_allowed'),
+                        htmlentities($prefs['name'], ENT_QUOTES, 'UTF-8')
+                    ));
+                }
             }
         }
 

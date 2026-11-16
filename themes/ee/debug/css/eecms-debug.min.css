@@ -14111,6 +14111,41 @@ body[data-theme=dark] .hljs .apache .hljs-attribute {
   margin-right: -15px;
   font-size: 0;
 }
+.ee-debugger .panel-body__publish .url-title-input-group {
+  display: flex;
+}
+.ee-debugger .panel-body__publish .url-title-input-group > input {
+  flex: 1;
+  min-width: 0;
+  border-start-end-radius: 0;
+  border-end-end-radius: 0;
+}
+.ee-debugger .panel-body__publish .js-update-url-title {
+  flex: 0 0 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  margin-inline-start: -1px;
+  border: 1px solid var(--ee-button-default-border);
+  border-start-end-radius: 5px;
+  border-end-end-radius: 5px;
+  background-color: var(--ee-button-default-bg);
+  color: var(--ee-button-default-color);
+}
+.ee-debugger .panel-body__publish .js-update-url-title:hover {
+  background-color: var(--ee-button-default-hover-bg);
+  border-color: var(--ee-button-default-hover-border);
+}
+.ee-debugger .panel-body__publish .js-update-url-title:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--ee-accent-medium);
+}
+.ee-debugger .panel-body__publish .js-update-url-title:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
+}
 .ee-debugger .tab-open {
   display: block;
 }

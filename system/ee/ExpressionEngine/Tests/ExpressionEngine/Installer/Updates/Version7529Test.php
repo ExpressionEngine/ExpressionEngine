@@ -29,7 +29,14 @@ class Version7529Test extends TestCase
         ee()->resetMocks();
     }
 
-    /** @dataProvider routeRequirements */
+    /**
+     * Preserve stored route definitions while applying the combined update.
+     *
+     * @param string $required Whether the route requires every segment.
+     * @param string $compiled Previously compiled route expression.
+     * @return void
+     * @dataProvider routeRequirements
+     */
     public function testUpgradeFrom7528RecompilesSavedRoutesWithoutChangingTheirDefinitions($required, $compiled)
     {
         require_once BASEPATH . 'libraries/template_router/Route.php';
@@ -43,7 +50,10 @@ class Version7529Test extends TestCase
         ];
         $saved = $row;
         $db = $this->getMockBuilder(\eeDbArMock::class)
-            ->onlyMethods(['select', 'join', 'where', 'get', 'update'])->getMock();
+            ->onlyMethods(['select', 'join', 'where', 'get', 'update'])
+            ->addMethods(['table_exists', 'field_exists'])->getMock();
+        $db->expects($this->once())->method('table_exists')->with('mfa_sessions')->willReturn(true);
+        $db->expects($this->once())->method('field_exists')->with('mfa_login_id', 'sessions')->willReturn(true);
         $db->method('select')->willReturnSelf();
         $db->expects($this->exactly(2))->method('join')->withConsecutive(
             ['templates', 'templates.template_id = template_routes.template_id'],
@@ -83,13 +93,21 @@ class Version7529Test extends TestCase
         ];
     }
 
+    /**
+     * Refresh capture names when the CLI still holds the old router in memory.
+     *
+     * @return void
+     */
     public function testUsesNewCaptureNamesWhenTheOldRouterIsAlreadyLoaded()
     {
         // Model the old parser retained in a CLI process after core file replacement.
         class_alias(LegacyRouteStub::class, 'EE_Route');
         $saved = null;
         $db = $this->getMockBuilder(\eeDbArMock::class)
-            ->onlyMethods(['select', 'join', 'where', 'get', 'update'])->getMock();
+            ->onlyMethods(['select', 'join', 'where', 'get', 'update'])
+            ->addMethods(['table_exists', 'field_exists'])->getMock();
+        $db->expects($this->once())->method('table_exists')->with('mfa_sessions')->willReturn(true);
+        $db->expects($this->once())->method('field_exists')->with('mfa_login_id', 'sessions')->willReturn(true);
         $db->method('select')->willReturnSelf();
         $db->expects($this->exactly(2))->method('join')->withConsecutive(
             ['templates', 'templates.template_id = template_routes.template_id'],
@@ -112,10 +130,18 @@ class Version7529Test extends TestCase
         $this->assertSame('example', $matches['e61c4128c816142244cd9de5f843e1d']);
     }
 
+    /**
+     * Complete the combined update when no routes need recompiling.
+     *
+     * @return void
+     */
     public function testUpdateWorksWithoutStoredRoutes()
     {
         $db = $this->getMockBuilder(\eeDbArMock::class)
-            ->onlyMethods(['select', 'join', 'where', 'get', 'update'])->getMock();
+            ->onlyMethods(['select', 'join', 'where', 'get', 'update'])
+            ->addMethods(['table_exists', 'field_exists'])->getMock();
+        $db->expects($this->once())->method('table_exists')->with('mfa_sessions')->willReturn(true);
+        $db->expects($this->once())->method('field_exists')->with('mfa_login_id', 'sessions')->willReturn(true);
         $db->method('select')->willReturnSelf();
         $db->expects($this->exactly(2))->method('join')->withConsecutive(
             ['templates', 'templates.template_id = template_routes.template_id'],

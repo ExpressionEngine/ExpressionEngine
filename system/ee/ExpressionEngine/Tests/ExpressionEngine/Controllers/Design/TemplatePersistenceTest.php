@@ -372,12 +372,18 @@ class TemplatePersistenceTest extends TestCase
             ->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Capture template state with consistent file paths across platforms.
+     *
+     * @return array
+     */
     private function state(): array
     {
         $files = [];
         foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->root, \FilesystemIterator::SKIP_DOTS)) as $file) {
             if ($file->isFile()) {
-                $files[substr($file->getPathname(), strlen($this->root))] = file_get_contents($file->getPathname());
+                $path = str_replace('\\', '/', substr($file->getPathname(), strlen($this->root)));
+                $files[$path] = file_get_contents($file->getPathname());
             }
         }
         ksort($files);
