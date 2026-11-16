@@ -5,7 +5,25 @@ namespace ExpressionEngine\Tests\ExpressionEngine\legacy\Libraries;
 require_once __DIR__ . '/../../../eeObjectMock.php';
 require_once SYSPATH . 'ee/legacy/libraries/File_field.php';
 
+use ExpressionEngine\Library\Mime\MimeType;
 use PHPUnit\Framework\TestCase;
+
+class FileFieldConfigMock extends \eeSingletonConfigMock
+{
+    /** @var array<string|int, mixed> */
+    public $mimeTypes = [];
+
+    /**
+     * Return configured MIME groups for upload directory filtering.
+     *
+     * @param string $file
+     * @return array<string|int, mixed>
+     */
+    public function loadFile($file)
+    {
+        return $this->mimeTypes;
+    }
+}
 
 class FileFieldFieldHarness extends \File_field
 {
@@ -1845,6 +1863,8 @@ class FileFieldFieldTest extends TestCase
             /** @var string */
             public $name;
 
+            public $allowed_types = ['all'];
+
             /** @var int */
             public $getDirectoriesDropdownCalls = 0;
 
@@ -1887,6 +1907,8 @@ class FileFieldFieldTest extends TestCase
      */
     private function setLoadDragAndDropCollaborators(bool $canAccessFiles): array
     {
+        ee()->setMock('config', new FileFieldConfigMock());
+
         $permission = new class($canAccessFiles) {
             /** @var array<int, string> */
             public $hasCalls = [];
@@ -4296,9 +4318,22 @@ class FileFieldFieldTest extends TestCase
         $currentSitePref = $this->makeDragAndDropUploadPreference(2, 7, 0, 'Site Assets', [12 => 'Site Child']);
         $otherSitePref = $this->makeDragAndDropUploadPreference(3, 9, 0, 'Other Site', [13 => 'Other Child']);
         $moduleOwnedPref = $this->makeDragAndDropUploadPreference(4, 7, 9, 'Module Files', [14 => 'Module Child']);
+        $currentSitePref->allowed_types = ['doc', 'img'];
         $this->setUploadPreferenceCache([$globalPref, $currentSitePref, $otherSitePref, $moduleOwnedPref]);
 
         $collaborators = $this->setLoadDragAndDropCollaborators(true);
+
+        ee()->config->mimeTypes = [
+            'img' => ['image/png'],
+            'doc' => ['application/pdf'],
+            'heic' => ['image/heic'],
+            'mixed' => ['application/pdf', 'image/heif'],
+            'empty' => [],
+            'image/jpeg',
+        ];
+        $mimeTypes = new MimeType();
+        $mimeTypes->whitelistMimesFromConfig();
+        ee()->setMock('MimeType', $mimeTypes);
 
         $this->subject->loadDragAndDropAssets();
 
@@ -4327,6 +4362,8 @@ class FileFieldFieldTest extends TestCase
         $globals = $this->javascriptMock->globals[0];
         $this->assertSame('file_dnd_no_directories_desc', $globals['lang.file_dnd_no_directories_desc']);
         $this->assertSame($expectedDestinations, $globals['dragAndDrop.uploadDesinations']);
+        $this->assertSame([1 => ['all'], 2 => ['doc', 'img']], (array) $globals['dragAndDrop.allowedDirectoryTypes']);
+        $this->assertSame(['img', 'heic', 'mixed'], $globals['dragAndDrop.imageTypes']);
         $this->assertSame('compiled://addons/settings/filepicker/ajax-upload', $globals['dragAndDrop.endpoint']);
         $this->assertSame(
             'compiled://addons/settings/filepicker/ajax-overwrite-or-rename',
@@ -4359,6 +4396,56 @@ class FileFieldFieldTest extends TestCase
     }
 
     /**
+     * Include grouped MIME additions while preserving configured image groups.
+     *
+     * @dataProvider additionalMimeTypesProvider
+     * @param mixed $additions
+     * @param array $expectedTypes
+     * @return void
+     */
+    public function testLoadDragAndDropAssetsIncludesAdditionalImageTypes($additions, array $expectedTypes): void
+    {
+        $this->setUploadPreferenceCache(new \ArrayObject([]));
+        $this->setLoadDragAndDropCollaborators(true);
+        ee()->config->mimeTypes = [
+            'img' => ['image/png'],
+            'doc' => ['application/pdf'],
+        ];
+        ee()->config->setItem('mime_whitelist_additions', $additions);
+        $mimeTypes = new MimeType();
+        $mimeTypes->whitelistMimesFromConfig();
+        ee()->setMock('MimeType', $mimeTypes);
+
+        $this->subject->loadDragAndDropAssets();
+
+        $this->assertSame($expectedTypes, $this->javascriptMock->globals[0]['dragAndDrop.imageTypes']);
+    }
+
+    /**
+     * Provide supported MIME addition formats and their image groups.
+     *
+     * @return array
+     */
+    public function additionalMimeTypesProvider(): array
+    {
+        return [
+            'unset' => [false, ['img']],
+            'empty' => [[], ['img']],
+            'flat array' => [['image/heic'], ['img']],
+            'pipe-delimited string' => ['image/heic|image/heif', ['img']],
+            'already registered image' => [['doc' => ['image/png']], ['img']],
+            'duplicate additions' => [['doc' => ['image/heic'], 'heic' => ['image/heic']], ['img', 'doc']],
+            'grouped additions' => [[
+                'img' => ['application/x-photoshop'],
+                'doc' => ['image/heic'],
+                'heif' => ['image/heif'],
+                'audio' => ['audio/flac'],
+                'image/jpeg',
+            ], ['img', 'doc', 'heif']],
+        ];
+    }
+
+    /**
      * Ensure destination globals are emptied and permissions copy reflects access denial.
      *
      * @return void
@@ -4382,6 +4469,7 @@ class FileFieldFieldTest extends TestCase
         $globals = $this->javascriptMock->globals[0];
         $this->assertSame('file_dnd_no_directory_permissions', $globals['lang.file_dnd_no_directories_desc']);
         $this->assertSame([], $globals['dragAndDrop.uploadDesinations']);
+        $this->assertSame([], (array) $globals['dragAndDrop.allowedDirectoryTypes']);
     }
 
     /**
