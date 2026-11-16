@@ -32299,6 +32299,53 @@ fieldset .field-control #eye {
   margin: 0;
 }
 
+tr.ee-table-reorder-helper--flex {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border: 1px solid var(--ee-border);
+  margin-bottom: 10px;
+  padding-bottom: 15px;
+  background-color: var(--ee-bg-blank);
+  box-shadow: var(--ee-shadow-dropdown);
+}
+tr.ee-table-reorder-helper--flex > td {
+  border-right: none;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  display: block;
+  border-bottom: none;
+  padding: 10px 15px;
+  font-size: 1rem;
+}
+tr.ee-table-reorder-helper--flex.grid__item--collapsed {
+  padding-bottom: 0 !important;
+}
+tr.ee-table-reorder-helper--flex .row-counter-column {
+  width: 100% !important;
+}
+tr.ee-table-reorder-helper--flex .grid-field__item-fieldset {
+  padding: 10px 15px 5px;
+  border-bottom: 1px solid var(--ee-border) !important;
+  position: relative;
+}
+tr.ee-table-reorder-helper--flex .grid-field__column--tools {
+  display: none !important;
+}
+tr.ee-table-reorder-helper--flex .grid-field__column-label {
+  display: inherit;
+  margin-bottom: 10px;
+}
+tr.ee-table-reorder-helper--flex .grid-field__column-label label,
+tr.ee-table-reorder-helper--flex .grid-field__column-label em {
+  color: var(--ee-text-secondary);
+  margin: 0;
+}
+tr.ee-table-reorder-helper--flex .grid-field__column-label em {
+  font-style: normal;
+}
+
 .grid-field.horizontal-layout .table-responsive {
   overflow-x: auto;
 }
