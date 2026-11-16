@@ -1266,7 +1266,7 @@ $(document).ready(function(){
 			}
 
 			// copy asset link to clipboard and show notification
-			var success = await copyToClipboard(copyText);
+			var success = await copyToClipboard(copyText.trim());
 
 			// show notification if success
 			if (success) {
