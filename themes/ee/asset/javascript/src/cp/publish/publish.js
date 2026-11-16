@@ -54,6 +54,27 @@ $(document).ready(function () {
 		});
 	}
 
+	if (EE.publish.which == 'edit') {
+		var urlTitleInput = publishForm.find("input[name=url_title]").not('[readonly], :disabled');
+		urlTitleInput.wrap('<div class="url-title-input-group"></div>');
+		urlTitleInput.after('<button type="button" class="js-update-url-title" title="'+EE.lang.update_url_title+'" aria-label="'+EE.lang.update_url_title+'"><i class="fa-light fa-rotate-right" aria-hidden="true"></i></button>');
+
+		var structureUrlInput = publishForm.find("input[name=structure__uri]").not('[readonly], :disabled');
+		if (structureUrlInput.length) {
+			structureUrlInput.wrap('<div class="url-title-input-group"></div>');
+			structureUrlInput.after('<button type="button" class="js-update-url-title" title="'+EE.lang.update_structure_url+'" aria-label="'+EE.lang.update_structure_url+'"><i class="fa-light fa-rotate-right" aria-hidden="true"></i></button>');
+		}
+
+		$('body').on('click', '.js-update-url-title', function(){
+			var inputField = $(this).prev('input');
+			if (inputField.is('[readonly], :disabled')) {
+				return;
+			}
+
+			publishForm.find('input[name=title]').ee_url_title(inputField);
+		});
+	}
+
 	// Emoji
 	if (EE.publish.smileys === true) {
 		$('body').on('click', '.format-options .toolbar .emoji a', function(e) {
