@@ -66,6 +66,10 @@ $lang = array(
 
     'cmt_unsubscribe' => 'Un-subscribe from this comment',
 
+    'cmt_unsubscribe_confirm' => 'Please confirm that you want to remove your subscription to the following entry:',
+
+    'cmt_unsubscribe_confirm_button' => 'Unsubscribe',
+
     'cmt_will_be_reviewed' => 'Your comment will be reviewed by a moderator for approval.',
 
     'cmt_you_have_been_removed' => 'You have been removed from receiving further notifications.',

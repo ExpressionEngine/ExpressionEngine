@@ -47,6 +47,8 @@ function expectUpdatedPlugin() {
 }
 
 context('CLI add-on update regressions', () => {
+    let restoreInstaller = false;
+
     beforeEach(() => {
         cy.task('db:seed');
         cy.task('filesystem:copy', {
@@ -61,6 +63,14 @@ context('CLI add-on update regressions', () => {
     });
 
     afterEach(() => {
+        if (restoreInstaller) {
+            cy.task('filesystem:rename', {
+                from: '../../system/ee/installer',
+                to: '../../system/ee/_installer',
+            }).then(() => {
+                restoreInstaller = false;
+            });
+        }
         cy.task('filesystem:delete', addonPath);
     });
 
@@ -148,6 +158,16 @@ context('CLI add-on update regressions', () => {
     });
 
     it('preserves the existing installer logger when loading Smartforge', () => {
+        cy.task('filesystem:exists', '../../system/ee/installer').then((exists) => {
+            if (!exists) {
+                return cy.task('filesystem:rename', {
+                    from: '../../system/ee/_installer',
+                    to: '../../system/ee/installer',
+                }).then(() => {
+                    restoreInstaller = true;
+                });
+            }
+        });
         cy.exec('php support/fixtures/smartforgeInstaller.php').then((result) => {
             expect(result.code).to.eq(0);
             expect(result.stderr).to.be.empty;
