@@ -755,7 +755,13 @@ EE.cp.broadcastEvents = (function() {
 					this.doRefresh();
 				}
 
-				this.lastActive = $.now();
+				// What this tab sees happens now. Word from another tab may
+				// not: a frozen tab hears it when it wakes up, long after the
+				// fact. So go by the shared record of when someone was last
+				// seen, where there is one, not by when the message arrived.
+				var lastSeen = (isUserActivity || this.modalActive) ? 0 : SharedActivity.read();
+
+				this.lastActive = lastSeen ? Math.max(this.lastActive, lastSeen) : $.now();
 
 				// Only real activity seen by this tab is shared. Pings relayed
 				// from other tabs are not, the tab that saw it has done so.
@@ -916,7 +922,11 @@ EE.cp.broadcastEvents = (function() {
 		init: function() {
 			// Loading a control panel page is activity other tabs should know
 			// about. Record it before telling them, they check it when told.
-			SharedActivity.write(State.lastActive);
+			// Pages in a frame can load with nobody there (Pro's front-end
+			// idle prompt does), those have to wait for someone to use them.
+			if (window.self === window.top) {
+				SharedActivity.write(State.lastActive);
+			}
 
 			$(window).trigger('broadcast.setBasePath', EE.BASE);
 			$(window).trigger('broadcast.setCsrfToken', EE.CSRF_TOKEN);
