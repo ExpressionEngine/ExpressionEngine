@@ -153,7 +153,7 @@ if (array_key_exists($scenario, $invalidApprovals)) {
 } else {
     switch ($scenario) {
         case 'session-query-budget':
-            ee()->config->set_item('app_version', '7.5.29');
+            ee()->config->set_item('app_version', '7.6.0');
             $queryLog = ee('Database')->getLog();
             $queryLog->saveQueries();
             $db->where('session_id', 'issuing-session')->update('sessions', [
@@ -329,8 +329,8 @@ if (array_key_exists($scenario, $invalidApprovals)) {
 
             defined('EE_APPPATH') || define('EE_APPPATH', BASEPATH);
             require_once $installerPath . 'libraries/Progress.php';
-            require_once $installerPath . 'updates/ud_7_05_29.php';
-            $updater = new \ExpressionEngine\Updater\Version_7_5_29\Updater();
+            require_once $installerPath . 'updates/ud_7_06_00.php';
+            $updater = new \ExpressionEngine\Updater\Version_7_6_0\Updater();
             checkMfaSession($updater->do_update() === true, 'Session column migration failed.');
             checkMfaSession($db->select('session_id, member_id, mfa_flag')
                 ->order_by('session_id')->get('sessions')->result_array() === $existingSessions,
