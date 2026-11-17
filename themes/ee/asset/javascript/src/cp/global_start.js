@@ -649,10 +649,10 @@ EE.cp.broadcastEvents = (function() {
 					Events.login();
 
 					// Logging back in is activity the other tabs should know
-					// about, unless we only heard of it after the idle limit
-					if ( ! State.modalThresholdReached()) {
-						SharedActivity.write(State.lastActive);
-					}
+					// about. Share when the password was given, not our own
+					// clock: that may have been moved on by another tab's
+					// automatic pings while we waited for the answer.
+					SharedActivity.write(submittedAt);
 
 					// Grab the new token
 					EE.cp.refreshSessionData(null, result.base);
@@ -684,7 +684,9 @@ EE.cp.broadcastEvents = (function() {
 	 */
 	var SharedActivity = {
 
-		KEY: 'ee_cp_last_active',
+		// One record per control panel, other installations on this domain
+		// have sessions of their own
+		KEY: 'ee_cp_last_active:' + window.location.pathname,
 		WRITE_INTERVAL: 5 * 1000,	// interactions fire constantly, no need to store them all
 		_lastWrite: 0,
 
@@ -700,11 +702,22 @@ EE.cp.broadcastEvents = (function() {
 		},
 
 		write: function(time) {
+			// Login pages load this file too (the Pro login form does), but
+			// anyone can open those, so nothing seen there counts
+			if (EE.router_class == 'login') {
+				return;
+			}
+
 			if (Math.abs(time - this._lastWrite) < this.WRITE_INTERVAL) {
 				return;
 			}
 
 			this._lastWrite = time;
+
+			// Never replace newer activity with older
+			if (time <= this.read()) {
+				return;
+			}
 
 			try {
 				window.localStorage.setItem(this.KEY, time);
