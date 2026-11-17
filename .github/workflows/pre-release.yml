@@ -177,7 +177,8 @@ jobs:
               run: |
                 rm -f system/user/config/config.php
                 cp -f tests/cypress/support/config/config.php system/user/config/config.php
-                rpl -v '${{ needs.build.outputs.version }}' '7.0.0' build-tools/build.json
+                jq '.tag = "7.0.0"' build-tools/build.json > build-tools/build.json.tmp
+                mv build-tools/build.json.tmp build-tools/build.json
 
             - name: Remove installer
               run: |
