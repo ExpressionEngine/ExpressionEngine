@@ -818,7 +818,7 @@ $lang = array(
 
     'search_reindex_tip' => 'Content Reindex',
 
-    'search_reindex_tip_desc' => "Please <a href='%s'>run the content reindex tool</a> tool to keep your searchable data up-to-date.",
+    'search_reindex_tip_desc' => "Please <a href='%s'>run the content reindex tool</a> to keep your searchable data up-to-date.",
 
     'reindex_not_needed' => 'Reindexing Not Necessary',
 
