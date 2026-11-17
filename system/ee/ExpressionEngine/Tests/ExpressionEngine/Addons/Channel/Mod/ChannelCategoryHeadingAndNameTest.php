@@ -5,6 +5,154 @@ require_once __DIR__ . '/ChannelTestBase.php';
 class ChannelCategoryHeadingAndNameTest extends ChannelTestBase
 {
     /**
+     * An inclusive category group can scope URL title matching without a channel.
+     *
+     * @return void
+     */
+    public function testCategoryHeadingUsesCategoryGroupWithoutChannel()
+    {
+        $this->setCategoryHeadingRenderingMocks();
+        $this->setTemplateParams([
+            'category_group' => '7',
+            'category_url_title' => 'documents',
+        ]);
+        $this->setTemplateTagdata('{category_id}:{category_name}');
+        $this->setCategoryHeadingRows(
+            [],
+            [
+                ['cat_id' => 23, 'site_id' => 1, 'group_id' => 7, 'parent_id' => 0, 'cat_name' => 'Documents', 'cat_url_title' => 'documents'],
+            ]
+        );
+
+        $out = $this->channel->category_heading();
+
+        $this->assertEquals('23:Documents', $out);
+    }
+
+    /**
+     * A category group can scope a category URL segment without a channel.
+     *
+     * @return void
+     */
+    public function testCategoryHeadingUsesCategoryGroupWithCategoryUrlSegmentWithoutChannel()
+    {
+        $this->setCategoryHeadingRenderingMocks();
+        $this->channel->query_string = 'category/documents';
+        $this->channel->reserved_cat_segment = 'category';
+        $this->setTemplateParams([
+            'category_group' => '7',
+        ]);
+        $this->setTemplateTagdata('{category_id}:{category_name}');
+        $this->setCategoryHeadingRows(
+            [],
+            [
+                ['cat_id' => 23, 'site_id' => 1, 'group_id' => 7, 'parent_id' => 0, 'cat_name' => 'Documents', 'cat_url_title' => 'documents'],
+            ]
+        );
+
+        $out = $this->channel->category_heading();
+
+        $this->assertEquals('23:Documents', $out);
+    }
+
+    /**
+     * Channel-less category group matching supports multiple groups.
+     *
+     * @return void
+     */
+    public function testCategoryHeadingUsesMultipleCategoryGroupsWithoutChannel()
+    {
+        $this->setCategoryHeadingRenderingMocks();
+        $this->setTemplateParams([
+            'category_group' => '7|8',
+            'category_url_title' => 'shared-category',
+        ]);
+        $this->setTemplateTagdata('{category_id}:{category_name}');
+        $this->setCategoryHeadingRows(
+            [],
+            [
+                ['cat_id' => 24, 'site_id' => 1, 'group_id' => 8, 'parent_id' => 0, 'cat_name' => 'Second Shared', 'cat_url_title' => 'shared-category'],
+                ['cat_id' => 21, 'site_id' => 1, 'group_id' => 7, 'parent_id' => 0, 'cat_name' => 'First Shared', 'cat_url_title' => 'shared-category'],
+            ]
+        );
+
+        $out = $this->channel->category_heading();
+
+        $this->assertEquals('21:First Shared', $out);
+    }
+
+    /**
+     * MSM category group matching is limited to the template's selected sites.
+     *
+     * @return void
+     */
+    public function testCategoryHeadingCategoryGroupWithoutChannelSupportsMsmSiteIds()
+    {
+        $this->setCategoryHeadingRenderingMocks();
+        ee()->TMPL->site_ids = [1, 2];
+        $this->setTemplateParams([
+            'category_group' => '7|8',
+            'category_url_title' => 'documents',
+        ]);
+        $this->setTemplateTagdata('{category_id}:{category_name}');
+        $this->setCategoryHeadingRows(
+            [],
+            [
+                ['cat_id' => 20, 'site_id' => 3, 'group_id' => 7, 'parent_id' => 0, 'cat_name' => 'Other Site Documents', 'cat_url_title' => 'documents'],
+                ['cat_id' => 25, 'site_id' => 2, 'group_id' => 8, 'parent_id' => 0, 'cat_name' => 'Second Site Documents', 'cat_url_title' => 'documents'],
+            ]
+        );
+
+        $out = $this->channel->category_heading();
+
+        $this->assertEquals('25:Second Site Documents', $out);
+    }
+
+    /**
+     * A category group outside the selected MSM sites cannot be resolved.
+     *
+     * @return void
+     */
+    public function testCategoryHeadingCategoryGroupWithoutChannelRejectsOtherMsmSites()
+    {
+        $this->setCategoryHeadingRenderingMocks();
+        ee()->TMPL->site_ids = [1, 2];
+        $this->setTemplateParams([
+            'category_group' => '7',
+            'category_url_title' => 'documents',
+        ]);
+        $this->setTemplateTagdata('{category_id}:{category_name}');
+        $this->setCategoryHeadingRows(
+            [],
+            [
+                ['cat_id' => 20, 'site_id' => 3, 'group_id' => 7, 'parent_id' => 0, 'cat_name' => 'Other Site Documents', 'cat_url_title' => 'documents'],
+            ]
+        );
+
+        $out = $this->channel->category_heading();
+
+        $this->assertEquals('NO_RESULTS', $out);
+    }
+
+    /**
+     * Exclusions still require a channel to define their starting scope.
+     *
+     * @return void
+     */
+    public function testCategoryHeadingExcludedCategoryGroupWithoutChannelReturnsNoResults()
+    {
+        $this->setTemplateParams([
+            'category_group' => 'not 7',
+            'category_url_title' => 'documents',
+        ]);
+        $this->setTemplateTagdata('{category_id}:{category_name}');
+
+        $out = $this->channel->category_heading();
+
+        $this->assertEquals('NO_RESULTS', $out);
+    }
+
+    /**
      * Category URL title matches use the first category when groups share slugs.
      *
      * @return void
