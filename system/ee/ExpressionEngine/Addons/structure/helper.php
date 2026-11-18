@@ -47,6 +47,26 @@ class Structure_Helper
 
         return end($segments);
     }
+
+    /**
+     * Prepare a title for output by a template tag, so that it is shown as
+     * written rather than read as template code
+     *
+     * @param mixed $title Title, already HTML-encoded where that is wanted
+     * @return mixed
+     */
+    public static function encode_title_for_template($title)
+    {
+        if (! is_string($title)) {
+            return $title;
+        }
+
+        return str_replace(
+            array('{', '}', '<?', '?>'),
+            array('&#123;', '&#125;', '&lt;?', '?&gt;'),
+            $title
+        );
+    }
 }
 
 /**

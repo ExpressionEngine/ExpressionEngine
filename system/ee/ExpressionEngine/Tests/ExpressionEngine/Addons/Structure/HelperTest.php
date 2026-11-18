@@ -236,4 +236,24 @@ class HelperTest extends TestCase
         $this->assertNull(pick());
     }
 
+    public function testEncodeTitleForTemplate()
+    {
+        // Titles without braces or PHP delimiters are returned as they are
+        $this->assertSame('Plain title', Structure_Helper::encode_title_for_template('Plain title'));
+        $this->assertSame('Tom &amp; Jerry <em>live</em>', Structure_Helper::encode_title_for_template('Tom &amp; Jerry <em>live</em>'));
+        $this->assertSame('', Structure_Helper::encode_title_for_template(''));
+
+        // Braces and PHP delimiters are shown as text
+        $this->assertSame('Sizes &#123;S, M, L&#125;', Structure_Helper::encode_title_for_template('Sizes {S, M, L}'));
+        $this->assertSame('1 &lt;? 2 and 3 ?&gt; 2', Structure_Helper::encode_title_for_template('1 <? 2 and 3 ?> 2'));
+
+        // Encoding a title twice gives the same result as encoding it once
+        $encoded = Structure_Helper::encode_title_for_template('Sizes {S, M, L} <? ?>');
+        $this->assertSame($encoded, Structure_Helper::encode_title_for_template($encoded));
+
+        // Values that are not strings are passed through
+        $this->assertFalse(Structure_Helper::encode_title_for_template(false));
+        $this->assertNull(Structure_Helper::encode_title_for_template(null));
+    }
+
 }

@@ -772,6 +772,8 @@ class Sql_structure
                 $title = htmlspecialchars($title);
             }
 
+            $title = Structure_Helper::encode_title_for_template($title);
+
             // Add span hook if desired
             $title_output = ee()->TMPL->fetch_param('add_span', false) == "yes" ? "<span>" . $title . "</span>" : $title;
 
@@ -789,7 +791,7 @@ class Sql_structure
                     if ($recursive_overview == "no") {
                         if ($tree[$i]['depth'] == $level) {
                             if ($rename_overview == "title") {
-                                $title = $tree[$i]['title'];
+                                $title = Structure_Helper::encode_title_for_template($tree[$i]['title']);
                             } else {
                                 $title = $rename_overview;
                             }
@@ -798,7 +800,7 @@ class Sql_structure
                         }
                     } else {
                         if ($rename_overview == "title") {
-                            $title = $tree[$i]['title'];
+                            $title = Structure_Helper::encode_title_for_template($tree[$i]['title']);
                         } else {
                             $title = $rename_overview;
                         }

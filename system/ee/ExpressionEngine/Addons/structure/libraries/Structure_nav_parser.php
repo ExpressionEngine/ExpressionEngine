@@ -5,6 +5,9 @@ namespace ExpressionEngine\Addons\Structure\Libraries;
 use DOMElement;
 use DOMDocument;
 use Structure;
+use Structure_Helper;
+
+require_once PATH_ADDONS . 'structure/helper.php';
 
 /**
  * Library File for Structure Nav by Rob Sanchez
@@ -231,6 +234,8 @@ class Structure_core_nav_parser
                     $variable_row[$prefix . $field_name] = $channelEntry->$field_name;
                 }
 
+                $variable_row[$prefix . 'title'] = Structure_Helper::encode_title_for_template($channelEntry->title);
+
                 // edit date is special in getModChannelResultsArray, so also special here
                 // not sure why is that though...
                 if (isset($variable_row[$prefix . 'edit_date'])) {
@@ -302,6 +307,10 @@ class Structure_core_nav_parser
             }
 
             $variable_row[$prefix . $key] = $value;
+        }
+
+        if (isset($row['title'])) {
+            $variable_row[$prefix . 'title'] = Structure_Helper::encode_title_for_template($row['title']);
         }
 
         $field_names = $this->get_custom_fields_by_group($row['field_group']);
@@ -454,10 +463,10 @@ class Structure_core_nav_parser
 
             $variables[$i] = array(
                 '__prefix' => $prefix,
-                $prefix . 'entry_id' => $entry_id,
-                $prefix . 'title' => $link->nodeValue,
-                $prefix . 'page_url' => $link->getAttribute('href'),
-                $prefix . 'page_uri' => str_replace(ee()->functions->create_url(''), '', $link->getAttribute('href')),
+                $prefix . 'entry_id' => Structure_Helper::encode_title_for_template($entry_id),
+                $prefix . 'title' => Structure_Helper::encode_title_for_template($link->nodeValue),
+                $prefix . 'page_url' => Structure_Helper::encode_title_for_template($link->getAttribute('href')),
+                $prefix . 'page_uri' => Structure_Helper::encode_title_for_template(str_replace(ee()->functions->create_url(''), '', $link->getAttribute('href'))),
                 $prefix . 'first_child' => $i === 0,
                 $prefix . 'last_child' => ($i + 1) === $numLis,
                 $prefix . 'count' => $i + 1,

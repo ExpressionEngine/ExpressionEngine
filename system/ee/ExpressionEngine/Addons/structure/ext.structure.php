@@ -1140,15 +1140,7 @@ class Structure_ext
      */
     private function encodeTitleForTemplate($title)
     {
-        if (! is_string($title)) {
-            return $title;
-        }
-
-        return str_replace(
-            array('{', '}', '<?', '?>'),
-            array('&#123;', '&#125;', '&lt;?', '?&gt;'),
-            $title
-        );
+        return Structure_Helper::encode_title_for_template($title);
     }
 
     public function _parse_tag_url_for($m)
@@ -1183,7 +1175,7 @@ class Structure_ext
     {
         $title = $this->sql->get_entry_title($m[1]);
 
-        return $title;
+        return $this->encodeTitleForTemplate($title);
     }
 
     public function _parse_tag_slug_for($m)
