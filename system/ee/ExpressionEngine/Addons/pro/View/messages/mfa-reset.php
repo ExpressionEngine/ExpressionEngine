@@ -23,5 +23,5 @@ endif;
     , 'maxlength' => 16, 'autocomplete' => 'off'))?>
 </fieldset>
 <fieldset class="last">
-    <?=form_submit('submit', $btn_label, 'class="' . $btn_class . '" data-work-text="' . lang('authenticating') . $btn_disabled)?>
+    <?=form_submit('submit', $btn_label, 'class="' . $btn_class . '" data-work-text="' . lang('authenticating') . '" ' . $btn_disabled)?>
 </fieldset>
