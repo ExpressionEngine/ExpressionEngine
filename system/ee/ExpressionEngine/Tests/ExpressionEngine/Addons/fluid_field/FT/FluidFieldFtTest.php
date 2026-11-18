@@ -407,9 +407,11 @@ class FluidFieldFtTest extends FluidFieldTestBase
     {
         $gridRecord = new FluidFieldRecordStub(70, 7, new FluidFieldFacadeStub(7), new FluidFieldChannelFieldStub(7, 'grid_field', new FluidFieldFacadeStub(7), 'grid', 'Grid Field', 'exp_channel_data_field_7'));
         $gridRecord->field_data_id = 707;
+        $gridRecord->entry_id = 100;
 
         $relationshipRecord = new FluidFieldRecordStub(80, 8, new FluidFieldFacadeStub(8), new FluidFieldChannelFieldStub(8, 'relationship_field', new FluidFieldFacadeStub(8), 'relationship', 'Relationship Field', 'exp_channel_data_field_8'));
         $relationshipRecord->field_data_id = 808;
+        $relationshipRecord->entry_id = 101;
 
         ee()->setMock('grid_lib', new FluidFieldGridLibStub());
         $this->extensions->activeHooks['fluid_field_remove_field'] = true;
@@ -422,6 +424,15 @@ class FluidFieldFtTest extends FluidFieldTestBase
         $this->assertNotEmpty($this->load->packagePaths);
         $this->assertGreaterThanOrEqual(3, count($this->db->deletes));
         $this->assertNotEmpty($this->extensions->calls);
+        $this->assertSame(100, ee()->grid_lib->entry_id);
+        $this->assertSame([
+            ['id', 707],
+            ['parent_id', 101],
+            ['field_id', 8],
+            ['fluid_field_data_id', 80],
+            ['grid_field_id', 0],
+            ['id', 808],
+        ], $this->db->whereValues);
     }
 
     public function testDisplayFieldRendersPublishViewInControlPanel()
@@ -641,21 +652,163 @@ class FluidFieldFtTest extends FluidFieldTestBase
         $this->assertSame('mediumtext', $columns['field_id_10']['type']);
     }
 
-    public function testDeleteRemovesFluidFieldRowsForEntryIds()
+    /**
+     * Clean up each Grid item using its own entry and Fluid item scope.
+     *
+     * @param string $fieldType The Grid fieldtype stored inside Fluid.
+     * @return void
+     * @dataProvider gridFieldTypes
+     */
+    public function testDeleteRemovesFluidFieldRowsForEntryIds(string $fieldType): void
     {
-        $deletedCollection = new FluidFieldTestCollection();
+        $records = [];
 
-        $this->setModelGetCallback(function ($model, $id = null) use ($deletedCollection) {
-            if ($model === 'fluid_field:FluidField') {
-                return $this->makeModelQuery($deletedCollection);
-            }
+        foreach ([[70, 100], [71, 100], [72, 101]] as [$id, $entryId]) {
+            $record = new FluidFieldRecordStub($id, 7);
+            $record->entry_id = $entryId;
+            $record->field_data_id = $id * 10;
+            $record->ChannelField->field_type = $fieldType;
+            $records[] = $record;
+        }
 
-            return $this->makeModelQuery(new FluidFieldTestCollection());
+        $this->expectDeletionQuery($records, [100, 101]);
+        $this->extensions->activeHooks['fluid_field_remove_field'] = true;
+
+        $cleanupScopes = [];
+        $grid = m::mock(FluidFieldGridLibStub::class)->makePartial();
+        $grid->shouldReceive('save')->with([])->times(3)->andReturnUsing(function () use ($grid, &$cleanupScopes) {
+            $cleanupScopes[] = [$grid->field_id, $grid->content_type, $grid->entry_id, $grid->fluid_field_data_id];
+            $this->assertSame(99, $this->getPrivateProperty($this->fieldtype, 'content_id'));
         });
+        ee()->setMock('grid_lib', $grid);
 
         $this->fieldtype->delete([100, 101]);
 
-        $this->assertTrue($deletedCollection->deleted);
+        $this->assertSame([
+            [7, 'channel', 100, 70],
+            [7, 'channel', 100, 71],
+            [7, 'channel', 101, 72],
+        ], $cleanupScopes);
+        $this->assertSame([['id', 700], ['id', 710], ['id', 720]], $this->db->whereValues);
+        $this->assertSame(array_fill(0, 3, ['exp_channel_data_field_7', null]), $this->db->deletes);
+        $this->assertSame([
+            ['fluid_field_remove_field', $records[0]],
+            ['fluid_field_remove_field', $records[1]],
+            ['fluid_field_remove_field', $records[2]],
+        ], $this->extensions->calls);
+        $this->assertSame(99, $this->getPrivateProperty($this->fieldtype, 'content_id'));
+
+        foreach ($records as $record) {
+            $this->assertTrue($record->deleted);
+        }
+    }
+
+    /**
+     * Supply both Grid fieldtypes that require nested row cleanup.
+     *
+     * @return array<string, array{string}>
+     */
+    public static function gridFieldTypes(): array
+    {
+        return ['grid' => ['grid'], 'file_grid' => ['file_grid']];
+    }
+
+    /**
+     * Scope relationship cleanup to each entry, field, and Fluid item.
+     *
+     * @return void
+     */
+    public function testDeleteRemovesRelationshipsForEachEntry(): void
+    {
+        $records = [];
+
+        foreach ([[80, 100], [81, 101]] as [$id, $entryId]) {
+            $record = new FluidFieldRecordStub($id, 8);
+            $record->entry_id = $entryId;
+            $record->field_data_id = $id * 10;
+            $record->ChannelField->field_type = 'relationship';
+            $records[] = $record;
+        }
+
+        $this->expectDeletionQuery($records, [100, 101]);
+        $this->extensions->activeHooks['fluid_field_remove_field'] = true;
+
+        $this->fieldtype->delete([100, 101]);
+
+        $this->assertSame([
+            ['parent_id', 100],
+            ['field_id', 8],
+            ['fluid_field_data_id', 80],
+            ['grid_field_id', 0],
+            ['id', 800],
+            ['parent_id', 101],
+            ['field_id', 8],
+            ['fluid_field_data_id', 81],
+            ['grid_field_id', 0],
+            ['id', 810],
+        ], $this->db->whereValues);
+        $this->assertSame([
+            ['relationships', null],
+            ['exp_channel_data_field_8', null],
+            ['relationships', null],
+            ['exp_channel_data_field_8', null],
+        ], $this->db->deletes);
+        $this->assertSame([
+            ['fluid_field_remove_field', $records[0]],
+            ['fluid_field_remove_field', $records[1]],
+        ], $this->extensions->calls);
+        $this->assertTrue($records[0]->deleted);
+        $this->assertTrue($records[1]->deleted);
+        $this->assertSame([], ee()->grid_lib->saved);
+        $this->assertSame(99, $this->getPrivateProperty($this->fieldtype, 'content_id'));
+    }
+
+    /**
+     * Delete orphaned Fluid records without preventing cleanup of valid fields.
+     *
+     * @return void
+     */
+    public function testDeleteHandlesMissingChannelFields(): void
+    {
+        $orphan = new FluidFieldRecordStub(90, 9);
+        $orphan->entry_id = 100;
+        $orphan->ChannelField = null;
+
+        $text = new FluidFieldRecordStub(60, 6);
+        $text->entry_id = 101;
+        $text->field_data_id = 600;
+
+        $this->expectDeletionQuery([$orphan, $text], [100, 101]);
+        $this->extensions->activeHooks['fluid_field_remove_field'] = true;
+
+        $this->fieldtype->delete([100, 101]);
+
+        $this->assertTrue($orphan->deleted);
+        $this->assertTrue($text->deleted);
+        $this->assertSame([['id', 600]], $this->db->whereValues);
+        $this->assertSame([['exp_channel_data_field_6', null]], $this->db->deletes);
+        $this->assertSame([['fluid_field_remove_field', $text]], $this->extensions->calls);
+        $this->assertSame([], ee()->grid_lib->saved);
+        $this->assertSame(99, $this->getPrivateProperty($this->fieldtype, 'content_id'));
+    }
+
+    /**
+     * Leave cleanup services and fieldtype state untouched when nothing matches.
+     *
+     * @return void
+     */
+    public function testDeleteDoesNothingWhenNoFluidItemsMatch(): void
+    {
+        $this->expectDeletionQuery([], [100, 101]);
+        $this->extensions->activeHooks['fluid_field_remove_field'] = true;
+
+        $this->fieldtype->delete([100, 101]);
+
+        $this->assertSame([], $this->db->whereValues);
+        $this->assertSame([], $this->db->deletes);
+        $this->assertSame([], $this->extensions->calls);
+        $this->assertSame([], ee()->grid_lib->saved);
+        $this->assertSame(99, $this->getPrivateProperty($this->fieldtype, 'content_id'));
     }
 
     public function testAcceptsContentType()
@@ -818,11 +971,24 @@ class FluidFieldFtTest extends FluidFieldTestBase
         $this->assertSame(2, $count);
     }
 
-    public function testValidateReturnsAjaxCallbackUsingFallbackFieldLookupAndArrayCasting()
+    /**
+     * Validate AJAX children with the same optional-value rules as full submissions.
+     *
+     * @dataProvider provideAjaxValidationData
+     * @param mixed $value The submitted child value.
+     * @param bool $hasArrayData Whether the child expects array data.
+     * @param mixed $expectedData The normalized child value.
+     * @param bool|string $expectedResult The expected validation result.
+     * @return void
+     */
+    public function testValidateReturnsAjaxResultUsingFallbackFieldLookupAndArrayCasting($value, $hasArrayData, $expectedData, $expectedResult)
     {
         $field = new FluidFieldFacadeStub(1);
-        $field->nativeField = (object) ['has_array_data' => true];
+        $field->nativeField = (object) ['has_array_data' => $hasArrayData];
+        $field->validateResult = is_string($expectedResult) ? $expectedResult : 'invalid_field';
         $channelField = new FluidFieldChannelFieldStub(1, 'title', $field);
+
+        ee()->setMock('Validation', new \ExpressionEngine\Service\Validation\Factory());
 
         $this->setModelGetCallback(function ($model, $id = null) use ($channelField) {
             if ($model === 'ChannelField' && $id === null) {
@@ -837,14 +1003,6 @@ class FluidFieldFtTest extends FluidFieldTestBase
         });
 
         $fieldName = 'fluid_content[fields][new_field_1][field_group_id_3][field_id_1]';
-        $rule = new FluidFieldRuleStub('callback');
-
-        $validation = new FluidFieldValidationServiceStub();
-        $validation->validator = new FluidFieldValidatorStub(
-            new FluidFieldValidationResultStub(false, [$fieldName => [$rule]])
-        );
-        ee()->setMock('Validation', $validation);
-
         $this->fieldtype->settings['field_channel_fields'] = [1];
         $this->input->ajax = true;
         $this->input->postData['ee_fv_field'] = $fieldName;
@@ -853,14 +1011,39 @@ class FluidFieldFtTest extends FluidFieldTestBase
             'fields' => [
                 'new_field_1' => [
                     'field_group_id_3' => [
-                        'field_id_1' => 'scalar-value'
+                        'field_id_1' => $value
                     ]
                 ]
             ]
         ];
 
-        $this->assertSame('', $this->fieldtype->validate($data));
-        $this->assertSame([], $field->getData());
+        $this->assertSame($expectedResult, $this->fieldtype->validate($data));
+        $this->assertSame($expectedData, $field->getData());
+
+        $this->input->ajax = false;
+        $this->assertSame($expectedResult === true ? true : 'form_validation_error', $this->fieldtype->validate($data));
+    }
+
+    /**
+     * Provide empty optional values and invalid nonempty child values.
+     *
+     * @return array
+     */
+    public function provideAjaxValidationData()
+    {
+        $gridData = ['rows' => ['new_row_1' => ['col_id_1' => 'value']]];
+
+        return [
+            'array casting' => ['scalar-value', true, [], true],
+            'empty array' => [[], true, [], true],
+            'empty string' => ['', false, '', true],
+            'whitespace' => ['   ', false, '   ', true],
+            'invalid text' => ['value', false, 'value', 'invalid_field'],
+            'literal percent in error' => ['value', false, 'value', 'Use 100%% accuracy.'],
+            'zero' => [0, false, 0, 'invalid_field'],
+            'string zero' => ['0', false, '0', 'invalid_field'],
+            'nonempty array' => [$gridData, true, $gridData, 'invalid_field'],
+        ];
     }
 
     public function testValidateSkipsAjaxFieldsThatDoNotMatchCurrentValidationTarget()
@@ -2244,6 +2427,28 @@ class FluidFieldFtTest extends FluidFieldTestBase
         $this->assertCount(0, $fluidFieldLookups);
         $this->assertSame(10, $newRecord->field_group_id);
         $this->assertSame(1, $newRecord->group);
+    }
+
+    /**
+     * Return Fluid fixtures only for the field and entry IDs being deleted.
+     *
+     * @param FluidFieldRecordStub[] $records The matching Fluid records.
+     * @param int[] $entryIds The entry IDs requested for deletion.
+     * @return void
+     */
+    private function expectDeletionQuery(array $records, array $entryIds): void
+    {
+        $query = m::mock(FluidFieldModelQueryStub::class);
+        $query->shouldReceive('with')->with('ChannelField')->andReturnSelf();
+        $query->shouldReceive('filter')->with('fluid_field_id', 10)->once()->andReturnSelf();
+        $query->shouldReceive('filter')->with('entry_id', 'IN', $entryIds)->once()->andReturnSelf();
+        $query->shouldReceive('all')->once()->andReturn(new FluidFieldTestCollection($records));
+
+        $this->setModelGetCallback(function ($model) use ($query) {
+            $this->assertSame('fluid_field:FluidField', $model);
+
+            return $query;
+        });
     }
 }
 

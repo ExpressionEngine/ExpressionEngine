@@ -149,4 +149,65 @@ class EE_TemplateTagsTest extends EE_TemplateTestBase
         $this->template->template = 'Another test template';
         $this->assertTrue(method_exists($this->template, 'tags'));
     }
+
+    public function testTagsInitializesLoopStateAndReturnsWhenProcessingCeases()
+    {
+        $templateMock = $this->getMockBuilder(\EE_Template::class)
+            ->onlyMethods(['fetch_addons', 'parse_tags', 'process_tags', 'log_item'])
+            ->getMock();
+        $templateMock->modules = [];
+        $templateMock->template = '{exp:test:tag}';
+        $templateMock->cease_processing = false;
+
+        $templateMock->expects($this->once())
+            ->method('fetch_addons')
+            ->willReturnCallback(function() use ($templateMock) {
+                $templateMock->modules = ['test_module' => 'module'];
+            });
+        $templateMock->expects($this->once())
+            ->method('parse_tags')
+            ->willReturnCallback(function() use ($templateMock) {
+                $templateMock->template = 'no more exp tags';
+            });
+        $templateMock->expects($this->once())
+            ->method('process_tags')
+            ->willReturnCallback(function() use ($templateMock) {
+                $templateMock->cease_processing = true;
+            });
+        $templateMock->method('log_item')->willReturn(null);
+
+        $templateMock->tags();
+
+        $this->assertSame([], $templateMock->tag_data);
+        $this->assertSame([], $templateMock->var_single);
+        $this->assertSame([], $templateMock->var_cond);
+        $this->assertSame([], $templateMock->var_pair);
+        $this->assertSame(0, $templateMock->loop_count);
+    }
+
+    public function testTagsLogsEndMessageWhenLoopCompletes()
+    {
+        $templateMock = $this->getMockBuilder(\EE_Template::class)
+            ->onlyMethods(['fetch_addons', 'parse_tags', 'process_tags', 'log_item'])
+            ->getMock();
+        $templateMock->modules = ['already_loaded'];
+        $templateMock->template = '{exp:test:tag}';
+        $templateMock->cease_processing = false;
+
+        $templateMock->expects($this->never())->method('fetch_addons');
+        $templateMock->expects($this->once())
+            ->method('parse_tags')
+            ->willReturnCallback(function() use ($templateMock) {
+                $templateMock->template = 'finished template';
+            });
+        $templateMock->expects($this->once())
+            ->method('process_tags')
+            ->willReturn(null);
+        $templateMock->expects($this->atLeastOnce())
+            ->method('log_item');
+
+        $templateMock->tags();
+
+        $this->assertFalse($templateMock->cease_processing);
+    }
 }

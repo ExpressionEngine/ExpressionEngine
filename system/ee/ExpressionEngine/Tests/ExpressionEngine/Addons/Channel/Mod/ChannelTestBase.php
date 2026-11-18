@@ -38,6 +38,16 @@ if (!function_exists('ee')) {
 // Include the real Channel class (and its requires)
 require_once rtrim(PATH_ADDONS, '/') . '/channel/mod.channel.php';
 
+class ChannelTestShim extends Channel
+{
+    public $paginate = false;
+    public $p_limit = 100;
+    public $p_page = 0;
+    public $fixed_order = false;
+    public $TMPL;
+    public $config;
+}
+
 
 
 abstract class ChannelTestBase extends TestCase
@@ -385,7 +395,7 @@ abstract class ChannelTestBase extends TestCase
         }
 
         // Instantiate real class WITHOUT running its constructor to avoid dependencies
-        $this->channel = (new ReflectionClass('Channel'))->newInstanceWithoutConstructor();
+        $this->channel = (new ReflectionClass(ChannelTestShim::class))->newInstanceWithoutConstructor();
 
         // Manually initialize properties that would be set in constructor
         $this->channel->pagination = new class {
@@ -405,10 +415,10 @@ abstract class ChannelTestBase extends TestCase
 
         // Initialize hidden_fields array to prevent undefined property errors
         $this->channel->hidden_fields = [];
-        @$this->channel->paginate = false;
-        @$this->channel->p_limit = 100;
-        @$this->channel->p_page = 0;
-        @$this->channel->fixed_order = false;
+        $this->channel->paginate = false;
+        $this->channel->p_limit = 100;
+        $this->channel->p_page = 0;
+        $this->channel->fixed_order = false;
         $this->channel->sql = '';
         $this->channel->categories = [];
         $this->channel->cfields = [];
@@ -490,5 +500,4 @@ abstract class ChannelTestBase extends TestCase
         ee()->db->setRows($rows);
     }
 }
-
 

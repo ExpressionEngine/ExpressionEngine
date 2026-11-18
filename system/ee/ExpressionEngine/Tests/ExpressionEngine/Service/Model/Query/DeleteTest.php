@@ -366,7 +366,7 @@ class DeleteTest extends TestCase
     private function invokePrivate($object, $method, array $args)
     {
         $reflection = new \ReflectionMethod($object, $method);
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($reflection);
 
         return $reflection->invokeArgs($object, $args);
     }

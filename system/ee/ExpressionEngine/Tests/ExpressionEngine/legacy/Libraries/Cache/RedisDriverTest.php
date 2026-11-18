@@ -9,6 +9,9 @@ namespace ExpressionEngine\Tests\ExpressionEngine\legacy\Libraries\Cache;
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
  */
 
 class RedisDriverTest extends CacheTestBase
@@ -23,6 +26,26 @@ class RedisDriverTest extends CacheTestBase
      * @var RedisStub
      */
     private $redisStub;
+
+    public function testMissingAndEmptyCacheValuesDoNotEmitWarnings()
+    {
+        set_error_handler(function ($severity, $message, $file, $line) {
+            throw new \ErrorException($message, 0, $severity, $file, $line);
+        });
+        try {
+            $this->assertFalse($this->driver->get('missing'));
+            $this->assertFalse($this->driver->get_metadata('missing'));
+            $this->redisStub->set('https://example.com/:empty', '');
+            $this->assertFalse($this->driver->get('empty'));
+            $this->assertFalse($this->driver->get_metadata('empty'));
+            foreach ([false, '', 0, null] as $value) {
+                $this->driver->save('stored', $value);
+                $this->assertSame($value, $this->driver->get('stored'));
+            }
+        } finally {
+            restore_error_handler();
+        }
+    }
 
     public function setUp(): void
     {
@@ -206,6 +229,163 @@ class RedisDriverTest extends CacheTestBase
         // Check that the key was prefixed correctly for global scope
         $expectedKey = md5('127.0.0.1' . APPPATH) . ':global_key';
         $this->assertEquals($expectedKey, $this->redisStub->lastSetexKey);
+    }
+
+    public function testSetupRedisDoesNotPassContextToLegacyConnect()
+    {
+        $redis = new RedisSetupLegacyConnectStub();
+        $driver = $this->makeRedisSetupDriver($redis);
+
+        ee()->config->setItem('redis', [
+            'host' => 'redis.example.com',
+            'port' => 6380,
+            'timeout' => 1.5,
+            'scheme' => 'tls',
+            'context' => [
+                'stream' => [
+                    'verify_peer' => false,
+                    'cafile' => '/etc/ssl/redis-ca.pem',
+                ],
+            ],
+        ]);
+
+        $this->assertTrue($driver->setupRedisForTest());
+        $this->assertCount(3, $redis->connectArgs);
+        $this->assertSame('tls://redis.example.com', $redis->connectArgs[0]);
+        $this->assertSame(6380, $redis->connectArgs[1]);
+        $this->assertSame(1.5, $redis->connectArgs[2]);
+    }
+
+    public function testSetupRedisMergesTlsContextOptions()
+    {
+        $redis = new RedisSetupContextConnectStub();
+        $driver = $this->makeRedisSetupDriver($redis);
+
+        ee()->config->setItem('redis', [
+            'host' => 'redis.example.com',
+            'port' => 6380,
+            'timeout' => 1.5,
+            'scheme' => 'tls',
+            'context' => [
+                'stream' => [
+                    'verify_peer' => false,
+                    'peer_name' => 'cache.internal',
+                    'cafile' => '/etc/ssl/redis-ca.pem',
+                ],
+            ],
+        ]);
+
+        $this->assertTrue($driver->setupRedisForTest());
+        $this->assertCount(7, $redis->connectArgs);
+        $this->assertSame('tls://redis.example.com', $redis->connectArgs[0]);
+
+        $context = $redis->connectArgs[6];
+        $this->assertSame(false, $context['stream']['verify_peer']);
+        $this->assertSame(true, $context['stream']['verify_peer_name']);
+        $this->assertSame('cache.internal', $context['stream']['peer_name']);
+        $this->assertSame('/etc/ssl/redis-ca.pem', $context['stream']['cafile']);
+    }
+
+    public function testSetupRedisAuthenticatesWithAclCredentials()
+    {
+        $redis = new RedisSetupLegacyConnectStub();
+        $driver = $this->makeRedisSetupDriver($redis);
+
+        ee()->config->setItem('redis', [
+            'username' => 'default',
+            'password' => 'secret',
+        ]);
+
+        $this->assertTrue($driver->setupRedisForTest());
+        $this->assertSame(['default', 'secret'], $redis->authArg);
+    }
+
+    private function makeRedisSetupDriver($redis)
+    {
+        return new class($redis) extends \EE_Cache_redis {
+            private $redis;
+
+            public function __construct($redis)
+            {
+                $this->redis = $redis;
+            }
+
+            public function setupRedisForTest()
+            {
+                return $this->_setup_redis();
+            }
+
+            protected function _new_redis()
+            {
+                return $this->redis;
+            }
+        };
+    }
+}
+
+class RedisSetupLegacyConnectStub
+{
+    public $connectArgs = [];
+    public $authArg;
+    public $selectedDatabase;
+
+    public function connect($host, $port = 6379, $timeout = 0, $reserved = null, $retry_interval = 0, $read_timeout = 0)
+    {
+        $this->connectArgs = func_get_args();
+
+        return true;
+    }
+
+    public function auth($auth)
+    {
+        $this->authArg = $auth;
+
+        return true;
+    }
+
+    public function select($database)
+    {
+        $this->selectedDatabase = $database;
+
+        return true;
+    }
+
+    public function close()
+    {
+        return true;
+    }
+}
+
+class RedisSetupContextConnectStub
+{
+    public $connectArgs = [];
+    public $authArg;
+    public $selectedDatabase;
+
+    public function connect($host, $port = 6379, $timeout = 0, $reserved = null, $retry_interval = 0, $read_timeout = 0, $context = [])
+    {
+        $this->connectArgs = func_get_args();
+
+        return true;
+    }
+
+    public function auth($auth)
+    {
+        $this->authArg = $auth;
+
+        return true;
+    }
+
+    public function select($database)
+    {
+        $this->selectedDatabase = $database;
+
+        return true;
+    }
+
+    public function close()
+    {
+        return true;
     }
 }
 

@@ -179,7 +179,12 @@ class File
         $limit = (int) ee()->TMPL->fetch_param('limit', 0);
         $offset = (int) ee()->TMPL->fetch_param('offset', 0);
         if ($limit > 0 && $this->enable['pagination'] && $pagination->paginate == true) {
-            $pagination->build(ee()->db->count_all_results(), $limit);
+            $pagination->build($this->_count_file_data($category_id, $category_group), $limit);
+
+            if ($category_id or $category_group) {
+                ee()->db->distinct();
+            }
+
             ee()->db->limit($pagination->per_page, $pagination->offset);
         } elseif ($limit > 0 && $offset >= 0) {
             ee()->db->limit($limit, $offset);
@@ -221,6 +226,28 @@ class File
             ->order_by($order_by, $sort);
 
         return ee()->db->get('files');
+    }
+
+    /**
+      * Count File IDs for pagination
+      */
+    private function _count_file_data($category_id, $category_group)
+    {
+        if (! $category_id && ! $category_group) {
+            return ee()->db->count_all_results();
+        }
+
+        $sql = ee()->db->_compile_select('SELECT COUNT(DISTINCT exp_files.file_id) AS ' . ee()->db->protect_identifiers('numrows'));
+        $query = ee()->db->query($sql);
+        ee()->db->_reset_select();
+
+        if ($query->num_rows() == 0) {
+            return 0;
+        }
+
+        $row = $query->row();
+
+        return (int) $row->numrows;
     }
 
     /**

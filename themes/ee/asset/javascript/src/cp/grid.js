@@ -119,6 +119,12 @@ $.fn.miniGrid = function(params) {
 Grid.Publish.prototype = Grid.MiniField.prototype = {
 
 	init: function() {
+		var autoLayoutGrid = this.root.hasClass('entry-grid');
+		var originalVisibility = autoLayoutGrid ? this.root[0].style.visibility : '';
+		if (autoLayoutGrid) {
+			this.root[0].style.visibility = 'hidden';
+		}
+
 		this._hideToolbarRowForVerticalLayout();
 		this._bindSortable();
 		this._bindAddButton();
@@ -137,6 +143,13 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		// Allow access to this Grid.Publish object from the DOM element;
 		// this may be a bad idea
 		this.root.data('GridInstance', this)
+
+		observeGridAutoLayout(this.root);
+		updateGridAutoLayout(this.root);
+
+		if (autoLayoutGrid) {
+			this.root[0].style.visibility = originalVisibility;
+		}
 	},
 
 	/**
@@ -292,18 +305,6 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 			this.root.toggleClass('hidden', rowCount == 0)
 		}
 
-		if ($(this.rowContainer).parents('.fluid__item-field').length) {
-			var gridFieldWidth = $(this.rowContainer).innerWidth();
-		} else {
-			var gridFieldWidth = $(this.rowContainer).width();
-		}
-
-		if ($(this.rowContainer).parents('.field-control').length) {
-			var parentFieldControlWidth = $(this.rowContainer).parents('.field-control').width();
-		} else {
-			var parentFieldControlWidth = gridFieldWidth
-		}
-
 		if(rowCount == 0) {
 			var showAddButton = setInterval(function (){
 				if ( !that.find('.field-no-results').hasClass('hidden') ) {
@@ -311,12 +312,9 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 					clearInterval(showAddButton);
 				}
 			}, 50);
-
-			if ( !$(this.rowContainer).parents('.grid-field').hasClass('horizontal-layout') && $(this.rowContainer).parents('.grid-field').hasClass('entry-grid') && (parentFieldControlWidth >= gridFieldWidth)) {
-				$(this.rowContainer).parents('.grid-field').removeClass('overwidth');
-				$(this.rowContainer).parents('.grid-field').find('.grid-field__item-fieldset').hide()
-			}
 		}
+
+		updateGridAutoLayout(this.root);
 	},
 
 	/**
@@ -353,6 +351,14 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 	 * Inserts new row at the bottom of our field
 	 */
 	_addRow: function() {
+		// Keep the row insertion and the auto-layout measurement in one hidden
+		// update so a new row cannot briefly paint in horizontal layout.
+		var autoLayoutGrid = this.root.hasClass('entry-grid');
+		var originalVisibility = autoLayoutGrid ? this.root[0].style.visibility : '';
+		if (autoLayoutGrid) {
+			this.root[0].style.visibility = 'hidden';
+		}
+
 		// Clone our blank row
 		el = this.blankRow.clone();
 
@@ -409,23 +415,6 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 			EE.cp.formValidation.bindInputs(el);
 		}
 
-		if ($(this.rowContainer).parents('.fluid__item-field').length) {
-			var gridFieldWidth = $(this.rowContainer).innerWidth()
-		} else {
-			var gridFieldWidth = $(this.rowContainer).width();
-		}
-
-		if ($(this.rowContainer).parents('.field-control').length) {
-			var parentFieldControlWidth = $(this.rowContainer).parents('.field-control').width();
-		} else {
-			var parentFieldControlWidth = gridFieldWidth;
-		}
-
-		if ( !$(this.rowContainer).parents('.grid-field').hasClass('horizontal-layout') && $(this.rowContainer).parents('.grid-field').hasClass('entry-grid') && (parentFieldControlWidth < gridFieldWidth)) {
-			$(this.rowContainer).parents('.grid-field').addClass('overwidth');
-			$(this.rowContainer).parents('.grid-field').find('.grid-field__item-fieldset').show()
-		}
-
 		if ($(this.rowContainer).find('tr:not(.hidden) div[data-relationship-react]').length) {
 			$(this.rowContainer).find('tr:not(.hidden) div[data-relationship-react]').each(function(el) {
 				var button = $(this).find('.js-dropdown-toggle').get(0);
@@ -435,6 +424,12 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 
 		if ($(this.rowContainer).parents('.grid-field').hasClass('vertical-layout')) {
 			$(this.rowContainer).parents('.grid-field').find('.grid-field__item-fieldset').show();
+		}
+
+		updateGridAutoLayout(this.root);
+
+		if (autoLayoutGrid) {
+			this.root[0].style.visibility = originalVisibility;
 		}
 
 		return el;
@@ -475,6 +470,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 			that._updateRowCounter();
 
 			that._toggleRowManipulationButtons();
+			updateGridAutoLayout(that.root);
 
 			// Show our empty field message if we have no rows left
 			if (that._getRows().length == 0) {
@@ -515,6 +511,14 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 			that._getRows().each(function() {
 				that._fireEvent('display', $(this));
 			});
+
+			// A deferred editor with a custom width can change the table width after initialization.
+			var hasCustomWidthPreview = that.root.hasClass('entry-grid') && that.root.find('iframe.rte').is(function() {
+				return this.style.width && this.style.width !== '100%';
+			});
+			if (hasCustomWidthPreview) {
+				updateGridAutoLayout(that.root);
+			}
 
 			that._addMinimumRows();
 		}, 500);
@@ -1056,7 +1060,20 @@ if (typeof _ !== 'undefined' && EE.grid_cache !== 'undefined') {
 
 $(document).ready(function () {
 	FluidField.on('grid', 'add', function(el) {
-  		EE.grid($('div', el));
+		EE.grid($('.grid-field', el));
+	});
+
+	$('.fluid').on('click', '.js-toggle-fluid-item, .js-show-all-fluid-items', function() {
+		var context = $(this).hasClass('js-toggle-fluid-item')
+			? $(this).closest('.fluid__item')
+			: $(this).closest('.fluid');
+
+		// Wait for Fluid's click handler to finish updating visibility.
+		setTimeout(function() {
+			if (!context.hasClass('fluid__item--collapsed')) {
+				updateGridAutoLayouts(context);
+			}
+		}, 0);
 	});
 
 	// Toggle grid item
@@ -1071,6 +1088,7 @@ $(document).ready(function () {
 			$(this).parents('tr').find('td:not(.grid-field__item-fieldset)').each(function() {
 				$(this).show();
 			});
+			updateGridAutoLayout($(this).closest('.grid-field'));
 		}
 
 		return false;
@@ -1101,64 +1119,134 @@ $(document).ready(function () {
 		// Hide the dropdown menu
 		$('.js-dropdown-toggle.dropdown-open').trigger('click');
 
+		updateGridAutoLayout($(this).closest('.grid-field'));
 		return false;
 	});
 });
 
-function checkGridWidthForResize() {
-	var gridTables = $('.grid-field:not(.horizontal-layout)');
+var gridAutoLayoutObserver = null;
+var gridAutoLayoutUpdateTimer = null;
+var gridAutoLayoutResizeDelay = 150;
+var gridAutoLayoutHysteresis = 24;
 
-	gridTables.each(function(el) {
+function getGridAutoLayoutWidths(grid, hysteresis) {
+	var table = grid.find('.grid-field__table').first();
+	var tableContainer = table.closest('.table-responsive');
+	var fieldControl = grid.parents('.field-control').first();
+	var containerWidth = fieldControl.length ? fieldControl.width() : tableContainer.width();
+	var originalWidth = grid[0].style.width;
 
-		if ( $(this).parents('.hidden').length ) return;
+	// Tables fill the available width, so measure in a narrower space to leave room for a scrollbar.
+	if (hysteresis) {
+		grid.width(Math.max(0, grid.width() - hysteresis));
+	}
 
-		if ($(this).find('.grid-field__table').parents('.fluid__item-field').length) {
-			var tableInnerWidth = $(this).find('.grid-field__table').innerWidth()
-		} else {
-			var tableInnerWidth = $(this).find('.grid-field__table').width();
-		}
+	var tableWidth = table.outerWidth();
 
-		if ($(this).parents('.field-control').length) {
-			var containerWidth = $(this).parents('.field-control').width();
-		} else {
-			var containerWidth = tableInnerWidth;
-		}
+	if (tableContainer.length && tableContainer[0].scrollWidth > tableWidth) {
+		tableWidth = tableContainer[0].scrollWidth;
+	}
 
-		if ($(this).hasClass('entry-grid') && containerWidth < tableInnerWidth) {
-			$(this).addClass('overwidth');
-			$(this).find('.grid-field__item-fieldset').show();
-		}
+	if (hysteresis) {
+		grid[0].style.width = originalWidth;
+	}
+
+	return {
+		tableWidth: tableWidth,
+		containerWidth: containerWidth - hysteresis
+	};
+}
+
+function updateGridAutoLayout(grid) {
+	grid = $(grid).first();
+
+	if (!grid.length || !grid.hasClass('entry-grid') || !grid.is(':visible') || grid.parents('.hidden').length) {
+		return;
+	}
+
+	var table = grid.find('.grid-field__table').first();
+	if (!table.length) {
+		return;
+	}
+
+	var itemFieldsets = grid.find('.grid-field__item-fieldset');
+	var originalVisibility = grid[0].style.visibility;
+	var wasOverwidth = grid.hasClass('overwidth');
+
+	grid[0].style.visibility = 'hidden';
+	grid.removeClass('overwidth').addClass('horizontal-layout');
+	itemFieldsets.hide();
+
+	var widths = getGridAutoLayoutWidths(grid, wasOverwidth ? gridAutoLayoutHysteresis : 0);
+	// Keep row controls accessible when collapsed or forced vertical by Live Preview.
+	var isOverwidth = widths.tableWidth > widths.containerWidth
+		|| grid.find('.grid__item--collapsed').length > 0
+		|| grid.closest('.live-preview__form-content').length > 0;
+
+	grid.removeClass('horizontal-layout').toggleClass('overwidth', isOverwidth);
+	itemFieldsets.toggle(isOverwidth);
+
+	grid[0].style.visibility = originalVisibility;
+}
+
+function updateGridAutoLayouts(context) {
+	var grids = context
+		? $(context).find('.grid-field.entry-grid').addBack('.grid-field.entry-grid')
+		: $('.grid-field.entry-grid');
+
+	grids.each(function() {
+		updateGridAutoLayout(this);
 	});
 }
 
-function checkGridWidth() {
-	var gridTables = $('.grid-field:not(.horizontal-layout)');
+function scheduleGridAutoLayoutUpdate(delay) {
+	if (gridAutoLayoutUpdateTimer !== null) {
+		window.clearTimeout(gridAutoLayoutUpdateTimer);
+	}
 
-	gridTables.each(function(el) {
-		if ( $(this).parents('.hidden').length ) return;
+	delay = typeof delay === 'number' ? delay : gridAutoLayoutResizeDelay;
+	gridAutoLayoutUpdateTimer = window.setTimeout(function() {
+		gridAutoLayoutUpdateTimer = null;
+		updateGridAutoLayouts();
+	}, delay);
+}
 
-		if ($(this).find('.grid-field__table').parents('.fluid__item-field').length) {
-			var tableInnerWidth = $(this).find('.grid-field__table').innerWidth()
-		} else {
-			var tableInnerWidth = $(this).find('.grid-field__table').width();
-		}
+function observeGridAutoLayout(grid) {
+	grid = $(grid).first();
 
-		if ($(this).parents('.field-control').length) {
-			var containerWidth = $(this).parents('.field-control').width();
-		} else {
-			var containerWidth = tableInnerWidth;
-		}
+	if (!grid.hasClass('entry-grid') || typeof ResizeObserver === 'undefined') {
+		return;
+	}
 
-		if ($(this).hasClass('entry-grid') && containerWidth < tableInnerWidth) {
-			$(this).addClass('overwidth');
-			$(this).find('.grid-field__item-fieldset').show();
-		}
+	if (!gridAutoLayoutObserver) {
+		gridAutoLayoutObserver = new ResizeObserver(function(entries) {
+			var widthChanged = false;
 
-		if ($(this).hasClass('entry-grid') && containerWidth >= tableInnerWidth && $(window).width() > 1440) {
-			$(this).removeClass('overwidth');
-			$(this).find('.grid-field__item-fieldset').hide();
-		}
-	});
+			entries.forEach(function(entry) {
+				var width = Math.round(entry.contentRect.width);
+
+				// Layout and editor height changes must not trigger another measurement.
+				if ($.data(entry.target, 'gridAutoLayoutWidth') !== width) {
+					$.data(entry.target, 'gridAutoLayoutWidth', width);
+					widthChanged = true;
+				}
+			});
+
+			if (widthChanged) {
+				scheduleGridAutoLayoutUpdate();
+			}
+		});
+	}
+
+	var container = grid.parents('.field-control').first();
+	if (!container.length) {
+		container = grid;
+	}
+
+	if (!container.data('gridAutoLayoutObserved')) {
+		container.data('gridAutoLayoutObserved', true);
+		gridAutoLayoutObserver.observe(container[0]);
+	}
 }
 
 function addHorizontalClassToFluid() {
@@ -1171,11 +1259,15 @@ function addHorizontalClassToFluid() {
 
 $(window).on('load', function() {
 	addHorizontalClassToFluid();
-	checkGridWidth();
+	scheduleGridAutoLayoutUpdate(0);
 });
 
 $(window).on('resize', function() {
-	checkGridWidthForResize();
+	scheduleGridAutoLayoutUpdate();
+});
+
+$(document).on('entry:preview-open entry:preview-close', function() {
+	scheduleGridAutoLayoutUpdate();
 });
 
 })(jQuery);

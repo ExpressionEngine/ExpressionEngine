@@ -406,6 +406,8 @@ $lang = array(
 
     'mbr_username_length' => 'Usernames must be at least %x characters long',
 
+    'mbr_email_cannot_be_used_as_username' => 'Please provide a different email address or username.',
+
     'mbr_view_posts_by_member' => 'View all posts by this member',
 
     'mbr_yahoo' => 'Yahoo Messenger',

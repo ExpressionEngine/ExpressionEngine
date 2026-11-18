@@ -99,8 +99,7 @@ class ChannelFormLibResourceEdgeCasesTest extends ChannelFormLibTestBase
                 return $this->fields[$name] ?? null;
             }
         };
-        // Suppress deprecation warning for PHP 8.2+ dynamic property creation
-        @$mockMember->memberFields = $memberFieldsMock;
+        $mockMember->memberFields = $memberFieldsMock;
 
         $this->setProtectedProperty('member', $mockMember);
 

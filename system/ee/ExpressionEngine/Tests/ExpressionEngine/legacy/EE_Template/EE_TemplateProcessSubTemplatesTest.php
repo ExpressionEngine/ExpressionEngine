@@ -20,6 +20,13 @@ if (!function_exists('trim_slashes')) {
     }
 }
 
+if (!function_exists('ol')) {
+    function ol($items) {
+        $items = (array) $items;
+        return '<ol><li>' . implode('</li><li>', $items) . '</li></ol>';
+    }
+}
+
 /**
  * Tests for EE_Template::process_sub_templates() method
  */
@@ -868,5 +875,144 @@ class EE_TemplateProcessSubTemplatesTest extends EE_TemplateAdvancedMethodsTestB
         $this->assertStringContainsString('Unicode content: ñáéíóú', $result);
         $this->assertStringContainsString('Content', $result);
         $this->assertStringContainsString('end', $result);
+    }
+
+    public function testProcessSubTemplatesRematchesFullTagWhenEmbedContainsVariableTag()
+    {
+        $variablesParserMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['getFullTag', 'parseTagParameters'])
+            ->getMock();
+        $variablesParserMock->expects($this->once())
+            ->method('getFullTag')
+            ->willReturn('{embed="news/sidebar" title="{site_name}" cache_prefix="embed-pref"}');
+        $variablesParserMock->expects($this->once())
+            ->method('parseTagParameters')
+            ->with('title="{site_name}" cache_prefix="embed-pref"')
+            ->willReturn(['title' => '{site_name}', 'cache_prefix' => 'embed-pref']);
+        ee()->setMock('Variables/Parser', $variablesParserMock);
+
+        $mockTemplate = $this->getMockBuilder(\EE_Template::class)
+            ->onlyMethods(['fetch_and_parse', 'process_layout_template', '_get_fetch_data'])
+            ->getMock();
+
+        $mockTemplate->expects($this->once())
+            ->method('_get_fetch_data')
+            ->with('"news/sidebar"')
+            ->willReturn(['news', 'sidebar', 1]);
+        $mockTemplate->expects($this->once())
+            ->method('fetch_and_parse')
+            ->willReturnCallback(function() use ($mockTemplate) {
+                $mockTemplate->template = 'resolved embed content';
+            });
+        $mockTemplate->expects($this->once())
+            ->method('process_layout_template')
+            ->willReturn('resolved embed content');
+
+        $this->template = $mockTemplate;
+
+        $result = $this->template->process_sub_templates(
+            'Start {embed="news/sidebar" title="{site_name}" cache_prefix="embed-pref"} end'
+        );
+
+        $this->assertStringContainsString('resolved embed content', $result);
+        $this->assertStringNotContainsString('{embed=', $result);
+    }
+
+    public function testProcessSubTemplatesTreatsFalseParsedEmbedParamsAsEmpty()
+    {
+        $variablesParserMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['parseTagParameters'])
+            ->getMock();
+        $variablesParserMock->expects($this->once())
+            ->method('parseTagParameters')
+            ->with('bad=params')
+            ->willReturn(false);
+        ee()->setMock('Variables/Parser', $variablesParserMock);
+
+        $mockTemplate = $this->getMockBuilder(\EE_Template::class)
+            ->onlyMethods(['fetch_and_parse', 'process_layout_template', '_get_fetch_data'])
+            ->getMock();
+
+        $mockTemplate->expects($this->once())
+            ->method('_get_fetch_data')
+            ->willReturn(['news', 'sidebar', 1]);
+        $mockTemplate->expects($this->once())
+            ->method('fetch_and_parse')
+            ->willReturnCallback(function() use ($mockTemplate) {
+                $this->assertSame([], $mockTemplate->embed_vars);
+                $this->assertSame('', $mockTemplate->cache_prefix);
+                $mockTemplate->template = 'embed';
+            });
+        $mockTemplate->expects($this->once())
+            ->method('process_layout_template')
+            ->willReturn('embed');
+
+        $this->template = $mockTemplate;
+
+        $result = $this->template->process_sub_templates('X {embed="news/sidebar" bad=params} Y');
+
+        $this->assertStringContainsString('embed', $result);
+    }
+
+    public function testProcessSubTemplatesSkipsEmbedWhenFetchDataIsInvalid()
+    {
+        $variablesParserMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['parseTagParameters'])
+            ->getMock();
+        $variablesParserMock->method('parseTagParameters')->willReturn([]);
+        ee()->setMock('Variables/Parser', $variablesParserMock);
+
+        $mockTemplate = $this->getMockBuilder(\EE_Template::class)
+            ->onlyMethods(['_get_fetch_data', 'fetch_and_parse'])
+            ->getMock();
+        $mockTemplate->expects($this->once())
+            ->method('_get_fetch_data')
+            ->willReturn(null);
+        $mockTemplate->expects($this->never())
+            ->method('fetch_and_parse');
+
+        $this->template = $mockTemplate;
+
+        $template = 'Keep {embed="bad-template"} unchanged';
+        $result = $this->template->process_sub_templates($template);
+
+        $this->assertSame($template, $result);
+    }
+
+    public function testProcessSubTemplatesLoopPreventionDebugBranchBuildsMessage()
+    {
+        if (!function_exists('\\ol')) {
+            eval('function ol($items) { $items = (array) $items; return "<ol><li>" . implode("</li><li>", $items) . "</li></ol>"; }');
+        }
+
+        ee()->config->setItem('template_loop_prevention', 'y');
+        ee()->config->setItem('debug', 1);
+
+        $variablesParserMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['parseTagParameters'])
+            ->getMock();
+        $variablesParserMock->method('parseTagParameters')->willReturn([]);
+        ee()->setMock('Variables/Parser', $variablesParserMock);
+
+        $outputMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['set_status_header', 'show_message'])
+            ->getMock();
+        $outputMock->method('set_status_header')->willReturn(null);
+        $outputMock->method('show_message')->willThrowException(new \RuntimeException('loop-prevented'));
+        ee()->setMock('output', $outputMock);
+
+        $mockTemplate = $this->getMockBuilder(\EE_Template::class)
+            ->onlyMethods(['_get_fetch_data'])
+            ->getMock();
+        $mockTemplate->templates_sofar = '|1:loop/template||1:loop/template|';
+        $mockTemplate->expects($this->once())
+            ->method('_get_fetch_data')
+            ->with('"loop/template"')
+            ->willReturn(['loop', 'template', 1]);
+
+        $this->template = $mockTemplate;
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('loop-prevented');
+        $this->template->process_sub_templates('Start {embed="loop/template"} end');
     }
 }

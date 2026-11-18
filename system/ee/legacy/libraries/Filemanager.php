@@ -233,7 +233,7 @@ class Filemanager
      */
     public function is_editable_image($file_path, $mime)
     {
-        if (!file_exists($file_path)) {
+        if (! file_exists_safe($file_path)) {
             return false;
         }
 
@@ -380,6 +380,13 @@ class Filemanager
 
                         break;
                     }
+                }
+
+                if ($safeForUpload === false) {
+                    return $this->_save_file_response(false, sprintf(
+                        lang('upload_directory_type_not_allowed'),
+                        htmlentities($prefs['name'], ENT_QUOTES, 'UTF-8')
+                    ));
                 }
             }
         }
@@ -1319,7 +1326,16 @@ class Filemanager
                     ($prefs['width'] < $size['width'] && $prefs['height'] < $size['height'])
                 ) or
                 $size['resize_type'] == 'none') {
-                $config['new_image'] = $config['source_image'];
+                  // Copy into this manipulation's own temp file rather than aliasing onto                                                                                                                                                                   
+                  // the shared source, otherwise the in-place watermark below contaminates                                                                                                                                                                  
+                  // the source that every later manipulation (including 'thumbs') resizes from.                                                                                                                                                             
+                  if (! @copy($config['source_image'], $new['path'])) {                                                                                                                                                                                      
+                      log_message('error', 'Image Copy Failed: ' . $prefs['file_name']);                                                                                                                                                                     
+                                                                                                                                                                                                                                                             
+                      return false;                                                                                                                                                                                                                          
+                  }                                                                                                                                                                                                                                          
+                                                                                                                                                                                                                                                             
+                  $config['new_image'] = $new['path'];
             } elseif (isset($size['resize_type']) and $size['resize_type'] == 'crop') {
                 // Scale the larger dimension up so only one dimension of our
                 // image fits within the desired dimension
@@ -1535,7 +1551,7 @@ class Filemanager
     {
         $thumb_path = rtrim($dir['server_path'], '/') . '/_thumbs';
 
-        if (! is_dir($thumb_path)) {
+        if (strpos($thumb_path, "\0") !== false || ! is_dir($thumb_path)) {
             return $files;
         }
 
@@ -2500,7 +2516,7 @@ class Filemanager
                 $upload_prefs[$file_data->upload_location_id]['server_path'] . '/' . $file_data->file_name
             );
 
-            if (! file_exists($file_path)) {
+            if (! file_exists_safe($file_path)) {
                 return false;
             }
 

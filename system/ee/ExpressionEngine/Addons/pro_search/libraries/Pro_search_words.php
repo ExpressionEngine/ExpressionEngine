@@ -109,7 +109,7 @@ class Pro_search_words
             isset($rules[$lang])
         ) {
             $this->_rules = $rules[$lang];
-        } elseif (file_exists($file)) {
+        } elseif (file_exists_safe($file)) {
             // Check our own location
             $this->_rules = include $file;
         } else {
@@ -168,7 +168,7 @@ class Pro_search_words
 
         $ok = false; // Initiate cache value
 
-        if (file_exists($file)) {
+        if (file_exists_safe($file)) {
             include $file;
 
             if (class_exists($class) && is_callable(array($class, $method))) {
@@ -330,7 +330,9 @@ class Pro_search_words
             $words = array_map('preg_quote', $words);
         }
 
-        $str = preg_replace('/<br\s?\/?>/iu', ' ', (string) $str);
+        $str = (string) $str;
+        $str = str_replace('<', ' <', $str); //inject some whitespace between tags to prevent concatenation
+        $str = preg_replace('/<br\s?\/?>/iu', ' ', $str);
         $str = strip_tags($str);
         $str = html_entity_decode($str, ENT_QUOTES, 'UTF-8');
         $str = preg_replace('/[^\p{L}\p{N}]+/u', ' ', $str);

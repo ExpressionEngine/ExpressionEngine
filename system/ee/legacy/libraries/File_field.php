@@ -32,9 +32,12 @@ class File_field
      *              Either 'all' or ONE directory ID
      * @param string $content_type The content type allowed.
      *              Either 'all' or 'image'
+     * @param bool $filebrowser Whether the file browser is available
+     * @param int|null $existing_limit Maximum number of existing files to show
+     * @param string|null $input_id ID for the rendered upload input
      * @return string Fully rendered file field
      */
-    public function field($field_name, $data = '', $allowed_file_dirs = 'all', $content_type = 'all', $filebrowser = true, $existing_limit = null)
+    public function field($field_name, $data = '', $allowed_file_dirs = 'all', $content_type = 'all', $filebrowser = true, $existing_limit = null, $input_id = null)
     {
         // Load necessary library, helper, model and langfile
         ee()->load->library('filemanager');
@@ -93,12 +96,18 @@ class File_field
 
         // Create a standard file upload field and dropdown for folks
         // without javascript
-        $vars['upload'] = form_upload(array(
+        $upload_attributes = array(
             'name' => $field_name,
             'value' => $vars['filename'],
             'data-content-type' => $content_type,
             'data-directory' => $specified_directory
-        ));
+        );
+
+        if ($input_id !== null) {
+            $upload_attributes['id'] = $input_id;
+        }
+
+        $vars['upload'] = form_upload($upload_attributes);
 
         $vars['allowed_file_dirs'] = $allowed_file_dirs;
         $vars['directory'] = form_hidden($field_name . '_directory', $vars['upload_location_id']);
@@ -299,7 +308,7 @@ class File_field
                 ->with('UploadDestination')
                 ->filter('file_name', $file_name)
                 ->filter('upload_location_id', $dir_id)
-                ->filter('site_id', ee()->config->item('site_id'))
+                ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
                 ->first(true);
         }
 
@@ -614,7 +623,9 @@ class File_field
         $file = false;
 
         // URL-decode the reference bfore searching or querying
-        $file_reference = rawurldecode($file_reference);
+        if ($file_reference !== null) {
+            $file_reference = rawurldecode($file_reference);
+        }
 
         if ($file_reference != null) {
             // Assign the key (field) and value we'll be searching by
@@ -987,18 +998,22 @@ class File_field
     }
 
     /**
-     * Loads proper JavaScript for drag and drop uploading
+     * Load JavaScript dependencies and upload directory configuration.
+     *
+     * @return void
      */
     public function loadDragAndDropAssets()
     {
         $upload_prefs = $this->_get_upload_prefs();
 
         $upload_destinations = [];
+        $allowed_directory_types = [];
         foreach ($upload_prefs as $upload_pref) {
             if (
                 ($upload_pref->site_id == 0 || $upload_pref->site_id == ee()->config->item('site_id')) &&
                 $upload_pref->module_id == 0
             ) {
+                $allowed_directory_types[$upload_pref->id] = $upload_pref->allowed_types;
                 $upload_destinations[$upload_pref->id] = [
                     'label' => $upload_pref->name,
                     'path' => '',
@@ -1009,9 +1024,16 @@ class File_field
         }
         if (!ee('Permission')->has('can_access_files')) {
             $upload_destinations = [];
+            $allowed_directory_types = [];
         }
 
         if (REQ == 'CP') {
+            $mimes = ee()->config->loadFile('mimes');
+            $extra_mimes = ee()->config->item('mime_whitelist_additions');
+            if (is_array($extra_mimes)) {
+                $mimes = array_merge_recursive($mimes, $extra_mimes);
+            }
+
             ee()->javascript->set_global([
                 'lang.file_dnd_choose_directory' => lang('file_dnd_choose_directory'),
                 'lang.file_dnd_choose_file_directory' => lang('file_dnd_choose_file_directory'),
@@ -1035,8 +1057,15 @@ class File_field
                 'lang.file_dnd_create_directory' => lang('file_dnd_create_directory'),
                 'lang.hidden_input' => lang('hidden_input'),
                 'lang.file_dnd_no_directories' => lang('file_dnd_no_directories'),
+                'lang.file_dnd_no_compatible_directories' => lang('file_dnd_no_compatible_directories'),
                 'lang.file_dnd_no_directories_desc' => !ee('Permission')->has('can_access_files') ? lang('file_dnd_no_directory_permissions') : lang('file_dnd_no_directories_desc'),
 
+                'dragAndDrop.allowedDirectoryTypes' => (object) $allowed_directory_types,
+                'dragAndDrop.imageTypes' => array_keys(array_filter($mimes, function ($types, $kind) {
+                    return is_array($types) && array_filter(preg_grep('/^image\//', $types), function ($mime) use ($kind) {
+                        return ee('MimeType')->isOfKind($mime, $kind);
+                    });
+                }, ARRAY_FILTER_USE_BOTH)),
                 'dragAndDrop.uploadDesinations' => ee('View/Helpers')->normalizedChoices($upload_destinations),
                 'dragAndDrop.endpoint' => ee('CP/URL')->make('addons/settings/filepicker/ajax-upload')->compile(),
                 'dragAndDrop.resolveConflictEndpoint' => ee('CP/URL')->make('addons/settings/filepicker/ajax-overwrite-or-rename')->compile(),

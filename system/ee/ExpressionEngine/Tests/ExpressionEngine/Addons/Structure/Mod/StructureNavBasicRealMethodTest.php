@@ -1,84 +1,84 @@
 <?php
 
+require_once rtrim(PATH_ADDONS, '/') . '/structure/mod.structure.php';
+
 use PHPUnit\Framework\TestCase;
+
+class StructureNavBasicRealMethodParserStub
+{
+    public $variables = [];
+    public $lastAddEntryVars = null;
+
+    public function get_variables($add_entry_vars = false)
+    {
+        $this->lastAddEntryVars = $add_entry_vars;
+
+        return $this->variables;
+    }
+}
+
+class StructureNavBasicRealMethodStructureStub extends Structure
+{
+    public $navParser;
+
+    protected function makeNavParser()
+    {
+        return $this->navParser;
+    }
+}
 
 class StructureNavBasicRealMethodTest extends TestCase
 {
     /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
+     * Verify nav_basic() uses the real module file and preserves its
+     * observable no-results and parse-variable behavior.
      */
-    public function testNavBasicCoversNoResultsAndParsedPaths()
+    public function testNavBasicUsesRealModuleFileForNoResultsAndParsedBranches()
     {
-        require_once __DIR__ . '/../../../../eeObjectMock.php';
-
-        if (!defined('APP_VER')) {
-            define('APP_VER', '7.5.14');
-        }
-        if (!defined('BASEPATH')) {
-            define('BASEPATH', __DIR__);
-        }
-        if (defined('PATH_ADDONS')) {
-            $this->markTestSkipped('Isolated PATH_ADDONS stubbing is not available under this bootstrap.');
-        }
-        if (!defined('PATH_ADDONS')) {
-            $addonsPath = defined('SYSPATH')
-                ? (SYSPATH . 'ee/ExpressionEngine/Addons/')
-                : (__DIR__ . '/../../../../Addons/');
-            define('PATH_ADDONS', $addonsPath);
-        }
-        if (!defined('PATH_MOD')) {
-            define('PATH_MOD', PATH_ADDONS);
-        }
-        if (!defined('PATH_PRO_ADDONS')) {
-            define('PATH_PRO_ADDONS', PATH_ADDONS);
-        }
-
-        if (!class_exists('ExpressionEngine\\Addons\\Structure\\Libraries\\Structure_core_nav_parser')) {
-            eval(<<<'PHPSTUB'
-namespace ExpressionEngine\Addons\Structure\Libraries;
-class Structure_core_nav_parser {
-    public function get_variables($add_entry_vars = false)
-    {
-        return $GLOBALS['__structure_nav_basic_vars'] ?? [];
-    }
-}
-PHPSTUB
-            );
-        }
-
-        require_once '/Users/tomjaeger/Sites/ee_test_repo/system/ee/ExpressionEngine/Addons/structure/mod.structure.php';
-
         ee()->resetMocks();
-        ee()->setMock('load', new class {
-            public function add_package_path($path)
-            {
-            }
-            public function library($name)
-            {
-            }
-            public function helper($name)
-            {
-            }
-        });
         ee()->setMock('TMPL', new class {
             public $tagdata = 'TAGDATA';
+            public $noResultsCalls = 0;
+            public $parseVariablesCalls = 0;
+            public $lastParsedTagdata = null;
+            public $lastParsedVariables = [];
+
             public function no_results()
             {
+                $this->noResultsCalls++;
+
                 return 'NO_RESULTS';
             }
+
             public function parse_variables($tagdata, $variables)
             {
+                $this->parseVariablesCalls++;
+                $this->lastParsedTagdata = $tagdata;
+                $this->lastParsedVariables = $variables;
+
                 return 'PARSED:' . count($variables);
             }
         });
 
-        $structure = (new ReflectionClass('Structure'))->newInstanceWithoutConstructor();
+        $expectedModulePath = realpath(__DIR__ . '/../../../../../Addons/structure/mod.structure.php');
+        $this->assertSame($expectedModulePath, (new ReflectionClass('Structure'))->getFileName());
 
-        $GLOBALS['__structure_nav_basic_vars'] = [];
+        $parser = new StructureNavBasicRealMethodParserStub();
+        $structure = (new ReflectionClass('StructureNavBasicRealMethodStructureStub'))->newInstanceWithoutConstructor();
+        $structure->navParser = $parser;
+
+        $parser->variables = [];
         $this->assertSame('NO_RESULTS', $structure->nav_basic(false));
+        $this->assertFalse($parser->lastAddEntryVars);
+        $this->assertSame(1, ee()->TMPL->noResultsCalls);
+        $this->assertSame(0, ee()->TMPL->parseVariablesCalls);
 
-        $GLOBALS['__structure_nav_basic_vars'] = [['entry_id' => 1]];
+        $parser->variables = [['entry_id' => 1]];
         $this->assertSame('PARSED:1', $structure->nav_basic(true));
+        $this->assertTrue($parser->lastAddEntryVars);
+        $this->assertSame(1, ee()->TMPL->noResultsCalls);
+        $this->assertSame(1, ee()->TMPL->parseVariablesCalls);
+        $this->assertSame('TAGDATA', ee()->TMPL->lastParsedTagdata);
+        $this->assertSame([['entry_id' => 1]], ee()->TMPL->lastParsedVariables);
     }
 }

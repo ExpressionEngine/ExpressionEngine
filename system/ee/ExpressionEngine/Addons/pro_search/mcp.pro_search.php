@@ -801,10 +801,10 @@ class Pro_search_mcp
     // --------------------------------------------------------------------
 
     /**
-     * Create new collection or edit existing one
+     * Display the new or existing collection form.
      *
-     * @access      public
-     * @return      string
+     * @param string|int $collection_id The collection ID or "new".
+     * @return array
      */
     public function edit_collection($collection_id = 'new')
     {
@@ -1002,7 +1002,7 @@ class Pro_search_mcp
 
             foreach ($cf as $id => $name) {
                 $channel_fields[] = array(
-                    'title' => $name,
+                    'title' => ee_html_escape($name),
                     'fields' => array(array(
                         'type'  => 'slider',
                         'name'  => "settings[{$channel->channel_id}][{$id}]",
@@ -1511,10 +1511,9 @@ class Pro_search_mcp
     // --------------------------------------------------------------------
 
     /**
-     * List Shortcut Groups
+     * Display the shortcut groups and their removal controls.
      *
-     * @access      public
-     * @return      string
+     * @return array
      */
     public function groups()
     {
@@ -1580,7 +1579,7 @@ class Pro_search_mcp
                 'name'  => 'group_id[]',
                 'value' => $id,
                 'data'  => array(
-                    'confirm' => $group['group_label']
+                    'confirm' => '<span>' . ee_html_escape($group['group_label']) . '</span>'
                 )
             );
 
@@ -1674,13 +1673,16 @@ class Pro_search_mcp
     }
 
     /**
-     * Save short group
+     * Save a shortcut group when the current user has permission.
      *
-     * @access      public
-     * @return      string
+     * @return void
      */
     public function save_group()
     {
+        if (! $this->can_manage_shortcuts()) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
         // --------------------------------------
         // Data to save
         // --------------------------------------
@@ -1718,10 +1720,16 @@ class Pro_search_mcp
     }
 
     /**
-     * Delete group and its shortcuts
+     * Delete groups and their shortcuts when the current user has permission.
+     *
+     * @return void
      */
     public function delete_group()
     {
+        if (! $this->can_manage_shortcuts()) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
         // Make sure an ID is posted
         if ($group_id = ee()->input->post('group_id')) {
             // Delete it
@@ -1745,10 +1753,10 @@ class Pro_search_mcp
     // --------------------------------------------------------------------
 
     /**
-     * List shortcuts for given group
+     * List shortcuts for the given group.
      *
-     * @access      public
-     * @return      string
+     * @param int $group_id The group whose shortcuts should be listed.
+     * @return array
      */
     public function shortcuts($group_id)
     {
@@ -1820,7 +1828,7 @@ class Pro_search_mcp
                 'name'  => 'shortcut_id[]',
                 'value' => $id,
                 'data'  => array(
-                    'confirm' => $shortcut['shortcut_label']
+                    'confirm' => '<span>' . ee_html_escape($shortcut['shortcut_label']) . '</span>'
                 )
             );
 
@@ -1858,13 +1866,17 @@ class Pro_search_mcp
     }
 
     /**
-     * Edit shortcut
+     * Display the new or existing shortcut form.
      *
-     * @access      public
-     * @return      string
+     * @param string|int $shortcut_id
+     * @return array
      */
     public function edit_shortcut($shortcut_id = 'new')
     {
+        if (! $this->can_manage_shortcuts()) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
         // --------------------------------------
         // Get all groups
         // --------------------------------------
@@ -2005,7 +2017,7 @@ class Pro_search_mcp
         $this->_set_cp_var('cp_page_title', $title);
         $this->_set_cp_crumb($this->mcp_url(), lang('pro_search_module_name'));
         $this->_set_cp_crumb($this->mcp_url('groups'), lang('groups'));
-        $this->_set_cp_crumb($this->mcp_url('shortcuts/' . $group_id), $group_name);
+        $this->_set_cp_crumb($this->mcp_url('shortcuts/' . $group_id), ee_html_escape($group_name));
 
         $this->active = 'groups';
 
@@ -2013,13 +2025,16 @@ class Pro_search_mcp
     }
 
     /**
-     * Save shortcut
+     * Save a shortcut when the current user has permission.
      *
-     * @access      public
-     * @return      void
+     * @return void
      */
     public function save_shortcut()
     {
+        if (! $this->can_manage_shortcuts()) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
         // --------------------------------------
         // Read parameters
         // --------------------------------------
@@ -2080,10 +2095,16 @@ class Pro_search_mcp
     }
 
     /**
-     * Delete shotcut
+     * Delete shortcuts when the current user has permission.
+     *
+     * @return void
      */
     public function delete_shortcut()
     {
+        if (! $this->can_manage_shortcuts()) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
         // Make sure an ID is posted
         if ($shortcut_id = ee()->input->post('shortcut_id')) {
             // Delete it
@@ -2106,10 +2127,16 @@ class Pro_search_mcp
     }
 
     /**
-     * Order shortcuts
+     * Order shortcuts when the current user has permission.
+     *
+     * @return void
      */
     public function order_shortcuts()
     {
+        if (! $this->can_manage_shortcuts()) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
         // Get order from POST
         if (($order = ee()->input->post('order')) && is_array($order)) {
             foreach ($order as $i => $id) {
@@ -2849,10 +2876,10 @@ class Pro_search_mcp
     // --------------------------------------------------------------------
 
     /**
-     * View search log
+     * Display the search log with optional filters.
      *
-     * @access      public
-     * @return      string
+     * @param string|null $filter
+     * @return array
      */
     public function search_log($filter = null)
     {
@@ -3023,7 +3050,7 @@ class Pro_search_mcp
 
                     // Shortcut toolbar
                     $r[] = array(
-                        'toolbar_items' => array(
+                        'toolbar_items' => $this->can_manage_shortcuts() ? array(
                             // 'view' => array(
                             //  'href'  => '#',
                             //  'title' => 'View details'
@@ -3032,7 +3059,7 @@ class Pro_search_mcp
                                 'href'  => $this->mcp_url('edit_shortcut/new', 'log_id=' . $row['log_id']),
                                 'title' => lang('create_shortcut_from_log')
                             )
-                        )
+                        ) : array()
                     );
 
                     // Add row to table body

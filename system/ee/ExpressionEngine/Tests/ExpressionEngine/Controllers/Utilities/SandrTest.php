@@ -10,7 +10,10 @@
 
 namespace ExpressionEngine\Tests\Controllers\Utilities;
 
+use ExpressionEngine\Controller\Utilities\UtilitiesShowErrorException;
 use PHPUnit\Framework\TestCase;
+
+require_once __DIR__ . '/UtilitiesTestHelper.php';
 
 class SandrTest extends TestCase
 {
@@ -33,5 +36,37 @@ class SandrTest extends TestCase
         sort($controller_methods);
 
         $this->assertEquals(array('index'), $controller_methods);
+    }
+
+    /**
+     * Check Super Admin access before loading or processing the form.
+     *
+     * @return void
+     */
+    public function testIndexChecksSuperAdminAccessBeforeLoadingForm()
+    {
+        ee()->resetMocks();
+
+        $permission = $this->getMockBuilder('stdClass')
+            ->addMethods(array('can', 'isSuperAdmin'))
+            ->getMock();
+        $permission->method('can')->willReturn(true);
+        $permission->expects($this->once())
+            ->method('isSuperAdmin')
+            ->willReturn(false);
+        ee()->setMock('Permission', $permission);
+
+        $controller = (new \ReflectionClass('ExpressionEngine\\Controller\\Utilities\\Sandr'))
+            ->newInstanceWithoutConstructor();
+
+        $this->expectException(UtilitiesShowErrorException::class);
+        $this->expectExceptionMessage('unauthorized_access');
+        $this->expectExceptionCode(403);
+
+        try {
+            $controller->index();
+        } finally {
+            ee()->resetMocks();
+        }
     }
 }

@@ -14,7 +14,6 @@ context('Publish Entry with Fluid', () => {
       Cypress.config('numTestsKeptInMemory', 0)
       cy.task('db:seed')
       cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
-      cy.createEntries({n: 1})
       cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' }).then(() => {
         cy.visit('admin.php?/cp/design')
       })
@@ -72,6 +71,42 @@ context('Publish Entry with Fluid', () => {
           expect(existing_fields).to.deep.equal(available_fields)
         })
 
+      })
+
+      it('refreshes Grid layout when Fluid items are expanded', () => {
+        cy.viewport(1600, 1000)
+        fluid_field.get('actions_menu.fields').eq(available_fields.indexOf('Stupid Grid')).click()
+        fluid_field.add_content(0)
+        fluid_field.get('actions_menu.fields').eq(available_fields.indexOf('Text')).click()
+
+        fluid_field.get('items').eq(0).as('gridItem')
+        fluid_field.get('items').eq(1).as('textItem')
+        cy.get('@gridItem').find('.grid-field.entry-grid').as('fluidGrid')
+        cy.get('@fluidGrid').closest('.field-control').as('gridContainer').invoke('css', 'width', '1100px')
+        cy.get('@fluidGrid').find('td[data-fieldtype]').invoke('css', 'min-width', '400px')
+        cy.wait(500)
+        cy.get('@fluidGrid').should('not.have.class', 'overwidth')
+
+        ;[false, true].forEach(expandAll => {
+          ;[800, 1100].forEach(width => {
+            cy.get('@gridItem').find('.js-toggle-fluid-item:visible').click()
+            cy.get('@fluidGrid').should('not.be.visible')
+            cy.get('@gridContainer').invoke('css', 'width', `${width}px`)
+            // Let the resize debounce finish while the Grid is still hidden.
+            cy.wait(500)
+
+            if (expandAll) {
+              cy.get('@textItem').find('.fluid__item-tools--item-open > .js-dropdown-toggle').first().click()
+              cy.get('@textItem').find('.js-show-all-fluid-items').click()
+            } else {
+              cy.get('@gridItem').find('.js-toggle-fluid-item:visible').click()
+            }
+
+            cy.get('@fluidGrid').should('be.visible')
+              .and(width === 800 ? 'have.class' : 'not.have.class', 'overwidth')
+            cy.get('@fluidGrid').find('input[type=text]:visible').first().should('have.value', 'Lorem0')
+          })
+        })
       })
 
       it('adds field groups', () => {
@@ -172,6 +207,41 @@ context('Publish Entry with Fluid', () => {
         cy.get('.meta__current_group_short_name').contains('news');
         cy.get('.meta__first_group').contains('1')
         cy.get('.meta__total_fields').contains('4')
+    })
+
+    ;[false, true].forEach(nestedFirst => {
+      it(`clears nested Fluid fieldsets when the nested child is corrected ${nestedFirst ? 'first' : 'last'}`, () => {
+        fluid_field.get('actions_menu.fields').eq(available_fields.indexOf('Home Page')).click()
+        fluid_field.get('actions_menu.fields').eq(available_fields.indexOf('Home Page')).click()
+
+        fluid_field.get('items').eq(0).find('input[type=text]').as('nestedUrl').then($input => {
+          // Custom fieldtypes can render their own fieldsets inside Fluid.
+          $input.wrap('<fieldset><div class="field-control"></div></fieldset>')
+        })
+        fluid_field.get('items').eq(1).find('input[type=text]').as('siblingUrl')
+
+        ;['nestedUrl', 'siblingUrl'].forEach(alias => {
+          cy.get(`@${alias}`).type('invalid-url').blur()
+          cy.get(`@${alias}`).closest('.fluid__item-field')
+            .find('em.ee-form-error-message').should('exist')
+        })
+        page.get('save').should('be.disabled')
+
+        const correctionOrder = nestedFirst ? ['nestedUrl', 'siblingUrl'] : ['siblingUrl', 'nestedUrl']
+        correctionOrder.forEach((alias, index) => {
+          cy.get(`@${alias}`).clear().type('https://example.com/').blur()
+          cy.get(`@${alias}`).closest('.fluid__item-field')
+            .find('em.ee-form-error-message').should('not.exist')
+          if (alias === 'nestedUrl') {
+            cy.get('@nestedUrl').closest('fieldset').should('not.have.class', 'fieldset-invalid')
+          }
+          page.get('save').should(index === 0 ? 'be.disabled' : 'be.enabled')
+        })
+
+        cy.get('.fluid .fieldset-invalid, .fluid em.ee-form-error-message').should('not.exist')
+        page.get('save').click()
+        page.get('alert').contains('Entry Created')
+      })
     })
 
     it('adds a field to Fluid', () => {

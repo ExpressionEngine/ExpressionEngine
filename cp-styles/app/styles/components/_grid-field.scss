@@ -443,6 +443,63 @@
   }
 }
 
+// Sortable helpers are appended outside of their Grid table. Preserve the
+// vertical/flex row layout after the helper loses the Grid ancestor selectors.
+tr.ee-table-reorder-helper--flex {
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	border: 1px solid var(--ee-border);
+	margin-bottom: 10px;
+	padding-bottom: 15px;
+	background-color: var(--ee-bg-blank);
+	box-shadow: color(shadow-dropdown);
+
+	& > td {
+		border-right: none;
+		min-width: 0;
+		width: 100%;
+		max-width: 100%;
+		display: block;
+		border-bottom: none;
+		padding: 10px 15px;
+		font-size: 1rem;
+	}
+
+	&.grid__item--collapsed {
+		padding-bottom: 0 !important;
+	}
+
+	.row-counter-column {
+		width: 100% !important;
+	}
+
+	.grid-field__item-fieldset {
+		padding: 10px 15px 5px;
+		border-bottom: 1px solid var(--ee-border) !important;
+		position: relative;
+	}
+
+	.grid-field__column--tools {
+		display: none !important;
+	}
+
+	.grid-field__column-label {
+		display: inherit;
+		margin-bottom: 10px;
+
+		label,
+		em {
+			color: var(--ee-text-secondary);
+			margin: 0;
+		}
+
+		em {
+			font-style: normal;
+		}
+	}
+}
+
 // HORIZONTAL GRID LAYOUT
 .grid-field.horizontal-layout {
 	.table-responsive {

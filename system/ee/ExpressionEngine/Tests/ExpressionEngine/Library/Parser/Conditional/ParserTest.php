@@ -99,7 +99,7 @@ class ParserTest extends TestCase
     private function readOutput(Parser $parser): string
     {
         $reflection = new \ReflectionProperty(Parser::class, 'output');
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($reflection);
 
         return $reflection->getValue($parser);
     }
@@ -107,7 +107,7 @@ class ParserTest extends TestCase
     private function setLastConditionalAnnotation(Parser $parser, object $annotation): void
     {
         $reflection = new \ReflectionProperty(Parser::class, 'last_conditional_annotation');
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($reflection);
         $reflection->setValue($parser, $annotation);
     }
 }

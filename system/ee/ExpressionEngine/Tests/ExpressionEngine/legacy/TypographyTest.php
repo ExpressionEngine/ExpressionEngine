@@ -109,6 +109,129 @@ class TypographyTest extends TestCase
         $this->assertStringContainsString('<a href="https://packagecontrol.io/packages/Marked%20App%20Menu">Marked App Menu</a>', $str);
     }
 
+    public function testMarkdownNormalizesOnlyMatchedInlineLinkUrl()
+    {
+        $originalUrl = 'https://unicode.example/path';
+        $normalizedUrl = 'https://normalized.example/path';
+        $this->typography->decodedUrls[$originalUrl] = $normalizedUrl;
+
+        $markdown = 'Plain parenthetical URL: (' . $originalUrl . '). Linked URL: [site](' . $originalUrl . ').';
+
+        $str = $this->typography->markdown($markdown, array('smartypants' => false));
+
+        $this->assertStringContainsString('Plain parenthetical URL: (' . $originalUrl . ').', $str);
+        $this->assertStringContainsString('<a href="' . $normalizedUrl . '">site</a>', $str);
+        $this->assertStringNotContainsString('Plain parenthetical URL: (' . $normalizedUrl . ').', $str);
+    }
+
+    public function testMarkdownEncodesSpacesInAngleBracketInlineLinkUrl()
+    {
+        $markdown = 'Read [release notes](<https://example.com/release notes?name=big deal> "Release notes").';
+
+        $str = $this->typography->markdown($markdown, array('smartypants' => false));
+
+        $this->assertStringContainsString('<a href="https://example.com/release%20notes?name=big%20deal" title="Release notes">release notes</a>', $str);
+    }
+
+    public function testMarkdownPreservesProtocolRelativeAngleBracketInlineLinkUrl()
+    {
+        $str = $this->typography->markdown('[cdn](<//cdn.example/path file>)', array('smartypants' => false));
+
+        $this->assertStringContainsString('<a href="//cdn.example/path%20file">cdn</a>', $str);
+        $this->assertStringNotContainsString('href="http://cdn.example', $str);
+        $this->assertStringNotContainsString('href="https://cdn.example', $str);
+    }
+
+    public function testMarkdownDoesNotNormalizeLinkTextThatLooksLikeUrl()
+    {
+        $label = 'https://label.example';
+        $targetUrl = 'https://target.example/path';
+        $normalizedLabel = 'https://normalized-label.example';
+        $normalizedTargetUrl = 'https://normalized-target.example/path';
+        $this->typography->decodedUrls[$label] = $normalizedLabel;
+        $this->typography->decodedUrls[$targetUrl] = $normalizedTargetUrl;
+
+        $str = $this->typography->markdown('See [' . $label . '](' . $targetUrl . ').', array('smartypants' => false));
+
+        $this->assertStringContainsString('<a href="' . $normalizedTargetUrl . '">' . $label . '</a>', $str);
+        $this->assertStringNotContainsString($normalizedLabel, $str);
+    }
+
+    public function testMarkdownNormalizesOnlyHrefWhenUrlAppearsInLabelOrTitle()
+    {
+        $originalUrl = 'https://unicode.example/path';
+        $normalizedUrl = 'https://normalized.example/path';
+        $this->typography->decodedUrls[$originalUrl] = $normalizedUrl;
+
+        $regular = $this->typography->markdown(
+            '[see (' . $originalUrl . ')](' . $originalUrl . ' "Title ' . $originalUrl . '")',
+            array('smartypants' => false)
+        );
+
+        $this->assertStringContainsString('<a href="' . $normalizedUrl . '" title="Title ' . $originalUrl . '">see (' . $originalUrl . ')</a>', $regular);
+        $this->assertStringNotContainsString('Title ' . $normalizedUrl, $regular);
+        $this->assertStringNotContainsString('see (' . $normalizedUrl . ')', $regular);
+
+        $angle = $this->typography->markdown(
+            '[angle](<' . $originalUrl . '> "Title <' . $originalUrl . '>")',
+            array('smartypants' => false)
+        );
+
+        $this->assertStringContainsString('<a href="' . $normalizedUrl . '" title="Title &lt;' . $originalUrl . '>">angle</a>', $angle);
+        $this->assertStringNotContainsString('Title &lt;' . $normalizedUrl . '>', $angle);
+    }
+
+    public function testMarkdownNormalizesUtf8HostsInInlineLinkUrls()
+    {
+        if (! function_exists('idn_to_ascii')) {
+            $this->markTestSkipped('IDN normalization requires the intl extension.');
+        }
+
+        $unicodeHost = 't' . "\xC3\xA4" . 'st.example';
+        $encodedHost = idn_to_ascii($unicodeHost, 0, defined('INTL_IDNA_VARIANT_UTS46') ? INTL_IDNA_VARIANT_UTS46 : INTL_IDNA_VARIANT_2003);
+
+        if ($encodedHost !== 'xn--tst-qla.example') {
+            $this->markTestSkipped('IDN normalization is unavailable in this PHP environment.');
+        }
+
+        $path = 'caf' . "\xC3\xA9";
+        $query = 'na' . "\xC3\xAF" . 've';
+        $unicodeUrl = 'https://' . $unicodeHost . '/' . $path . '?q=' . $query;
+        $expectedUrl = 'https://' . $encodedHost . '/' . $path . '?q=' . $query;
+
+        $str = $this->typography->markdown(
+            'Visit [regular](' . $unicodeUrl . ') and [angle](<' . $unicodeUrl . '>).',
+            array('smartypants' => false)
+        );
+
+        $this->assertStringContainsString('<a href="' . $expectedUrl . '">regular</a>', $str);
+        $this->assertStringContainsString('<a href="' . $expectedUrl . '">angle</a>', $str);
+        $this->assertStringNotContainsString('href="' . $unicodeUrl . '"', $str);
+    }
+
+    public function testMarkdownNormalizesUtf8ProtocolRelativeHostsInInlineLinkUrls()
+    {
+        if (! function_exists('idn_to_ascii')) {
+            $this->markTestSkipped('IDN normalization requires the intl extension.');
+        }
+
+        $unicodeHost = 't' . "\xC3\xA4" . 'st.example';
+        $encodedHost = idn_to_ascii($unicodeHost, 0, defined('INTL_IDNA_VARIANT_UTS46') ? INTL_IDNA_VARIANT_UTS46 : INTL_IDNA_VARIANT_2003);
+
+        if ($encodedHost !== 'xn--tst-qla.example') {
+            $this->markTestSkipped('IDN normalization is unavailable in this PHP environment.');
+        }
+
+        $unicodeUrl = '//' . $unicodeHost . '/path file';
+        $expectedUrl = '//' . $encodedHost . '/path%20file';
+
+        $str = $this->typography->markdown('[cdn](<' . $unicodeUrl . '>)', array('smartypants' => false));
+
+        $this->assertStringContainsString('<a href="' . $expectedUrl . '">cdn</a>', $str);
+        $this->assertStringNotContainsString('href="http://' . $encodedHost, $str);
+        $this->assertStringNotContainsString('href="https://' . $encodedHost, $str);
+    }
+
     public function testEmoticonConversionOn()
     {
         ee()->session->setUserdata('parse_smileys', 'y');
@@ -132,9 +255,20 @@ class TypographyTest extends TestCase
 
 class TypographyStub extends EE_Typography
 {
+    public $decodedUrls = array();
+
     public function __construct()
     {
         // Skipping initialize and autoloader
+    }
+
+    public function decodeIDN($url)
+    {
+        if (isset($this->decodedUrls[$url])) {
+            return $this->decodedUrls[$url];
+        }
+
+        return parent::decodeIDN($url);
     }
 }
 

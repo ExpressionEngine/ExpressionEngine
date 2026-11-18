@@ -1508,6 +1508,9 @@ class Pro_search_filter_keywords extends Pro_search_filter
         // Load typo lib
         ee()->load->library('typography');
 
+        //inject some whitespace between tags to prevent concatenation
+        $str = str_replace('<', ' <', $str);
+
         // Strip tags first
         $str = strip_tags($str);
 

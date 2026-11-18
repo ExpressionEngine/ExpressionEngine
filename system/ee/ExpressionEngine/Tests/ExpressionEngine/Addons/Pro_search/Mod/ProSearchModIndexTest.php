@@ -43,7 +43,7 @@ class ProSearchModIndexTest extends ProSearchTestBase
         // Use reflection to set the private settings property
         $reflection = new ReflectionClass($this->mod);
         $settingsProperty = $reflection->getProperty('settings');
-        $settingsProperty->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($settingsProperty);
         $settingsProperty->setValue($this->mod, $settings);
 
         // Mock input for GET/POST parameters

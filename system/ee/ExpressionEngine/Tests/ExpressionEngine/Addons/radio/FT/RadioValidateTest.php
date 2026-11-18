@@ -40,9 +40,7 @@ class RadioValidateTest extends RadioTestBase
         $mock = m::mock(\Radio_ft::class)->makePartial();
         $mock->shouldReceive('_get_historic_field_options')->with($data)->andReturn($fieldOptions);
         $mock->shouldReceive('validate')->andReturn(true);
-        @$mock->field_name = $this->mockFieldName;
-        @$mock->field_id = $this->mockFieldId;
-        @$mock->settings = $this->fieldtype->settings;
+        $this->seedFieldtypeIdentity($mock, $this->fieldtype->settings, $this->fieldtype->settings_vars ?? []);
 
         $result = $mock->validate($data);
 
@@ -61,9 +59,7 @@ class RadioValidateTest extends RadioTestBase
         $mock = m::mock(\Radio_ft::class)->makePartial();
         $mock->shouldReceive('_get_historic_field_options')->with($data)->andReturn($fieldOptions);
         $mock->shouldReceive('validate')->andReturn(true);
-        @$mock->field_name = $this->mockFieldName;
-        @$mock->field_id = $this->mockFieldId;
-        @$mock->settings = $this->fieldtype->settings;
+        $this->seedFieldtypeIdentity($mock, $this->fieldtype->settings, $this->fieldtype->settings_vars ?? []);
 
         $result = $mock->validate($data);
 
@@ -82,9 +78,7 @@ class RadioValidateTest extends RadioTestBase
         $mock = m::mock(\Radio_ft::class)->makePartial();
         $mock->shouldReceive('_get_historic_field_options')->with($data)->andReturn($fieldOptions);
         $mock->shouldReceive('validate')->andReturn(true);
-        @$mock->field_name = $this->mockFieldName;
-        @$mock->field_id = $this->mockFieldId;
-        @$mock->settings = $this->fieldtype->settings;
+        $this->seedFieldtypeIdentity($mock, $this->fieldtype->settings, $this->fieldtype->settings_vars ?? []);
 
         $result = $mock->validate($data);
 
@@ -103,9 +97,7 @@ class RadioValidateTest extends RadioTestBase
         $mock = m::mock(\Radio_ft::class)->makePartial();
         $mock->shouldReceive('_get_historic_field_options')->with($data)->andReturn($fieldOptions);
         $mock->shouldReceive('validate')->andReturn(true);
-        @$mock->field_name = $this->mockFieldName;
-        @$mock->field_id = $this->mockFieldId;
-        @$mock->settings = $this->fieldtype->settings;
+        $this->seedFieldtypeIdentity($mock, $this->fieldtype->settings, $this->fieldtype->settings_vars ?? []);
 
         $result = $mock->validate($data);
 
@@ -124,9 +116,7 @@ class RadioValidateTest extends RadioTestBase
         $mock = m::mock(\Radio_ft::class)->makePartial();
         $mock->shouldReceive('_get_historic_field_options')->with($data)->andReturn($fieldOptions);
         $mock->shouldReceive('validate')->andReturn(true);
-        @$mock->field_name = $this->mockFieldName;
-        @$mock->field_id = $this->mockFieldId;
-        @$mock->settings = $this->fieldtype->settings;
+        $this->seedFieldtypeIdentity($mock, $this->fieldtype->settings, $this->fieldtype->settings_vars ?? []);
 
         $result = $mock->validate($data);
 
@@ -145,9 +135,7 @@ class RadioValidateTest extends RadioTestBase
         $mock = m::mock(\Radio_ft::class)->makePartial();
         $mock->shouldReceive('_get_historic_field_options')->with($data)->andReturn($fieldOptions);
         $mock->shouldReceive('validate')->andReturn(true);
-        @$mock->field_name = $this->mockFieldName;
-        @$mock->field_id = $this->mockFieldId;
-        @$mock->settings = $this->fieldtype->settings;
+        $this->seedFieldtypeIdentity($mock, $this->fieldtype->settings, $this->fieldtype->settings_vars ?? []);
 
         $result = $mock->validate($data);
 
@@ -169,9 +157,7 @@ class RadioValidateTest extends RadioTestBase
         $mock = m::mock(\Radio_ft::class)->makePartial();
         $mock->shouldReceive('_get_historic_field_options')->with($data)->andReturn($fieldOptions);
         $mock->shouldReceive('validate')->andReturn(true);
-        @$mock->field_name = $this->mockFieldName;
-        @$mock->field_id = $this->mockFieldId;
-        @$mock->settings = $this->fieldtype->settings;
+        $this->seedFieldtypeIdentity($mock, $this->fieldtype->settings, $this->fieldtype->settings_vars ?? []);
 
         $result = $mock->validate($data);
 
@@ -191,9 +177,7 @@ class RadioValidateTest extends RadioTestBase
         $mock->shouldReceive('_get_historic_field_options')->with($data)->andReturn($fieldOptions);
         $mock->shouldReceive('validate')->andReturn(true);
         $mock->shouldReceive('get_setting')->with('filter_url', null)->andReturn('http://example.com/filter');
-        @$mock->field_name = $this->mockFieldName;
-        @$mock->field_id = $this->mockFieldId;
-        @$mock->settings = $this->fieldtype->settings;
+        $this->seedFieldtypeIdentity($mock, $this->fieldtype->settings, $this->fieldtype->settings_vars ?? []);
 
         $result = $mock->validate($data);
 
@@ -215,9 +199,7 @@ class RadioValidateTest extends RadioTestBase
         $mock = m::mock(\Radio_ft::class)->makePartial();
         $mock->shouldReceive('_get_historic_field_options')->with($data)->andReturn($fieldOptions);
         $mock->shouldReceive('validate')->andReturn(true);
-        @$mock->field_name = $this->mockFieldName;
-        @$mock->field_id = $this->mockFieldId;
-        @$mock->settings = $this->fieldtype->settings;
+        $this->seedFieldtypeIdentity($mock, $this->fieldtype->settings, $this->fieldtype->settings_vars ?? []);
 
         $result = $mock->validate($data);
 
@@ -241,9 +223,7 @@ class RadioValidateTest extends RadioTestBase
         $mock = m::mock(\Radio_ft::class)->makePartial();
         $mock->shouldReceive('_get_historic_field_options')->with($data)->andReturn($fieldOptions);
         $mock->shouldReceive('validate')->andReturn(true);
-        @$mock->field_name = $this->mockFieldName;
-        @$mock->field_id = $this->mockFieldId;
-        @$mock->settings = $this->fieldtype->settings;
+        $this->seedFieldtypeIdentity($mock, $this->fieldtype->settings, $this->fieldtype->settings_vars ?? []);
 
         $result = $mock->validate($data);
 
@@ -266,9 +246,7 @@ class RadioValidateTest extends RadioTestBase
         $mock = m::mock(\Radio_ft::class)->makePartial();
         $mock->shouldReceive('_get_historic_field_options')->with($data)->andReturn($fieldOptions);
         $mock->shouldReceive('validate')->andReturn(true);
-        @$mock->field_name = $this->mockFieldName;
-        @$mock->field_id = $this->mockFieldId;
-        @$mock->settings = $this->fieldtype->settings;
+        $this->seedFieldtypeIdentity($mock, $this->fieldtype->settings, $this->fieldtype->settings_vars ?? []);
 
         $result = $mock->validate($data);
 
@@ -292,9 +270,7 @@ class RadioValidateTest extends RadioTestBase
         $mock = m::mock(\Radio_ft::class)->makePartial();
         $mock->shouldReceive('_get_historic_field_options')->with($data)->andReturn($fieldOptions);
         $mock->shouldReceive('validate')->andReturn(true);
-        @$mock->field_name = $this->mockFieldName;
-        @$mock->field_id = $this->mockFieldId;
-        @$mock->settings = $this->fieldtype->settings;
+        $this->seedFieldtypeIdentity($mock, $this->fieldtype->settings, $this->fieldtype->settings_vars ?? []);
 
         $result = $mock->validate($data);
 
@@ -316,9 +292,7 @@ class RadioValidateTest extends RadioTestBase
         $mock = m::mock(\Radio_ft::class)->makePartial();
         $mock->shouldReceive('_get_historic_field_options')->with($data)->andReturn($fieldOptions);
         $mock->shouldReceive('validate')->andReturn(true);
-        @$mock->field_name = $this->mockFieldName;
-        @$mock->field_id = $this->mockFieldId;
-        @$mock->settings = $this->fieldtype->settings;
+        $this->seedFieldtypeIdentity($mock, $this->fieldtype->settings, $this->fieldtype->settings_vars ?? []);
 
         $result = $mock->validate($data);
 
@@ -337,9 +311,7 @@ class RadioValidateTest extends RadioTestBase
         $mock = m::mock(\Radio_ft::class)->makePartial();
         $mock->shouldReceive('_get_historic_field_options')->with($data)->andReturn($fieldOptions);
         $mock->shouldReceive('validate')->andReturn(true);
-        @$mock->field_name = $this->mockFieldName;
-        @$mock->field_id = $this->mockFieldId;
-        @$mock->settings = $this->fieldtype->settings;
+        $this->seedFieldtypeIdentity($mock, $this->fieldtype->settings, $this->fieldtype->settings_vars ?? []);
 
         $result = $mock->validate($data);
 
@@ -363,9 +335,7 @@ class RadioValidateTest extends RadioTestBase
         $mock = m::mock(\Radio_ft::class)->makePartial();
         $mock->shouldReceive('_get_historic_field_options')->with($data)->andReturn($fieldOptions);
         $mock->shouldReceive('validate')->andReturn(true);
-        @$mock->field_name = $this->mockFieldName;
-        @$mock->field_id = $this->mockFieldId;
-        @$mock->settings = $this->fieldtype->settings;
+        $this->seedFieldtypeIdentity($mock, $this->fieldtype->settings, $this->fieldtype->settings_vars ?? []);
 
         $result = $mock->validate($data);
 

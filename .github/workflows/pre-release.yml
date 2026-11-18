@@ -83,7 +83,7 @@ jobs:
           APP_REPO_PATH: ${{ github.workspace }}
           REDACTORX_REPO_PATH: ${{ github.workspace }}/__redactorx
         run: |
-          gulp app --local --nogit --head --skip-lint --skip-pro --version=${{ steps.build_json.outputs.BUILD_VERSION }}-dp.${{ env.dp_ver }}
+          ./node_modules/.bin/gulp app --local --nogit --head --skip-lint --skip-pro --version=${{ steps.build_json.outputs.BUILD_VERSION }}-dp.${{ env.dp_ver }}
 
       - name: Archive Build files
         uses: actions/upload-artifact@v4
@@ -170,13 +170,15 @@ jobs:
                   php-version: ${{ matrix.php }}
                   extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
                   coverage: none
-                  ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
+                  ini-values: >-
+                      error_reporting=E_ALL, log_errors=On, error_log=/home/runner/php_errors.log, memory_limit=128M
 
             - name: Copy config.php
               run: |
                 rm -f system/user/config/config.php
                 cp -f tests/cypress/support/config/config.php system/user/config/config.php
-                rpl -v '${{ needs.build.outputs.version }}' '7.0.0' build-tools/build.json
+                jq '.tag = "7.0.0"' build-tools/build.json > build-tools/build.json.tmp
+                mv build-tools/build.json.tmp build-tools/build.json
 
             - name: Remove installer
               run: |
@@ -231,7 +233,9 @@ jobs:
 
             - name: Archive server errors
               uses: actions/upload-artifact@v4
-              if: failure()
+              if: always()
               with:
                 name: updater.error.log
-                path: /home/runner/php_errors.log
+                path: |
+                    /home/runner/php_errors.log
+                    system/user/logs/

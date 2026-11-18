@@ -42,6 +42,11 @@ class Login extends CP_Controller
         ee()->functions->redirect(ee('CP/URL')->make('login', $return)->compile());
     }
 
+    /**
+     * Verify the member's MFA code and remember it when configured.
+     *
+     * @return void
+     */
     public function mfa()
     {
         if (ee()->session->userdata('member_id') == 0) {
@@ -107,6 +112,7 @@ class Login extends CP_Controller
                     $session->mfa_flag = 'skip';
                     $session->save();
                 }
+                ee()->mfa_session->create(ee()->session->getMember(), ee()->session->userdata('session_id'));
                 $this->functions->redirect($return_path);
             }
         }
@@ -707,6 +713,7 @@ class Login extends CP_Controller
     public function logout()
     {
         if ($this->session->userdata('group_id') == 3) {
+            $this->session->destroy();
             $this->functions->redirect(ee('CP/URL', 'login')->compile());
         }
 

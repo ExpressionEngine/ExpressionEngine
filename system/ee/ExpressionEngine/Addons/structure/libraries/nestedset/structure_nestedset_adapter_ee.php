@@ -1,5 +1,7 @@
 <?php
 
+require_once PATH_ADDONS . 'structure/helper.php';
+
 class Structure_Nestedset_Adapter_Ee
 {
     private $dbh;
@@ -55,6 +57,11 @@ class Structure_Nestedset_Adapter_Ee
 
     public function getNodeById($id)
     {
+        $id = Structure_Helper::normalize_entry_id($id, true);
+        if ($id === null) {
+            return false;
+        }
+
         $table = $this->table;
         $idCol = $this->idCol;
 
@@ -72,12 +79,12 @@ class Structure_Nestedset_Adapter_Ee
                 FROM $table AS node
                 INNER JOIN $table AS parent
                     ON node.lft BETWEEN parent.lft AND parent.rgt
-                WHERE node.$idCol = '$id'
-                AND parent.site_id IN (0, $this->site_id)
+                WHERE node.$idCol = ?
+                AND parent.site_id IN (0, ?)
                 GROUP BY node.lft
                 LIMIT 1";
 
-        $result = ee()->db->query($sql);
+        $result = ee()->db->query($sql, [$id, (int) $this->site_id]);
 
         if ($result->num_rows == 0) {
             return false;

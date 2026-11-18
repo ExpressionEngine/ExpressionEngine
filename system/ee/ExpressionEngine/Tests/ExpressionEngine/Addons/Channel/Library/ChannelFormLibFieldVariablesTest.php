@@ -4,6 +4,31 @@ require_once __DIR__ . '/ChannelFormLibTestBase.php';
 
 class ChannelFormLibFieldVariablesTest extends ChannelFormLibTestBase
 {
+    public function testCustomFieldsLoopSwapsIntegerSingleVariablesButNotIntegerConditionals()
+    {
+        $customFieldVariables = [
+            'field_id' => 9,
+            'field_name' => 'title_ar',
+            'field_data' => 300,
+            'rows' => 8,
+            'maxlength' => 256,
+            'field_type' => 'text',
+            'textinput' => 1,
+        ];
+
+        $reflection = new ReflectionClass($this->channelFormLib);
+        $method = $reflection->getMethod('_swap_custom_field_variables');
+        TestReflectionHelper::makeMethodAccessible($method);
+
+        $result = $method->invoke(
+            $this->channelFormLib,
+            $customFieldVariables,
+            '[{field_id} : {field_name} : {field_data} : {rows} : {maxlength} : {textinput}]'
+        );
+
+        $this->assertSame('[9 : title_ar : 300 : 8 : 256 : {textinput}]', $result);
+    }
+
     public function testBuildCustomFieldVariablesReturnsEmptyArrayForNoFields()
     {
         // Test with no custom fields
@@ -107,10 +132,10 @@ class ChannelFormLibFieldVariablesTest extends ChannelFormLibTestBase
 
         // Setup mock entry with selected value
         $mockEntry = $this->createMockEntry();
-        @$mockEntry->{'field_id_2'} = 'Option 2';
+        $mockEntry->{'field_id_2'} = 'Option 2';
 
         // Create a custom mock entry class that overrides getDisplay
-        $customEntry = new class($mockEntry, $mockField) {
+        $customEntry = new class($mockEntry, $mockField) extends \stdClass {
             private $originalEntry;
             private $mockField;
 
@@ -119,7 +144,7 @@ class ChannelFormLibFieldVariablesTest extends ChannelFormLibTestBase
                 $this->mockField = $field;
                 // Copy all properties from original entry
                 foreach (get_object_vars($entry) as $key => $value) {
-                    @$this->$key = $value;
+                    $this->$key = $value;
                 }
             }
 
@@ -237,10 +262,10 @@ class ChannelFormLibFieldVariablesTest extends ChannelFormLibTestBase
 
         // Setup mock entry
         $mockEntry = $this->createMockEntry();
-        @$mockEntry->{'field_id_3'} = 'value1';
+        $mockEntry->{'field_id_3'} = 'value1';
 
         // Create a custom mock entry class that overrides getDisplay
-        $customEntry = new class($mockEntry, $mockField) {
+        $customEntry = new class($mockEntry, $mockField) extends \stdClass {
             private $originalEntry;
             private $mockField;
 
@@ -249,7 +274,7 @@ class ChannelFormLibFieldVariablesTest extends ChannelFormLibTestBase
                 $this->mockField = $field;
                 // Copy all properties from original entry
                 foreach (get_object_vars($entry) as $key => $value) {
-                    @$this->$key = $value;
+                    $this->$key = $value;
                 }
             }
 
@@ -399,7 +424,7 @@ class ChannelFormLibFieldVariablesTest extends ChannelFormLibTestBase
         $mockEntry = $this->createMockEntry();
 
         // Create a custom mock entry class that overrides getDisplay
-        $customEntry = new class($mockEntry, $mockField) {
+        $customEntry = new class($mockEntry, $mockField) extends \stdClass {
             private $originalEntry;
             private $mockField;
 
@@ -408,7 +433,7 @@ class ChannelFormLibFieldVariablesTest extends ChannelFormLibTestBase
                 $this->mockField = $field;
                 // Copy all properties from original entry
                 foreach (get_object_vars($entry) as $key => $value) {
-                    @$this->$key = $value;
+                    $this->$key = $value;
                 }
             }
 
@@ -520,10 +545,10 @@ class ChannelFormLibFieldVariablesTest extends ChannelFormLibTestBase
 
         // Setup mock entry with date data
         $mockEntry = $this->createMockEntry();
-        @$mockEntry->{'field_id_5'} = 1609459200; // 2021-01-01 timestamp
+        $mockEntry->{'field_id_5'} = 1609459200; // 2021-01-01 timestamp
 
         // Create a custom mock entry class that overrides getDisplay
-        $customEntry = new class($mockEntry, $mockField) {
+        $customEntry = new class($mockEntry, $mockField) extends \stdClass {
             private $originalEntry;
             private $mockField;
 
@@ -532,7 +557,7 @@ class ChannelFormLibFieldVariablesTest extends ChannelFormLibTestBase
                 $this->mockField = $field;
                 // Copy all properties from original entry
                 foreach (get_object_vars($entry) as $key => $value) {
-                    @$this->$key = $value;
+                    $this->$key = $value;
                 }
             }
 
@@ -648,7 +673,7 @@ class ChannelFormLibFieldVariablesTest extends ChannelFormLibTestBase
 
         // Create a custom mock entry class that overrides getDisplay
         $fields = [$textField, $selectField];
-        $customEntry = new class($mockEntry, $fields) {
+        $customEntry = new class($mockEntry, $fields) extends \stdClass {
             private $originalEntry;
             private $mockFields;
 
@@ -657,7 +682,7 @@ class ChannelFormLibFieldVariablesTest extends ChannelFormLibTestBase
                 $this->mockFields = $fields;
                 // Copy all properties from original entry
                 foreach (get_object_vars($entry) as $key => $value) {
-                    @$this->$key = $value;
+                    $this->$key = $value;
                 }
             }
 
@@ -834,7 +859,7 @@ class ChannelFormLibFieldVariablesTest extends ChannelFormLibTestBase
 
         // Create a custom mock entry class that overrides getDisplay
         $fieldArray = array_values($fields);
-        $customEntry = new class($mockEntry, $fieldArray) {
+        $customEntry = new class($mockEntry, $fieldArray) extends \stdClass {
             private $originalEntry;
             private $mockFields;
 
@@ -843,7 +868,7 @@ class ChannelFormLibFieldVariablesTest extends ChannelFormLibTestBase
                 $this->mockFields = $fields;
                 // Copy all properties from original entry
                 foreach (get_object_vars($entry) as $key => $value) {
-                    @$this->$key = $value;
+                    $this->$key = $value;
                 }
             }
 

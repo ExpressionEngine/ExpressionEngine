@@ -197,8 +197,8 @@ class SimplePie_IRI
             $return = null;
         }
 
-        if ($return === null && isset($this->normalization[$this->scheme][$name])) {
-            return $this->normalization[$this->scheme][$name];
+        if ($return === null && isset($this->normalization[$this->scheme ?? ''][$name])) {
+            return $this->normalization[$this->scheme ?? ''][$name];
         } else {
             return $return;
         }
@@ -648,22 +648,22 @@ class SimplePie_IRI
 
     protected function scheme_normalization()
     {
-        if (isset($this->normalization[$this->scheme]['iuserinfo']) && $this->iuserinfo === $this->normalization[$this->scheme]['iuserinfo']) {
+        if (isset($this->normalization[$this->scheme ?? '']['iuserinfo']) && $this->iuserinfo === $this->normalization[$this->scheme ?? '']['iuserinfo']) {
             $this->iuserinfo = null;
         }
-        if (isset($this->normalization[$this->scheme]['ihost']) && $this->ihost === $this->normalization[$this->scheme]['ihost']) {
+        if (isset($this->normalization[$this->scheme ?? '']['ihost']) && $this->ihost === $this->normalization[$this->scheme ?? '']['ihost']) {
             $this->ihost = null;
         }
-        if (isset($this->normalization[$this->scheme]['port']) && $this->port === $this->normalization[$this->scheme]['port']) {
+        if (isset($this->normalization[$this->scheme ?? '']['port']) && $this->port === $this->normalization[$this->scheme ?? '']['port']) {
             $this->port = null;
         }
-        if (isset($this->normalization[$this->scheme]['ipath']) && $this->ipath === $this->normalization[$this->scheme]['ipath']) {
+        if (isset($this->normalization[$this->scheme ?? '']['ipath']) && $this->ipath === $this->normalization[$this->scheme ?? '']['ipath']) {
             $this->ipath = '';
         }
-        if (isset($this->normalization[$this->scheme]['iquery']) && $this->iquery === $this->normalization[$this->scheme]['iquery']) {
+        if (isset($this->normalization[$this->scheme ?? '']['iquery']) && $this->iquery === $this->normalization[$this->scheme ?? '']['iquery']) {
             $this->iquery = null;
         }
-        if (isset($this->normalization[$this->scheme]['ifragment']) && $this->ifragment === $this->normalization[$this->scheme]['ifragment']) {
+        if (isset($this->normalization[$this->scheme ?? '']['ifragment']) && $this->ifragment === $this->normalization[$this->scheme ?? '']['ifragment']) {
             $this->ifragment = null;
         }
     }
@@ -1046,8 +1046,8 @@ class SimplePie_IRI
         }
         if ($this->ipath !== '') {
             $iri .= $this->ipath;
-        } elseif (!empty($this->normalization[$this->scheme]['ipath']) && $iauthority !== null && $iauthority !== '') {
-            $iri .= $this->normalization[$this->scheme]['ipath'];
+        } elseif (!empty($this->normalization[$this->scheme ?? '']['ipath']) && $iauthority !== null && $iauthority !== '') {
+            $iri .= $this->normalization[$this->scheme ?? '']['ipath'];
         }
         if ($this->iquery !== null) {
             $iri .= '?' . $this->iquery;

@@ -591,7 +591,7 @@ abstract class ChannelFormLibTestBase extends TestCase
 
     protected function createMockChannel($properties = [])
     {
-        $channel = USE_ALLOW_DYNAMIC_PROPERTIES ? new class {
+        $channel = USE_ALLOW_DYNAMIC_PROPERTIES ? new class extends \stdClass {
             public $channel_id = 1;
             public $channel_name = 'test_channel';
             public $default_entry_title = 'Test Entry';
@@ -622,7 +622,7 @@ abstract class ChannelFormLibTestBase extends TestCase
             public function getId() {
                 return $this->channel_id;
             }
-        } : new class {
+        } : new class extends \stdClass {
             public $channel_id = 1;
             public $channel_name = 'test_channel';
             public $default_entry_title = 'Test Entry';
@@ -660,7 +660,7 @@ abstract class ChannelFormLibTestBase extends TestCase
 
     protected function createMockEntry($properties = [])
     {
-        $entry = USE_ALLOW_DYNAMIC_PROPERTIES ? new class {
+        $entry = USE_ALLOW_DYNAMIC_PROPERTIES ? new class extends \stdClass {
             public $entry_id = 1;
             public $channel_id = 1;
             public $author_id = 1;
@@ -726,7 +726,7 @@ abstract class ChannelFormLibTestBase extends TestCase
                     }
                 };
             }
-        } : new class {
+        } : new class extends \stdClass {
             public $entry_id = 1;
             public $channel_id = 1;
             public $author_id = 1;
@@ -799,13 +799,16 @@ abstract class ChannelFormLibTestBase extends TestCase
 
     protected function createMockMember($properties = [])
     {
-        $member = USE_ALLOW_DYNAMIC_PROPERTIES ? new class {
+        $member = USE_ALLOW_DYNAMIC_PROPERTIES ? new class extends \stdClass {
             public $member_id = 1;
             public $PrimaryRole = null;
+            public $assignedChannels;
+            public $memberFields;
+            public $username = '';
 
             public function __construct($properties = []) {
                 foreach ($properties as $key => $value) {
-                    @$this->$key = $value;
+                    $this->$key = $value;
                 }
                 if (!$this->PrimaryRole) {
                     $this->PrimaryRole = USE_ALLOW_DYNAMIC_PROPERTIES ? new class {
@@ -840,13 +843,16 @@ abstract class ChannelFormLibTestBase extends TestCase
                     }
                 };
             }
-        } : new class {
+        } : new class extends \stdClass {
             public $member_id = 1;
             public $PrimaryRole = null;
+            public $assignedChannels;
+            public $memberFields;
+            public $username = '';
 
             public function __construct($properties = []) {
                 foreach ($properties as $key => $value) {
-                    @$this->$key = $value;
+                    $this->$key = $value;
                 }
                 if (!$this->PrimaryRole) {
                     $this->PrimaryRole = new class {

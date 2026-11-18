@@ -1901,7 +1901,7 @@ class JumpMenu extends AbstractJumpMenu
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'utilities/query',
-                'permission' => 'can_access_sql_manager'
+                'permission' => 'is_super_admin'
             ),
             'systemUtilitiesContentReindex' => array(
                 'icon' => 'fa-hammer',
@@ -1933,7 +1933,7 @@ class JumpMenu extends AbstractJumpMenu
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'utilities/sandr',
-                'permission' => 'can_access_data'
+                'permission' => 'is_super_admin'
             ),
 
             //misc

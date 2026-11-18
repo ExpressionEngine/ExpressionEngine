@@ -197,7 +197,7 @@ class RelationshipParserSupportClassesTest extends TestCase
     {
         $finder = new \VariableFinder('foo');
         $method = new \ReflectionMethod(\VariableFinder::class, 'lineToCharacterOffsets');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($method);
 
         $variables = [
             [['foo'], 2, 'conditional'],

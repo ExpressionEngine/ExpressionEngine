@@ -82,7 +82,6 @@ class Alert
      *  deferring or immediately displaying alerts
      * @param View $view A View object for rendering this alert
      * @param EE_Lang $lang A EE_Lang object for loading language
-     * @return self This returns a reference to itself
      */
     public function __construct($type, $name, $collection, View $view, EE_Lang $lang)
     {
@@ -91,8 +90,6 @@ class Alert
         $this->collection = $collection;
         $this->view = $view;
         $this->lang = $lang;
-
-        return $this;
     }
 
     /**

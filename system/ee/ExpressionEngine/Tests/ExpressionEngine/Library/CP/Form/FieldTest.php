@@ -318,6 +318,19 @@ class FieldTest extends TestCase
     }
 
     /**
+     * Serialize a group toggle into the shared form value map.
+     *
+     * @return void
+     */
+    public function testGroupToggleIsSerializedForSharedForm(): void
+    {
+        $field = $this->_getField();
+        $field->setGroupToggle('test-group-toggle');
+
+        $this->assertSame(['y' => 'test-group-toggle'], $field->toArray()['group_toggle']);
+    }
+
+    /**
      * @depends testSetGroupToggleReturnInstance
      * @param Field $field
      * @return void

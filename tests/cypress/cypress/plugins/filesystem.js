@@ -58,7 +58,15 @@ class Filesystem {
     }
 
     info(file) {
-        return fs.statSync(file);
+        const stats = fs.statSync(file);
+
+        return {
+            ...stats,
+            atime: stats.atime.toISOString(),
+            mtime: stats.mtime.toISOString(),
+            ctime: stats.ctime.toISOString(),
+            birthtime: stats.birthtime.toISOString()
+        };
     }
 
     exists(file) {

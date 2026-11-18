@@ -104,6 +104,8 @@ abstract class AbstractPublish extends CP_Controller
             'lang.extra_title' => lang('extra_title'),
             'lang.edit_element' => lang('edit_element'),
             'lang.remove_btn' => lang('remove_btn'),
+            'lang.update_url_title' => lang('update_url_title'),
+            'lang.update_structure_url' => lang('update_structure_url'),
             'publish.autosave.interval' => (int) $autosave_interval_seconds,
             'publish.autosave.URL' => ee('CP/URL')->make('publish/autosave/' . $channel_id . '/' . $entry_id)->compile(),
             'publish.channel_title' => ee('Format')->make('Text', $entry->Channel->channel_title)
@@ -385,6 +387,8 @@ abstract class AbstractPublish extends CP_Controller
 
         if (defined('CLONING_MODE') && CLONING_MODE === true && $this->entryCloningEnabled($entry)) {
             $entry->setId(null);
+            // Clone is a new entry: stamp creator IP like Publish::create()
+            $entry->ip_address = ee()->session->userdata['ip_address'] ?: ee()->input->ip_address();
             $word_separator = ee()->config->item('word_separator') != "dash" ? '_' : '-';
             while (true !== $entry->validateUniqueUrlTitle('url_title', $_POST['url_title'], ['channel_id'], null)) {
                 $_POST['url_title'] = 'copy' . $word_separator . $_POST['url_title'];

@@ -126,6 +126,8 @@ $lang = array(
 
     'edit_entry_with_title' => 'Edit Entry: %s',
 
+    'edit_entry_with_styled_title' => 'Edit Entry: <span>[%s]</span>',
+
     'entries' => 'Entries',
 
     'entries_deleted_desc' => 'The following entries were deleted',
@@ -782,6 +784,10 @@ $lang = array(
     'upload_file' => 'Upload File',
 
     'upload_to' => 'Upload to %s',
+
+    'update_url_title' => 'Update URL title',
+
+    'update_structure_url' => 'Update Structure URL',
 
     'url' => 'URL',
 

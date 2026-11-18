@@ -97,6 +97,7 @@ class RelationshipMixinTest extends TestCase
 
 class RelationshipMixinScopeStub
 {
+    public $Author;
     private $associations = array();
 
     public function registerAssociation($name, $association)

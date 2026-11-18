@@ -56,7 +56,7 @@ abstract class MultiSelectTestBase extends OptionFieldtypeTestBase
     protected function createMockFieldtype()
     {
         // Create mock and mark display settings as configured BEFORE calling base class methods
-        $fieldtype = m::mock()->makePartial();
+        $fieldtype = m::mock(\stdClass::class)->makePartial();
 
         // Mark as configured to prevent base class from setting up display_settings
         $this->markDisplaySettingsConfigured($fieldtype);

@@ -42,7 +42,7 @@ class Diff
 
     public function add($model)
     {
-        $hash = spl_object_hash($model);
+        $hash = spl_object_id($model);
 
         if (! $this->attemptFastUndoRemove($hash)) {
             $this->added[$hash] = $model;
@@ -51,7 +51,7 @@ class Diff
 
     public function remove($model)
     {
-        $hash = spl_object_hash($model);
+        $hash = spl_object_id($model);
 
         if (! $this->attemptFastUndoAdd($hash)) {
             $this->removed[$hash] = $model;

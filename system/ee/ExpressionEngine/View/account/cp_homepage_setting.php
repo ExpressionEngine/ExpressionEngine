@@ -48,5 +48,5 @@
 </div>
 
 <div class="add-mrg-top">
-	<input type="text" name="cp_homepage_custom" value="<?=$member->cp_homepage_custom?>">
+	<?=form_input('cp_homepage_custom', $member->cp_homepage_custom)?>
 </div>

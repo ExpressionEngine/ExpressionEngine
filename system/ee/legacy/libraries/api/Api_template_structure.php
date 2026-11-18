@@ -240,6 +240,10 @@ class Api_template_structure extends Api
             $template_type = reset($template_type);
         }
 
+        if ($template_type === null || $template_type === false || $template_type === '') {
+            return (!empty($engine)) ? $engine : '';
+        }
+
         if (isset($this->file_extensions[$template_type])) {
             return implode('', array_filter([$this->file_extensions[$template_type], $engine]));
         } else {

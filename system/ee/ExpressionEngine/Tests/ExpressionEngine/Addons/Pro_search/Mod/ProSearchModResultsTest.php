@@ -10,19 +10,19 @@ class ProSearchModResultsTest extends ProSearchTestBase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Mock App container for ee('App')->get()
         $appInfo = $this->getMockBuilder('stdClass')
             ->addMethods(['getVersion'])
             ->getMock();
         $appInfo->method('getVersion')->willReturn('1.0.0');
-        
+
         $app = $this->getMockBuilder('stdClass')
             ->addMethods(['get'])
             ->getMock();
         $app->method('get')->willReturn($appInfo);
         ee()->setMock('App', $app);
-        
+
         // Mock necessary dependencies
         $params = $this->getMockBuilder('stdClass')
             ->addMethods(['set', 'get', 'valid_query', 'query_given', 'combine', 'set_defaults', 'apply', 'get_vars', 'site_ids', 'explode', 'merge', 'implode', 'overwrite'])
@@ -41,24 +41,25 @@ class ProSearchModResultsTest extends ProSearchTestBase
         $params->method('implode')->willReturn('');
         $params->method('overwrite')->willReturn(null);
         ee()->setMock('pro_search_params', $params);
-        
+
         // Mock Filters
         $filters = $this->getMockBuilder('stdClass')
-            ->addMethods(['filter', 'entry_ids', 'set_entry_ids', 'exclude', 'fixed_order'])
+            ->addMethods(['filter', 'entry_ids', 'set_entry_ids', 'exclude', 'fixed_order', 'names'])
             ->getMock();
         $filters->method('filter')->willReturn(null);
         $filters->method('entry_ids')->willReturn([1, 2, 3]);
         $filters->method('exclude')->willReturn(false);
         $filters->method('fixed_order')->willReturn(false);
+        $filters->method('names')->willReturn([]);
         ee()->setMock('pro_search_filters', $filters);
-        
+
         // Mock Log Model
         $logModel = $this->getMockBuilder('stdClass')
             ->addMethods(['add_num_results', 'insert'])
             ->getMock();
         $logModel->key = 'pro_search_log_id';
         ee()->setMock('pro_search_log_model', $logModel);
-        
+
         // Mock Session flashdata
         $session = ee()->session;
         if (method_exists($session, 'flashdata')) {
@@ -66,7 +67,7 @@ class ProSearchModResultsTest extends ProSearchTestBase
         } else {
             $session->flashdata = function($key) { return null; };
         }
-        
+
         // Mock Functions
         $functions = $this->getMockBuilder('stdClass')
             ->addMethods(['fetch_action_id', 'form_declaration', 'create_url', 'redirect'])
@@ -75,7 +76,7 @@ class ProSearchModResultsTest extends ProSearchTestBase
         $functions->method('form_declaration')->willReturn('<form>');
         $functions->method('create_url')->willReturn('http://example.com');
         ee()->setMock('functions', $functions);
-        
+
         // Mock URI (needed by Channel module) - use test class to avoid dynamic property deprecation
         $uri = $this->getMockBuilder('Uri_test')
             ->onlyMethods(['uri_string'])
@@ -85,7 +86,7 @@ class ProSearchModResultsTest extends ProSearchTestBase
         $uri->page_query_string = '';
         $uri->query_string = '';
         ee()->setMock('uri', $uri);
-        
+
         // Mock Pagination (needed by Channel module) - use test class to avoid dynamic property deprecation
         $pagination = $this->getMockBuilder('stdClass')
             ->addMethods(['create', 'prepare'])
@@ -100,14 +101,14 @@ class ProSearchModResultsTest extends ProSearchTestBase
         $pagination->method('create')->willReturn($paginationObj);
         $pagination->method('prepare')->will($this->returnArgument(0));
         ee()->setMock('pagination', $pagination);
-        
+
         // Mock Legacy API (needed by Channel module)
         $legacyApi = $this->getMockBuilder('stdClass')
             ->addMethods(['instantiate'])
             ->getMock();
         $legacyApi->method('instantiate')->willReturn(null);
         ee()->setMock('legacy_api', $legacyApi);
-        
+
         // Mock API Channel Fields (needed by Channel module)
         $apiChannelFields = $this->getMockBuilder('stdClass')
             ->addMethods(['fetch_custom_channel_fields', 'fetch_custom_member_fields'])
@@ -125,7 +126,7 @@ class ProSearchModResultsTest extends ProSearchTestBase
         $apiChannelFields->method('fetch_custom_member_fields')->willReturn([]);
         $apiChannelFields->custom_member_field_pairs = [];
         ee()->setMock('api_channel_fields', $apiChannelFields);
-        
+
         // Mock Session cache (needed by Channel module)
         $session = ee()->session;
         if (!isset($session->cache)) {
@@ -134,7 +135,7 @@ class ProSearchModResultsTest extends ProSearchTestBase
         if (!isset($session->cache['channel'])) {
             $session->cache['channel'] = [];
         }
-        
+
         // Mock Localize (needed by Channel module)
         $localize = $this->getMockBuilder('stdClass')
             ->addMethods(['set_human_time', 'format_date', 'string_to_timestamp'])
@@ -144,7 +145,7 @@ class ProSearchModResultsTest extends ProSearchTestBase
         $localize->method('format_date')->will($this->returnArgument(0));
         $localize->method('string_to_timestamp')->willReturn(time());
         ee()->setMock('localize', $localize);
-        
+
         // Mock Shortcut Model
         $shortcutModel = $this->getMockBuilder('stdClass')
             ->addMethods(['get_one', 'get_template_attrs'])
@@ -168,13 +169,13 @@ class ProSearchModResultsTest extends ProSearchTestBase
         ee()->TMPL->tagdata = '{title}';
         ee()->TMPL->tagparams = [];
         ee()->TMPL->search_fields = [];
-        
+
         // The Channel module has many dependencies that are complex to mock
         // For now, skip this test as it requires full Channel module setup
         // In a real environment, the Channel module would be properly initialized
         $this->markTestSkipped('Channel module requires extensive mocking - skipping for now');
     }
-    
+
     public function testResultsWithNoQuery()
     {
         // Setup params to return no query - need to recreate the mock to ensure methods work
@@ -200,18 +201,18 @@ class ProSearchModResultsTest extends ProSearchTestBase
         $params->method('implode')->willReturn('');
         $params->method('overwrite')->willReturn(null);
         ee()->setMock('pro_search_params', $params);
-        
+
         // Recreate mod instance so it uses the new params mock
         $this->mod = new Pro_search();
-        
+
         ee()->TMPL->tagdata = '{title}';
         ee()->TMPL->tagparams = ['require_query' => 'yes'];
         ee()->TMPL->search_fields = [];
-        
+
         // This test should return early before Channel module is instantiated
         // because require_query='yes' and query_given=false should trigger no_results
         $result = $this->mod->results();
-        
+
         // Should return no_results when query required but not given
         $this->assertIsString($result);
         // Should be no_results, not parsed content (which would require Channel)
@@ -527,12 +528,13 @@ class ProSearchModResultsTest extends ProSearchTestBase
 
         // Mock filters to return collection-filtered results
         $filters = $this->getMockBuilder('stdClass')
-            ->addMethods(['filter', 'entry_ids', 'set_entry_ids', 'exclude', 'fixed_order'])
+            ->addMethods(['filter', 'entry_ids', 'set_entry_ids', 'exclude', 'fixed_order', 'names'])
             ->getMock();
         $filters->method('filter')->willReturn(null);
         $filters->method('entry_ids')->willReturn([1, 2, 3]); // Filtered results
         $filters->method('exclude')->willReturn(false);
         $filters->method('fixed_order')->willReturn(false);
+        $filters->method('names')->willReturn(['collection']);
         ee()->setMock('pro_search_filters', $filters);
 
         $tmpl = $this->getMockBuilder('stdClass')
@@ -625,12 +627,13 @@ class ProSearchModResultsTest extends ProSearchTestBase
 
         // Mock filters to return empty results
         $filters = $this->getMockBuilder('stdClass')
-            ->addMethods(['filter', 'entry_ids', 'set_entry_ids', 'exclude', 'fixed_order'])
+            ->addMethods(['filter', 'entry_ids', 'set_entry_ids', 'exclude', 'fixed_order', 'names'])
             ->getMock();
         $filters->method('filter')->willReturn(null);
         $filters->method('entry_ids')->willReturn([]); // Empty results
         $filters->method('exclude')->willReturn(false);
         $filters->method('fixed_order')->willReturn(false);
+        $filters->method('names')->willReturn([]);
         ee()->setMock('pro_search_filters', $filters);
 
         $tmpl = $this->getMockBuilder('stdClass')
@@ -679,12 +682,13 @@ class ProSearchModResultsTest extends ProSearchTestBase
 
         // Mock filters to return exclude-only results
         $filters = $this->getMockBuilder('stdClass')
-            ->addMethods(['filter', 'entry_ids', 'set_entry_ids', 'exclude', 'fixed_order'])
+            ->addMethods(['filter', 'entry_ids', 'set_entry_ids', 'exclude', 'fixed_order', 'names'])
             ->getMock();
         $filters->method('filter')->willReturn(null);
         $filters->method('entry_ids')->willReturn(false); // Not an array, so exclude mode
         $filters->method('exclude')->willReturn([5, 6, 7]); // Exclude these IDs
         $filters->method('fixed_order')->willReturn(false);
+        $filters->method('names')->willReturn([]);
         ee()->setMock('pro_search_filters', $filters);
 
         $tmpl = $this->getMockBuilder('stdClass')
@@ -700,4 +704,3 @@ class ProSearchModResultsTest extends ProSearchTestBase
         $this->markTestSkipped('Exclude-only filtering requires Channel module - testing exclude detection instead');
     }
 }
-

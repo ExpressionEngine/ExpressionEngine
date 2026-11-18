@@ -8,6 +8,9 @@ class ChannelLivePreviewTest extends ChannelTestBase
     {
         parent::setUp();
         unset($_SERVER['HTTP_AUTHORIZATION']);
+        unset($_SERVER['REDIRECT_HTTP_AUTHORIZATION']);
+        unset($_SERVER['HTTP_EE_LIVE_PREVIEW_TOKEN']);
+        unset($_SERVER['REDIRECT_HTTP_EE_LIVE_PREVIEW_TOKEN']);
         ee()->session->set_userdata('session_id', 'test-session');
         $this->setDbRows([
             [
@@ -46,10 +49,22 @@ class ChannelLivePreviewTest extends ChannelTestBase
     {
         if (empty($token)) {
             unset($_SERVER['HTTP_AUTHORIZATION']);
+            unset($_SERVER['REDIRECT_HTTP_AUTHORIZATION']);
             return;
         }
 
         $_SERVER['HTTP_AUTHORIZATION'] = 'Bearer ' . $token;
+    }
+
+    private function setPreviewTokenCompatibilityHeader(?string $token): void
+    {
+        if (empty($token)) {
+            unset($_SERVER['HTTP_EE_LIVE_PREVIEW_TOKEN']);
+            unset($_SERVER['REDIRECT_HTTP_EE_LIVE_PREVIEW_TOKEN']);
+            return;
+        }
+
+        $_SERVER['HTTP_EE_LIVE_PREVIEW_TOKEN'] = $token;
     }
 
     public function testNoPreviewDataEarlyExit()
@@ -191,6 +206,47 @@ class ChannelLivePreviewTest extends ChannelTestBase
         $this->setMock('Permission', new class { public function can($k){ return true; } public function isSuperAdmin(){ return false; } });
         ee()->session->set_userdata('member_id', 1);
         $this->setPreviewTokenHeader($this->issuePreviewToken());
+        $this->setMock('config', (function(){ $c = new FakeConfig(); $c->items['cp_url'] = 'http://localhost/admin.php';
+            $c->items['site_id'] = 1; return $c; })());
+
+        $out = $this->channel->live_preview();
+
+        $this->assertTrue($livePreview->called, 'unexpected error: ' . json_encode($output->last));
+        $this->assertSame('PREVIEW', $out);
+    }
+
+    public function testLivePreviewAllowsValidTokenFromCompatibilityHeader()
+    {
+        $_SERVER['HTTP_ORIGIN'] = 'http://localhost';
+        unset($_SERVER['HTTP_REFERER']);
+        $livePreview = new class {
+            public $called = false;
+            public function preview() { $this->called = true; return 'PREVIEW'; }
+            public function hasEntryData(){ return false; }
+        };
+        $this->setMock('LivePreview', $livePreview);
+
+        $this->setMock('input', new class {
+            public function get_post($k){ if ($k === 'entry_id') { return 3; } if ($k === 'channel_id') { return 1; } return null; }
+            public function get($k){ if ($k==='return'){ return rawurlencode(base64_encode('http://localhost/return')); } if ($k==='prefer_system_preview'){ return 'n'; } return null; }
+        });
+        $this->setMock('Request', new class { public function get($k){ return rawurlencode(base64_encode('http://localhost')); } public function isEncrypted(){ return false; } public function method(){ return 'POST'; } });
+        $this->setMock('Model', new class { public function get($m){ return new class { public function filter(){ return $this; } public function all(){ return new class { public function pluck($k){ return ['http://localhost/']; } }; } }; } });
+        $this->setMock('Config', new class { public function getFile(){ return new class { public function get($k){ return []; } }; } });
+        $this->setMock('lang', new class { public function load($k){} public function line($k){ return $k; } });
+        $output = new class {
+            public $last = null;
+            public function show_user_error(...$args){
+                $this->last = $args;
+                return 'ERR';
+            }
+        };
+        $this->setMock('output', $output);
+        $this->setMock('Permission', new class { public function can($k){ return true; } public function isSuperAdmin(){ return false; } });
+        ee()->session->set_userdata('member_id', 1);
+        $token = $this->issuePreviewToken();
+        $this->setPreviewTokenHeader(null);
+        $this->setPreviewTokenCompatibilityHeader($token);
         $this->setMock('config', (function(){ $c = new FakeConfig(); $c->items['cp_url'] = 'http://localhost/admin.php';
             $c->items['site_id'] = 1; return $c; })());
 

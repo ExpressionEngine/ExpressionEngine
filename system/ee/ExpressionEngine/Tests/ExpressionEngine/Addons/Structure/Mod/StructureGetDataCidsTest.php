@@ -32,7 +32,54 @@ class StructureGetDataCidsTest extends StructureTestBase
 		$this->assertSame([], $this->structure->get_data_cids(false));
 		$this->assertSame([], $this->structure->get_data_cids(true));
 	}
-}
 
+	public function testQueriesChannelIdColumnWhenListingsDisabled()
+	{
+		$db = new class extends FakeDb {
+			public $queries = [];
+
+			public function query($sql)
+			{
+				$this->queries[] = $sql;
+
+				return new eeDbResultMock([
+					['entry_id' => 42, 'channel_id' => 8, 'listing_cid' => 99],
+				]);
+			}
+		};
+
+		$this->setMock('db', $db);
+
+		$result = $this->structure->get_data_cids(false);
+
+		$this->assertSame(['42' => 8], array_map('intval', $result));
+		$this->assertSame(1, count($db->queries));
+		$this->assertStringContainsString('SELECT entry_id, channel_id', $db->queries[0]);
+	}
+
+	public function testQueriesListingCidColumnWhenListingsEnabled()
+	{
+		$db = new class extends FakeDb {
+			public $queries = [];
+
+			public function query($sql)
+			{
+				$this->queries[] = $sql;
+
+				return new eeDbResultMock([
+					['entry_id' => 24, 'channel_id' => 8, 'listing_cid' => 11],
+				]);
+			}
+		};
+
+		$this->setMock('db', $db);
+
+		$result = $this->structure->get_data_cids(true);
+
+		$this->assertSame(['24' => 11], array_map('intval', $result));
+		$this->assertSame(1, count($db->queries));
+		$this->assertStringContainsString('SELECT entry_id, listing_cid', $db->queries[0]);
+	}
+}
 
 

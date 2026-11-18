@@ -370,6 +370,106 @@ class Text extends Formatter
     }
 
     /**
+     * Escape text for HTML while allowing basic inline formatting and HTTP/HTTPS links.
+     *
+     * Only validated link destinations are retained. Tags are balanced so they
+     * cannot extend beyond the element containing this text.
+     *
+     * @return self
+     */
+    public function inlineHtml()
+    {
+        $parts = preg_split(
+            '/(<\/?(?:a|b|strong|i|em|u|br)(?=[\s\/>])(?:[^<>"\']++|"[^"]*"|\'[^\']*\')*>)/i',
+            $this->content,
+            -1,
+            PREG_SPLIT_DELIM_CAPTURE
+        );
+
+        if ($parts === false) {
+            $parts = [$this->content];
+        }
+
+        $output = '';
+        $open_tags = [];
+
+        foreach ($parts as $index => $part) {
+            if ($index % 2 === 0) {
+                $output .= htmlentities($part, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+                continue;
+            }
+
+            preg_match('/^<(\/?)([a-z]+)/i', $part, $matches);
+            $tag = strtolower($matches[2]);
+
+            // The CP styles em as an instruction container rather than inline italics.
+            if ($tag === 'em') {
+                $tag = 'i';
+            }
+
+            // Opening a link must also close any existing link to avoid nested anchors.
+            if ($matches[1] === '/' || $tag === 'a') {
+                if (in_array($tag, $open_tags, true)) {
+                    do {
+                        $open_tag = array_pop($open_tags);
+                        $output .= '</' . $open_tag . '>';
+                    } while ($open_tag !== $tag);
+                }
+
+                if ($matches[1] === '/') {
+                    continue;
+                }
+            }
+
+            $output .= $tag === 'a' ? $this->inlineHtmlLink($part) : '<' . $tag . '>';
+
+            if ($tag !== 'br') {
+                $open_tags[] = $tag;
+            }
+        }
+
+        foreach (array_reverse($open_tags) as $tag) {
+            $output .= '</' . $tag . '>';
+        }
+
+        $this->content = $output;
+
+        return $this;
+    }
+
+    /**
+     * Rebuild an inline link using only its validated HTTP/HTTPS destination.
+     *
+     * @param string $tag The opening anchor tag, including untrusted attributes.
+     * @return string The opening anchor tag with a safe href, or no attributes.
+     */
+    private function inlineHtmlLink($tag)
+    {
+        preg_match_all(
+            '/\G\s+([^\s\/=<>"\'`]+)(?:\s*=\s*(?:"([^"]*)"|\'([^\']*)\'|([^\s"\'=<>`]+)))?/',
+            substr($tag, 2, -1),
+            $attributes,
+            PREG_SET_ORDER | PREG_UNMATCHED_AS_NULL
+        );
+
+        foreach ($attributes as $attribute) {
+            if (strtolower($attribute[1]) !== 'href') {
+                continue;
+            }
+
+            $href = html_entity_decode($attribute[2] ?? $attribute[3] ?? $attribute[4] ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+            if (! preg_match('#^https?://#i', $href) || filter_var($href, FILTER_VALIDATE_URL) === false) {
+                return '<a>';
+            }
+
+            return '<a href="' . htmlspecialchars($href, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '">';
+        }
+
+        return '<a>';
+    }
+
+    /**
      * JSON encoding
      *
      * @param  array  $options Options: (bool) double_encode, (bool) enclose_with_quotes, (string) options, pipe-delimited list of PHP JSON bitmask constants

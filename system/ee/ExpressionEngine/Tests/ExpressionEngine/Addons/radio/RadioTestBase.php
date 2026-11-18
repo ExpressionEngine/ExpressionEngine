@@ -22,7 +22,7 @@ abstract class RadioTestBase extends OptionFieldtypeTestBase
      */
     protected function createMockFieldtype()
     {
-        $fieldtype = m::mock()->makePartial()->shouldIgnoreMissing();
+        $fieldtype = m::mock(\stdClass::class)->makePartial()->shouldIgnoreMissing();
 
         // Radio-specific display settings (must be set before common mocks)
         $fieldtype->shouldReceive('display_settings')->withAnyArgs()->andReturn([
@@ -109,7 +109,7 @@ abstract class RadioTestBase extends OptionFieldtypeTestBase
      */
     protected function getMockRadioFieldtypeWithSettings($settings = [])
     {
-        $fieldtype = m::mock()->makePartial()->shouldIgnoreMissing();
+        $fieldtype = m::mock(\stdClass::class)->makePartial()->shouldIgnoreMissing();
 
         // Radio-specific display settings (must be set before common mocks)
         $fieldtype->shouldReceive('display_settings')->andReturn([
@@ -253,7 +253,7 @@ abstract class RadioTestBase extends OptionFieldtypeTestBase
     {
         static $configuredFieldtypes = [];
 
-        $mockId = spl_object_hash($fieldtype);
+        $mockId = spl_object_id($fieldtype);
         return isset($configuredFieldtypes[$mockId]);
     }
 
@@ -265,7 +265,7 @@ abstract class RadioTestBase extends OptionFieldtypeTestBase
     {
         static $configuredFieldtypes = [];
 
-        $mockId = spl_object_hash($fieldtype);
+        $mockId = spl_object_id($fieldtype);
         $configuredFieldtypes[$mockId] = true;
     }
 }

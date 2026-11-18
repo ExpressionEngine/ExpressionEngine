@@ -319,21 +319,23 @@ class Table
                 }
 
                 foreach ($rows as $row) {
+                    // CP Table formatted rows use 'columns' and optional 'attrs' keys only.
+                    // Database tables may also have a column named 'columns' (e.g. file_manager_views).
+                    $is_formatted_row = array_key_exists('columns', $row)
+                        && is_array($row['columns'])
+                        && count(array_diff(array_keys($row), array('attrs', 'columns'))) === 0;
+
                     // Make sure we have the same number of columns in the row
                     // as was set using setColumns
-                    if (array_key_exists('columns', $row)) {
-                        $count = count($row['columns']);
-                    } else {
-                        $count = count($row);
-                    }
+                    $count = $is_formatted_row ? count($row['columns']) : count($row);
                     if ($count != count($this->columns)) {
                         throw new \InvalidArgumentException('Data must have the same number of columns as the set columns.');
                     }
 
                     $attrs = array();
 
-                    if (count(array_diff(array_keys($row), array('attrs', 'columns'))) == 0) {
-                        $attrs = $row['attrs'];
+                    if ($is_formatted_row) {
+                        $attrs = $row['attrs'] ?? array();
                         $row = $row['columns'];
                     }
 

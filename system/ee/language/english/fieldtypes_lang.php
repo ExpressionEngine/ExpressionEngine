@@ -212,6 +212,8 @@ $lang = array(
 
     'file_dnd_no_directories' => 'No upload directories available',
 
+    'file_dnd_no_compatible_directories' => 'The available upload directories do not allow this file type.',
+
     'file_dnd_no_directories_desc' => 'This field is limited to upload directory not available for current member and site.',
 
     'file_dnd_no_directory_permissions' => 'You do not have permission to upload files to any of the available directories.',

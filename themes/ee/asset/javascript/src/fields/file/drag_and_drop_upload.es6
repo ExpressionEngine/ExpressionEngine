@@ -207,6 +207,8 @@ class DragAndDropUpload extends React.Component {
       let xhr = new XMLHttpRequest()
       xhr.open('POST', EE.dragAndDrop.endpoint, true)
       xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+      xhr.setRequestHeader('X-CSRF-TOKEN', EE.CSRF_TOKEN);
+      xhr.setRequestHeader('X-EEXID', EE.CSRF_TOKEN);
 
       xhr.upload.addEventListener('progress', (e) => {
         if ( $('.file-upload-widget').hasClass('open-dd') ) {
@@ -277,7 +279,9 @@ class DragAndDropUpload extends React.Component {
               reject(file)
               break
             default:
-              if (typeof(response.message) !== 'undefined') {
+              if (typeof(response.error) !== 'undefined') {
+                file.error = this.stripTags(response.error);
+              } else if (typeof(response.message) !== 'undefined') {
                 file.error = response.message;
               } else {
                 file.error = EE.lang.file_dnd_unexpected_error;
@@ -588,6 +592,21 @@ class DragAndDropUpload extends React.Component {
       });
     }
 
+    // Existing files remain selectable even if a directory's upload policy changed.
+    let browseDirectoriesForDropdown = uploadDirectoriesForDropdown;
+    if (this.props.contentType == 'image') {
+      let imageTypes = EE.dragAndDrop.imageTypes || ['img'];
+      uploadDirectoriesForDropdown = uploadDirectoriesForDropdown.filter(directory => {
+        let allowedTypes = (EE.dragAndDrop.allowedDirectoryTypes || {})[directory.upload_location_id];
+        return !allowedTypes || allowedTypes.includes('all') || imageTypes.some(type => allowedTypes.includes(type));
+      });
+    }
+
+    if (this.props.allowedDirectory == 'all' && browseDirectoriesForDropdown.length > 0 && uploadDirectoriesForDropdown.length == 0) {
+      heading = EE.lang.file_dnd_no_directories;
+      subheading = EE.lang.file_dnd_no_compatible_directories;
+    }
+
     return (
       <React.Fragment>
         <div className={"file-field" + (this.props.marginTop ? ' mt' : '') + (this.warningsExist() ? ' file-field--warning' : '') + (this.state.error ? ' file-field--invalid' : '')} >
@@ -729,7 +748,7 @@ class DragAndDropUpload extends React.Component {
               keepSelectedState={false}
               title={EE.lang.file_dnd_choose_existing}
               placeholder={EE.lang.file_dnd_filter_directories}
-              items={uploadDirectoriesForDropdown}
+              items={browseDirectoriesForDropdown}
               onSelect={(directory) => this.chooseExisting(directory)}
               rel="modal-file"
               itemClass="m-link"
@@ -739,7 +758,7 @@ class DragAndDropUpload extends React.Component {
               addInput={false}
             />
 
-            <DropDownButton key={EE.lang.file_dnd_upload_new}
+            {uploadDirectoriesForDropdown.length > 0 && <DropDownButton key={EE.lang.file_dnd_upload_new}
               action={true}
               keepSelectedState={false}
               title={EE.lang.file_dnd_upload_new}
@@ -751,7 +770,7 @@ class DragAndDropUpload extends React.Component {
               ignoreChild={false}
               addInput={true}
               allowMultipleFiles={this.props.allowMultipleFiles}
-            />
+            />}
           </div>
         )}
         {this.props.imitationButton && (

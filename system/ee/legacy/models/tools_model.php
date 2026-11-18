@@ -60,7 +60,7 @@ class Tools_model extends CI_Model
         foreach ($query->result() as $row) {
             $prefix = ($display_site) ? $row->site_label . ' - ' : '';
 
-            $fields["field_id_{$row->field_id}"] = $prefix . $row->field_label . ' {' . $row->field_name . '}';
+            $fields["field_id_{$row->field_id}"] = $prefix . $row->field_label . ' {' . $row->field_name . '}' . ' #' . $row->field_id;
         }
 
         $options['channel_fields'] = array('name' => $this->lang->line('channel_fields'), 'choices' => $fields);

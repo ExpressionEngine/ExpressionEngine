@@ -95,11 +95,7 @@ class Pages_mcp
             $titles = $entries->getDictionary('entry_id', 'title');
 
             foreach ($pages[$site_id]['uris'] as $entry_id => $url) {
-                // shouldn't happen, but in case Pages array is out of sync
-                if (! isset($titles[$entry_id])) {
-                    ee()->load->library('logger');
-                    ee()->logger->developer('Pages entry does not exist: ' . (int) $entry_id . '. Contact support@expressionengine.com for assistance.', true, 1209600);
-
+                if ($this->shouldSkipMissingPageEntry($entry_id, $titles)) {
                     continue;
                 }
 
@@ -174,6 +170,23 @@ class Pages_mcp
     }
 
     /**
+     *  Checks for Pages data that references missing entries.
+     *  If we encounter a missing entry create log entry once every 2 weeks
+     */
+    private function shouldSkipMissingPageEntry($entry_id, $titles)
+    {
+        // shouldn't happen, but in case Pages array is out of sync
+        if (isset($titles[$entry_id])) {
+            return false;
+        }
+
+        ee()->load->library('logger');
+        ee()->logger->developer('Pages entry does not exist: ' . (int) $entry_id . '. Contact support@expressionengine.com for assistance.', true, 1209600);
+
+        return true;
+    }
+
+    /**
      *  Constructs a tree data structure from Page URIs
      */
     private function getPagesTree()
@@ -197,7 +210,7 @@ class Pages_mcp
         ksort($lookup);
 
         foreach ($lookup as $uri => $entry_id) {
-            if (empty($uri)) {
+            if (empty($uri) || $this->shouldSkipMissingPageEntry($entry_id, $titles)) {
                 continue;
             }
 

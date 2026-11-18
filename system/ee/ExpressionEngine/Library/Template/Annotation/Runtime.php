@@ -10,6 +10,8 @@
 
 namespace ExpressionEngine\Library\Template\Annotation;
 
+use ExpressionEngine\Library\Compat\ObjectHash;
+
 /**
  * Template Runtime Annotation
  *
@@ -103,7 +105,7 @@ class Runtime
         // We store an object so we can easily return a reference
         // for editing annotation data without creating a new one.
         $obj = (object) $data;
-        $key = spl_object_hash($obj);
+        $key = ObjectHash::get($obj);
 
         $this->store[$key] = $obj;
 

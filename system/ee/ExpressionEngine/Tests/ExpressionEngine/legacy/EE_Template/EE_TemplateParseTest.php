@@ -343,4 +343,377 @@ class EE_TemplateParseTest extends EE_TemplateTestBase
         // The parse method should handle empty strings gracefully
         $this->assertEquals('', $this->template->final_template);
     }
+
+    private function setupParseRuntimeDependencies($errors = [])
+    {
+        $configMock = new class extends \FakeConfig {
+            public function site_url()
+            {
+                return 'https://example.com/';
+            }
+        };
+        $configMock->items = [
+            'smart_static_parsing' => 'y',
+            'site_id' => 1,
+            'site_short_name' => 'default_site',
+            'site_name' => 'Example Site',
+            'site_label' => 'Example Site',
+            'site_url' => 'https://example.com/',
+            'site_description' => 'Description',
+            'site_index' => '',
+            'webmaster_email' => 'admin@example.com',
+            'enable_frontedit' => 'n',
+        ];
+        $configMock->_global_vars = [];
+        ee()->setMock('config', $configMock);
+
+        $sessionMock = new class($errors) {
+            public $userdata = ['role_id' => 3, 'admin_sess' => 0];
+            private $errors;
+            public function __construct($errors)
+            {
+                $this->errors = $errors;
+            }
+
+            public function userdata($key)
+            {
+                return $this->userdata[$key] ?? null;
+            }
+
+            public function flashdata($key = null)
+            {
+                return $this->errors;
+            }
+
+            public function getMember()
+            {
+                return null;
+            }
+        };
+        ee()->setMock('session', $sessionMock);
+
+        $functionsMock = new class {
+            public function fetch_current_uri()
+            {
+                return 'news/article';
+            }
+
+            public function prep_conditionals($template, $vars = [])
+            {
+                return $template;
+            }
+
+            public function insert_action_ids($str)
+            {
+                return $str;
+            }
+        };
+        ee()->setMock('functions', $functionsMock);
+
+        $uriMock = new class {
+            public $uri_string = 'news/article';
+            public function segment($n)
+            {
+                $segments = ['', 'news', 'article', 'detail'];
+                return $segments[$n] ?? '';
+            }
+
+            public function segment_array()
+            {
+                return ['news', 'article', 'detail'];
+            }
+        };
+        ee()->setMock('uri', $uriMock);
+
+        $localizeMock = new class {
+            public $format = ['%Y' => 'Y'];
+            public $now = 1700000000;
+        };
+        ee()->setMock('localize', $localizeMock);
+
+        $modelMock = new class {
+            public function get($model)
+            {
+                return new class {
+                    public function with($relation)
+                    {
+                        return $this;
+                    }
+
+                    public function all()
+                    {
+                        return [(object) ['consent_name' => 'newsletter']];
+                    }
+                };
+            }
+        };
+        ee()->setMock('Model', $modelMock);
+
+        $consentMock = new class {
+            public function hasGranted($name)
+            {
+                return 'granted';
+            }
+
+            public function hasResponded($name)
+            {
+                return 'responded';
+            }
+        };
+        ee()->setMock('Consent', $consentMock);
+
+        $variablesParser = new class {
+            public function parseModifiedVariables($template, $vars = [])
+            {
+                return $template;
+            }
+        };
+        ee()->setMock('Variables/Parser', $variablesParser);
+    }
+
+    public function testParseRuntimeCoversSmartStaticBranch()
+    {
+        $this->setupParseRuntimeDependencies();
+
+        $template = 'Plain static-looking content';
+        $this->template->embed_type = 'webpage';
+        $this->template->template_type = 'webpage';
+
+        $this->template->parse($template, false);
+
+        $this->assertEquals('Plain static-looking content', $this->template->final_template);
+    }
+
+    public function testParseRuntimeCoversExpiredCacheOutputAndPreloadPaths()
+    {
+        $this->setupParseRuntimeDependencies(['error:field' => 'Required']);
+
+        $templateMock = $this->getMockBuilder(\EE_Template::class)
+            ->onlyMethods([
+                'getMemberVariables',
+                'markContext',
+                'remove_ee_comments',
+                'wrapInContextAnnotations',
+                '_find_layout',
+                'parse_variables',
+                'parse_date_variables',
+                'tags',
+                'parse_template_php',
+                'parse_nocache',
+                'advanced_conditionals',
+                'process_layout_template',
+                'process_sub_templates',
+                'write_cache_file',
+                '_cleanup_layout_tags',
+            ])
+            ->getMock();
+
+        $templateMock->method('getMemberVariables')->willReturn(['logged_in' => false]);
+        $templateMock->method('markContext')->willReturn('');
+        $templateMock->method('remove_ee_comments')->willReturnArgument(0);
+        $templateMock->method('wrapInContextAnnotations')->willReturnArgument(0);
+        $templateMock->method('_find_layout')->willReturn(['{layout="layouts/main"}', '{layout=', '"layouts/main"']);
+        $templateMock->method('parse_variables')->willReturnArgument(0);
+        $templateMock->method('parse_date_variables')->willReturnArgument(0);
+        $templateMock->method('tags')->willReturn(null);
+        $templateMock->method('parse_template_php')->willReturnCallback(function ($str) {
+            return $str . '|php';
+        });
+        $templateMock->method('parse_nocache')->willReturnCallback(function ($str) {
+            return $str . '|nocache';
+        });
+        $templateMock->method('advanced_conditionals')->willReturnCallback(function ($str) {
+            return $str . '|advanced';
+        });
+        $templateMock->method('process_layout_template')->willReturnCallback(function ($str) {
+            return $str . '|layout';
+        });
+        $templateMock->method('process_sub_templates')->willReturnCallback(function ($str) {
+            return $str . '|subs';
+        });
+        $templateMock->method('write_cache_file')->willReturn(true);
+        $templateMock->method('_cleanup_layout_tags')->willReturn(null);
+
+        $templateMock->template_type = 'webpage';
+        $templateMock->cache_status = 'EXPIRED';
+        $templateMock->cache_hash = 'abc123';
+        $templateMock->parse_php = true;
+        $templateMock->php_parse_location = 'input';
+        $templateMock->template_name = 'index';
+        $templateMock->group_name = 'news';
+        $templateMock->template_group_id = 1;
+        $templateMock->template_id = 1;
+        $templateMock->template_edit_date = 1700000000;
+        $templateMock->template_route_vars = ['segment:category' => 'news'];
+
+        $template = '{if errors}{errors}{/if} {segment_1:upper} {segment:category} {template_edit_date format="%Y"} {current_time format="%Y"} {variable_time date="yesterday"} {consent:newsletter} {embed:unused} {preload_replace:foo="bar"} {foo} {if condition}';
+
+        $templateMock->parse($template, false);
+
+        $this->assertStringContainsString('|layout|subs', $templateMock->final_template);
+    }
+
+    public function testParseRuntimeCoversCacheCurrentBranch()
+    {
+        $this->setupParseRuntimeDependencies();
+
+        $templateMock = $this->getMockBuilder(\EE_Template::class)
+            ->onlyMethods([
+                'getMemberVariables',
+                'markContext',
+                'remove_ee_comments',
+                'wrapInContextAnnotations',
+                '_find_layout',
+                'parse_nocache',
+                'advanced_conditionals',
+                'process_layout_template',
+                'process_sub_templates',
+                'write_cache_file',
+                '_cleanup_layout_tags',
+            ])
+            ->getMock();
+
+        $templateMock->method('getMemberVariables')->willReturn(['logged_in' => false]);
+        $templateMock->method('markContext')->willReturn('');
+        $templateMock->method('remove_ee_comments')->willReturnArgument(0);
+        $templateMock->method('wrapInContextAnnotations')->willReturnArgument(0);
+        $templateMock->method('_find_layout')->willReturn(null);
+        $templateMock->method('parse_nocache')->willReturnCallback(function ($str) {
+            return $str . '|nocache';
+        });
+        $templateMock->method('advanced_conditionals')->willReturnCallback(function ($str) {
+            return $str . '|advanced';
+        });
+        $templateMock->method('process_layout_template')->willReturnCallback(function ($str) {
+            return $str . '|layout';
+        });
+        $templateMock->method('process_sub_templates')->willReturnCallback(function ($str) {
+            return $str . '|subs';
+        });
+        $templateMock->method('_cleanup_layout_tags')->willReturn(null);
+
+        $templateMock->template_type = 'webpage';
+        $templateMock->cache_status = 'CURRENT';
+        $templateMock->template_name = 'index';
+        $templateMock->group_name = 'news';
+        $templateMock->template_group_id = 1;
+        $templateMock->template_id = 1;
+
+        $template = '{if condition}cached{/if}';
+        $templateMock->parse($template, false);
+
+        $this->assertStringContainsString('|layout|subs', $templateMock->final_template);
+    }
+
+    public function testParseRuntimeCoversEmbedVariablesEmptyErrorsCeaseAndOutputPhp()
+    {
+        $this->setupParseRuntimeDependencies([]);
+
+        $templateMock = $this->getMockBuilder(\EE_Template::class)
+            ->onlyMethods([
+                'getMemberVariables',
+                'markContext',
+                'remove_ee_comments',
+                'wrapInContextAnnotations',
+                '_find_layout',
+                '_match_date_vars',
+                '_parse_var_single',
+                'parse_date_variables',
+                'tags',
+                'parse_template_php',
+                'parse_nocache',
+                'advanced_conditionals',
+                'process_layout_template',
+                'process_sub_templates',
+                'write_cache_file',
+                '_cleanup_layout_tags',
+            ])
+            ->getMock();
+
+        $templateMock->method('getMemberVariables')->willReturn(['logged_in' => false]);
+        $templateMock->method('markContext')->willReturn('');
+        $templateMock->method('remove_ee_comments')->willReturnArgument(0);
+        $templateMock->method('wrapInContextAnnotations')->willReturnArgument(0);
+        $templateMock->method('_find_layout')->willReturn(null);
+        $templateMock->method('_match_date_vars')->willReturn(null);
+        $templateMock->method('_parse_var_single')
+            ->willReturnCallback(function ($name, $value, $template) {
+                return str_replace('{' . $name . '}', $value, $template);
+            });
+        $templateMock->method('parse_date_variables')->willReturnArgument(0);
+        $templateMock->method('tags')->willReturn(null);
+        $templateMock->method('parse_template_php')->willReturnArgument(0);
+        $templateMock->method('parse_nocache')->willReturnArgument(0);
+        $templateMock->method('advanced_conditionals')->willReturnArgument(0);
+        $templateMock->method('process_layout_template')->willReturnArgument(0);
+        $templateMock->method('process_sub_templates')->willReturnArgument(0);
+        $templateMock->method('write_cache_file')->willReturn(true);
+        $templateMock->method('_cleanup_layout_tags')->willReturn(null);
+
+        $templateMock->template_type = 'webpage';
+        $templateMock->cache_status = 'EXPIRED';
+        $templateMock->parse_php = true;
+        $templateMock->php_parse_location = 'output';
+        $templateMock->embed_vars = ['title' => 'HELLO'];
+        $templateMock->template_name = 'index';
+        $templateMock->group_name = 'news';
+        $templateMock->template_group_id = 1;
+        $templateMock->template_id = 1;
+
+        $template = '{embed:title}{if errors}x{/if}';
+        $templateMock->parse($template, true);
+
+        $this->assertStringContainsString('HELLO', $templateMock->template);
+        $this->assertStringNotContainsString('{if errors}', $templateMock->template);
+    }
+
+    public function testParseRuntimeCoversLayoutVariableParsingBranch()
+    {
+        $this->setupParseRuntimeDependencies([]);
+
+        $templateMock = $this->getMockBuilder(\EE_Template::class)
+            ->onlyMethods([
+                'getMemberVariables',
+                'markContext',
+                'remove_ee_comments',
+                'wrapInContextAnnotations',
+                'parseLayoutVariables',
+                'tags',
+                'parse_date_variables',
+                'parse_nocache',
+                'advanced_conditionals',
+                'process_layout_template',
+                'process_sub_templates',
+                '_cleanup_layout_tags',
+            ])
+            ->getMock();
+
+        $templateMock->method('getMemberVariables')->willReturn(['logged_in' => false]);
+        $templateMock->method('markContext')->willReturn('');
+        $templateMock->method('remove_ee_comments')->willReturnArgument(0);
+        $templateMock->method('wrapInContextAnnotations')->willReturnArgument(0);
+        $templateMock->method('parseLayoutVariables')->willReturn('layout-vars-parsed');
+        $templateMock->method('tags')->willReturnCallback(function () use ($templateMock) {
+            $templateMock->cease_processing = true;
+        });
+        $templateMock->method('parse_date_variables')->willReturnArgument(0);
+        $templateMock->method('parse_nocache')->willReturnArgument(0);
+        $templateMock->method('advanced_conditionals')->willReturnArgument(0);
+        $templateMock->method('process_layout_template')->willReturnArgument(0);
+        $templateMock->method('process_sub_templates')->willReturnArgument(0);
+        $templateMock->method('_cleanup_layout_tags')->willReturn(null);
+
+        $templateMock->template_type = 'webpage';
+        $templateMock->cache_status = 'EXPIRED';
+        $templateMock->layout_vars = ['headline' => 'Title'];
+        $templateMock->template_name = 'index';
+        $templateMock->group_name = 'news';
+        $templateMock->template_group_id = 1;
+        $templateMock->template_id = 1;
+
+        $template = '{layout:headline}';
+        $templateMock->parse($template, false, '', true);
+
+        $this->assertEquals('layout-vars-parsed', $templateMock->template);
+    }
 }

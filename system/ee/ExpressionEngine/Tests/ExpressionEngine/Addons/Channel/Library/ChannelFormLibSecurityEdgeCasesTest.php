@@ -197,15 +197,15 @@ class ChannelFormLibSecurityEdgeCasesTest extends ChannelFormLibTestBase
                 'default_entry_title' => 'Test Entry'
             ]);
 
-            // Inject malicious data (suppress deprecation warnings for PHP 8.2+)
+            // Inject malicious data
             if ($field === 'member_name') {
-                @$mockMember->username = $payload;
+                $mockMember->username = $payload;
             } elseif ($field === 'channel_name') {
-                @$mockChannel->channel_name = $payload;
+                $mockChannel->channel_name = $payload;
             } elseif ($field === 'url_title_prefix') {
-                @$mockChannel->url_title_prefix = $payload;
+                $mockChannel->url_title_prefix = $payload;
             } elseif ($field === 'default_entry_title') {
-                @$mockChannel->default_entry_title = $payload;
+                $mockChannel->default_entry_title = $payload;
             }
 
             $this->setProtectedProperty('channel', $mockChannel);

@@ -10,6 +10,8 @@
 
 namespace ExpressionEngine\Service\Model;
 
+use ExpressionEngine\Library\Compat\ObjectHash;
+
 use Closure;
 use OverflowException;
 
@@ -320,7 +322,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
     {
         $pk = $this->getPrimaryKey();
 
-        if (isset($data[$pk])) {
+        if ($pk !== null && $pk !== '' && isset($data[$pk])) {
             $this->_new = false;
         }
 
@@ -991,6 +993,10 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
      */
     public function addForeignKey($key, $assoc_name)
     {
+        if ($key === null || $key === '') {
+            return;
+        }
+
         $this->_foreign_keys[$key] = $assoc_name;
     }
 
@@ -1010,7 +1016,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
      */
     public function __toString()
     {
-        return spl_object_hash($this) . ':' . $this->getName() . ':' . $this->getId();
+        return ObjectHash::get($this) . ':' . $this->getName() . ':' . $this->getId();
     }
 
     /**

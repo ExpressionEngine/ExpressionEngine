@@ -49,7 +49,7 @@ class FileDimension extends Model
     );
 
     protected static $_validation_rules = array(
-        'short_name' => 'required|xss|alphaDash|notNumeric|uniqueWithinSiblings[UploadDestination,FileDimensions]',
+        'short_name' => 'required|xss|alphaDash|notNumeric|validateShortNameIsNotReserved|uniqueWithinSiblings[UploadDestination,FileDimensions]',
         'resize_type' => 'enum[crop,constrain]',
         'width' => 'isNatural|validateDimension',
         'height' => 'isNatural|validateDimension',
@@ -67,6 +67,15 @@ class FileDimension extends Model
     protected $watermark_id;
     protected $quality;
 
+    private $reserved_short_names = array(
+        'thumbs',
+        'resize',
+        'crop',
+        'rotate',
+        'webp',
+        'avif',
+    );
+
     public function onAfterDelete()
     {
         //delete the root manipulation folder
@@ -83,6 +92,24 @@ class FileDimension extends Model
                 $filesystem->deleteDir($manipulatedFolderPath);
             }
         }
+    }
+
+    /**
+     * Prevent custom manipulations from colliding with built-in manipulation folders.
+     *
+     * @param string $key Field key being validated
+     * @param mixed $value Field value being validated
+     * @param array $params Validation rule parameters
+     * @param \ExpressionEngine\Service\Validation\Rule\Callback $rule Validation callback rule
+     * @return bool|string True when valid, otherwise a localized error message
+     */
+    public function validateShortNameIsNotReserved($key, $value, $params, $rule)
+    {
+        if (in_array(strtolower((string) $value), $this->reserved_short_names, true)) {
+            return lang('invalid_short_name');
+        }
+
+        return true;
     }
 
     /**

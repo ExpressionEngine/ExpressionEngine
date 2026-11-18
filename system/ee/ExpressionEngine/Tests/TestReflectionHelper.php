@@ -7,6 +7,25 @@
 class TestReflectionHelper
 {
     /**
+     * Make a reflection object accessible in a version-compatible way
+     *
+     * @param ReflectionProperty|ReflectionMethod $reflection
+     * @return void
+     */
+    public static function makeAccessible($reflection): void
+    {
+        if ($reflection instanceof ReflectionProperty) {
+            self::makePropertyAccessible($reflection);
+
+            return;
+        }
+
+        if ($reflection instanceof ReflectionMethod) {
+            self::makeMethodAccessible($reflection);
+        }
+    }
+
+    /**
      * Make a reflection property accessible in a version-compatible way
      *
      * @param ReflectionProperty $property

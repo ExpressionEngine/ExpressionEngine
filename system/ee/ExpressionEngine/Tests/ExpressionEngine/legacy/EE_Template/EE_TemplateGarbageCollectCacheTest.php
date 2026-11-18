@@ -7,6 +7,7 @@ require_once SYSPATH . 'ee/legacy/libraries/Template.php';
 class EE_TemplateGarbageCollectCacheTest extends EE_TemplateTestBase
 {
     private $reflectionMethod;
+    private $createdCacheDirs = [];
 
     public function setUp(): void
     {
@@ -336,6 +337,67 @@ class EE_TemplateGarbageCollectCacheTest extends EE_TemplateTestBase
         $this->assertTrue(true);
     }
 
+    public function testGarbageCollectCacheDeletesWhenCountExceedsComputedMax()
+    {
+        $siteShortName = 'gc_delete_case';
+        $this->createRealPageCacheFiles($siteShortName, 2);
+
+        $configMock = $this->createMock('eeSingletonConfigMock');
+        $configMock->method('item')->willReturnCallback(function($key) use ($siteShortName) {
+            $config = [
+                'site_short_name' => $siteShortName,
+                'max_caches' => false
+            ];
+            return isset($config[$key]) ? $config[$key] : false;
+        });
+        ee()->setMock('config', $configMock);
+
+        $cacheMock = $this->getMockBuilder('stdClass')->addMethods(['get_adapter', 'delete'])->getMock();
+        $cacheMock->method('get_adapter')->willReturn('file');
+        $cacheMock->expects($this->once())
+            ->method('delete')
+            ->with('/page_cache/');
+        ee()->setMock('cache', $cacheMock);
+
+        $this->template->disable_caching = false;
+        $this->reflectionMethod->invoke($this->template);
+    }
+
+    public function testGarbageCollectCacheSkipsDeleteWhenCountWithinDefaultLimit()
+    {
+        $siteShortName = 'gc_keep_case';
+        $this->createRealPageCacheFiles($siteShortName, 3);
+
+        $configMock = $this->createMock('eeSingletonConfigMock');
+        $configMock->method('item')->willReturnCallback(function($key) use ($siteShortName) {
+            $config = [
+                'site_short_name' => $siteShortName,
+                'max_caches' => 500
+            ];
+            return isset($config[$key]) ? $config[$key] : false;
+        });
+        ee()->setMock('config', $configMock);
+
+        $cacheMock = $this->getMockBuilder('stdClass')->addMethods(['get_adapter', 'delete'])->getMock();
+        $cacheMock->method('get_adapter')->willReturn('file');
+        $cacheMock->expects($this->never())
+            ->method('delete');
+        ee()->setMock('cache', $cacheMock);
+
+        $this->template->disable_caching = false;
+        $this->reflectionMethod->invoke($this->template);
+    }
+
+    protected function tearDown(): void
+    {
+        foreach ($this->createdCacheDirs as $dir) {
+            $this->removeDirectory($dir);
+        }
+        $this->createdCacheDirs = [];
+
+        parent::tearDown();
+    }
+
     // Helper methods
 
     private function setupFileAdapterMocks($fileCount = 50)
@@ -373,5 +435,39 @@ class EE_TemplateGarbageCollectCacheTest extends EE_TemplateTestBase
 
         // Set global for the mock function
         $GLOBALS['mockFileCount'] = $fileCount;
+    }
+
+    private function createRealPageCacheFiles($siteShortName, $count)
+    {
+        $baseDir = PATH_CACHE . $siteShortName . DIRECTORY_SEPARATOR . 'page_cache' . DIRECTORY_SEPARATOR;
+        if (!is_dir($baseDir)) {
+            mkdir($baseDir, 0777, true);
+        }
+
+        for ($i = 0; $i < $count; $i++) {
+            file_put_contents($baseDir . 'cache_' . $i . '.txt', 'x');
+        }
+
+        $this->createdCacheDirs[] = PATH_CACHE . $siteShortName;
+    }
+
+    private function removeDirectory($dir)
+    {
+        if (!is_dir($dir)) {
+            return;
+        }
+
+        $iterator = new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS);
+        $files = new \RecursiveIteratorIterator($iterator, \RecursiveIteratorIterator::CHILD_FIRST);
+
+        foreach ($files as $file) {
+            if ($file->isDir()) {
+                rmdir($file->getPathname());
+            } else {
+                unlink($file->getPathname());
+            }
+        }
+
+        rmdir($dir);
     }
 }

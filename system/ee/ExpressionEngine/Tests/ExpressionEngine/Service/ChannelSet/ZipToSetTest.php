@@ -201,7 +201,7 @@ class ZipToSetTest extends TestCase
         
         $reflection = new \ReflectionClass($extractor);
         $method = $reflection->getMethod('ensureNoPHP');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($method);
         
         $this->expectException(\ExpressionEngine\Service\ChannelSet\ImportException::class);
         $this->expectExceptionMessage('Cannot extract archive that contains PHP files.');
@@ -221,7 +221,7 @@ class ZipToSetTest extends TestCase
         
         $reflection = new \ReflectionClass($extractor);
         $method = $reflection->getMethod('ensureNoPHP');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($method);
         
         // Should not throw exception
         $method->invoke($extractor, $zip);
@@ -251,7 +251,7 @@ class ZipToSetTest extends TestCase
         
         $reflection = new \ReflectionClass($extractor);
         $method = $reflection->getMethod('ensureNoPHP');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($method);
         
         $this->expectException(\ExpressionEngine\Service\ChannelSet\ImportException::class);
         $this->expectExceptionMessage('Cannot extract archive that contains PHP files.');

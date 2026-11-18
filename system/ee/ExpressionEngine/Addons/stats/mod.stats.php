@@ -16,28 +16,54 @@ class Stats
     public $return_data = '';
 
     /**
-     *  Constructor
+     * Create the stats module and parse the current template tag.
      */
     public function __construct()
     {
         ee()->stats->load_stats();
+        $statdata = ee()->stats->statdata();
 
-        // Limit stats by channel
+        // Limit stats by channel or status
         // You can limit the stats by any combination of channels
 
         if (! isset(ee()->TMPL)) {
             return;
         }
 
-        if ($channel_name = ee()->TMPL->fetch_param('channel')) {
-            $sql = "SELECT	total_entries,
-							total_comments,
-							last_entry_date,
-							last_comment_date
-					FROM exp_channels
-					WHERE site_id IN ('" . implode("','", ee()->TMPL->site_ids) . "') ";
+        $channel_name = ee()->TMPL->fetch_param('channel');
+        $status = ee()->TMPL->fetch_param('status');
+        $filter_by_status = ($status !== false && $status != '');
 
-            $sql .= ee()->functions->sql_andor_string($channel_name, 'exp_channels.channel_name');
+        if ($channel_name || $filter_by_status) {
+            if ($filter_by_status) {
+                $now = ee()->localize->now;
+
+                $sql = "SELECT	COUNT(exp_channel_titles.entry_id) AS total_entries,
+								COALESCE(SUM(exp_channel_titles.comment_total), 0) AS total_comments,
+								MAX(exp_channel_titles.entry_date) AS last_entry_date,
+								MAX(exp_channel_titles.recent_comment_date) AS last_comment_date
+						FROM exp_channel_titles
+						INNER JOIN exp_channels
+							ON exp_channel_titles.channel_id = exp_channels.channel_id
+						WHERE exp_channel_titles.site_id IN ('" . implode("','", ee()->TMPL->site_ids) . "') ";
+
+                if ($channel_name) {
+                    $sql .= ee()->functions->sql_andor_string($channel_name, 'exp_channels.channel_name');
+                }
+
+                $sql .= $this->statusSql($status);
+                $sql .= " AND exp_channel_titles.entry_date <= " . $now . " ";
+                $sql .= " AND (exp_channel_titles.expiration_date = 0 OR exp_channel_titles.expiration_date > " . $now . ") ";
+            } else {
+                $sql = "SELECT	total_entries,
+								total_comments,
+								last_entry_date,
+								last_comment_date
+						FROM exp_channels
+						WHERE site_id IN ('" . implode("','", ee()->TMPL->site_ids) . "') ";
+
+                $sql .= ee()->functions->sql_andor_string($channel_name, 'exp_channels.channel_name');
+            }
 
             $cache_sql = md5($sql);
 
@@ -64,16 +90,11 @@ class Stats
                         }
                     }
 
-                    foreach ($sdata as $key => $val) {
-                        ee()->stats->set_statdata($key, $val);
-
-                        ee()->stats->stats_cache[$cache_sql][$key] = $val;
-                    }
+                    ee()->stats->stats_cache[$cache_sql] = $sdata;
+                    $statdata = array_merge($statdata, $sdata);
                 }
             } else {
-                foreach (ee()->stats->stats_cache[$cache_sql] as $key => $val) {
-                    ee()->stats->set_statdata($key, $val);
-                }
+                $statdata = array_merge($statdata, ee()->stats->stats_cache[$cache_sql]);
             }
         }
 
@@ -85,8 +106,9 @@ class Stats
 
         foreach ($fields as $field) {
             if (isset(ee()->TMPL->var_single[$field])) {
-                $cond[$field] = ee()->stats->statdata($field);
-                ee()->TMPL->tagdata = ee()->TMPL->swap_var_single($field, ee()->stats->statdata($field), ee()->TMPL->tagdata);
+                $value = isset($statdata[$field]) ? $statdata[$field] : false;
+                $cond[$field] = $value;
+                ee()->TMPL->tagdata = ee()->TMPL->swap_var_single($field, $value, ee()->TMPL->tagdata);
             }
         }
 
@@ -101,13 +123,14 @@ class Stats
         foreach (ee()->TMPL->var_single as $key => $val) {
             foreach ($dates as $date) {
                 if (strncmp($key, $date, strlen($date)) == 0) {
+                    $date_value = isset($statdata[$date]) ? $statdata[$date] : false;
                     ee()->TMPL->tagdata = ee()->TMPL->swap_var_single(
                         $key,
-                        (! ee()->stats->statdata($date)
-                                                    or ee()->stats->statdata($date) == 0) ? '--' :
+                        (! $date_value
+                                                    or $date_value == 0) ? '--' :
                                                 ee()->localize->format_date(
                                                     $val,
-                                                    ee()->stats->statdata($date)
+                                                    $date_value
                                                 ),
                         ee()->TMPL->tagdata
                     );
@@ -119,7 +142,7 @@ class Stats
 
         $names = '';
 
-        if (ee()->stats->statdata('current_names')) {
+        if (! empty($statdata['current_names'])) {
             $chunk = ee()->TMPL->fetch_data_between_var_pairs(
                 ee()->TMPL->tagdata,
                 'member_names'
@@ -152,7 +175,7 @@ class Stats
             $member_path = str_replace("'", "", $member_path);
             $member_path = trim_slashes($member_path);
 
-            foreach (ee()->stats->statdata('current_names') as $k => $v) {
+            foreach ($statdata['current_names'] as $k => $v) {
                 $temp = $chunk;
 
                 if (empty($temp)) {
@@ -196,6 +219,24 @@ class Stats
         }
 
         $this->return_data = ee()->TMPL->tagdata;
+    }
+
+    /**
+     * Build the SQL clause for status-filtered stats.
+     *
+     * @param string $status Entry status parameter.
+     * @return string
+     */
+    private function statusSql($status)
+    {
+        $status = str_replace(array('Open', 'Closed'), array('open', 'closed'), $status);
+        $sstr = ee()->functions->sql_andor_string($status, 'exp_channel_titles.status');
+
+        if (stristr($sstr, "'closed'") === false) {
+            $sstr .= " AND exp_channel_titles.status != 'closed' ";
+        }
+
+        return $sstr;
     }
 
     /**

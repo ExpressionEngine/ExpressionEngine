@@ -1059,10 +1059,9 @@ class Comment
     }
 
     /**
-     * Preview
+     * Render a preview of the submitted comment.
      *
-     * @access	public
-     * @return	void
+     * @return string|false|null
      */
     public function preview()
     {
@@ -1160,6 +1159,8 @@ class Comment
         if ($url != '') {
             ee()->load->helper('url');
             $url = ee('Format')->make('Text', $url)->url();
+            $escaped_url = htmlspecialchars($url, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8', false);
+            $escaped_name = htmlspecialchars($name, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8', false);
         }
 
         /** ----------------------------------------
@@ -1185,7 +1186,7 @@ class Comment
             //  {url_or_email_as_author}
             elseif ($key == "url_or_email_as_author") {
                 if ($url != '') {
-                    $tagdata = ee()->TMPL->swap_var_single($val, "<a href=\"" . $url . "\">" . $name . "</a>", $tagdata);
+                    $tagdata = ee()->TMPL->swap_var_single($val, '<a href="' . $escaped_url . '">' . $escaped_name . '</a>', $tagdata);
                 } else {
                     if ($email != '') {
                         $tagdata = ee()->TMPL->swap_var_single($val, ee()->typography->encode_email($email, $name), $tagdata);
@@ -1198,7 +1199,7 @@ class Comment
             //  {url_or_email_as_link}
             elseif ($key == "url_or_email_as_link") {
                 if ($url != '') {
-                    $tagdata = ee()->TMPL->swap_var_single($val, "<a href=\"" . $url . "\">" . $url . "</a>", $tagdata);
+                    $tagdata = ee()->TMPL->swap_var_single($val, '<a href="' . $escaped_url . '">' . $escaped_url . '</a>', $tagdata);
                 } else {
                     if ($email != '') {
                         $tagdata = ee()->TMPL->swap_var_single($val, ee()->typography->encode_email($email), $tagdata);
@@ -1212,7 +1213,7 @@ class Comment
 
             elseif ($key == 'url_as_author') {
                 if ($url != '') {
-                    $tagdata = ee()->TMPL->swap_var_single($val, '<a href="' . $url . '">' . $name . '</a>', $tagdata);
+                    $tagdata = ee()->TMPL->swap_var_single($val, '<a href="' . $escaped_url . '">' . $escaped_name . '</a>', $tagdata);
                 } else {
                     $tagdata = ee()->TMPL->swap_var_single($val, $name, $tagdata);
                 }
@@ -1907,15 +1908,22 @@ class Comment
      */
     public function comment_subscribe()
     {
-        if (!bool_config_item('disable_csrf_protection') && ee()->input->get('csrf_token')!==CSRF_TOKEN) {
+        $id = ee()->input->get_post('entry_id');
+        $hash = ee()->input->get_post('hash');
+        $type = (ee()->input->get_post('type')) ? 'unsubscribe' : 'subscribe';
+        $ret = ee()->input->get_post('ret');
+
+        // Unsubscribe links in notification emails cannot carry a CSRF token,
+        // so a hash matching a subscription to this entry is the authorization
+        $valid_hash = $type == 'unsubscribe'
+            && is_string($hash)
+            && $hash !== ''
+            && ee()->db->where('entry_id', $id)->where('hash', $hash)->count_all_results('comment_subscriptions') > 0;
+
+        if (! $valid_hash && !bool_config_item('disable_csrf_protection') && ee()->input->get('csrf_token')!==CSRF_TOKEN) {
             show_error(lang('unauthorized_access'));
         }
         ee()->lang->loadfile('comment');
-
-        $id = ee()->input->get('entry_id');
-        $hash = ee()->input->get('hash');
-        $type = (ee()->input->get('type')) ? 'unsubscribe' : 'subscribe';
-        $ret = ee()->input->get('ret');
 
         // Membership is required unless hash is set
         if (ee()->session->userdata('member_id') == 0) {
@@ -1945,7 +1953,7 @@ class Comment
 
         ee()->load->library('subscription');
         ee()->subscription->init('comment', array('entry_id' => $id), true);
-        $subscribed = ee()->subscription->is_subscribed(false);
+        $subscribed = $valid_hash || ee()->subscription->is_subscribed(false);
 
         if ($type == 'subscribe' && $subscribed == true) {
             return ee()->output->show_form_error(['type' => ee()->lang->line('already_subscribed')], 'submission');
@@ -1953,6 +1961,31 @@ class Comment
 
         if ($type == 'unsubscribe' && $subscribed == false) {
             return ee()->output->show_form_error(['type' => ee()->lang->line('not_currently_subscribed')], 'submission');
+        }
+
+        // Mail scanners follow links in emails automatically, so a link
+        // authorized by hash only unsubscribes once it is confirmed by POST
+        if ($valid_hash && ee()->input->server('REQUEST_METHOD') !== 'POST') {
+            // The message page is not run through the template parser, so the
+            // token is added here rather than as the {csrf_token} placeholder
+            $form = ee()->functions->form_declaration(array(
+                'hidden_fields' => array(
+                    'ACT' => (int) ee()->input->get('ACT'),
+                    'entry_id' => $id,
+                    'hash' => $hash,
+                    'type' => 'unsubscribe',
+                    'ret' => $ret,
+                    'csrf_token' => CSRF_TOKEN,
+                ),
+                'secure' => false,
+            ));
+            $form .= '<input type="submit" value="' . ee()->lang->line('cmt_unsubscribe_confirm_button') . '" /></form>';
+
+            return ee()->output->show_message(array(
+                'title' => ee()->lang->line('cmt_unsubscribe'),
+                'heading' => ee()->lang->line('cmt_unsubscribe'),
+                'content' => ee()->lang->line('cmt_unsubscribe_confirm') . ' ' . htmlspecialchars($entry_title, ENT_QUOTES, 'UTF-8') . $form,
+            ), false);
         }
 
         // They check out- let them through
@@ -1992,12 +2025,10 @@ class Comment
     }
 
     /**
-     * Frontend comment editing
+     * Update or moderate a frontend comment and send the AJAX response.
      *
-     *
-     * @access	public
-     * @param	string
-     * @return	string
+     * @param bool $ajax_request Unused legacy AJAX request flag.
+     * @return void
      */
     public function edit_comment($ajax_request = true)
     {
@@ -2044,7 +2075,10 @@ class Comment
         }
 
         if ($edited_comment && $comment_vars->getVariable('editable')) {
-            $comment->comment = $edited_comment;
+            // POST comments and globally filtered GET comments are already sanitized.
+            $comment->comment = isset($_POST['comment']) || ee()->input->_enable_xss === true
+                ? $edited_comment
+                : ee('Security/XSS')->clean($edited_comment);
         }
 
         // save if we changed something

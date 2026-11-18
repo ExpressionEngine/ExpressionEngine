@@ -184,5 +184,37 @@ class EE_TemplateNoResultsTest extends EE_TemplateAdvancedMethodsTestBase
 
         $this->template->no_results();
     }
-}
 
+    public function testNoResultsReturnsContentWhen404RedirectConfiguredWithoutTemplatePath()
+    {
+        $configMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['item', 'setItem', 'site_url'])
+            ->getMock();
+        $configMock->method('item')->willReturnCallback(function($key) {
+            if ($key === 'site_404') {
+                return '404';
+            }
+
+            $defaults = [
+                'site_id' => 1,
+                'site_short_name' => 'default_site',
+                'multiple_sites_enabled' => 'n',
+                'template_loop_prevention' => 'y',
+                'debug' => 1,
+                'save_tmpl_files' => 'n'
+            ];
+
+            return $defaults[$key] ?? null;
+        });
+        $configMock->method('setItem')->willReturnSelf();
+        $configMock->method('site_url')->willReturn('https://example.com/');
+        $configMock->_global_vars = [];
+        ee()->setMock('config', $configMock);
+
+        $this->setupTemplateWithNoResults('{redirect="404"}');
+
+        $result = $this->template->no_results();
+
+        $this->assertSame('{redirect="404"}', $result);
+    }
+}

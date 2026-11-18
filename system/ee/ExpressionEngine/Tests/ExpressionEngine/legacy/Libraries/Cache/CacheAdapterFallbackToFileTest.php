@@ -9,8 +9,10 @@ namespace ExpressionEngine\Tests\ExpressionEngine\legacy\Libraries\Cache;
  * @link      https://expressionEngine.com/
  * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionEngine.com/license Licensed under Apache License, Version 2.0
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
  */
-
 class CacheAdapterFallbackToFileTest extends CacheTestBase
 {
     /**

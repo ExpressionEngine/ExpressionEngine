@@ -40,7 +40,17 @@ class Cp extends Logs
         $sites = ee('Model')->get('Site');
         $logs = ee('Model')->get('CpLog');
 
-        if ($search = ee()->input->get_post('filter_by_keyword')) {
+        $search = null;
+        $keyword_post = ee()->input->post('filter_by_keyword');
+        $is_clearing_keyword = ($keyword_post !== false && trim((string) $keyword_post) === '');
+
+        // CP logs only: when keyword is intentionally cleared via POST,
+        // prevent GET fallback from rehydrating the previous keyword value.
+        if ($is_clearing_keyword) {
+            unset($_GET['filter_by_keyword']);
+        }
+
+        if (! $is_clearing_keyword && ($search = ee()->input->get_post('filter_by_keyword'))) {
             $logs->search(['action', 'username', 'ip_address'], $search);
         }
 

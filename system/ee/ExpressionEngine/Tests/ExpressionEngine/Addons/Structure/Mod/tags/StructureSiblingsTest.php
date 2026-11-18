@@ -12,29 +12,49 @@ class StructureSiblingsTest extends StructureTestBase
         $this->setTemplateTagdata('{prev_title}|{next_title}');
     }
 
-    protected function setSqlStubWithSiblings($sitePages, string $uri, $customTitles = false, $parentId = 0, $selectiveData = []): void
+    protected function setSqlStubWithSiblings($sitePages, string $uri, $customTitles = false, $parentId = 0, $selectiveData = [], $tracker = null): void
     {
-        $sql = new class($sitePages, $uri, $customTitles, $parentId, $selectiveData) {
+        $sql = new class($sitePages, $uri, $customTitles, $parentId, $selectiveData, $tracker) {
             private $sitePages; 
             private $uri; 
             private $customTitles; 
             private $parentId;
             private $selectiveData;
+            private $tracker;
             
-            public function __construct($sitePages, $uri, $customTitles, $parentId, $selectiveData) {
+            public function __construct($sitePages, $uri, $customTitles, $parentId, $selectiveData, $tracker) {
                 $this->sitePages = $sitePages; 
                 $this->uri = $uri; 
                 $this->customTitles = $customTitles; 
                 $this->parentId = $parentId;
                 $this->selectiveData = $selectiveData;
+                $this->tracker = $tracker;
             }
             
             public function get_site_pages() { return $this->sitePages; }
             public function get_uri() { return $this->uri; }
-            public function create_custom_titles($flag = false) { return $this->customTitles; }
-            public function get_parent_id($entryId) { return $this->parentId; }
+            public function create_custom_titles($flag = false) {
+                if ($this->tracker) {
+                    $this->tracker->customTitleFlags = $this->tracker->customTitleFlags ?? [];
+                    $this->tracker->customTitleFlags[] = $flag;
+                }
+
+                return $this->customTitles;
+            }
+            public function get_parent_id($entryId) {
+                if ($this->tracker) {
+                    $this->tracker->parentEntryIds = $this->tracker->parentEntryIds ?? [];
+                    $this->tracker->parentEntryIds[] = $entryId;
+                }
+
+                return $this->parentId;
+            }
             public function get_home_page_id() { return 1; }
             public function get_selective_data($siteId, $entryId, $parentId, $type, $depth, $limit, $status, $include, $exclude, $showExpired, $showFuture, $showExpired2, $showFuture2) {
+                if ($this->tracker) {
+                    $this->tracker->selectiveDataArgs = func_get_args();
+                }
+
                 return $this->selectiveData;
             }
         };
@@ -233,6 +253,34 @@ class StructureSiblingsTest extends StructureTestBase
         $this->assertStringContainsString('|', $result);
     }
 
+    public function testSiblingsUsesUriDerivedEntryIdAndForwardsTemplateParametersToSelectiveData()
+    {
+        $tracker = new stdClass();
+        $sitePages = ['uris' => [1 => '/', 2 => '/about', 3 => '/team', 4 => '/contact']];
+        $selectiveData = [
+            2 => ['entry_id' => 2, 'title' => 'About', 'uri' => '/about', 'parent_id' => 0, 'channel_id' => 1, 'status' => 'open', 'depth' => 1],
+            3 => ['entry_id' => 3, 'title' => 'Team', 'uri' => '/team', 'parent_id' => 0, 'channel_id' => 1, 'status' => 'open', 'depth' => 1],
+            4 => ['entry_id' => 4, 'title' => 'Contact', 'uri' => '/contact', 'parent_id' => 0, 'channel_id' => 1, 'status' => 'open', 'depth' => 1],
+        ];
+
+        $this->setSqlStubWithSiblings($sitePages, '/team', false, 1, $selectiveData, $tracker);
+        $this->setTemplateParams([
+            'status' => 'closed',
+            'include' => [2, 4],
+            'exclude' => [5],
+            'show_expired' => 'yes',
+            'show_future_entries' => 'yes',
+        ]);
+
+        $result = $this->structure->siblings();
+
+        $this->assertSame([3], $tracker->parentEntryIds);
+        $this->assertSame([true], $tracker->customTitleFlags);
+        $this->assertSame([1, 3, 0, 'sub', 1, -1, 'closed', [2, 4], [5], false, false, 'yes', 'yes'], $tracker->selectiveDataArgs);
+        $this->assertStringContainsString('About', $result);
+        $this->assertStringContainsString('Contact', $result);
+    }
+
     public function testSiblingsWithComplexTemplate()
     {
         $sitePages = ['uris' => [1 => '/', 2 => '/about', 3 => '/team', 4 => '/contact']];
@@ -250,6 +298,58 @@ class StructureSiblingsTest extends StructureTestBase
         
         $this->assertStringContainsString('Previous: About (/about)', $result);
         $this->assertStringContainsString('Next: Contact (/contact)', $result);
+    }
+
+    public function testSiblingsPassesFullPrevAndNextMetadataToTemplateParser()
+    {
+        $template = new class extends FakeTemplate {
+            public $capturedVars = [];
+
+            public function parse_variables($tagdata, $vars)
+            {
+                $this->capturedVars = $vars;
+
+                return parent::parse_variables($tagdata, $vars);
+            }
+        };
+        $template->tagproper = 'structure:siblings';
+        $template->setTagdata('{prev_title}|{prev_entry_id}|{next_title}|{next_entry_id}');
+        ee()->setMock('TMPL', $template);
+
+        $sitePages = ['uris' => [1 => '/', 2 => '/about', 3 => '/team', 4 => '/contact']];
+        $customTitles = [2 => 'Custom About', 4 => 'Custom Contact'];
+        $selectiveData = [
+            2 => ['entry_id' => 2, 'title' => 'About', 'uri' => '/about', 'parent_id' => 7, 'channel_id' => 10, 'status' => 'closed', 'depth' => 1],
+            3 => ['entry_id' => 3, 'title' => 'Team', 'uri' => '/team', 'parent_id' => 7, 'channel_id' => 10, 'status' => 'open', 'depth' => 1],
+            4 => ['entry_id' => 4, 'title' => 'Contact', 'uri' => '/contact', 'parent_id' => 7, 'channel_id' => 12, 'status' => 'draft', 'depth' => 1],
+        ];
+
+        $this->setSqlStubWithSiblings($sitePages, '/team', $customTitles, 7, $selectiveData);
+        $this->setTemplateParams(['entry_id' => 3]);
+
+        $result = $this->structure->siblings();
+
+        $this->assertSame([
+            [
+                'prev' => [[
+                    'title' => 'Custom About',
+                    'url' => '/about',
+                    'entry_id' => 2,
+                    'parent_id' => 7,
+                    'channel_id' => 10,
+                    'status' => 'closed',
+                ]],
+                'next' => [[
+                    'title' => 'Custom Contact',
+                    'url' => '/contact',
+                    'entry_id' => 4,
+                    'parent_id' => 7,
+                    'channel_id' => 12,
+                    'status' => 'draft',
+                ]],
+            ],
+        ], $template->capturedVars);
+        $this->assertSame('Custom About|2|Custom Contact|4', $result);
     }
 
     public function testSiblingsWithMultipleSiblings()
@@ -378,7 +478,6 @@ class StructureSiblingsTest extends StructureTestBase
         $this->assertStringContainsString('|', $result);
     }
 }
-
 
 
 

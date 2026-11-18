@@ -49,6 +49,21 @@ class CI_DB_driver
     public $CACHE; // The cache class object
     public $dbcollat_default; // true if the collation is not in the config or is default
 
+    // PDO MYSQL_ATTR_* options that can be passed in database config
+    public $MYSQL_ATTR_LOCAL_INFILE;
+    public $MYSQL_ATTR_LOCAL_INFILE_DIRECTORY;
+    public $MYSQL_ATTR_READ_DEFAULT_FILE;
+    public $MYSQL_ATTR_READ_DEFAULT_GROUP;
+    public $MYSQL_ATTR_MAX_BUFFER_SIZE;
+    public $MYSQL_ATTR_INIT_COMMAND;
+    public $MYSQL_ATTR_COMPRESS;
+    public $MYSQL_ATTR_SSL_CA;
+    public $MYSQL_ATTR_SSL_CAPATH;
+    public $MYSQL_ATTR_SSL_CERT;
+    public $MYSQL_ATTR_SSL_CIPHER;
+    public $MYSQL_ATTR_SSL_KEY;
+    public $MYSQL_ATTR_SSL_VERIFY_SERVER_CERT;
+
     // Private variables
     public $_protect_identifiers = true;
     public $_reserved_identifiers = array('*'); // Identifiers that should NOT be escaped
@@ -762,12 +777,10 @@ class CI_DB_driver
     }
 
     /**
-     * Enables a native PHP function to be run, using a platform agnostic wrapper.
+     * Run a driver-specific native PHP function through a common wrapper.
      *
-     * @access	public
-     * @param	string	the function name
-     * @param	mixed	any parameters needed by the function
-     * @return	mixed
+     * @param string $function The native function name without the driver prefix.
+     * @return mixed
      */
     public function call_function($function)
     {
@@ -783,11 +796,12 @@ class CI_DB_driver
             }
 
             return false;
-        } else {
-            $args = (func_num_args() > 1) ? array_splice(func_get_args(), 1) : null;
-
-            return call_user_func_array($function, $args);
         }
+
+        $args = func_get_args();
+        array_shift($args);
+
+        return call_user_func_array($function, $args);
     }
 
     /**
@@ -830,13 +844,13 @@ class CI_DB_driver
     }
 
     /**
-     * Display an error message
+     * Display or throw a database error message.
      *
-     * @access	public
-     * @param	string	the error message
-     * @param	string	any "swap" values
-     * @param	boolean	whether to localize the message
-     * @return	string	sends the application/error_db.php template
+     * @param string|array $error The error message or language key.
+     * @param string $swap Replacement text for localized messages.
+     * @param bool $native Whether the message is already formatted.
+     * @return void
+     * @throws Exception
      */
     public function display_error($error = '', $swap = '', $native = false)
     {
@@ -854,7 +868,7 @@ class CI_DB_driver
         }
 
         if ($native == true) {
-            $message = $error;
+            $message = (array) $error;
         } else {
             $message = (! is_array($error)) ? array(str_replace('%s', $swap, $LANG->line($error))) : $error;
         }

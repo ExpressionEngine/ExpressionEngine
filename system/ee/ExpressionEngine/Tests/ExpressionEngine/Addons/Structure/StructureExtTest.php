@@ -184,7 +184,7 @@ class StructureExtTest extends TestCase
 
         ee()->setMock('extensions', (object) ['last_call' => 'override://last']);
         $rm = new ReflectionMethod('Structure_ext', '_redirect_url');
-        $rm->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($rm);
         $this->assertSame('override://last', $rm->invoke($fixture, 17, ['channel_id' => 5], null, false, 'orig://loc', false));
         $this->assertFalse($rm->invoke($fixture, 17, ['channel_id' => 5], null, false, 'orig://loc', true));
 
@@ -316,11 +316,11 @@ class StructureExtTest extends TestCase
         $this->assertCount(1, $db->inserted);
 
         $rm = new ReflectionMethod($real, 'unregisterExtension');
-        $rm->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($rm);
         $this->assertTrue($rm->invoke($real, 'sample_method', null));
 
         $rm = new ReflectionMethod($real, 'updateVersion');
-        $rm->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($rm);
         $this->assertTrue($rm->invoke($real));
         $this->assertNotEmpty($db->deleted);
         $this->assertNotEmpty($db->updated);
@@ -466,6 +466,14 @@ class StructureExtTest extends TestCase
         $fixture->sessions_end($session);
     }
 
+    /**
+     * Cover template routing and private helper behavior with local router stubs.
+     *
+     * @return void
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function testCoreTemplateRouteTemplateParseAndPrivateHelpers()
     {
         ee()->setMock('config', new class {
@@ -603,10 +611,10 @@ class StructureExtTest extends TestCase
         ];
         $fixture->entry_id = 8;
         $fixture->parent_id = 7;
-        $fixture->page_title = 'Beta';
+        $fixture->page_title = 'Plan > Build';
         $fixture->uri = '/alpha/beta/';
         $fixture->segment_1 = '/alpha';
-        $fixture->top_id = 7;
+        $fixture->top_id = 6;
         $fixture->sql = new class {
             public function get_settings()
             {
@@ -618,7 +626,15 @@ class StructureExtTest extends TestCase
             }
             public function get_page_title($entryId)
             {
-                return $entryId == 8 ? 'Page 8' : 'Page ' . $entryId;
+                if ($entryId == 7) {
+                    return '<em>Example</em>';
+                }
+
+                if ($entryId == 6) {
+                    return 'Top {draft} — 日本語 <?xml?>';
+                }
+
+                return 'Page ' . $entryId;
             }
             public function get_slug($slug)
             {
@@ -709,13 +725,27 @@ class StructureExtTest extends TestCase
         $this->assertFalse($fixture->_is_search());
 
         $rm = new ReflectionMethod('Structure_ext', '_create_global_vars');
-        $rm->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($rm);
         $rm->invoke($fixture, true);
         $this->assertSame(8, ee()->config->_global_vars['structure:page:entry_id']);
+        $this->assertSame('Plan > Build', ee()->config->_global_vars['structure:page:title']);
+        $this->assertSame('<em>Example</em>', ee()->config->_global_vars['structure:parent:title']);
+        $this->assertSame(
+            'Top &#123;draft&#125; — 日本語 &lt;?xml?&gt;',
+            ee()->config->_global_vars['structure:top:title']
+        );
+        $conditionals = \ExpressionEngine\Library\Parser\ParserFactory::createConditionalRunner();
+        $this->assertSame(
+            'matched',
+            $conditionals->processConditionals(
+                '{if structure:page:title == "Plan > Build"}matched{/if}',
+                ee()->config->_global_vars
+            )
+        );
         $this->assertSame('20|21', ee()->config->_global_vars['structure:child_ids']);
 
         $clean = new ReflectionMethod('Structure_ext', '_create_clean_structure_segments');
-        $clean->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($clean);
         $fixture->site_pages['uris'][8] = '/alpha';
         $uri->segments = ['alpha', 'P9'];
         $uri->uri_string = 'alpha/P9';

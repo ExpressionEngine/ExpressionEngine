@@ -29,6 +29,14 @@ class XSSTest extends TestCase
         $this->xss = null;
     }
 
+    /**
+     * Verify the XSS cleaner removes known unsafe markup patterns.
+     *
+     * @return void
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function testXssClean()
     {
         $testArray = array(

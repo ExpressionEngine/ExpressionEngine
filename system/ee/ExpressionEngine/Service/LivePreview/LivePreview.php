@@ -89,7 +89,13 @@ class LivePreview
     }
 
     /**
-     * generate and display the live preview
+     * Generate and display the live preview.
+     *
+     * @param int         $channel_id           Channel ID being previewed
+     * @param int|null    $entry_id             Entry ID being previewed
+     * @param string|null $preview_url          Explicit preview URL
+     * @param bool        $prefer_system_preview Whether to prefer the system preview route
+     * @return void
      */
     public function preview($channel_id, $entry_id = null, $preview_url = null, $prefer_system_preview = false)
     {
@@ -216,8 +222,14 @@ class LivePreview
         //  - Added 4.2.0
         if (ee()->extensions->active_hook('publish_live_preview_route') === true) {
             $route = ee()->extensions->call('publish_live_preview_route', array_merge($_POST, $data), $uri, $template_id);
-            $uri = $route['uri'];
-            $template_id = $route['template_id'];
+            if (
+                is_array($route) &&
+                array_key_exists('uri', $route) &&
+                array_key_exists('template_id', $route)
+            ) {
+                $uri = $route['uri'];
+                $template_id = $route['template_id'];
+            }
         }
         //
         // -------------------------------------------

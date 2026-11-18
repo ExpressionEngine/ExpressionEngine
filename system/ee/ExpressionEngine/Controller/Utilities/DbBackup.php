@@ -15,6 +15,15 @@ namespace ExpressionEngine\Controller\Utilities;
  */
 class DbBackup extends Utilities
 {
+    public function __construct()
+    {
+        parent::__construct();
+
+        if (! ee('Permission')->can('access_sql_manager')) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+    }
+
     public function index()
     {
         $tables = ee('Database/Backup/Query')->getTables();

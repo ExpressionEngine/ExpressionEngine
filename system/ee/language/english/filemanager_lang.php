@@ -88,7 +88,7 @@ $lang = array(
 
     'invalid_mime' => 'Invalid mime type, file could not be processed',
 
-    'invalid_short_name' => 'The image manipulation short name may only contain alpha-numeric characters, dashes and underscores, and cannot be named "thumbs".',
+    'invalid_short_name' => 'The image manipulation short name may only contain alpha-numeric characters, dashes and underscores, and cannot use a built-in manipulation name: "thumbs", "resize", "crop", "rotate", "webp", or "avif".',
 
     'link' => 'Link',
 
@@ -157,6 +157,8 @@ $lang = array(
     'replace_no_metadata' => 'Only the file was replaced. The Title, Description, Credit, Location, and Categories were not updated.',
 
     'security_failure' => 'The file type you are attempting to upload is not allowed.',
+
+    'upload_directory_type_not_allowed' => 'The &ldquo;%s&rdquo; upload directory does not allow this file type. Choose another directory.',
 
     'select' => 'Select...',
 
@@ -998,7 +1000,7 @@ $lang = array(
 
     'move_file' => 'Move File',
 
-    'select_new_destinatin_for' => 'Select new destination for:',
+    'select_new_destination_for' => 'Select new destination for:',
 
     'destination' => 'Destination',
 

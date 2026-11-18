@@ -28,6 +28,7 @@ context('Cookie Consents', () => {
     after(function() {
         cy.eeConfig({ item: 'require_cookie_consent', value: 'n' })
         cy.eeConfig({ item: 'save_tmpl_files', value: 'n' })
+        cy.eeConfig({ item: 'website_session_type', value: 'c' })
     })
 
     it('tracker cookie not set if consent not granted', function() {
@@ -277,6 +278,71 @@ context('Cookie Consents', () => {
             cy.get('[name="ee:cookies_targeting"]').should('be.checked');
         })
 
+    });
+
+    it('supports submit_to targets in consent form', function() {
+        cy.clearCookies()
+        cy.visit('index.php/consents/form')
+        cy.get('#cookieConsentForm')
+            .should('have.attr', 'action')
+            .and('include', '/consents/form')
+        cy.intercept('POST', '**/consents/form').as('currentSubmit')
+        cy.get('[name=submit]').click()
+        cy.wait('@currentSubmit')
+        cy.visit('index.php/about/contact')
+        cy.getCookie('exp_tracker').should('exist')
+
+        cy.clearCookies()
+        cy.visit('index.php/consents/form_site_index')
+        cy.get('#cookieConsentForm').invoke('attr', 'action').then((action) => {
+            expect(action).to.match(/\/index\.php\/?$/)
+        })
+        cy.intercept('POST', '**/index.php').as('siteIndexSubmit')
+        cy.get('[name=submit]').click()
+        cy.wait('@siteIndexSubmit')
+        cy.visit('index.php/about/contact')
+        cy.getCookie('exp_tracker').should('exist')
+
+        cy.clearCookies()
+        cy.visit('index.php/consents/form_action_id')
+        cy.get('#cookieConsentForm').invoke('attr', 'action').then((action) => {
+            expect(action).to.match(/\/index\.php\?ACT=\d+$/)
+        })
+        cy.intercept('POST', /\/index\.php\?ACT=\d+$/).as('actionIdSubmit')
+        cy.get('[name=submit]').click()
+        cy.wait('@actionIdSubmit')
+        cy.visit('index.php/about/contact')
+        cy.getCookie('exp_tracker').should('exist')
+    });
+
+    it('preserves URL session token for action_id submit_to', function() {
+        cy.eeConfig({ item: 'website_session_type', value: 's' })
+        cy.eeConfig({ item: 'website_session_type' }).then((config) => {
+            expect(config.trim()).to.be.equal('s')
+        })
+
+        cy.clearCookies()
+        cy.visit('index.php/members/login')
+        cy.get('input[name=username]').clear().type('admin')
+        cy.get('input[name=password]').clear().type('password')
+        cy.get('input[name=submit]').click()
+        cy.get('.sidebar').should('not.contain', 'Logged out')
+        cy.url().then((url) => {
+            const match = url.match(/\/S=[^/]+\//)
+            expect(match, 'URL session token').to.not.be.null
+            const sessionSegment = match[0]
+
+            cy.visit(`index.php${sessionSegment}consents/form_action_id`)
+            cy.get('#cookieConsentForm').invoke('attr', 'action').then((action) => {
+                expect(action).to.match(/\/index\.php\/S=[^/]+\/\?ACT=\d+$/)
+            })
+
+            cy.intercept('POST', /\/index\.php\/S=[^/]+\/\?ACT=\d+$/).as('actionIdSubmitWithSession')
+            cy.get('[name=submit]').click()
+            cy.wait('@actionIdSubmitWithSession')
+            cy.visit(`index.php${sessionSegment}about/contact`)
+            cy.getCookie('exp_tracker').should('exist')
+        })
     });
 
 

@@ -253,6 +253,7 @@ class RunnerTest extends TestCase
             array($parser_exception,	'Double float',						'{if 1.2.3 }out{/if}'),
             array($parser_exception,	'Comment Looks Like Math',			'{if 7 /* 5 }out{/if}'),
             array($parser_exception,	'Inline Comment Looks Like Math',	'{if 7 // 5 }out{/if}'),
+            array($parser_exception,	'Function-call syntax',				'{if value == transform()}out{/if}'),
 
         );
     }

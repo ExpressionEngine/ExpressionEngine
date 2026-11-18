@@ -155,6 +155,7 @@ class Usage
                 $replacement = [];
                 foreach ($query->result_array() as $row) {
                     $update = [];
+                    $countFilesUsed = [];
                     foreach ($fields as $fieldName) {
                         $data = $row[$fieldName];
                         if (strpos((string) $data, '{filedir_') !== false || strpos((string) $data, '{file:') !== false) {
@@ -205,7 +206,6 @@ class Usage
                             //replace, actually
                             if (!empty($currentReplacement)) {
                                 $customFieldId = str_replace(['field_id_', 'col_id_', 'category_image'], ['', '', ''], $fieldName);
-                                $countFilesUsed = [];
                                 foreach ($currentReplacement as $oldTag => $replacementData) {
                                     //the replacements are being counted
                                     $numberOfReplacements = 0;

@@ -57,7 +57,92 @@ class StructureUserAccessTest extends StructureTestBase
 		$settings = [ 'perm_delete_9' => 'y' ];
 		$this->assertTrue($this->structure->user_access('perm_delete', $settings));
 	}
+
+	public function testAdminPermissionKeyPresenceGrantsAccessEvenWhenDisabled()
+	{
+		ee()->setMock('session', (object) ['userdata' => ['group_id' => 10]]);
+		$settings = [ 'perm_admin_structure_10' => 'n' ];
+
+		$this->assertTrue($this->structure->user_access('perm_delete', $settings));
+	}
+
+	public function testSuperAdminSkipsDatabaseLookup()
+	{
+		ee()->setMock('session', (object) ['userdata' => ['group_id' => 1]]);
+		ee()->setMock('db', new class extends eeDbArMock {
+			public function select($field = null)
+			{
+				throw new RuntimeException('Super admins should return before database lookup.');
+			}
+		});
+
+		$this->assertTrue($this->structure->user_access('perm_delete'));
+	}
+
+	public function testProvidedSettingsSkipDatabaseLookup()
+	{
+		ee()->setMock('session', (object) ['userdata' => ['group_id' => 11]]);
+		ee()->setMock('db', new class extends eeDbArMock {
+			public function select($field = null)
+			{
+				throw new RuntimeException('Database lookup should be skipped when settings are provided.');
+			}
+		});
+
+		$this->assertFalse($this->structure->user_access('perm_delete', ['foo' => 'bar']));
+	}
+
+	public function testDbLookupUsesExpectedPermissionKeys()
+	{
+		ee()->setMock('session', (object) ['userdata' => ['group_id' => 12]]);
+
+		$db = new class extends eeDbArMock {
+			public $selected = [];
+			public $fromTable;
+			public $whereCalls = [];
+			public $orWhereCalls = [];
+
+			public function select($field = null)
+			{
+				$this->selected[] = $field;
+
+				return $this;
+			}
+
+			public function from($table = null)
+			{
+				$this->fromTable = $table;
+
+				return $this;
+			}
+
+			public function where($field = null, $value = null)
+			{
+				$this->whereCalls[] = [$field, $value];
+
+				return $this;
+			}
+
+			public function or_where($field = null, $value = null)
+			{
+				$this->orWhereCalls[] = [$field, $value];
+
+				return $this;
+			}
+
+			public function num_rows()
+			{
+				return 1;
+			}
+		};
+
+		ee()->setMock('db', $db);
+
+		$this->assertTrue($this->structure->user_access('perm_delete'));
+		$this->assertSame(['var'], $db->selected);
+		$this->assertSame('structure_settings', $db->fromTable);
+		$this->assertSame([['var', 'perm_admin_structure_12']], $db->whereCalls);
+		$this->assertSame([['var', 'perm_delete_12']], $db->orWhereCalls);
+	}
 }
-
-
 

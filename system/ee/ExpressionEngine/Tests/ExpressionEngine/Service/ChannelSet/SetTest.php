@@ -2347,7 +2347,7 @@ class SetTest extends TestCase
     {
         $reflection = new \ReflectionClass($object);
         $prop = $reflection->getProperty($property);
-        $prop->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($prop);
         return $prop->getValue($object);
     }
 
@@ -2358,7 +2358,7 @@ class SetTest extends TestCase
     {
         $reflection = new \ReflectionClass($object);
         $prop = $reflection->getProperty($property);
-        $prop->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($prop);
         $prop->setValue($object, $value);
     }
 
@@ -2369,7 +2369,7 @@ class SetTest extends TestCase
     {
         $reflection = new \ReflectionClass($object);
         $meth = $reflection->getMethod($method);
-        $meth->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($meth);
         return $meth->invokeArgs($object, $args);
     }
 

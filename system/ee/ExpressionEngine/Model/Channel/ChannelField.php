@@ -320,10 +320,10 @@ class ChannelField extends FieldModel
         }
 
         foreach ($fluid_fields as $fluid_field) {
-            if (in_array($this->getId(), $fluid_field->field_settings['field_channel_fields'])) {
+            if (in_array($this->getId(), (array) $fluid_field->field_settings['field_channel_fields'])) {
                 $field_id = $this->getId();
                 $settings = $fluid_field->field_settings;
-                $settings['field_channel_fields'] = array_filter($settings['field_channel_fields'], function ($var) use ($field_id) {
+                $settings['field_channel_fields'] = array_filter((array) $settings['field_channel_fields'], function ($var) use ($field_id) {
                     return ($var != $field_id);
                 });
                 $fluid_field->field_settings = $settings;

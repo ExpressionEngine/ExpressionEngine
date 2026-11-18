@@ -44,7 +44,25 @@ class StructureOrderEntriesTest extends StructureTestBase
         $out = $this->structure->order_entries();
         $this->assertSame('99', $out);
     }
+
+    public function testOrderEntriesReturnsEmptyStringWhenSqlReturnsNull()
+    {
+        $this->structure->sql = new class { public function get_data() { return null; } };
+        $out = $this->structure->order_entries();
+        $this->assertSame('', $out);
+    }
+
+    public function testOrderEntriesReturnsEmptyStringForEmptyTraversablePages()
+    {
+        $this->structure->sql = new class {
+            public function get_data()
+            {
+                return new ArrayIterator([]);
+            }
+        };
+
+        $out = $this->structure->order_entries();
+        $this->assertSame('', $out);
+    }
 }
-
-
 

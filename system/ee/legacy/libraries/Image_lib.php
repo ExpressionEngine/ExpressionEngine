@@ -504,8 +504,11 @@ class EE_Image_lib
         }
 
         //  Kill the file handles
-        imagedestroy($dst_img);
-        imagedestroy($src_img);
+        if (PHP_VERSION_ID < 80000) {
+            imagedestroy($dst_img);
+            imagedestroy($src_img);
+        }
+        unset($dst_img, $src_img);
 
         // Set the file to 777
         @chmod($this->full_dst_path, FILE_WRITE_MODE);
@@ -729,8 +732,11 @@ class EE_Image_lib
         }
 
         //  Kill the file handles
-        imagedestroy($dst_img);
-        imagedestroy($src_img);
+        if (PHP_VERSION_ID < 80000) {
+            imagedestroy($dst_img);
+            imagedestroy($src_img);
+        }
+        unset($dst_img, $src_img);
 
         // Set the file to 777
 
@@ -787,7 +793,10 @@ class EE_Image_lib
         }
 
         //  Kill the file handles
-        imagedestroy($new_img);
+        if (PHP_VERSION_ID < 80000) {
+            imagedestroy($new_img);
+        }
+        unset($new_img);
 
         // Set the file to 777
         @chmod($this->full_dst_path, FILE_WRITE_MODE);
@@ -796,18 +805,15 @@ class EE_Image_lib
     }
 
     /**
-     * Preserves transparencies when working with GIFs and PNGs
+     * Preserve source transparency on a destination GD image resource.
      *
-     * Provided a new image and source image resource, it works with those
-     * already-allocated resources, so it returns void
-     *
-     * @access  public
-     * @param   resource $new_img Destination image resource, will have alpha applied to this
-     * @param   resource $src_img Source image resource for reference
+     * @param resource $new_img Destination image resource that will receive transparency setup.
+     * @param resource $src_img Source image resource used to inspect transparency metadata.
+     * @return void
      */
     public function image_preserve_alpha($new_img, $src_img)
     {
-        // Preserve transparancies for GIFs and PNGs
+        // Preserve transparancies for GIFs and PNGs.
         if ($this->image_type == IMAGETYPE_GIF || $this->image_type == IMAGETYPE_PNG) {
             $src_alpha_index = imagecolortransparent($src_img);
 
@@ -827,17 +833,26 @@ class EE_Image_lib
                 // Set alpha color as background color and make it transparent
                 imagefill($new_img, 0, 0, $alpha_index);
                 imagecolortransparent($new_img, $alpha_index);
-            } elseif ($this->image_type == IMAGETYPE_PNG) {
-                imagealphablending($new_img, false);
 
-                // Create a new transparent color for image
-                $alpha_color = imagecolorallocatealpha($new_img, 0, 0, 0, 127);
-
-                // Set alpha color as background color and save alpha state
-                imagefill($new_img, 0, 0, $alpha_color);
-                imagesavealpha($new_img, true);
+                return;
             }
         }
+
+        // If the image is not a PNG, WEBP or AVIF we will skip handling alpha channel support.
+        // Note: IMAGETYPE_AVIF was introduced in PHP 8.1.0 so the value 19 is used here instead.
+        $imagetype_avif = defined('IMAGETYPE_AVIF') ? IMAGETYPE_AVIF : 19;
+        if (! in_array($this->image_type, [IMAGETYPE_PNG, IMAGETYPE_WEBP, $imagetype_avif], true)) {
+            return;
+        }
+
+        imagealphablending($new_img, false);
+
+        // Create a new transparent color for image
+        $alpha_color = imagecolorallocatealpha($new_img, 0, 0, 0, 127);
+
+        // Set alpha color as background color and save alpha state
+        imagefill($new_img, 0, 0, $alpha_color);
+        imagesavealpha($new_img, true);
     }
 
     /**
@@ -974,8 +989,11 @@ class EE_Image_lib
             }
         }
 
-        imagedestroy($src_img);
-        imagedestroy($wm_img);
+        if (PHP_VERSION_ID < 80000) {
+            imagedestroy($src_img);
+            imagedestroy($wm_img);
+        }
+        unset($src_img, $wm_img);
 
         return true;
     }
@@ -992,7 +1010,7 @@ class EE_Image_lib
             return false;
         }
 
-        if ($this->wm_use_truetype == true and ! file_exists($this->wm_font_path)) {
+        if ($this->wm_use_truetype == true and ! file_exists_safe($this->wm_font_path)) {
             $this->set_error('imglib_missing_font');
 
             return false;
@@ -1125,7 +1143,10 @@ class EE_Image_lib
             $this->image_save_gd($src_img);
         }
 
-        imagedestroy($src_img);
+        if (PHP_VERSION_ID < 80000) {
+            imagedestroy($src_img);
+        }
+        unset($src_img);
 
         return true;
     }
@@ -1410,7 +1431,7 @@ class EE_Image_lib
             $path = $this->full_src_path;
         }
 
-        if (! file_exists($path)) {
+        if (! file_exists_safe($path)) {
             $this->set_error('imglib_invalid_path');
 
             return false;

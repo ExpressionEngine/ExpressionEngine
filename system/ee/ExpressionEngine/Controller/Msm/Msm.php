@@ -536,6 +536,18 @@ class Msm extends CP_Controller
             $site_ids = array($site_ids);
         }
 
+        if (! ee('Permission')->can('admin_sites')) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
+        $assignedSites = ee()->session->userdata('assigned_sites');
+        $assignedSites = is_array($assignedSites) ? $assignedSites : array();
+        $site_ids = array_map('intval', $site_ids);
+
+        if (array_diff($site_ids, array_map('intval', array_keys($assignedSites)))) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
         if (in_array(1, $site_ids)) {
             $site = ee('Model')->get('Site', 1)
                 ->fields('site_label')
@@ -560,27 +572,11 @@ class Msm extends CP_Controller
             ->addToBody($site_names)
             ->defer();
 
-        // Refresh Sites List
-        $assigned_sites = array();
-
-        if (ee('Permission')->isSuperAdmin()) {
-            $result = ee('Model')->get('Site')
-                ->fields('site_id', 'site_label')
-                ->order('site_label', 'asc')
-                ->all();
-        } elseif (ee()->session->userdata['assigned_sites'] != '') {
-            $result = ee('Model')->get('Site')
-                ->fields('site_id', 'site_label')
-                ->filter('site_id', explode('|', ee()->session->userdata['assigned_sites']))
-                ->order('site_label', 'asc')
-                ->all();
+        foreach ($site_ids as $siteId) {
+            unset($assignedSites[$siteId]);
         }
 
-        if ((ee('Permission')->isSuperAdmin() or ee()->session->userdata['assigned_sites'] != '') && count($result) > 0) {
-            $assigned_sites = $result->getDictionary('site_id', 'site_label');
-        }
-
-        ee()->session->userdata['assigned_sites'] = $assigned_sites;
+        ee()->session->userdata['assigned_sites'] = $assignedSites;
     }
 }
 

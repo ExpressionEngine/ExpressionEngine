@@ -118,10 +118,16 @@ class Sql extends Utilities
     }
 
     /**
-     * Results of table operation
+     * Run an authorized table maintenance operation.
+     *
+     * @return mixed
      */
     public function opResults()
     {
+        if (! ee('Permission')->can('access_sql_manager')) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
         $action = ee()->input->post('bulk_action');
         $tables = ee()->input->post('table');
 
@@ -138,9 +144,24 @@ class Sql extends Utilities
                 $data = $cache['data'];
             }
         } else {
+            if (! in_array($action, array('OPTIMIZE', 'REPAIR'), true) || ! is_array($tables) || empty($tables)) {
+                show_error(lang('unauthorized_access'), 403);
+            }
+
+            $available_tables = ee()->db->list_tables();
+            $prefix = ee()->db->dbprefix;
+            foreach ($tables as $table) {
+                if (! is_string($table)
+                    || strncmp($table, $prefix, strlen($prefix)) !== 0
+                    || ! in_array($table, $available_tables, true)
+                ) {
+                    show_error(lang('unauthorized_access'), 403);
+                }
+            }
+
             // Perform the action on each selected table and store the results
             foreach ($tables as $table) {
-                $query = ee()->db->query("{$action} TABLE " . ee()->db->escape_str($table));
+                $query = ee()->db->query("{$action} TABLE " . ee()->db->escape_identifiers($table));
 
                 foreach ($query->result_array() as $row) {
                     $row = array_values($row);

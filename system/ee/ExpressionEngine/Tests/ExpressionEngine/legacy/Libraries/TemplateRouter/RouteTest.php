@@ -7,6 +7,21 @@ require_once BASEPATH . 'libraries/template_router/Route.php';
 
 class RouteTest extends \PHPUnit\Framework\TestCase
 {
+    public function testNamedVariablesCompileAndBuildWithoutPrecisionNotices(): void
+    {
+        set_error_handler(function ($severity, $message, $file, $line) {
+            throw new \ErrorException($message, 0, $severity, $file, $line);
+        });
+        try {
+            $route = new \EE_Route('/articles/{category:alpha_dash}/{entry:alpha_dash}', true);
+            $this->assertSame('/articles/news/example', $route->build(['category' => 'news', 'entry' => 'example']));
+            $this->assertSame(1, preg_match('#' . $route->compile() . '#', 'articles/news/example'));
+            $this->assertSame(['category', 'entry'], array_values($route->subpatterns));
+        } finally {
+            restore_error_handler();
+        }
+    }
+
     protected function setUp(): void
     {
         ee()->setMock('Security/XSS', new class {

@@ -103,7 +103,7 @@ class ProSearchFieldsTest extends ProSearchTestBase
         // Use reflection to set the cache directly since we can't easily mock ee('Model')
         $reflection = new \ReflectionClass($this->fields);
         $cacheProperty = $reflection->getProperty('cache');
-        $cacheProperty->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($cacheProperty);
         
         // Create a helper function to create filtered results
         // This will handle the filter chain properly
@@ -239,7 +239,7 @@ class ProSearchFieldsTest extends ProSearchTestBase
         // Use reflection to set cache to empty
         $reflection = new \ReflectionClass($this->fields);
         $cacheProperty = $reflection->getProperty('cache');
-        $cacheProperty->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($cacheProperty);
         
         $emptyCache = $this->getMockBuilder('stdClass')
             ->addMethods(['filter', 'first', 'getDictionary', 'count'])

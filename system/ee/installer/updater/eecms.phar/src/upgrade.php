@@ -20,11 +20,13 @@ class Command
             if (isset($params['microapp'])) {
                 $step = (isset($params['step'])) ? $params['step'] : null;
 
-                return $this->updaterMicroapp($step);
+                $this->updaterMicroapp($step);
+                return;
             }
 
             if (isset($params['rollback'])) {
-                return $this->updaterMicroapp('rollback');
+                $this->updaterMicroapp('rollback');
+                return;
             }
 
             $this->start(! isset($params['y']));

@@ -597,7 +597,15 @@ class Template extends AbstractDesignController
             $_POST['template_engine'] = null;
         }
 
-        $template->set($_POST);
+        if (! ee('Permission')->isSuperAdmin()) {
+            $_POST['allow_php'] = $template->isNew() ? 'n' : $template->allow_php;
+            $_POST['php_parse_location'] = $template->isNew() ? 'o' : $template->php_parse_location;
+        }
+
+        $values = $_POST;
+        unset($values['group_id'], $values['site_id'], $values['template_id']);
+
+        $template->set($values);
         $template->edit_date = ee()->localize->now;
         $template->last_author_id = ee()->session->userdata('member_id');
 
@@ -644,12 +652,10 @@ class Template extends AbstractDesignController
     }
 
     /**
-     * Sets a template route entity with the POSTed data and validates it,
-     * setting an alert if there are any errors.
+     * Validate posted route settings while preserving the route's identity.
      *
      * @param TemplateModel $template A Template entity
-     * @return mixed FALSE if nothing was posted, void if it was an AJAX call,
-     *  or a ValidationResult object.
+     * @return ValidationResult|false
      */
     private function validateTemplateRoute(TemplateModel $template)
     {
@@ -667,7 +673,10 @@ class Template extends AbstractDesignController
             $template->TemplateRoute = ee('Model')->make('TemplateRoute');
         }
 
-        $template->TemplateRoute->set($_POST);
+        $values = $_POST;
+        unset($values['route_id'], $values['template_id']);
+
+        $template->TemplateRoute->set($values);
         $result = $template->TemplateRoute->validate();
 
         if (! isset($_POST['save_modal']) && $response = $this->ajaxValidation($result)) {

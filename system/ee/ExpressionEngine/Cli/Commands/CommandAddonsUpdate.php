@@ -81,6 +81,12 @@ class CommandAddonsUpdate extends Cli
         ee('CP/JumpMenu')->clearAllCaches();
     }
 
+    /**
+     * Update the installed components of an add-on.
+     *
+     * @param string $addon
+     * @return void
+     */
     private function updateAddon($addon)
     {
         $addon = ee('pro:Addon')->get($addon);
@@ -140,21 +146,16 @@ class CommandAddonsUpdate extends Cli
                 }
             }
             if ($addon->hasExtension()) {
-                $class = $addon->getExtensionClass();
-                $EXT = new $class();
-                $EXT->update_extension($version);
-                ee()->extensions->version_numbers[ucfirst($addon->getPrefix()) . '_ext'] = $version;
-
-                $model = ee('Model')->get('Extension')
-                    ->filter('class', ucfirst($addon->getPrefix()) . '_ext')
-                    ->all();
-                $model->version = $version;
-                $model->save();
+                $this->updateExtension($addon, $version);
             }
             if ($addon->hasPlugin()) {
                 $model = ee('Model')->get('Plugin')->filter('plugin_package', $addon->getPrefix())->first();
+                if (! $model) {
+                    $model = ee('Model')->make('Plugin');
+                }
                 $model->set([
                     'plugin_name' => $addon->getName(),
+                    'plugin_package' => $addon->getPrefix(),
                     'plugin_version' => $addon->getVersion(),
                     'is_typography_related' => $addon->get('plugin.typography') ? 'y' : 'n'
                 ]);
@@ -171,5 +172,43 @@ class CommandAddonsUpdate extends Cli
         ee()->load->remove_package_path($addon->getPath());
 
         $this->info(sprintf(lang('command_addons_update_complete'), $addon->getName()));
+    }
+
+    /**
+     * Migrate an installed extension while preserving its disabled state.
+     *
+     * @param \ExpressionEngine\Service\Addon\Addon $addon
+     * @param string $version
+     * @return void
+     * @throws \Exception
+     */
+    private function updateExtension($addon, $version)
+    {
+        $extensionClass = ucfirst($addon->getPrefix()) . '_ext';
+        $query = ee('Model')->get('Extension')->filter('class', $extensionClass);
+        $installedHooks = $query->all();
+        $installedExtension = $installedHooks->first();
+
+        if (! $installedExtension) {
+            return;
+        }
+
+        $wasDisabled = ! in_array(true, $installedHooks->pluck('enabled'), true);
+
+        try {
+            $class = $addon->getExtensionClass();
+            $updater = new $class();
+            $updater->update_extension($installedExtension->version);
+        } finally {
+            if ($wasDisabled) {
+                ee('db')->where('class', $extensionClass)->update('extensions', ['enabled' => 'n']);
+            }
+        }
+
+        ee()->extensions->version_numbers[$extensionClass] = $version;
+
+        $updatedHooks = $query->all();
+        $updatedHooks->version = $version;
+        $updatedHooks->save();
     }
 }

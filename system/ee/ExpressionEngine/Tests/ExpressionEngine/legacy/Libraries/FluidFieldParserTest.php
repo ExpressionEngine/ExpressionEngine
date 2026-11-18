@@ -2576,21 +2576,21 @@ class FluidFieldParserTest extends \PHPUnit\Framework\TestCase
     private function invokePrivateMethod($object, string $method, array $args = [])
     {
         $reflection = new \ReflectionMethod($object, $method);
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($reflection);
         return $reflection->invokeArgs($object, $args);
     }
 
     private function getPrivateProperty($object, string $property)
     {
         $reflection = new \ReflectionProperty($object, $property);
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($reflection);
         return $reflection->getValue($object);
     }
 
     private function setPrivateProperty($object, string $property, $value): void
     {
         $reflection = new \ReflectionProperty($object, $property);
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($reflection);
         $reflection->setValue($object, $value);
     }
 }

@@ -20,7 +20,9 @@
 return array(
     'img' => array(
         'application/x-photoshop', // .psd
+        'image/vnd.adobe.photoshop', // .psd
         'image/bmp', // .bmp
+        'image/x-ms-bmp', // .bmp
         'image/gif', // .gif
         'image/jpeg', // .jpg, .jpe, .jpeg
         'image/pjpeg', // .jpg, .jpe, .jpeg
@@ -108,9 +110,13 @@ return array(
     ),
     'archive' => array(
         'application/x-gtar', // .gtar
+        'application/gzip', // .gz
         'application/x-gzip', // .gz
+        'application/vnd.rar', // .rar
+        'application/x-rar', // .rar
         'application/x-rar-compressed', // .rar
         'application/x-stuffit', // .sit
+        'application/tar', // .tar, .tgz
         'application/x-tar', // .tar, .tgz
         'application/x-zip', // .zip
         'application/x-zip-compressed', // .zip
@@ -118,7 +124,9 @@ return array(
     ),
     'audio' => array(
         'audio/flac', // .flac
+        'audio/x-flac', // .flac
         'audio/m4a', // .m4a
+        'audio/mp4a-latm', // .m4a, .m4p
         'audio/x-m4a', // m4a
         'audio/midi', // .mid, .midi
         'audio/mp4', // .mp4
@@ -129,11 +137,14 @@ return array(
         'audio/x-pn-realaudio', // .ram, .rm
         'audio/x-pn-realaudio-plugin', // .rpm
         'audio/x-realaudio', // .ra
+        'audio/wav', // .wav
+        'audio/wave', // .wav
         'audio/x-wav', // .wav
     ),
     'video' => array(
         'application/ogg', // .ogv
         'video/m4v', // .m4v
+        'video/x-m4v', // .m4v
         'video/mp4', // .mp4
         'video/mpeg', // .mpe, .mpeg, .mpg
         'video/ogg', // .ogv

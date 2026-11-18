@@ -4,17 +4,19 @@ require_once __DIR__ . '/../StructureTestBase.php';
 
 class StructureEntryLinkingTest extends StructureTestBase
 {
-    private function setTemplateForEntryLinking(string $tagdata): void
+    private function setTemplateForEntryLinking(string $tagdata, ?array $varSingle = null): void
     {
-        ee()->setMock('TMPL', new class($tagdata) extends FakeTemplate {
+        $varSingle = $varSingle ?? [
+            'linking_title' => 'linking_title',
+            'linking_page_url' => 'linking_page_url',
+        ];
+
+        ee()->setMock('TMPL', new class($tagdata, $varSingle) extends FakeTemplate {
             public $var_single;
-            public function __construct($tagdata)
+            public function __construct($tagdata, $varSingle)
             {
                 $this->tagdata = $tagdata;
-                $this->var_single = [
-                    'linking_title' => 'linking_title',
-                    'linking_page_url' => 'linking_page_url',
-                ];
+                $this->var_single = $varSingle;
             }
             public function swap_var_single($var, $val, $html)
             {
@@ -23,9 +25,9 @@ class StructureEntryLinkingTest extends StructureTestBase
         });
     }
 
-    private function setDbForOrder(string $order): void
+    private function setDbForOrder(string $order, ?array $rowsAsc = null): void
     {
-        $rowsAsc = [
+        $rowsAsc = $rowsAsc ?? [
             ['entry_id' => 200, 'title' => 'Prev'],
             ['entry_id' => 201, 'title' => 'Current'],
             ['entry_id' => 202, 'title' => 'Next'],
@@ -199,7 +201,141 @@ class StructureEntryLinkingTest extends StructureTestBase
         $out = $this->structure->entry_linking();
         $this->assertSame('', $out);
     }
-}
 
+    public function testReturnsFalseWhenSitePagesAreUnavailable()
+    {
+        $this->setTemplateForEntryLinking('{linking_title}');
+        $this->structure->sql = new class {
+            public function get_site_pages()
+            {
+                return false;
+            }
+        };
+
+        $this->assertFalse($this->structure->entry_linking());
+    }
+
+    public function testReturnsEmptyWhenUriIsNotMappedToStructureEntry()
+    {
+        $this->setTemplateForEntryLinking('{linking_title}');
+        $this->structure->site_pages = [
+            'url' => '/',
+            'uris' => [
+                201 => '/parent/item',
+            ],
+        ];
+
+        $sitePages = $this->structure->site_pages;
+        $this->structure->sql = new class($sitePages) {
+            private $sp;
+            public function __construct($sp)
+            {
+                $this->sp = $sp;
+            }
+            public function get_uri()
+            {
+                return '/missing';
+            }
+            public function get_site_pages()
+            {
+                return $this->sp;
+            }
+        };
+
+        $this->setTemplateParams(['type' => 'next']);
+
+        $this->assertSame('', $this->structure->entry_linking());
+    }
+
+    public function testListingEntriesUseParentNodeToResolveNextLink()
+    {
+        $this->setTemplateForEntryLinking('Next up: {linking_title} ({linking_page_url})');
+        $this->structure->site_pages = [
+            'url' => '/',
+            'uris' => [
+                100 => '/parent',
+                301 => '/parent/listing-one',
+                302 => '/parent/listing-two',
+            ],
+        ];
+
+        $sitePages = $this->structure->site_pages;
+        $this->structure->sql = new class($sitePages) {
+            private $sp;
+            public function __construct($sp)
+            {
+                $this->sp = $sp;
+            }
+            public function get_uri()
+            {
+                return '/parent/listing-one';
+            }
+            public function get_site_pages()
+            {
+                return $this->sp;
+            }
+        };
+
+        $this->structure->nset = new class {
+            public function getNode($entryId)
+            {
+                if ($entryId == 100) {
+                    return [
+                        'listing_cid' => 12,
+                        'parent_id' => 0,
+                    ];
+                }
+
+                return false;
+            }
+        };
+
+        $listingRows = [
+            ['entry_id' => 301, 'title' => 'Current listing'],
+            ['entry_id' => 302, 'title' => 'Next listing'],
+        ];
+        $this->setDbForOrder('ASC', $listingRows);
+        $this->setTemplateParams(['type' => 'next']);
+
+        $out = $this->structure->entry_linking();
+
+        $this->assertSame('Next up: Next listing (/parent/listing-two)', $out);
+    }
+
+    public function testReturnsEmptyWhenListingChannelHasNoOpenEntries()
+    {
+        $this->setTemplateForEntryLinking('{linking_title}');
+        $this->setSiteAndNset();
+        $this->setDbForOrder('ASC', []);
+        $this->setTemplateParams(['type' => 'next']);
+
+        $this->assertSame('', $this->structure->entry_linking());
+    }
+
+    public function testLeavesUnknownTemplateVariablesUnchanged()
+    {
+        $this->setTemplateForEntryLinking('Next up: {linking_title} {unknown}', [
+            'linking_title' => 'linking_title',
+            'unknown' => 'unknown',
+        ]);
+        $this->setSiteAndNset();
+        $this->setDbForOrder('ASC');
+        $this->setTemplateParams(['type' => 'next']);
+
+        $out = $this->structure->entry_linking();
+
+        $this->assertSame('Next up: Next {unknown}', $out);
+    }
+
+    public function testAllowsEmptyTagdataWhenVariablesAreNotRequested()
+    {
+        $this->setTemplateForEntryLinking('', []);
+        $this->setSiteAndNset();
+        $this->setDbForOrder('ASC');
+        $this->setTemplateParams(['type' => 'next']);
+
+        $this->assertSame('', $this->structure->entry_linking());
+    }
+}
 
 

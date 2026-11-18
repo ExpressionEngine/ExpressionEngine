@@ -604,7 +604,7 @@ class SelectAccessProxy extends Select
     public function getCustomFieldsPublic($modelName, $columnPrefix, $fieldIds)
     {
         $ref = new \ReflectionMethod(Select::class, 'getCustomFields');
-        $ref->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($ref);
 
         return $ref->invoke($this, $modelName, $columnPrefix, $fieldIds);
     }

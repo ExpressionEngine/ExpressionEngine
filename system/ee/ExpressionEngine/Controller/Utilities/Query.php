@@ -83,13 +83,21 @@ class Query extends Utilities
     }
 
     /**
-     * Query handler
+     * Run a submitted database query.
      *
-     * @param string	$table	Table name, used when coming from SQL Manager
-     *                      	for proper page-naming and breadcrumb-setting
+     * @param string $table_name
+     * @return mixed
      */
     public function runQuery($table_name = '')
     {
+        if (! ee('Permission')->can('access_sql_manager')) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
+        if (ee()->input->post('thequery') && ! ee('Permission')->isSuperAdmin()) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
         $row_limit = 25;
         $title = lang('query_result');
         $vars['write'] = false;

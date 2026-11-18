@@ -698,20 +698,7 @@ class Moblog
                                             preg_match("/\<field\>(.*)\<\/field\>/s", $this->body, $matches))) {
                 $matches[1] = trim($matches[1]);
 
-                ee()->db->select('field_id');
-                ee()->db->from('channel_fields');
-                ee()->db->where('(channel_fields.field_name = "' . $matches[1] . '" OR ' . ee()->db->dbprefix('channel_fields') . '.field_label = "' . $matches[1] . '")', null, false);
-
-                /* -------------------------------------
-                /*  Hidden Configuration Variable
-                /*  - moblog_allow_nontextareas => Removes the textarea only restriction
-                /*	for custom fields in the moblog module (y/n)
-                /* -------------------------------------*/
-                if (ee()->config->item('moblog_allow_nontextareas') != 'y') {
-                    ee()->db->where('channel_fields.field_type', 'textarea');
-                }
-
-                $results = ee()->db->get();
+                $results = $this->getFieldByNameOrLabel($matches[1], 'field_id');
 
                 if ($results->num_rows() > 0) {
                     $this->moblog_array['moblog_field_id'] = trim($results->row('field_id'));
@@ -1040,6 +1027,40 @@ class Moblog
     }
 
     /**
+     * Look up a Moblog target field by name or label using bound values.
+     */
+    private function getFieldByNameOrLabel($field_name, $select = 'field_id', $group_id = null)
+    {
+        $where = array();
+        $binds = array();
+
+        if ($group_id !== null) {
+            $where[] = 'group_id = ?';
+            $binds[] = $group_id;
+        }
+
+        $where[] = '(field_name = ? OR field_label = ?)';
+        $binds[] = $field_name;
+        $binds[] = $field_name;
+
+        /* -------------------------------------
+        /*  Hidden Configuration Variable
+        /*  - moblog_allow_nontextareas => Removes the textarea only restriction
+        /*	for custom fields in the moblog module (y/n)
+        /* -------------------------------------*/
+        if (ee()->config->item('moblog_allow_nontextareas') != 'y') {
+            $where[] = 'field_type = ?';
+            $binds[] = 'textarea';
+        }
+
+        $sql = 'SELECT ' . $select .
+            ' FROM ' . ee()->db->dbprefix('channel_fields') .
+            ' WHERE ' . implode(' AND ', $where);
+
+        return ee()->db->query($sql, $binds);
+    }
+
+    /**
      * 	parse_field
      *
      *	@param mixed - params
@@ -1064,17 +1085,7 @@ class Moblog
             $format = ($results->num_rows() > 0) ? $results->row('field_fmt') : 'none';
         } else {
             if ($params['name'] != '' && $params['format'] == '') {
-                $xsql = (ee()->config->item('moblog_allow_nontextareas') == 'y') ? "" : " AND exp_channel_fields.field_type = 'textarea' ";
-
-                ee()->db->select('field_id, field_fmt');
-                ee()->db->where('group_id', $field_id);
-                ee()->db->where('(field_name = "' . $params['name'] . '" OR field_label = "' . $params['name'] . '")', null, false);
-
-                if (ee()->config->item('moblog_allow_nontextareas') != 'y') {
-                    ee()->db->where('field_type', 'textarea');
-                }
-
-                $results = ee()->db->get('channel_fields');
+                $results = $this->getFieldByNameOrLabel($params['name'], 'field_id, field_fmt', $field_id);
 
                 $field_id = ($results->num_rows() > 0) ? $results->row('field_id') : $this->moblog_array['moblog_field_id'];
                 $format = ($results->num_rows() > 0) ? $results->row('field_fmt') : 'none';
@@ -1091,16 +1102,7 @@ class Moblog
                 $field_id = $this->moblog_array['moblog_field_id'];
                 $format = $params['format'];
             } elseif ($params['name'] != '' && $params['format'] != '') {
-                $xsql = (ee()->config->item('moblog_allow_nontextareas') == 'y') ? "" : " AND exp_channel_fields.field_type = 'textarea' ";
-
-                ee()->db->select('field_id');
-                ee()->db->where('(field_name = "' . $params['name'] . '" OR field_label = "' . $params['name'] . '")');
-
-                if (ee()->config->item('moblog_allow_nontextareas') != 'y') {
-                    ee()->db->where('field_type', 'textarea');
-                }
-
-                $results = ee()->db->get('channel_fields');
+                $results = $this->getFieldByNameOrLabel($params['name'], 'field_id');
 
                 $field_id = ($results->num_rows() > 0) ? $results->row('field_id') : $this->moblog_array['moblog_field_id'];
                 $format = $params['format'];
@@ -1595,7 +1597,9 @@ class Moblog
             return true;
         }
 
-        // Clean the file
+        // Clean decoded attachment content before raw_upload().
+        // EE_Upload is loaded below with explicit config, so its constructor
+        // does not enable the default xss_check() behavior for this path.
         ee()->load->helper('xss');
 
         if (xss_check()) {
@@ -1652,7 +1656,8 @@ class Moblog
             $file_path = ee()->upload->upload_path . $filename;
         }
 
-        // Disable xss cleaning in the filemanager
+        // The decoded attachment contents were cleaned above. Avoid a second
+        // File Manager XSS pass while registering the already-uploaded file.
         ee()->filemanager->xss_clean_off();
 
         // Send the file

@@ -174,12 +174,12 @@ class GlobalVariable extends FileSyncedModel
     }
 
     /**
-     * Load all variabless available on this site, including global variabless and
+     * Load all variables available on this site, including global variables and
      * any that are currently only available as files.
      *
      * This method is run from a front-end context, so we are sensitive to having as few and light queries as possible.
      *
-     * @return Collection of variabless
+     * @return \ExpressionEngine\Service\Model\Collection
      */
     public function loadAll()
     {
@@ -190,6 +190,10 @@ class GlobalVariable extends FileSyncedModel
 
         foreach ($paths as $path) {
             try {
+                if (! ee('Filesystem')->isDir($path)) {
+                    continue;
+                }
+
                 ee('Filesystem')->getDirectoryContents($path, true, true);
             } catch (\Exception $e) {
                 //silently continue

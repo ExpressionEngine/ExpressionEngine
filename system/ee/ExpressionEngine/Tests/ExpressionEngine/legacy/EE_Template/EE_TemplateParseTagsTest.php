@@ -250,6 +250,26 @@ class EE_TemplateParseTagsTest extends EE_TemplateTestBase
         $this->assertStringContainsString('{if no_results}No results found{/if}', $tagData['no_results_block']);
     }
 
+    public function testParseTagsHandlesNestedNoResultsConditionals()
+    {
+        $template = '{exp:channel:entries}Main{if no_results}{if segment_1}No{/if}{/if}{/exp:channel:entries}';
+
+        $this->variablesParserMock->method('getFullTag')->willReturnCallback(function($templateString, $tag) {
+            if (strpos($tag, '{if no_results}') === 0) {
+                return '{if no_results}{if segment_1}No{/if}{/if}';
+            }
+
+            return $tag;
+        });
+
+        $this->template->template = $template;
+        $this->template->parse_tags();
+
+        $tagData = $this->template->tag_data[0];
+        $this->assertSame('{if segment_1}No', $tagData['no_results']);
+        $this->assertStringStartsWith('{if no_results}{if segment_1}No{/if}', $tagData['no_results_block']);
+    }
+
     /**
      * Test that parse_tags handles random tags specially
      */

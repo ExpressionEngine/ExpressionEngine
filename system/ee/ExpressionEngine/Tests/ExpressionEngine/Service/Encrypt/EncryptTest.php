@@ -210,4 +210,26 @@ class EncryptTest extends TestCase
         $encrypt = new Encrypt\Encrypt("SomeDefaultKey");
         $encrypt->verifySignature('Hi', 'John Hancock', null, 'FooBarAlgorithm');
     }
+
+    public function testGenerateKeyReturnsSha1LengthRandomHex()
+    {
+        $encrypt = new Encrypt\Encrypt("SomeDefaultKey");
+
+        $key = $encrypt->generateKey();
+
+        $this->assertMatchesRegularExpression('/^[a-f0-9]{40}$/', $key);
+    }
+
+    public function testGenerateKeyDoesNotUsePredictableRandomSources()
+    {
+        $method = new \ReflectionMethod(Encrypt\Encrypt::class, 'generateKey');
+        $source = implode('', array_slice(
+            file($method->getFileName()),
+            $method->getStartLine() - 1,
+            $method->getEndLine() - $method->getStartLine() + 1
+        ));
+
+        $this->assertStringNotContainsString('mt_rand(', $source);
+        $this->assertStringNotContainsString('uniqid(', $source);
+    }
 }
