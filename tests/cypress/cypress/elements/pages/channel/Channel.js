@@ -38,6 +38,7 @@ class Channel extends ControlPanel {
 
             // Settings Tab
             "channel_description": 'textarea[name=channel_description]',
+            "channel_lang_filter": 'div[data-input-value="channel_lang"] .search-input__input',
             "channel_lang": 'div[data-input-value="channel_lang"] input[type="radio"]',
 
             "channel_url": 'input[type!=hidden][name=channel_url]',

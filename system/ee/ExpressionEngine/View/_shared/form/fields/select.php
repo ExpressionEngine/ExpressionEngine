@@ -150,9 +150,12 @@ else:
         'noResults' => isset($no_results['text']) ? lang($no_results['text']) : null,
         'splitForTwo' => isset($split_for_two) ? $split_for_two : null,
         'toggles' => isset($toggles) ? $toggles : [],
-        'virtualizationThreshold' => isset($virtualization_threshold) ? $virtualization_threshold : 100,
-        'virtualizationHeight' => isset($virtualization_height) ? $virtualization_height : 400
+        'virtualizationThreshold' => isset($virtualization_threshold) ? $virtualization_threshold : 100
     ];
+
+    if (isset($virtualization_height)) {
+        $component['virtualizationHeight'] = $virtualization_height;
+    }
     ?>
 	<div data-select-react="<?=base64_encode(json_encode($component))?>" data-input-value="<?=$field_name?>" class="<?=$class?>">
 		<div class="fields-select">
