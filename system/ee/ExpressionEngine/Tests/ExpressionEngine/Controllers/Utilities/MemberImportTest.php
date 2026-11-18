@@ -21,6 +21,18 @@ require_once __DIR__ . '/UtilitiesTestHelper.php';
 
 class MemberImportTest extends TestCase
 {
+    /**
+     * Role assignment relationships and the member methods that report them.
+     */
+    private const ASSIGNMENTS = array(
+        'AssignedModules' => 'getAssignedModules',
+        'AssignedChannels' => 'getAssignedChannels',
+        'AssignedUploadDestinations' => 'getAssignedUploadDestinations',
+        'AssignedStatuses' => 'getAssignedStatuses',
+        'AssignedTemplateGroups' => 'getAssignedTemplateGroups',
+        'AssignedTemplates' => 'getAssignedTemplates',
+    );
+
     public static function setUpBeforeClass(): void
     {
         require_once(APPPATH . 'core/Controller.php');
@@ -176,7 +188,7 @@ class MemberImportTest extends TestCase
         $query = $this->getMockBuilder(stdClass::class)
             ->addMethods(array('first'))
             ->getMock();
-        $query->method('first')->willReturn((object) array('is_locked' => 'n'));
+        $query->method('first')->willReturn($this->makeRole(5, 'n'));
 
         $lookedUpRoleIds = array();
         $model = $this->getMockBuilder(stdClass::class)
@@ -229,13 +241,13 @@ class MemberImportTest extends TestCase
     }
 
     /**
-     * Allow an unlocked role for a non-Super Admin.
+     * Allow the default member role for a non-Super Admin.
      *
      * @return void
      */
-    public function testUnlockedRoleIsAssignableByNonSuperAdmin()
+    public function testDefaultMemberRoleIsAssignableByNonSuperAdmin()
     {
-        $role = (object) array('is_locked' => 'n');
+        $role = $this->makeRole(5, 'n');
         $this->mockRoleLookup($role);
         $this->mockSuperAdmin(false);
 
@@ -254,6 +266,220 @@ class MemberImportTest extends TestCase
         $this->mockSuperAdmin(true);
 
         $this->assertSame($role, $this->invokeAuthorizedRole(1));
+    }
+
+    /**
+     * Reject a locked default member role for a non-Super Admin.
+     *
+     * @return void
+     */
+    public function testLockedDefaultMemberRoleIsNotAssignableByNonSuperAdmin()
+    {
+        $this->mockRoleLookup($this->makeRole(5, 'y'));
+        $this->mockSuperAdmin(false);
+
+        $this->expectException(UtilitiesShowErrorException::class);
+        $this->expectExceptionCode(403);
+
+        $this->invokeAuthorizedRole(5);
+    }
+
+    /**
+     * Allow an unlocked role whose permissions and assignments the importer also holds.
+     *
+     * @return void
+     */
+    public function testRoleWithinImporterAccessIsAssignableByNonSuperAdmin()
+    {
+        $role = $this->makeGrantingRole(8, 'n', array('1:can_access_cp'), array('AssignedChannels' => array(2)));
+        $this->mockRoleLookup($role);
+        $this->mockSuperAdmin(false);
+        $this->mockImporter(array('1:can_access_cp', '1:can_access_utilities'), array('AssignedChannels' => array(2, 3)));
+
+        $this->assertSame($role, $this->invokeAuthorizedRole(8));
+    }
+
+    /**
+     * Reject an unlocked role that holds a permission the importer does not.
+     *
+     * @return void
+     */
+    public function testRoleWithPermissionTheImporterLacksIsNotAssignable()
+    {
+        $this->mockRoleLookup($this->makeGrantingRole(8, 'n', array('1:can_access_cp', '1:can_edit_members')));
+        $this->mockSuperAdmin(false);
+        $this->mockImporter(array('1:can_access_cp'));
+
+        $this->expectException(UtilitiesShowErrorException::class);
+        $this->expectExceptionCode(403);
+
+        $this->invokeAuthorizedRole(8);
+    }
+
+    /**
+     * Compare permissions site by site.
+     *
+     * @return void
+     */
+    public function testRolePermissionsAreComparedForEachSite()
+    {
+        $this->mockRoleLookup($this->makeGrantingRole(8, 'n', array('2:can_access_cp')));
+        $this->mockSuperAdmin(false);
+        $this->mockImporter(array('1:can_access_cp'));
+
+        $this->expectException(UtilitiesShowErrorException::class);
+        $this->expectExceptionCode(403);
+
+        $this->invokeAuthorizedRole(8);
+    }
+
+    /**
+     * Reject an unlocked role that has an assignment the importer does not.
+     *
+     * @dataProvider assignmentProvider
+     * @param string $relationship
+     * @return void
+     */
+    public function testRoleWithAssignmentTheImporterLacksIsNotAssignable($relationship)
+    {
+        $this->mockRoleLookup($this->makeGrantingRole(8, 'n', array(), array($relationship => array(7))));
+        $this->mockSuperAdmin(false);
+        $this->mockImporter(array(), array($relationship => array(6)));
+
+        $this->expectException(UtilitiesShowErrorException::class);
+        $this->expectExceptionCode(403);
+
+        $this->invokeAuthorizedRole(8);
+    }
+
+    /**
+     * Provide each kind of role assignment.
+     *
+     * @return array
+     */
+    public function assignmentProvider()
+    {
+        $relationships = array();
+
+        foreach (array_keys(self::ASSIGNMENTS) as $relationship) {
+            $relationships[$relationship] = array($relationship);
+        }
+
+        return $relationships;
+    }
+
+    /**
+     * Compare a role with the importer's access once, however many members use it.
+     *
+     * @return void
+     */
+    public function testRoleComparisonRunsOncePerRole()
+    {
+        $role = $this->makeGrantingRole(8, 'n', array('1:can_access_cp'));
+        $role->AssignedModules = new class {
+            /** @var int */
+            public $calls = 0;
+
+            public function getIds()
+            {
+                $this->calls++;
+
+                return array();
+            }
+        };
+        $this->mockRoleLookup($role);
+        $this->mockSuperAdmin(false);
+        $this->mockImporter(array('1:can_access_cp'));
+
+        $controller = $this->makeController();
+        $method = new ReflectionMethod(MemberImport::class, 'getAuthorizedRole');
+        \TestReflectionHelper::makeAccessible($method);
+
+        $this->assertSame($role, $method->invoke($controller, 8));
+        $this->assertSame($role, $method->invoke($controller, 8));
+        $this->assertSame(1, $role->AssignedModules->calls);
+    }
+
+    /**
+     * Validate every pending role before saving the first imported member.
+     *
+     * @return void
+     */
+    public function testPendingRolesAreAuthorizedBeforeAnyMemberIsSaved()
+    {
+        $saveCount = 0;
+        $member = $this->getMockBuilder(stdClass::class)->addMethods(array('set', 'save'))->getMock();
+        $member->member_id = 10;
+        $member->method('set')->willReturn($member);
+        $member->method('save')->willReturnCallback(function () use (&$saveCount) {
+            $saveCount++;
+        });
+
+        $this->mockImportRequest(array(
+            5 => $this->makeRole(5, 'n'),
+            8 => $this->makeGrantingRole(8, 'n', array('1:can_edit_members')),
+        ), $member);
+        $this->mockSuperAdmin(false);
+        $this->mockImporter(array('1:can_access_cp'));
+
+        $controller = $this->makeController();
+        $controller->localize = (object) array('now' => 1);
+        $this->setControllerProperty($controller, 'default_fields', array('username' => '', 'role_id' => '', 'pending_role_id' => ''));
+        $this->setControllerProperty($controller, 'members', array(
+            array('username' => 'first', 'role_id' => 5),
+            array('username' => 'second', 'role_id' => 5, 'pending_role_id' => 8),
+        ));
+
+        try {
+            $controller->doImport();
+            $this->fail('Expected the pending role to be rejected.');
+        } catch (UtilitiesShowErrorException $exception) {
+            $this->assertSame(403, $exception->getCode());
+        }
+
+        $this->assertSame(0, $saveCount);
+    }
+
+    /**
+     * Save a member with the looked-up role IDs and without the older role alias.
+     *
+     * @return void
+     */
+    public function testSavedMemberDataCarriesTheAuthorizedRoles()
+    {
+        $saved = null;
+        $member = $this->getMockBuilder(stdClass::class)->addMethods(array('set', 'save'))->getMock();
+        $member->method('set')->willReturnCallback(function ($data) use (&$saved, $member) {
+            $saved = $data;
+
+            return $member;
+        });
+        $member->method('save')->willThrowException(new \RuntimeException('Member write reached.'));
+
+        $this->mockImportRequest(array(
+            5 => $this->makeRole(5, 'n'),
+            8 => $this->makeGrantingRole(8, 'n', array('1:can_access_cp')),
+        ), $member);
+        $this->mockSuperAdmin(false);
+        $this->mockImporter(array('1:can_access_cp'));
+
+        $controller = $this->makeController();
+        $controller->localize = (object) array('now' => 1);
+        $this->setControllerProperty($controller, 'default_fields', array('group_id' => '', 'role_id' => '', 'pending_role_id' => '', 'username' => ''));
+        $this->setControllerProperty($controller, 'members', array(
+            array('username' => 'first', 'group_id' => '9', 'role_id' => '5', 'pending_role_id' => '8'),
+        ));
+
+        try {
+            $controller->doImport();
+            $this->fail('Expected the member write to be reached.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('Member write reached.', $exception->getMessage());
+        }
+
+        $this->assertSame(5, $saved['role_id']);
+        $this->assertSame(8, $saved['pending_role_id']);
+        $this->assertArrayNotHasKey('group_id', $saved);
     }
 
     /**
@@ -385,6 +611,118 @@ class MemberImportTest extends TestCase
     }
 
     /**
+     * Create a role with an ID and lock state.
+     *
+     * @param int $id
+     * @param string $isLocked
+     * @return object
+     */
+    private function makeRole($id, $isLocked)
+    {
+        $role = $this->getMockBuilder(stdClass::class)->addMethods(array('getId'))->getMock();
+        $role->is_locked = $isLocked;
+        $role->method('getId')->willReturn($id);
+
+        return $role;
+    }
+
+    /**
+     * Create a role with permissions and assignments.
+     *
+     * @param int $id
+     * @param string $isLocked
+     * @param array $permissions Entries written as "site_id:permission"
+     * @param array $assignments Assigned IDs keyed by relationship name
+     * @return object
+     */
+    private function makeGrantingRole($id, $isLocked, array $permissions = array(), array $assignments = array())
+    {
+        $role = $this->makeRole($id, $isLocked);
+        $role->Permissions = array();
+
+        foreach ($permissions as $permission) {
+            list($siteId, $name) = explode(':', $permission, 2);
+            $role->Permissions[] = (object) array('site_id' => (int) $siteId, 'permission' => $name);
+        }
+
+        foreach (array_keys(self::ASSIGNMENTS) as $relationship) {
+            $role->{$relationship} = $this->makeIds(isset($assignments[$relationship]) ? $assignments[$relationship] : array());
+        }
+
+        return $role;
+    }
+
+    /**
+     * Create a collection stand-in that reports the given IDs.
+     *
+     * @param array $ids
+     * @return object
+     */
+    private function makeIds(array $ids)
+    {
+        $collection = $this->getMockBuilder(stdClass::class)->addMethods(array('getIds'))->getMock();
+        $collection->method('getIds')->willReturn($ids);
+
+        return $collection;
+    }
+
+    /**
+     * Provide the importing member with permissions and assignments.
+     *
+     * @param array $permissions Entries written as "site_id:permission"
+     * @param array $assignments Assigned IDs keyed by relationship name
+     * @return void
+     */
+    private function mockImporter(array $permissions, array $assignments = array())
+    {
+        $member = $this->getMockBuilder(stdClass::class)
+            ->addMethods(array_merge(array('getAllRoles'), array_values(self::ASSIGNMENTS)))
+            ->getMock();
+        $member->method('getAllRoles')->willReturn(array($this->makeGrantingRole(20, 'n', $permissions)));
+
+        foreach (self::ASSIGNMENTS as $relationship => $getter) {
+            $member->method($getter)->willReturn(
+                $this->makeIds(isset($assignments[$relationship]) ? $assignments[$relationship] : array())
+            );
+        }
+
+        $session = $this->getMockBuilder(stdClass::class)->addMethods(array('getMember', 'userdata'))->getMock();
+        $session->method('getMember')->willReturn($member);
+        $session->method('userdata')->willReturn(99);
+        ee()->setMock('session', $session);
+    }
+
+    /**
+     * Provide the services an import run uses: roles by ID, the member to save, and the form values.
+     *
+     * @param array $rolesById
+     * @param object $member
+     * @return void
+     */
+    private function mockImportRequest(array $rolesById, $member)
+    {
+        $model = $this->getMockBuilder(stdClass::class)->addMethods(array('get', 'make'))->getMock();
+        $model->method('get')->willReturnCallback(function ($modelName, $id) use ($rolesById) {
+            $query = $this->getMockBuilder(stdClass::class)->addMethods(array('first'))->getMock();
+            $query->method('first')->willReturn(isset($rolesById[(int) $id]) ? $rolesById[(int) $id] : null);
+
+            return $query;
+        });
+        $model->method('make')->willReturn($member);
+        ee()->setMock('Model', $model);
+
+        $input = $this->getMockBuilder(stdClass::class)->addMethods(array('post'))->getMock();
+        $input->method('post')->willReturnCallback(function ($key) {
+            return $key === 'role_id' ? 5 : null;
+        });
+        ee()->setMock('input', $input);
+
+        $encrypt = $this->getMockBuilder(stdClass::class)->addMethods(array('generateKey'))->getMock();
+        $encrypt->method('generateKey')->willReturn('member-import-test-key');
+        ee()->setMock('Encrypt', $encrypt);
+    }
+
+    /**
      * Configure whether the current member is a Super Admin.
      *
      * @param bool $isSuperAdmin
@@ -399,6 +737,13 @@ class MemberImportTest extends TestCase
         $permission->method('isSuperAdmin')->willReturn($isSuperAdmin);
 
         ee()->setMock('Permission', $permission);
+
+        // Role 5 is the default member role in these tests.
+        $config = $this->getMockBuilder(stdClass::class)->addMethods(array('item'))->getMock();
+        $config->method('item')->willReturnCallback(function ($key) {
+            return $key === 'default_primary_role' ? 5 : null;
+        });
+        ee()->setMock('config', $config);
     }
 }
 
