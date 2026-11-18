@@ -44,7 +44,7 @@ class EE_Cache_file extends CI_Driver
     {
         $key = $this->_namespaced_key($key, $scope);
 
-        if (! file_exists_safe($this->_cache_path . $key)) {
+        if (! $this->_is_valid_key($key) || ! file_exists_safe($this->_cache_path . $key)) {
             return false;
         }
 
@@ -85,7 +85,7 @@ class EE_Cache_file extends CI_Driver
 
         // Build file path to this key
         $path = $this->_cache_path . $key;
-        if (strpos($path, "\0") !== false) {
+        if (strpos($path, "\0") !== false || ! $this->_is_valid_key($key)) {
             return false;
         }
 
@@ -138,9 +138,10 @@ class EE_Cache_file extends CI_Driver
      */
     public function delete($key, $scope = Cache::LOCAL_SCOPE)
     {
-        $path = $this->_cache_path . $this->_namespaced_key($key, $scope);
+        $namespaced_key = $this->_namespaced_key($key, $scope);
+        $path = $this->_cache_path . $namespaced_key;
 
-        if (strpos($path, "\0") !== false) {
+        if (strpos($path, "\0") !== false || ! $this->_is_valid_key($namespaced_key)) {
             return false;
         }
 
@@ -211,7 +212,7 @@ class EE_Cache_file extends CI_Driver
     {
         $key = $this->_namespaced_key($key, $scope);
 
-        if (! file_exists_safe($this->_cache_path . $key)) {
+        if (! $this->_is_valid_key($key) || ! file_exists_safe($this->_cache_path . $key)) {
             return false;
         }
 
@@ -253,8 +254,22 @@ class EE_Cache_file extends CI_Driver
      */
     public function is_writable($key, $scope = Cache::LOCAL_SCOPE)
     {
-        $path = $this->_cache_path . $this->_namespaced_key($key, $scope);
-        return strpos($path, "\0") === false && is_really_writable($path);
+        $namespaced_key = $this->_namespaced_key($key, $scope);
+        $path = $this->_cache_path . $namespaced_key;
+
+        return strpos($path, "\0") === false && $this->_is_valid_key($namespaced_key) && is_really_writable($path);
+    }
+
+    /**
+     * Whether a namespaced key names an item inside the cache directory
+     *
+     * @param	string	$key	Key as returned by _namespaced_key()
+     * @return	bool
+     */
+    protected function _is_valid_key($key)
+    {
+        // No segment of the key may be a reference to the current or parent directory
+        return ! preg_match('#(^|[/\\\\])\.{1,2}([/\\\\]|\z)#', (string) $key);
     }
 
     /**

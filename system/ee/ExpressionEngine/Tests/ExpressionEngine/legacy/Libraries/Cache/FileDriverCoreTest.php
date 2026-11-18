@@ -187,4 +187,51 @@ class FileDriverCoreTest extends CacheTestBase
         $result = $this->driver->delete('nonexistent_key');
         $this->assertFalse($result);
     }
+
+    /**
+     * Test that a key segment cannot be a reference to the current or parent directory
+     *
+     * @dataProvider dotSegmentKeyProvider
+     */
+    public function testKeysWithDotSegmentsAreNotUsed($key)
+    {
+        $this->assertFalse($this->driver->save($key, 'value', 60));
+        $this->assertFalse($this->driver->get($key));
+        $this->assertFalse($this->driver->get_metadata($key));
+        $this->assertFalse($this->driver->delete($key));
+        $this->assertFalse($this->driver->is_writable($key));
+    }
+
+    public function dotSegmentKeyProvider()
+    {
+        return [
+            ['one/../two'],
+            ['../one'],
+            ['one/..'],
+            ['one/./two'],
+            ['./one'],
+        ];
+    }
+
+    /**
+     * Test that periods elsewhere in a key are unaffected
+     *
+     * @dataProvider keyWithPeriodsProvider
+     */
+    public function testKeysWithPeriodsStillWork($key)
+    {
+        $this->assertTrue($this->driver->save($key, 'value', 60));
+        $this->assertSame('value', $this->driver->get($key));
+        $this->assertTrue($this->driver->delete($key));
+    }
+
+    public function keyWithPeriodsProvider()
+    {
+        return [
+            ['file.name'],
+            ['one/two.three'],
+            ['one/...'],
+            ['one/..two'],
+        ];
+    }
 }
