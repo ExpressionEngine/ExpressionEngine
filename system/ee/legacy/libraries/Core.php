@@ -958,7 +958,11 @@ class EE_Core
             }
 
             if (REQ == 'CP') {
-                if (AJAX_REQUEST) {
+                // Only ask for the login modal when they are actually logged out
+                // of the control panel. A stale token in one tab is not a reason
+                // to make every tab ask for a password; the valid token is
+                // already on its way back in the X-CSRF-TOKEN header.
+                if (AJAX_REQUEST && ee()->session->userdata('admin_sess') != 1) {
                     header('X-EE-Broadcast: modal');
                 }
 
