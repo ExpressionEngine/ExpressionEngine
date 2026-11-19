@@ -24,9 +24,30 @@ class Pro extends Settings
     {
         parent::__construct();
 
-        if (!ee('pro:Access')->hasRequiredLicense()) {
+        if (! ee('pro:Access')->hasRequiredLicense() && ! $this->isRequiredMfaEnrollment()) {
             show_error(lang('unauthorized_access'), 403);
         }
+    }
+
+    /**
+     * Allow members to complete required MFA enrollment when licensing is unavailable.
+     *
+     * @return bool Whether this is the member's own required enrollment form, or the QR code it shows.
+     */
+    private function isRequiredMfaEnrollment()
+    {
+        if (
+            ee()->uri->segment(5) !== 'mfa' ||
+            ! in_array((string) ee()->uri->segment(6), ['', 'qrCode'], true) ||
+            $this->member->member_id != ee()->session->userdata('member_id') ||
+            $this->member->enable_mfa === true
+        ) {
+            return false;
+        }
+
+        $settings = $this->member->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first();
+
+        return $settings !== null && $settings->require_mfa == 'y';
     }
 
     public function __call($name, $arguments)

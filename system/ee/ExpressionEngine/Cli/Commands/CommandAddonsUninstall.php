@@ -98,7 +98,6 @@ class CommandAddonsUninstall extends Cli
 
         ee()->load->remove_package_path($addon->getPath());
 
-        ee()->cache->file->delete('/addons-status');
         ee('CP/JumpMenu')->clearAllCaches();
 
         $this->info(sprintf(lang('command_addons_uninstall_complete'), $addon->getName()));

@@ -32,6 +32,7 @@ class Downloader
     protected $filesystem;
     protected $logger;
     protected $config;
+    protected $public_keys;
 
     /**
      * Constructor
@@ -40,15 +41,36 @@ class Downloader
      * @param	Curl\RequestFactory $curl cURL service object
      * @param	Filesystem $filesystem Filesystem service object
      * @param	Logger $logger Updater logger object
-     * @param	Logger $logger Updater logger object
+     * @param	File $config Config file object
+     * @param	array $public_keys Public keys a package may be signed with, defaults to the bundled keys
      */
-    public function __construct(ExpressionEngineLicense $license, RequestFactory $curl, Filesystem $filesystem, Logger $logger, File $config)
+    public function __construct(ExpressionEngineLicense $license, RequestFactory $curl, Filesystem $filesystem, Logger $logger, File $config, array $public_keys = [])
     {
         $this->license = $license;
         $this->curl = $curl;
         $this->filesystem = $filesystem;
         $this->logger = $logger;
         $this->config = $config;
+        $this->public_keys = $public_keys ?: $this->bundledPublicKeys();
+    }
+
+    /**
+     * The public keys shipped with ExpressionEngine: the one in use, followed
+     * by those held in reserve
+     *
+     * @return array
+     */
+    private function bundledPublicKeys()
+    {
+        $keys = [];
+
+        foreach (['ExpressionEngineUpdate.pub', 'ExpressionEngineUpdate1.pub', 'ExpressionEngineUpdate2.pub'] as $file) {
+            if (is_file(SYSPATH . 'ee/ExpressionEngine/Keys/' . $file)) {
+                $keys[] = 'file://' . SYSPATH . 'ee/ExpressionEngine/Keys/' . $file;
+            }
+        }
+
+        return $keys;
     }
 
     /**
@@ -131,7 +153,8 @@ class Downloader
     }
 
     /**
-     * Verifies the signature of the downloaded build
+     * Verifies the signature of the downloaded build against each of the
+     * known public keys
      *
      * @param $hash string SHA384 hash of downloaded zip file
      * @param $signature string Base-64 encoded signature
@@ -141,14 +164,15 @@ class Downloader
     {
         $signature = base64_decode($signature);
 
-        $verified = openssl_verify(
-            $hash,
-            $signature,
-            openssl_get_publickey('file://' . SYSPATH . 'ee/ExpressionEngine/ExpressionEngineUpdate.pub'),
-            OPENSSL_ALGO_SHA384
-        );
+        foreach ($this->public_keys as $public_key) {
+            $key = openssl_get_publickey($public_key);
 
-        return ($verified === 1);
+            if ($key !== false && openssl_verify($hash, $signature, $key, OPENSSL_ALGO_SHA384) === 1) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
 

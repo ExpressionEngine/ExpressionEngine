@@ -615,10 +615,25 @@ $setup = [
         },
 
         'License' => function ($ee) {
-            $default_key_path = SYSPATH . 'ee/ExpressionEngine/ExpressionEngine.pub';
+            $default_key_path = SYSPATH . 'ee/ExpressionEngine/Keys/ExpressionEngine.pub';
             $default_key = (is_readable($default_key_path)) ? file_get_contents($default_key_path) : '';
 
             return new License\LicenseFactory($default_key);
+        },
+
+        'License/Status' => function ($ee) {
+            return new License\LicenseStatus(
+                ee()->cache->file,
+                $ee->make('Encrypt'),
+                ee()->config->item('session_crypt_key'),
+                [
+                    'license' => ee()->config->item('site_license_key'),
+                    'site_id' => ee()->config->item('site_id'),
+                    'site_url' => ee()->config->item('site_url'),
+                    'app_version' => APP_VER,
+                ],
+                $ee->make('Curl')
+            );
         },
 
         'Member' => function ($ee) {

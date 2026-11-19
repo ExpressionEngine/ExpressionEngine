@@ -77,7 +77,6 @@ class CommandAddonsUpdate extends Cli
             $this->updateAddon($addon);
         }
 
-        ee()->cache->file->delete('/addons-status');
         ee('CP/JumpMenu')->clearAllCaches();
     }
 
