@@ -28,6 +28,7 @@ class MemberImport extends Utilities
     private $importer_access = null;
     private $roles_within_access = array();
     private $authorized_roles = array();
+    private $existing_record_ids = null;
 
     public function __construct()
     {
@@ -662,10 +663,8 @@ class MemberImport extends Utilities
             // Recheck the effective role after XML values and form defaults have been merged.
             $data['role_id'] = $this->getAuthorizedRole($data['role_id'])->getId();
 
-            // A pending role is only kept for a member who is imported as pending
             if (isset($data['pending_role_id'])) {
-                $pendingRoleId = $this->getPendingRoleId($data['role_id'], $data['pending_role_id']);
-                $data['pending_role_id'] = $pendingRoleId ? $this->getAuthorizedRole($pendingRoleId)->getId() : 0;
+                $data['pending_role_id'] = $this->getImportedPendingRoleId($data['role_id'], $data['pending_role_id']);
             }
 
             /* -------------------------------------
@@ -749,7 +748,7 @@ class MemberImport extends Utilities
     }
 
     /**
-     * Get the pending role that applies to an imported member.
+     * Get the pending role an imported member will be activated into.
      *
      * Only a member whose role is the pending role is activated into their
      * pending role, so for every other member there is none.
@@ -760,9 +759,46 @@ class MemberImport extends Utilities
      */
     private function getPendingRoleId($roleId, $pendingRoleId)
     {
-        $pendingRoleId = is_scalar($pendingRoleId) ? (int) trim((string) $pendingRoleId) : 0;
+        $pendingRoleId = $this->normalizeRoleId($pendingRoleId);
 
         return ((int) $roleId === Member::PENDING && $pendingRoleId > 0) ? $pendingRoleId : 0;
+    }
+
+    /**
+     * Get the pending role to save for an imported member.
+     *
+     * A member imported as pending needs a pending role the current member
+     * may assign. For any other member the value is only kept on record, so
+     * it is saved when it is such a role and left out when it is not.
+     *
+     * @param mixed $roleId The member's role
+     * @param mixed $pendingRoleId The pending role given for the member
+     * @return int Pending role ID, or 0 for none
+     */
+    private function getImportedPendingRoleId($roleId, $pendingRoleId)
+    {
+        $pendingRoleId = $this->normalizeRoleId($pendingRoleId);
+
+        if ($pendingRoleId <= 0) {
+            return 0;
+        }
+
+        if ((int) $roleId === Member::PENDING) {
+            return $this->getAuthorizedRole($pendingRoleId)->getId();
+        }
+
+        $role = $this->findAssignableRole($pendingRoleId);
+
+        return $role ? $role->getId() : 0;
+    }
+
+    /**
+     * @param mixed $roleId
+     * @return int Role ID, or 0 when the value is not a number
+     */
+    private function normalizeRoleId($roleId)
+    {
+        return is_scalar($roleId) ? (int) trim((string) $roleId) : 0;
     }
 
     /**
@@ -806,19 +842,33 @@ class MemberImport extends Utilities
      */
     private function getAuthorizedRole($roleId)
     {
-        $roleId = (int) $roleId;
+        $role = $this->findAssignableRole($roleId);
 
-        if (isset($this->authorized_roles[$roleId])) {
-            return $this->authorized_roles[$roleId];
-        }
-
-        $role = ee('Model')->get('Role', $roleId)->first();
-
-        if (! $role || ! $this->canImportToRole($role)) {
+        if (! $role) {
             show_error(lang('unauthorized_access'), 403);
         }
 
-        return $this->authorized_roles[$roleId] = $role;
+        return $role;
+    }
+
+    /**
+     * Look up a role, if it exists and the current member may assign it
+     * during import. Each role is looked up once per batch.
+     *
+     * @param mixed $roleId
+     * @return \ExpressionEngine\Model\Role\Role|null
+     */
+    private function findAssignableRole($roleId)
+    {
+        $roleId = (int) $roleId;
+
+        if (! array_key_exists($roleId, $this->authorized_roles)) {
+            $role = ee('Model')->get('Role', $roleId)->first();
+
+            $this->authorized_roles[$roleId] = ($role && $this->canImportToRole($role)) ? $role : null;
+        }
+
+        return $this->authorized_roles[$roleId];
     }
 
     /**
@@ -922,11 +972,39 @@ class MemberImport extends Utilities
 
         foreach ($roles as $role) {
             foreach ($role->Permissions as $permission) {
+                if ($this->permissionIsForRemovedRecord($permission->permission)) {
+                    continue;
+                }
+
                 $permissions[$permission->site_id . ':' . $permission->permission] = true;
             }
         }
 
         return $permissions;
+    }
+
+    /**
+     * Determine whether a permission is for a channel or template group that
+     * no longer exists. Such a permission can stay behind on a role and no
+     * longer grants anything.
+     *
+     * @param string $permission Permission name
+     * @return bool
+     */
+    private function permissionIsForRemovedRecord($permission)
+    {
+        if (! preg_match('/_(channel|template_group)_id_(\d+)$/', (string) $permission, $match)) {
+            return false;
+        }
+
+        if ($this->existing_record_ids === null) {
+            $this->existing_record_ids = array(
+                'channel' => array_fill_keys(ee('Model')->get('Channel')->fields('channel_id')->all()->getIds(), true),
+                'template_group' => array_fill_keys(ee('Model')->get('TemplateGroup')->fields('group_id')->all()->getIds(), true),
+            );
+        }
+
+        return ! isset($this->existing_record_ids[$match[1]][(int) $match[2]]);
     }
 
     /**

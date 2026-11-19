@@ -198,6 +198,10 @@ class Settings extends CP_Controller
             return false;
         }
 
+        // The saved settings may include one the license is checked against,
+        // such as the site's address
+        ee('License/Status')->checkAgain();
+
         return true;
     }
 

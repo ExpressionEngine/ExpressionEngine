@@ -102,6 +102,18 @@ context('License check', () => {
     cy.get('@check.all').should('have.length', 1)
   })
 
+  it('asks again after settings are saved', () => {
+    serviceAnswers('success', 'valid')
+    cy.auth()
+    cy.wait('@answer').its('response.body.messageType').should('eq', 'success')
+
+    cy.visit('admin.php?/cp/settings/general')
+    cy.get('button').contains('Save Settings').first().click()
+    cy.wait('@answer').its('response.body.messageType').should('eq', 'success')
+
+    cy.get('@check.all').should('have.length', 2)
+  })
+
   it('asks again when the answer cannot be used', () => {
     cy.intercept('POST', serviceUrl, (req) => {
       reply(req, 200, { status: 'unexpected' })

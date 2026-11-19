@@ -485,6 +485,101 @@ class MemberImportTest extends TestCase
     }
 
     /**
+     * Save the pending role given for a member who is not pending when it is
+     * a role the importer may assign, and leave it out when it is not.
+     *
+     * @dataProvider recordedPendingRoleProvider
+     * @param string $pendingRoleId
+     * @param int $expected
+     * @return void
+     */
+    public function testPendingRoleOfAMemberWhoIsNotPending($pendingRoleId, $expected)
+    {
+        $saved = null;
+        $member = $this->getMockBuilder(stdClass::class)->addMethods(array('set', 'save'))->getMock();
+        $member->method('set')->willReturnCallback(function ($data) use (&$saved, $member) {
+            $saved = $data;
+
+            return $member;
+        });
+        $member->method('save')->willThrowException(new \RuntimeException('Member write reached.'));
+
+        $this->mockImportRequest(array(
+            5 => $this->makeRole(5, 'n'),
+            8 => $this->makeGrantingRole(8, 'n', array('1:can_access_cp')),
+            9 => $this->makeGrantingRole(9, 'n', array('1:can_access_cp', '1:can_admin_design')),
+        ), $member);
+        $this->mockSuperAdmin(false);
+        $this->mockImporter(array('1:can_access_cp'));
+
+        $controller = $this->makeController();
+        $controller->localize = (object) array('now' => 1);
+        $this->setControllerProperty($controller, 'default_fields', array('group_id' => '', 'role_id' => '', 'pending_role_id' => '', 'username' => ''));
+        $this->setControllerProperty($controller, 'members', array(
+            array('username' => 'first', 'role_id' => '5', 'pending_role_id' => $pendingRoleId),
+        ));
+
+        try {
+            $controller->doImport();
+            $this->fail('Expected the member write to be reached.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('Member write reached.', $exception->getMessage());
+        }
+
+        $this->assertSame(5, $saved['role_id']);
+        $this->assertSame($expected, $saved['pending_role_id']);
+    }
+
+    public function recordedPendingRoleProvider()
+    {
+        return array(
+            'role the importer may assign' => array('8', 8),
+            'role beyond the importer' => array('9', 0),
+            'role that does not exist' => array('77', 0),
+            'no role' => array('0', 0),
+        );
+    }
+
+    /**
+     * Leave out permissions for a channel or template group that has been
+     * removed when comparing a role with the importer.
+     *
+     * @return void
+     */
+    public function testPermissionsForRemovedRecordsAreNotCompared()
+    {
+        $this->mockRoleAndRecords($this->makeGrantingRole(8, 'n', array(
+            '1:can_access_cp',
+            '1:can_edit_other_entries_channel_id_7',
+            '1:can_edit_templates_template_group_id_4',
+        )), array(3), array(2));
+        $this->mockSuperAdmin(false);
+        $this->mockImporter(array('1:can_access_cp'));
+
+        $this->assertSame(8, $this->invokeAuthorizedRole(8)->getId());
+    }
+
+    /**
+     * Still compare permissions for a channel that exists.
+     *
+     * @return void
+     */
+    public function testPermissionsForExistingRecordsAreCompared()
+    {
+        $this->mockRoleAndRecords($this->makeGrantingRole(8, 'n', array(
+            '1:can_access_cp',
+            '1:can_edit_other_entries_channel_id_3',
+        )), array(3), array(2));
+        $this->mockSuperAdmin(false);
+        $this->mockImporter(array('1:can_access_cp'));
+
+        $this->expectException(UtilitiesShowErrorException::class);
+        $this->expectExceptionCode(403);
+
+        $this->invokeAuthorizedRole(8);
+    }
+
+    /**
      * Keep a pending role only for a member whose role is the pending role.
      *
      * @dataProvider pendingRoleProvider
@@ -640,6 +735,37 @@ class MemberImportTest extends TestCase
             ->addMethods(array('get'))
             ->getMock();
         $model->method('get')->willReturn($query);
+
+        ee()->setMock('Model', $model);
+    }
+
+    /**
+     * Provide a role, and the channels and template groups that exist.
+     *
+     * @param object $role
+     * @param array $channelIds
+     * @param array $templateGroupIds
+     * @return void
+     */
+    private function mockRoleAndRecords($role, array $channelIds, array $templateGroupIds)
+    {
+        $roleQuery = $this->getMockBuilder(stdClass::class)->addMethods(array('first'))->getMock();
+        $roleQuery->method('first')->willReturn($role);
+
+        $records = array('Channel' => $channelIds, 'TemplateGroup' => $templateGroupIds);
+        $queries = array('Role' => $roleQuery);
+
+        foreach ($records as $name => $ids) {
+            $query = $this->getMockBuilder(stdClass::class)->addMethods(array('fields', 'all'))->getMock();
+            $query->method('fields')->willReturnSelf();
+            $query->method('all')->willReturn($this->makeIds($ids));
+            $queries[$name] = $query;
+        }
+
+        $model = $this->getMockBuilder(stdClass::class)->addMethods(array('get'))->getMock();
+        $model->method('get')->willReturnCallback(function ($name) use ($queries) {
+            return $queries[$name];
+        });
 
         ee()->setMock('Model', $model);
     }

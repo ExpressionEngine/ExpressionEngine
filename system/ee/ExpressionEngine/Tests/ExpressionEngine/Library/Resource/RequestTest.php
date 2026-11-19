@@ -97,6 +97,14 @@ class RequestTest extends TestCase
         $this->assertSame('resource_cache/second_site/site/styles', $this->invoke('_cache_path', ' second_site : site / styles'));
     }
 
+    public function testCacheKeyWithoutAGroupCoversTheSite()
+    {
+        $this->mockSiteShortName('default_site');
+
+        $this->assertSame('resource_cache/default_site/', $this->invoke('_cache_path', '/'));
+        $this->assertSame('resource_cache/second_site/', $this->invoke('_cache_path', 'second_site:/'));
+    }
+
     /**
      * @dataProvider unnamedResourceProvider
      */

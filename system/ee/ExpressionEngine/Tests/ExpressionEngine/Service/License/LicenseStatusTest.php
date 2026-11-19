@@ -672,6 +672,29 @@ class LicenseStatusTest extends TestCase
         }
     }
 
+    public function testAFreshCheckCanBeAskedForWithoutGivingUpTheStatus()
+    {
+        $this->status()->store($this->response('invalid_domain', ['pro' => 'valid']));
+        $this->assertSame(0, $this->status()->secondsSinceUpdate());
+
+        $this->assertTrue($this->status()->checkAgain());
+
+        $this->assertFalse($this->status()->secondsSinceUpdate(), 'The next page asks the license service');
+        $this->assertSame('invalid_domain', $this->status()->statusFor('pro'), 'The last answer stays until then');
+        $this->assertFalse($this->status()->backupCheckDue(), 'The site does not ask for itself any sooner');
+
+        $this->status()->store($this->response('success', ['pro' => 'valid']));
+
+        $this->assertSame(0, $this->status()->secondsSinceUpdate());
+        $this->assertSame('valid', $this->status()->statusFor('pro'));
+    }
+
+    public function testAskingForAFreshCheckNeedsAStoredStatus()
+    {
+        $this->assertFalse($this->status()->checkAgain());
+        $this->assertFalse($this->status()->secondsSinceUpdate());
+    }
+
     public function testAChangedLicenseKeyStartsAFreshCheck()
     {
         $this->status()->store($this->response('success', ['pro' => 'valid']));

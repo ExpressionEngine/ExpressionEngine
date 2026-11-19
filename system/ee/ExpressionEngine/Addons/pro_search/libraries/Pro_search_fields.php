@@ -438,9 +438,10 @@ class Pro_search_fields
 
                 // A word boundary only exists beside a word character. Where the
                 // term begins or ends with anything else, look at the character
-                // outside the term instead.
-                $before = ($item === '' || preg_match('/^\w/u', $item)) ? '[[:<:]]' : '(^|[^[:alnum:]_])';
-                $after = ($item === '' || preg_match('/\w$/u', $item)) ? '[[:>:]]' : '([^[:alnum:]_]|$)';
+                // outside the term instead. Combining marks are part of the
+                // word they are written on.
+                $before = ($item === '' || preg_match('/^[\w\p{M}]/u', $item)) ? '[[:<:]]' : '(^|[^[:alnum:]_])';
+                $after = ($item === '' || preg_match('/[\w\p{M}]$/u', $item)) ? '[[:>:]]' : '([^[:alnum:]_]|$)';
 
                 $item = ee()->db->escape($before . preg_quote($item) . $after);
             } else {

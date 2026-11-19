@@ -211,7 +211,18 @@ class Request
             $site_name = ee()->config->get_cached_site_prefs($site_id)['site_short_name'];
         }
 
-        if (! $this->isValidSiteName($site_name) || ! $this->isValidName($group) || ($name !== '' && ! $this->isValidName($name))) {
+        if (! $this->isValidSiteName($site_name)) {
+            return null;
+        }
+
+        // Without a template group the key covers every resource cached for the site
+        if ($group === '' && $name === '') {
+            $site_name = ($site_name !== '') ? $site_name : ee()->config->item('site_short_name');
+
+            return self::CACHE_NAMESPACE . $site_name . '/';
+        }
+
+        if (! $this->isValidName($group) || ($name !== '' && ! $this->isValidName($name))) {
             return null;
         }
 

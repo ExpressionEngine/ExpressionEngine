@@ -178,9 +178,28 @@ class LicenseStatus
     /**
      * Seconds since a status was last stored
      *
-     * @return int|bool FALSE when no status is stored
+     * @return int|bool FALSE when no status is stored, or a fresh check has been asked for
      */
     public function secondsSinceUpdate()
+    {
+        $record = $this->answer();
+
+        if ($record === null || ! empty($record['check_again'])) {
+            return false;
+        }
+
+        // Statuses stored by earlier versions only have the time of the check
+        return max(0, $this->now() - (int) (empty($record['saved_at']) ? $record['checked_at'] : $record['saved_at']));
+    }
+
+    /**
+     * Asks for a fresh check from the next control panel page, for when
+     * something the license is checked against may have changed. The stored
+     * status stays in force until the answer arrives.
+     *
+     * @return bool TRUE when there is a stored status and it was marked
+     */
+    public function checkAgain()
     {
         $record = $this->answer();
 
@@ -188,8 +207,9 @@ class LicenseStatus
             return false;
         }
 
-        // Statuses stored by earlier versions only have the time of the check
-        return max(0, $this->now() - (int) (empty($record['saved_at']) ? $record['checked_at'] : $record['saved_at']));
+        $record['check_again'] = true;
+
+        return $this->write($record);
     }
 
     /**

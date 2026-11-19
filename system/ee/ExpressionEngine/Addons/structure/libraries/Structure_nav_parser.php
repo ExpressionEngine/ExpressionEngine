@@ -234,7 +234,10 @@ class Structure_core_nav_parser
                     $variable_row[$prefix . $field_name] = $channelEntry->$field_name;
                 }
 
-                $variable_row[$prefix . 'title'] = Structure_Helper::encode_title_for_template($channelEntry->title);
+                // An entry supplied without a title keeps the title the row already has
+                if (isset($channelEntry->title)) {
+                    $variable_row[$prefix . 'title'] = Structure_Helper::encode_title_for_template($channelEntry->title);
+                }
 
                 // edit date is special in getModChannelResultsArray, so also special here
                 // not sure why is that though...
