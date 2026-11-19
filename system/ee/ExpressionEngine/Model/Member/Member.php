@@ -1163,17 +1163,28 @@ class Member extends ContentModel
     /**
      * Get permissions assigned to member
      *
+     * Permissions are held per site. Without a site ID this returns the
+     * permissions for the site that was current when it was first called
+     * during the request; pass a site ID to get the permissions for that
+     * site, whichever site is current.
+     *
+     * @param  int|null $site_id Site to get the permissions for
      * @return Array [permission => permission_id]
      */
-    public function getPermissions()
+    public function getPermissions($site_id = null)
     {
         $cache_key = "Member/{$this->member_id}/Permissions";
+
+        if ($site_id !== null) {
+            $site_id = (int) $site_id;
+            $cache_key .= "/Site/{$site_id}";
+        }
 
         $permissions = $this->getFromCache($cache_key);
 
         if ($permissions === false) {
             $permissions = $this->getModelFacade()->get('Permission')
-                ->filter('site_id', ee()->config->item('site_id'))
+                ->filter('site_id', ($site_id !== null) ? $site_id : ee()->config->item('site_id'))
                 ->filter('role_id', 'IN', $this->getAllRoles()->pluck('role_id'))
                 ->all()
                 ->getDictionary('permission', 'permission_id');
@@ -1184,13 +1195,20 @@ class Member extends ContentModel
         return $permissions;
     }
 
-    public function can($permission)
+    /**
+     * Checks whether member can do something, e.g. `can('access_cp')`
+     *
+     * @param  string   $permission Permission name without the `can_` prefix
+     * @param  int|null $site_id    Site to check on, see getPermissions()
+     * @return Bool `true` if permission has been granted
+     */
+    public function can($permission, $site_id = null)
     {
         if ($this->isSuperAdmin()) {
             return true;
         }
 
-        $permissions = $this->getPermissions();
+        $permissions = $this->getPermissions($site_id);
 
         return array_key_exists('can_' . $permission, $permissions);
     }
@@ -1198,15 +1216,17 @@ class Member extends ContentModel
     /**
      * Checks whether member has certain permission
      *
+     * @param  string   $permission Full permission name
+     * @param  int|null $site_id    Site to check on, see getPermissions()
      * @return Bool `true` if permission has been granted
      */
-    public function has($permission)
+    public function has($permission, $site_id = null)
     {
         if ($this->isSuperAdmin()) {
             return true;
         }
 
-        $permissions = $this->getPermissions();
+        $permissions = $this->getPermissions($site_id);
 
         return array_key_exists($permission, $permissions);
     }

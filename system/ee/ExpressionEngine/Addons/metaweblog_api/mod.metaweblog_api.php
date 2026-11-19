@@ -54,6 +54,7 @@ class Metaweblog_api
     public $max_request_size = 4194304;				// Largest request body accepted, in bytes (override: metaweblog_max_request_size)
 
     protected $member = null;					// Member model of the authenticated member
+    protected $channel_sites = array();				// Site ID of each channel assigned to the member
 
     /**
      * Constructor
@@ -618,11 +619,13 @@ class Metaweblog_api
      */
     protected function member_can($action, $channel_id)
     {
-        if (! is_scalar($channel_id) || ! array_key_exists($channel_id, $this->userdata['assigned_channels'])) {
+        if (! is_scalar($channel_id) || ! array_key_exists($channel_id, $this->userdata['assigned_channels']) || ! isset($this->channel_sites[$channel_id])) {
             return false;
         }
 
-        return $this->member->can($action . '_channel_id_' . (int) $channel_id);
+        // Roles hold their permissions per site, and a channel may belong to
+        // another site than the one serving the request
+        return $this->member->can($action . '_channel_id_' . (int) $channel_id, $this->channel_sites[$channel_id]);
     }
 
     /**
@@ -1292,7 +1295,8 @@ class Metaweblog_api
         /** -------------------------------------------------
         /**  Find Assigned Channels
         /** -------------------------------------------------*/
-        $assigned_channels = $member->getAssignedChannels()->getDictionary('channel_id', 'channel_title');
+        $channels = $member->getAssignedChannels();
+        $assigned_channels = $channels->getDictionary('channel_id', 'channel_title');
 
         if (empty($assigned_channels)) {
             return false; // Nowhere to Post!!
@@ -1309,6 +1313,7 @@ class Metaweblog_api
         }
 
         $this->member = $member;
+        $this->channel_sites = $channels->getDictionary('channel_id', 'site_id');
         $this->userdata['assigned_channels'] = $assigned_channels;
 
         ee()->session->userdata = array_merge(
