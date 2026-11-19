@@ -77,6 +77,8 @@ class CommandAddonsUpdate extends Cli
             $this->updateAddon($addon);
         }
 
+        // The installed add-ons are part of what the license is checked against
+        ee('License/Status')->checkAgain();
         ee('CP/JumpMenu')->clearAllCaches();
     }
 

@@ -89,9 +89,10 @@ context('License check', () => {
     cy.get('@answer.all').should('have.length', 1)
   })
 
-  it('does not ask again after an add-on is installed', () => {
+  it('asks again after an add-on is installed', () => {
     serviceAnswers('success', 'valid')
     cy.auth()
+    cy.wait('@check')
     cy.wait('@answer').its('response.body.messageType').should('eq', 'success')
 
     addon_manager.load()
@@ -99,7 +100,13 @@ context('License check', () => {
     cy.get('div.app-notice.app-notice--inline').first().invoke('text').should('include', 'Add-Ons Installed')
     cy.hasNoErrors()
 
-    cy.get('@check.all').should('have.length', 1)
+    // The page that follows asks about the new add-on along with the rest
+    cy.wait('@check').then(({ request }) => {
+      expect(requestedAddons(request.body)).to.include('query')
+    })
+    cy.wait('@answer').its('response.body.messageType').should('eq', 'success')
+
+    cy.get('@check.all').should('have.length', 2)
   })
 
   it('asks again after settings are saved', () => {

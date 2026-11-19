@@ -486,6 +486,8 @@ class Addons extends CP_Controller
             $addon_info->updateProlets();
         }
 
+        // The installed add-ons are part of what the license is checked against
+        ee('License/Status')->checkAgain();
         ee('CP/JumpMenu')->clearAllCaches();
 
         foreach (array('first', 'third') as $party) {
@@ -671,6 +673,8 @@ class Addons extends CP_Controller
             }
         }
 
+        // The installed add-ons are part of what the license is checked against
+        ee('License/Status')->checkAgain();
         ee('CP/JumpMenu')->clearAllCaches();
 
         $return = $this->base_url;
