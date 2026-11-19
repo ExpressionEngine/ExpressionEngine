@@ -457,7 +457,11 @@ context('Front-end editing', () => {
 
             cy.wait(15000)
 
-            cy.get('.eeFrontEdit').should('have.length', 1);
+            // length 1 works when 1 pencil icon for the whole fluid field
+            // cy.get('.eeFrontEdit').should('have.length', 1);
+
+            // length 15 - single pencil icon for individual fields in a fluid field
+            cy.get('.eeFrontEdit').should('have.length', 15);
 
             cy.logFrontendPerformance()
         })
@@ -494,10 +498,14 @@ context('Front-end editing', () => {
 
           cy.wait(15000)
 
-          cy.get('#with-tag .eeFrontEdit').should('have.length', 3);
-          cy.get('#no-tag .eeFrontEdit').should('have.length', 3);
+          // 1 pencil icon for the whole fluid field
+          // cy.get('#with-tag .eeFrontEdit').should('have.length', 3);
+
+          // single pencil icon for individual fields in a fluid field
+          cy.get('#with-tag .eeFrontEdit').should('have.length', 17);
+          cy.get('#no-tag .eeFrontEdit').should('have.length', 17);
           cy.get('#disabled-with-comment .eeFrontEdit').should('not.exist');
-          cy.get('#disabled-with-param .eeFrontEdit').should('have.length', 2);
+          cy.get('#disabled-with-param .eeFrontEdit').should('have.length', 16);
 
           cy.logFrontendPerformance()
       })

@@ -116,6 +116,8 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 
             $ft = $ft_api->setup_handler($field_id, true);
             $ft_name = $ft_api->field_type;
+            // Keep a stable fieldtype reference; nested parser calls can mutate $ft_api->field_type.
+            $isFluidField = ($ft_name === 'fluid_field');
 
             if ($ft) {
                 $_ft_path = $ft_api->ft_paths[$ft_api->field_type];
@@ -200,34 +202,40 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
                     }
 
                     //frontend edit link
-                    $frontedit_disabled = false;
-                    $frontedit_disabled_with_param = false;
-                    $frontEditLink = '';
-                    if (isset($ft->disable_frontedit) && $ft->disable_frontedit == true) {
-                        $frontedit_disabled = true;
-                    } elseif (isset($params['disable'])) {
-                        $disable = explode("|", $params['disable']);
-                        if (in_array('frontedit', $disable)) {
+                    if (!$isFluidField) {
+                        $frontedit_disabled = false;
+                        $frontedit_disabled_with_param = false;
+                        $frontEditLink = '';
+                        if (isset($ft->disable_frontedit) && $ft->disable_frontedit == true) {
                             $frontedit_disabled = true;
-                            $frontedit_disabled_with_param = true;
+                        } elseif (isset($params['disable'])) {
+                            $disable = explode("|", $params['disable']);
+                            if (in_array('frontedit', $disable)) {
+                                $frontedit_disabled = true;
+                                $frontedit_disabled_with_param = true;
+                            }
                         }
-                    }
-                    if (!$frontedit_disabled) {
-                        $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($data['site_id'], $data['channel_id'], $data['entry_id'], $field_id);
-                    }
+                        if (!$frontedit_disabled) {
+                            $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($data['site_id'], $data['channel_id'], $data['entry_id'], $field_id);
+                        }
 
-                    if (! empty($tpl_chunk)) {
-                        $tpl_chunk = str_replace(LD . $prefix . $field_name . ($modifier != 'frontedit' ? ':frontedit' : '') . RD, $frontEditLink, $tpl_chunk);
+                        if (! empty($tpl_chunk)) {
+                            $tpl_chunk = str_replace(LD . $prefix . $field_name . ($modifier != 'frontedit' ? ':frontedit' : '') . RD, $frontEditLink, $tpl_chunk);
+                        }
+
+                        $tagdata = str_replace($chunk, $tpl_chunk, $tagdata);
+
+                        // additional round of replacements if edit link is outside of chunk
+
+                        if ($frontedit_disabled && $frontedit_disabled_with_param) {
+                            $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($data['site_id'], $data['channel_id'], $data['entry_id'], $field_id);
+                        }
+                        $tagdata = str_replace(LD . $prefix . $field_name . ($modifier != 'frontedit' ? ':frontedit' : '') . RD, $frontEditLink, $tagdata);
+                    } else {
+                        // Fluid items get per-item links from Fluid_field_parser; remove pair-level placeholders.
+                        $tagdata = str_replace($chunk, $tpl_chunk, $tagdata);
+                        $tagdata = str_replace(LD . $prefix . $field_name . ($modifier != 'frontedit' ? ':frontedit' : '') . RD, '', $tagdata);
                     }
-
-                    $tagdata = str_replace($chunk, $tpl_chunk, $tagdata);
-
-                    // additional round of replacements if edit link is outside of chunk
-
-                    if ($frontedit_disabled && $frontedit_disabled_with_param) {
-                        $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink($data['site_id'], $data['channel_id'], $data['entry_id'], $field_id);
-                    }
-                    $tagdata = str_replace(LD . $prefix . $field_name . ($modifier != 'frontedit' ? ':frontedit' : '') . RD, $frontEditLink, $tagdata);
                 }
 
                 ee()->load->remove_package_path($_ft_path);
