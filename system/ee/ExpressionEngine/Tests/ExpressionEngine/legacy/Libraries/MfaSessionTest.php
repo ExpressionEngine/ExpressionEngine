@@ -636,7 +636,7 @@ class MfaSessionTest extends TestCase
     public function testMigrationIsRepeatableAndReportsFailures($exists, $columnExists, $written, $expected)
     {
         require_once SYSPATH . 'ee/installer/libraries/Progress.php';
-        require_once SYSPATH . 'ee/installer/updates/ud_7_05_29.php';
+        require_once SYSPATH . 'ee/installer/updates/ud_7_06_00.php';
         require_once BASEPATH . 'libraries/template_router/Route.php';
         $db = $this->getMockBuilder(\stdClass::class)
             ->addMethods(['table_exists', 'field_exists', 'select', 'join', 'where', 'get'])->getMock();
@@ -659,7 +659,7 @@ class MfaSessionTest extends TestCase
         ee()->setMock('db', $db);
         ee()->setMock('dbforge', $forge);
         ee()->setMock('smartforge', $forge);
-        $updater = new \ExpressionEngine\Updater\Version_7_5_29\Updater();
+        $updater = new \ExpressionEngine\Updater\Version_7_6_0\Updater();
         $this->assertSame($expected, $updater->do_update());
     }
 

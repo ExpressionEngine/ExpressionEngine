@@ -73,7 +73,7 @@ class RunnerTest extends TestCase
         ];
         $this->newFiles = [
             'system/ee/core.txt' => 'new core',
-            'system/ee/legacy/libraries/Core.php' => "<?php define('APP_VER', '7.5.29');",
+            'system/ee/legacy/libraries/Core.php' => "<?php define('APP_VER', '7.6.0');",
             'system/ee/added.txt' => 'new file',
             'themes/ee/theme.txt' => 'new theme',
         ];
@@ -231,7 +231,7 @@ class RunnerTest extends TestCase
     public function testOlderCliHandoffRestoresTheSourceVersionBeforeReplacingFiles()
     {
         define('ExpressionEngine\Updater\Service\Updater\APP_VER', '7.5.28');
-        $this->config->config['app_version'] = '7.5.29';
+        $this->config->config['app_version'] = '7.6.0';
         file_put_contents($this->archive . 'system/ee/core.txt', 'damaged core');
         try {
             $this->runner->updateFiles();
@@ -241,7 +241,7 @@ class RunnerTest extends TestCase
         }
         $state = json_decode(file_get_contents($this->directory . 'cache/ee_update/configs.json'), true);
         $this->assertSame('7.5.28', $state['from_version']);
-        $this->assertSame('7.5.29', $state['to_version']);
+        $this->assertSame('7.6.0', $state['to_version']);
         $this->assertSame('7.5.28', $this->config->item('app_version'));
     }
 
@@ -253,11 +253,11 @@ class RunnerTest extends TestCase
         $this->assertSame('7.5.28', $this->config->item('app_version'));
         $this->mockCompletionServices();
         $this->runner->selfDestruct();
-        $this->assertSame('7.5.29', $this->config->item('app_version'));
+        $this->assertSame('7.6.0', $this->config->item('app_version'));
         $this->assertSame($online, $this->config->item('is_system_on'));
         $this->assertFalse($this->config->item('is_system_on_before_updater'));
         $this->assertSame(1, $this->runner->completions);
-        $this->assertSame(['Update complete. Now running version 7.5.29'], $this->messages);
+        $this->assertSame(['Update complete. Now running version 7.6.0'], $this->messages);
     }
 
     public function onlineStates()
@@ -296,7 +296,7 @@ class RunnerTest extends TestCase
         } catch (\RuntimeException $e) {
             $this->assertSame('Completion hook failed', $e->getMessage());
         }
-        $this->assertSame('7.5.29', $this->config->item('app_version'));
+        $this->assertSame('7.6.0', $this->config->item('app_version'));
         $this->assertSame('old core', file_get_contents($this->directory . 'cache/ee_update/backups/system_ee/core.txt'));
         $this->assertDirectoryDoesNotExist($this->directory . 'system/ee/updater');
     }
@@ -320,14 +320,14 @@ class RunnerTest extends TestCase
 
         (new Runner())->selfDestruct();
 
-        $this->assertSame('7.5.29', $this->config->item('app_version'));
+        $this->assertSame('7.6.0', $this->config->item('app_version'));
         $this->assertSame('y', $this->config->item('is_system_on'));
     }
 
     public function testRollbackRestoresOriginalVersionWithNewCodeAlreadyLoaded()
     {
         $this->runner->updateFiles();
-        define('ExpressionEngine\\Updater\\Service\\Updater\\APP_VER', '7.5.29');
+        define('ExpressionEngine\\Updater\\Service\\Updater\\APP_VER', '7.6.0');
         $this->runner->rollback();
         $this->mockCompletionServices();
         $this->runner->selfDestruct('rollback');
@@ -341,7 +341,7 @@ class RunnerTest extends TestCase
 
     public function testCliCanFinishRollingBackAWebUpdateWithoutCliVersionMetadata()
     {
-        define('ExpressionEngine\\Updater\\Service\\Updater\\APP_VER', '7.5.29');
+        define('ExpressionEngine\\Updater\\Service\\Updater\\APP_VER', '7.6.0');
         $this->mockCompletionServices();
         $this->runner->selfDestruct('rollback');
         $this->assertSame('7.5.28', $this->config->item('app_version'));
@@ -376,22 +376,22 @@ class RunnerTest extends TestCase
             public function item($key) { return $this->version; }
         });
         $this->writeFile($this->directory . 'system/ee/installer/updates/ud_7_05_28.php', '<?php');
-        $this->writeFile($this->directory . 'system/ee/installer/updates/ud_7_05_29.php', '<?php');
+        $this->writeFile($this->directory . 'system/ee/installer/updates/ud_7_06_00.php', '<?php');
 
         $updater = $this->runner->makeDatabaseUpdaterService();
         $this->assertTrue($updater->hasUpdatesToRun());
-        $this->assertSame('runUpdateFile[ud_7_05_29.php]', $updater->getFirstStep());
+        $this->assertSame('runUpdateFile[ud_7_06_00.php]', $updater->getFirstStep());
     }
 
     public function updateVersions()
     {
         return [
             // CLI writes the target config version while the old application is still running.
-            'CLI' => ['CLI', '7.5.28', '7.5.29'],
+            'CLI' => ['CLI', '7.5.28', '7.6.0'],
             // External CLI steps reload the new code while config still has the installed version.
-            'CLI new process' => ['CLI', '7.5.29', '7.5.28'],
+            'CLI new process' => ['CLI', '7.6.0', '7.5.28'],
             // CP reloads the new application before writing the target config version.
-            'CP' => ['CP', '7.5.29', '7.5.28'],
+            'CP' => ['CP', '7.6.0', '7.5.28'],
         ];
     }
 

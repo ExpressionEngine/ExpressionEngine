@@ -156,7 +156,7 @@ class UpdateCommandStub extends CommandUpdate
     {
         $this->config = $config;
         $this->currentVersion = '7.5.28';
-        $this->updateVersion = '7.5.29';
+        $this->updateVersion = '7.6.0';
         $this->updateType = 'curl';
         $this->defaultToYes = true;
     }

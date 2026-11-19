@@ -2,7 +2,7 @@
 
 namespace ExpressionEngine\Tests\Installer\Updates;
 
-use ExpressionEngine\Updater\Version_7_5_29\Updater;
+use ExpressionEngine\Updater\Version_7_6_0\Updater;
 use ExpressionEngine\Updater\Library\Filesystem\Filesystem;
 use ExpressionEngine\Updater\Service\Updater\DatabaseUpdater;
 use PHPUnit\Framework\TestCase;
@@ -11,12 +11,12 @@ use PHPUnit\Framework\TestCase;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-class Version7529Test extends TestCase
+class Version760Test extends TestCase
 {
     protected function setUp(): void
     {
         define('EE_APPPATH', BASEPATH);
-        require_once SYSPATH . 'ee/installer/updates/ud_7_05_29.php';
+        require_once SYSPATH . 'ee/installer/updates/ud_7_06_00.php';
         require_once BASEPATH . 'libraries/Progress.php';
         require_once BASEPATH . 'libraries/template_router/Match.php';
         ee()->setMock('Security/XSS', new class {
@@ -72,9 +72,9 @@ class Version7529Test extends TestCase
 
         $updater = new DatabaseUpdater('7.5.28', new Filesystem());
         $this->assertTrue($updater->hasUpdatesToRun());
-        $this->assertSame('runUpdateFile[ud_7_05_29.php]', $updater->steps[0]);
+        $this->assertSame('runUpdateFile[ud_7_06_00.php]', $updater->steps[0]);
         $this->assertContains('template_routes', $updater->getAffectedTables());
-        $updater->runUpdateFile('ud_7_05_29.php');
+        $updater->runUpdateFile('ud_7_06_00.php');
         $this->assertNotSame($row['route_parsed'], $saved['route_parsed']);
         $this->assertSame($row['route'], $saved['route']);
         $this->assertSame($required, $saved['route_required']);
