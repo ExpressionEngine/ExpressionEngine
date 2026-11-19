@@ -590,9 +590,9 @@ class Metaweblog_api
             return ee()->xmlrpc->send_error_message('805', ee()->lang->line('no_entry_found'));
         }
 
+        // The entry may belong to any site: access follows its channel
         $query = ee('Model')->get('ChannelEntry')->with('Channel');
         $query->filter('entry_id', $entry_id);
-        $query->filter('ChannelEntry.site_id', $this->site_id);
 
         $entry = $query->first();
 
@@ -699,6 +699,11 @@ class Metaweblog_api
 
         // Only for an entry the member may edit
         if (($error = $this->fetch_entry($parameters['0'])) !== null) {
+            return $error;
+        }
+
+        // The caches cleared below are those of the entry's site
+        if (($error = $this->parse_channel($this->channel_id)) !== null) {
             return $error;
         }
 
