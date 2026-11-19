@@ -958,9 +958,25 @@ class ChannelEntry extends ContentModel
         return $module_tabs;
     }
 
+    /**
+     * Sync field data and visibility for a channel entry.
+     *
+     * @param array $data The field values to fill.
+     * @return void
+     */
     protected function setDataOnCustomFields(array $data = array())
     {
-        $currentlyHiddenFieldsIds = $this->isNew() ? $this->evaluateConditionalFields() : $this->getHiddenFieldIds();
+        $isNew = $this->isNew();
+        if ($isNew && isset($data['channel_id']) && count($data) === 1
+            && $this->hasAssociation('Channel') && ! $this->getAssociation('Channel')->isLoaded()
+        ) {
+            // Loading Channel fills its foreign key before the relationship is ready to read.
+            parent::setDataOnCustomFields($data);
+
+            return;
+        }
+
+        $currentlyHiddenFieldsIds = $isNew ? $this->evaluateConditionalFields() : $this->getHiddenFieldIds();
         $currentlyHiddenFieldsNames = [];
         foreach ($currentlyHiddenFieldsIds as $hiddenFieldId) {
             $currentlyHiddenFieldsNames[] = 'field_id_' . $hiddenFieldId;
