@@ -623,9 +623,15 @@ class Metaweblog_api
             return false;
         }
 
+        if ($this->member->isSuperAdmin()) {
+            return true;
+        }
+
         // Roles hold their permissions per site, and a channel may belong to
         // another site than the one serving the request
-        return $this->member->can($action . '_channel_id_' . (int) $channel_id, $this->channel_sites[$channel_id]);
+        $permissions = $this->member->getPermissionsForSite($this->channel_sites[$channel_id]);
+
+        return array_key_exists('can_' . $action . '_channel_id_' . (int) $channel_id, $permissions);
     }
 
     /**
@@ -1147,10 +1153,8 @@ class Metaweblog_api
                 $cats[] = $cat_data['categoryId'];
             }
 
-            if (count($cats) == 0 && ! empty($this->deft_category)) {
-                $cats = array($this->deft_category);
-            }
-
+            // An empty list leaves the entry without categories: the
+            // channel's default category applies to new entries only
             if (count($cats) > 0 && ($error = $this->check_categories($cats)) !== null) {
                 return $error;
             }
@@ -1217,6 +1221,39 @@ class Metaweblog_api
     protected function storable($value)
     {
         return preg_match('/[\x{10000}-\x{10FFFF}]/u', $value) === 0;
+    }
+
+    /**
+     * Whether the content of the authenticated member's uploads is
+     * inspected: the same rules as xss_check() applies to uploads in the
+     * Control Panel, for the member of this request rather than the
+     * session the request arrived with
+     *
+     * @access	protected
+     * @return	bool
+     */
+    protected function inspects_uploads()
+    {
+        if ($this->member->isSuperAdmin() || ee()->config->item('xss_clean_uploads') == 'n') {
+            return false;
+        }
+
+        $member_exceptions = preg_split('/[\s|,]/', (string) ee()->config->item('xss_clean_member_exception'), -1, PREG_SPLIT_NO_EMPTY);
+
+        if (in_array((string) $this->member->member_id, $member_exceptions, true)) {
+            return false;
+        }
+
+        $role_exceptions = preg_split('/[\s|,]/', (string) ee()->config->item('xss_clean_member_group_exception'), -1, PREG_SPLIT_NO_EMPTY);
+        $roles = $this->member->getAllRoles();
+
+        foreach (array_merge($roles->pluck('role_id'), $roles->pluck('name')) as $role) {
+            if (in_array((string) $role, $role_exceptions, true)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -1317,9 +1354,23 @@ class Metaweblog_api
             return false;
         }
 
+        // Expired failed attempts are pruned, as after any other sign-in
+        try {
+            ee()->session->delete_password_lockout();
+        } catch (\Exception $e) {
+            log_message('error', 'MetaWeblog API: expired sign-in attempts could not be removed.');
+        }
+
         $this->member = $member;
         $this->channel_sites = $channels->getDictionary('channel_id', 'site_id');
         $this->userdata['assigned_channels'] = $assigned_channels;
+
+        // Who the member is, as a sign-in with a kept session would describe them
+        foreach (array('username', 'screen_name', 'email') as $key) {
+            $this->userdata[$key] = $member->$key;
+        }
+
+        $this->userdata['group_id'] = $member->role_id;
 
         ee()->session->userdata = array_merge(
             ee()->session->userdata,
@@ -1491,6 +1542,15 @@ class Metaweblog_api
 
         $categories = array_unique($categories);
 
+        // An ID may come with surrounding spaces or leading zeros, as the
+        // channel and entry IDs may
+        $category_ids = array();
+
+        foreach ($categories as $category) {
+            $id = trim($category);
+            $category_ids[$category] = ctype_digit($id) ? ltrim($id, '0') : null;
+        }
+
         $sql = "SELECT exp_categories.cat_id, exp_categories.cat_name, exp_categories.parent_id, exp_categories.group_id
 				FROM exp_categories
 				LEFT JOIN exp_channel_category_groups ON exp_categories.group_id = exp_channel_category_groups.group_id
@@ -1503,23 +1563,34 @@ class Metaweblog_api
             return ee()->xmlrpc->send_error_message('807', ee()->lang->line('invalid_categories'));
         }
 
-        $good = 0;
-        $all_cats = array();
-
         // //$this->categories[cat_group_id_1] = array(2,4);
 
-        foreach ($query->result_array() as $row) {
-            $all_cats[$row['cat_id']] = $row['cat_name'];
+        // Every category asked for must be one of the channel's, by ID or
+        // name exactly as sent, or else by its ID written another way
+        foreach ($categories as $category) {
+            $found = array();
 
-            if (in_array((string) $row['cat_id'], $categories, true) or in_array($row['cat_name'], $categories, true)) {
-                $good++;
-
-                $this->categories[$row['cat_id']] = $row['cat_id'];
+            foreach ($query->result_array() as $row) {
+                if ($category === (string) $row['cat_id'] || $category === $row['cat_name']) {
+                    $found[] = $row['cat_id'];
+                }
             }
-        }
 
-        if ($good < count($categories)) {
-            return ee()->xmlrpc->send_error_message('807', ee()->lang->line('invalid_categories'));
+            if (empty($found)) {
+                foreach ($query->result_array() as $row) {
+                    if ($category_ids[$category] === (string) $row['cat_id']) {
+                        $found[] = $row['cat_id'];
+                    }
+                }
+            }
+
+            if (empty($found)) {
+                return ee()->xmlrpc->send_error_message('807', ee()->lang->line('invalid_categories'));
+            }
+
+            foreach ($found as $cat_id) {
+                $this->categories[$cat_id] = $cat_id;
+            }
         }
     }
 
@@ -1557,6 +1628,12 @@ class Metaweblog_api
 
         if (! $this->member_can($action, $entry->channel_id)) {
             return ee()->xmlrpc->send_error_message('808', ee()->lang->line('invalid_access'));
+        }
+
+        // Deleted as part of its own site, so that site's records of the
+        // entry (such as its page URI) go with it
+        if (($error = $this->parse_channel($entry->channel_id)) !== null) {
+            return $error;
         }
 
         // Delete the entry
@@ -1635,7 +1712,13 @@ class Metaweblog_api
         ));
 
         // The directory's own limits apply, and the content of the file is
-        // always inspected
+        // inspected as for an upload in the Control Panel
+        $inspect = $this->inspects_uploads();
+
+        if (! $inspect) {
+            ee()->filemanager->xss_clean_off();
+        }
+
         $config = array(
             'upload_destination' => $destination,
             'file_name' => $filename,
@@ -1644,7 +1727,7 @@ class Metaweblog_api
             'max_width' => $dir['max_width'],
             'max_height' => $dir['max_height'],
             'auto_resize' => true,
-            'xss_clean' => true
+            'xss_clean' => $inspect
         );
 
         if ($dir['allowed_types'] == array('img')) {
@@ -1703,8 +1786,20 @@ class Metaweblog_api
 
         @unlink($temp_file);
 
-        // A file that was not accepted does not stay in the directory
+        // A file that was not accepted does not stay in the directory, on
+        // whichever storage the directory uses
         if ($result['status'] === false) {
+            try {
+                $filesystem = $destination->getFilesystem();
+                $stored = $filesystem->relative($file['full_path']);
+
+                if ($filesystem->exists($stored)) {
+                    $filesystem->delete($stored);
+                }
+            } catch (\Exception $e) {
+                log_message('error', 'MetaWeblog API: a file that was not accepted could not be removed.');
+            }
+
             ee()->filemanager->_upload_error(
                 $result['message'],
                 array('file_name' => $file['file_name'], 'directory_id' => $dir['id'])

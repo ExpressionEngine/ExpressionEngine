@@ -1163,28 +1163,47 @@ class Member extends ContentModel
     /**
      * Get permissions assigned to member
      *
-     * Permissions are held per site. Without a site ID this returns the
-     * permissions for the site that was current when it was first called
-     * during the request; pass a site ID to get the permissions for that
-     * site, whichever site is current.
+     * Answers for the site that is current on the first call during the
+     * request, and keeps that answer for the rest of it. The session library
+     * stores the same answer under this cache key when it loads the member.
      *
-     * @param  int|null $site_id Site to get the permissions for
      * @return Array [permission => permission_id]
      */
-    public function getPermissions($site_id = null)
+    public function getPermissions()
     {
         $cache_key = "Member/{$this->member_id}/Permissions";
 
-        if ($site_id !== null) {
-            $site_id = (int) $site_id;
-            $cache_key .= "/Site/{$site_id}";
+        $permissions = $this->getFromCache($cache_key);
+
+        if ($permissions === false) {
+            $permissions = $this->getPermissionsForSite(ee()->config->item('site_id'));
+
+            $this->saveToCache($cache_key, $permissions);
         }
+
+        return $permissions;
+    }
+
+    /**
+     * Get permissions assigned to member on a given site
+     *
+     * Permissions are held per site. getPermissions() answers for the site
+     * that was current when it was first called during the request; this
+     * answers for the site named, whichever site is current.
+     *
+     * @param  int $site_id Site to get the permissions for
+     * @return Array [permission => permission_id]
+     */
+    public function getPermissionsForSite($site_id)
+    {
+        $site_id = (int) $site_id;
+        $cache_key = "Member/{$this->member_id}/Permissions/Site/{$site_id}";
 
         $permissions = $this->getFromCache($cache_key);
 
         if ($permissions === false) {
             $permissions = $this->getModelFacade()->get('Permission')
-                ->filter('site_id', ($site_id !== null) ? $site_id : ee()->config->item('site_id'))
+                ->filter('site_id', $site_id)
                 ->filter('role_id', 'IN', $this->getAllRoles()->pluck('role_id'))
                 ->all()
                 ->getDictionary('permission', 'permission_id');
@@ -1195,20 +1214,13 @@ class Member extends ContentModel
         return $permissions;
     }
 
-    /**
-     * Checks whether member can do something, e.g. `can('access_cp')`
-     *
-     * @param  string   $permission Permission name without the `can_` prefix
-     * @param  int|null $site_id    Site to check on, see getPermissions()
-     * @return Bool `true` if permission has been granted
-     */
-    public function can($permission, $site_id = null)
+    public function can($permission)
     {
         if ($this->isSuperAdmin()) {
             return true;
         }
 
-        $permissions = $this->getPermissions($site_id);
+        $permissions = $this->getPermissions();
 
         return array_key_exists('can_' . $permission, $permissions);
     }
@@ -1216,17 +1228,15 @@ class Member extends ContentModel
     /**
      * Checks whether member has certain permission
      *
-     * @param  string   $permission Full permission name
-     * @param  int|null $site_id    Site to check on, see getPermissions()
      * @return Bool `true` if permission has been granted
      */
-    public function has($permission, $site_id = null)
+    public function has($permission)
     {
         if ($this->isSuperAdmin()) {
             return true;
         }
 
-        $permissions = $this->getPermissions($site_id);
+        $permissions = $this->getPermissions();
 
         return array_key_exists($permission, $permissions);
     }

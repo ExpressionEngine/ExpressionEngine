@@ -167,6 +167,43 @@ class Metaweblog_api_mcp
     }
 
     /**
+     * Whether the form can show a saved configuration as it is
+     *
+     * Its channel must be one the member may choose, unless the channel no
+     * longer exists. Its upload directory must be one the member may choose,
+     * unless it is none, no longer exists or belongs to an add-on (the API
+     * never uses those, so the form shows none).
+     *
+     * @access	private
+     * @param	array	Saved configuration
+     * @param	array	Channels the form offers, keyed by ID
+     * @return	bool
+     */
+    private function offers_saved_values($values, $channels)
+    {
+        $channel_id = (int) $values['channel_id'];
+
+        if (! isset($channels[$channel_id]) && ee('Model')->get('Channel', $channel_id)->count() > 0) {
+            return false;
+        }
+
+        $upload_dir = (int) $values['upload_dir'];
+
+        if ($upload_dir == 0) {
+            return true;
+        }
+
+        $destination = ee('Model')->get('UploadDestination', $upload_dir)->filter('module_id', 0)->first();
+
+        if (! $destination) {
+            return true;
+        }
+
+        return in_array($destination->site_id, array(0, ee()->config->item('site_id')))
+            && in_array($upload_dir, ee()->session->getMember()->getAssignedUploadDestinations()->pluck('id'));
+    }
+
+    /**
      * Delete Configuration(s)
      *
      * @access	public
@@ -249,11 +286,20 @@ class Metaweblog_api_mcp
 
             $id = (int) $id;
             $values = (array) $configurations[$id];
+
+            // The form can only offer the member's own channels and
+            // directories. A configuration that uses another one cannot be
+            // shown as it is saved, and saving the form would replace it.
+            if (! $this->offers_saved_values($values, $channels)) {
+                show_error(lang('unauthorized_access'), 403);
+            }
         }
 
-        // Filtering Javascript
-        $cid = ($id == 'new') ? null : $values['channel_id'];
-        $this->filtering_menus($cid, array_keys($channels));
+        // Filtering Javascript: the field menus start with the fields of the
+        // channel the form selects
+        $channel_ids = array_keys($channels);
+        $cid = ($id == 'new') ? (empty($channel_ids) ? null : $channel_ids[0]) : $values['channel_id'];
+        $this->filtering_menus($cid, $channel_ids);
         ee()->javascript->compile();
 
         // Get the directories
