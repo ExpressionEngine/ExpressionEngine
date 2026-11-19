@@ -130,8 +130,8 @@ module.exports = (on, config) => {
 
     on('task', {
         'cache:clear': () => {
-            fs.delete('../../system/user/cache/default_site/');
-            return true
+            // Finish before reporting back, so the next step starts from an empty cache
+            return fs.delete('../../system/user/cache/default_site/').then(() => true)
         }
     })
 

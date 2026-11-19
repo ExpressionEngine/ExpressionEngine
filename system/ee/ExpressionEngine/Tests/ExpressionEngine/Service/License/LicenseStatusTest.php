@@ -124,6 +124,7 @@ class LicenseStatusTest extends TestCase
             'no outcome' => [['addons' => [['slug' => 'pro', 'status' => 'expired']]]],
             'blank outcome' => [['messageType' => '', 'addons' => [['slug' => 'pro', 'status' => 'expired']]]],
             'malformed add-on list' => [['messageType' => 'success', 'addons' => 'pro']],
+            'an error with no add-on list' => [['messageType' => 'error', 'message' => 'Server busy']],
         ];
     }
 
@@ -200,6 +201,7 @@ class LicenseStatusTest extends TestCase
         $this->now += 2 * self::DAY;
         $this->missACheck();
         $this->now += 15 * self::DAY;
+        $this->servePage();
 
         $status = $this->status();
         $this->assertSame('unverified', $status->statusFor('pro'));
@@ -248,9 +250,32 @@ class LicenseStatusTest extends TestCase
         $this->assertSame('valid', $this->status()->statusFor('pro'));
 
         $this->now += 13 * self::DAY;
+        $this->servePage();
         $this->assertSame('valid', $this->status()->statusFor('pro'));
 
         $this->now += 2 * self::DAY;
+        $this->servePage();
+        $this->assertSame('unverified', $this->status()->statusFor('pro'));
+    }
+
+    public function testAQuietSiteKeepsItsStatusAfterAFailedCheck()
+    {
+        $this->status()->store($this->response('success', ['pro' => 'valid']));
+
+        // The license service cannot be reached while someone is logged in
+        $this->now += 2 * self::DAY;
+        $this->missACheck();
+        $this->assertCount(1, $this->curl->requests);
+
+        // Nobody logs in for two months. Pages on the site itself still read
+        // the status, and nothing has tried again since.
+        $this->now += 60 * self::DAY;
+        $this->assertSame('valid', $this->status()->statusFor('pro'));
+        $this->assertFalse($this->status()->verificationOverdue());
+
+        // Someone comes back and the license service still cannot be reached
+        $this->servePage();
+        $this->assertCount(2, $this->curl->requests);
         $this->assertSame('unverified', $this->status()->statusFor('pro'));
     }
 
@@ -295,6 +320,26 @@ class LicenseStatusTest extends TestCase
         $this->assertFalse($this->status()->verificationOverdue());
     }
 
+    public function testAnAnswerThatArrivesWhileTheSiteIsStillWaitingForItsOwnIsKept()
+    {
+        $this->status()->store($this->response('success', ['pro' => 'expired']));
+
+        $this->now += 2 * self::DAY;
+        $this->servePage();
+        $this->now += 700;
+
+        // The site's own request was answered before the license was renewed,
+        // but that answer only gets back after the browser's newer one
+        $this->curl->body = json_encode($this->response('success', ['pro' => 'expired']));
+        $this->curl->during = function () {
+            $this->status()->store($this->response('success', ['pro' => 'valid']));
+        };
+        $this->servePage();
+
+        $this->assertCount(1, $this->curl->requests);
+        $this->assertSame('valid', $this->status()->statusFor('pro'));
+    }
+
     public function testAKnownProblemWithALicenseIsStillReportedWhenChecksKeepFailing()
     {
         $this->status()->store($this->response('success', ['pro' => 'expired', 'forum' => 'invalid', 'wiki' => 'trial']));
@@ -302,6 +347,7 @@ class LicenseStatusTest extends TestCase
         $this->now += 2 * self::DAY;
         $this->missACheck();
         $this->now += 15 * self::DAY;
+        $this->servePage();
 
         $status = $this->status();
         $this->assertTrue($status->verificationOverdue());
@@ -341,6 +387,7 @@ class LicenseStatusTest extends TestCase
         $this->assertSame('valid', $this->status()->statusFor('pro'));
 
         $this->now += 2 * self::DAY;
+        $this->servePage();
         $this->assertSame('unverified', $this->status()->statusFor('pro'));
     }
 
@@ -453,6 +500,11 @@ class LicenseStatusTest extends TestCase
 
         $this->assertTrue($status->store($this->response('success', ['pro' => 'valid'])));
         $this->assertSame('valid', $status->statusFor('pro'));
+
+        // Signature fields that are present but empty, as the control panel
+        // passes on a response that had them set to null
+        $this->assertTrue($status->store($this->response('success', ['pro' => 'trial']) + ['payload' => '', 'signature' => '']));
+        $this->assertSame('trial', $status->statusFor('pro'));
 
         $this->assertTrue($status->store($this->signed(0, ['messageType' => 'expired', 'addons' => [['slug' => 'pro', 'status' => 'valid']]])));
         $this->assertSame('expired', $status->statusFor('pro'));
@@ -703,8 +755,11 @@ class LicenseStatusTest extends TestCase
         $this->now += 2 * self::DAY;
         $this->missACheck();
         $this->now += 15 * self::DAY;
+        $this->servePage();
         $this->assertSame('unverified', $this->status()->statusFor('pro'));
 
+        // The site's next attempt, an hour later, gets the fail-open reply
+        $this->now += 3700;
         $this->curl->body = json_encode([
             'messageType' => 'success',
             'addons' => [['slug' => 'pro', 'name' => 'ExpressionEngine Pro', 'status' => 'valid', 'update' => null]],

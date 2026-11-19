@@ -21,9 +21,9 @@ namespace ExpressionEngine\Service\License;
  * Only a definitive answer replaces what is stored. Connection problems and
  * unreadable responses leave the last known status in place. It stays in force
  * until checks have been failing for MAX_AGE, counted from the first time the
- * site's own check failed. That only happens after the browser has had its
- * turn, so a status cannot lapse unless both have tried, and a site nobody is
- * logged in to is not affected.
+ * site's own check failed to the latest. That check only runs after the
+ * browser has had its turn, so a status cannot lapse unless both have tried,
+ * and it does not lapse while nobody is logged in to try again.
  *
  * A stored answer belongs to the license key it was given for. The site's
  * address is not part of that: one key may serve several addresses.
@@ -45,8 +45,8 @@ class LicenseStatus
     // A check is overdue once the last successful one is this old
     const BACKUP_AFTER = 86400;
 
-    // How long the last known status stays in force once the site's own check
-    // has failed, and how long before members who manage licenses are told
+    // How long the site's own check has to keep failing before the last known
+    // status lapses, and before members who manage licenses are told
     const MAX_AGE = 1209600;
     const NOTICE_AGE = 604800;
 
@@ -230,30 +230,26 @@ class LicenseStatus
 
         $message = isset($response['messageType']) ? $this->cleanStatus($response['messageType']) : '';
 
-        if ($message === '') {
+        // The license service always says how the check went and lists the
+        // add-ons it was asked about
+        if ($message === '' || ! isset($response['addons']) || ! is_array($response['addons'])) {
             return false;
         }
 
         $addons = [];
 
-        if (isset($response['addons'])) {
-            if (! is_array($response['addons'])) {
-                return false;
+        foreach (array_slice($response['addons'], 0, self::MAX_ADDONS) as $addon) {
+            $slug = (is_array($addon) && isset($addon['slug'])) ? $this->cleanSlug($addon['slug']) : '';
+
+            if ($slug === '') {
+                continue;
             }
 
-            foreach (array_slice($response['addons'], 0, self::MAX_ADDONS) as $addon) {
-                $slug = (is_array($addon) && isset($addon['slug'])) ? $this->cleanSlug($addon['slug']) : '';
-
-                if ($slug === '') {
-                    continue;
-                }
-
-                $addons[$slug] = [
-                    'slug' => $slug,
-                    'status' => isset($addon['status']) ? $this->cleanStatus($addon['status']) : '',
-                    'update' => isset($addon['update']) ? $this->cleanVersion($addon['update']) : '',
-                ];
-            }
+            $addons[$slug] = [
+                'slug' => $slug,
+                'status' => isset($addon['status']) ? $this->cleanStatus($addon['status']) : '',
+                'update' => isset($addon['update']) ? $this->cleanVersion($addon['update']) : '',
+            ];
         }
 
         $record = [
@@ -271,6 +267,7 @@ class LicenseStatus
         // An answer that was already old when it arrived is not a fresh check
         if ($this->age($record) >= self::BACKUP_AFTER) {
             $record['overdue_since'] = $checked_at;
+            $record['failed_at'] = $this->now();
         }
 
         return $this->write($record);
@@ -387,18 +384,25 @@ class LicenseStatus
 
         $response = $this->askLicenseService($request);
 
+        // The browser may have got an answer in while the site waited. That
+        // one stands, whatever came of the site's own attempt.
+        $this->loaded = false;
+        $record = $this->answer();
+
+        if ($record !== null && $this->age($record) < self::BACKUP_AFTER) {
+            return false;
+        }
+
         if (is_array($response) && $this->store($response)) {
             return true;
         }
 
-        // The browser has had its turn and now the site has failed too: the
-        // last known status is on borrowed time from here. Read it again
-        // first, in case the browser got an answer in while the site waited.
-        $this->loaded = false;
-        $record = $this->answer();
-
-        if ($record !== null && empty($record['overdue_since']) && $this->age($record) >= self::BACKUP_AFTER) {
-            $record['overdue_since'] = $this->now();
+        // The browser has had its turn and now the site has failed too. The
+        // last known status lapses once that has gone on for long enough,
+        // counted between the first of these failures and the latest.
+        if ($record !== null) {
+            $record['overdue_since'] = empty($record['overdue_since']) ? $this->now() : $record['overdue_since'];
+            $record['failed_at'] = $this->now();
             $this->write($record);
         }
 
@@ -568,11 +572,15 @@ class LicenseStatus
 
     /**
      * @param array $record
-     * @return int Seconds since the site's own check first failed
+     * @return int Seconds between the first time the site's own check failed and the latest
      */
     protected function overdueFor(array $record)
     {
-        return empty($record['overdue_since']) ? 0 : $this->now() - (int) $record['overdue_since'];
+        if (empty($record['overdue_since']) || empty($record['failed_at'])) {
+            return 0;
+        }
+
+        return max(0, (int) $record['failed_at'] - (int) $record['overdue_since']);
     }
 
     /**
@@ -598,7 +606,9 @@ class LicenseStatus
      */
     protected function isSigned(array $response)
     {
-        return isset($response['payload'], $response['signature'])
+        // Fields left empty are the same as fields left out
+        return ! empty($response['payload'])
+            && ! empty($response['signature'])
             && is_string($response['payload'])
             && is_string($response['signature']);
     }
