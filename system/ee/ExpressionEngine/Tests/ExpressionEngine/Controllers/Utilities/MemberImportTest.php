@@ -205,20 +205,19 @@ class MemberImportTest extends TestCase
         $this->mockSuperAdmin(false);
 
         $controller = $this->makeController();
-        $this->setControllerProperty($controller, 'default_fields', array('role_id' => 5));
-        $this->setControllerProperty($controller, 'members', array(
+        $members = array(
             array('role_id' => '5'),
             array('role_id' => 5),
             array('role_id' => '05'),
             array(),
             array('role_id' => 6),
             array('role_id' => '6'),
-        ));
+        );
 
         $method = new ReflectionMethod(MemberImport::class, 'authorizeImportRoles');
         \TestReflectionHelper::makeAccessible($method);
-        $method->invoke($controller);
-        $method->invoke($controller);
+        $method->invoke($controller, $members, 5);
+        $method->invoke($controller, $members, 5);
 
         $this->assertSame(array(5, 6, 5, 6), $lookedUpRoleIds);
     }

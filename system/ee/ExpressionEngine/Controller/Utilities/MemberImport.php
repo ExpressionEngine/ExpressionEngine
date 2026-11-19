@@ -29,6 +29,18 @@ class MemberImport extends Utilities
     private $roles_within_access = array();
     private $authorized_roles = array();
     private $existing_record_ids = null;
+    private $role_grants = array();
+    private $file_roles_checked = false;
+
+    // What a role can be assigned, and how to get what a member is assigned
+    private $assignment_getters = array(
+        'AssignedModules' => 'getAssignedModules',
+        'AssignedChannels' => 'getAssignedChannels',
+        'AssignedUploadDestinations' => 'getAssignedUploadDestinations',
+        'AssignedStatuses' => 'getAssignedStatuses',
+        'AssignedTemplateGroups' => 'getAssignedTemplateGroups',
+        'AssignedTemplates' => 'getAssignedTemplates',
+    );
 
     public function __construct()
     {
@@ -53,10 +65,8 @@ class MemberImport extends Utilities
 
         ee()->lang->loadfile('settings');
 
-        // Only offer the roles the current member may import into
-        $roles = ee('Model')->get('Role')->order('name', 'asc')->all()->filter(function ($role) {
-            return $this->canImportToRole($role);
-        });
+        // The choices are only needed when the form is shown
+        $role_choices = AJAX_REQUEST ? array() : $this->getRoleChoices();
 
         $vars['sections'] = array(
             array(
@@ -77,7 +87,7 @@ class MemberImport extends Utilities
                     'fields' => array(
                         'role_id' => array(
                             'type' => 'radio',
-                            'choices' => $roles->getDictionary('role_id', 'name'),
+                            'choices' => $role_choices,
                             'required' => true,
                             'no_results' => [
                                 'text' => sprintf(lang('no_found'), lang('roles'))
@@ -267,6 +277,8 @@ class MemberImport extends Utilities
         }
 
         $this->xml_file_name = (! empty($this->xml_file_name)) ? $this->xml_file_name : ee('Encrypt')->decode(ee()->input->post('xml_file_name'));
+
+        $this->authorizeRolesInFile();
 
         $data = array(
             'xml_file_name' => ee('Encrypt')->encode($this->xml_file_name),
@@ -626,7 +638,7 @@ class MemberImport extends Utilities
         $this->default_fields['ip_address'] = '0.0.0.0';
         $this->default_fields['join_date'] = $this->localize->now;
 
-        $this->authorizeImportRoles();
+        $this->authorizeImportRoles($this->members, $this->default_fields['role_id']);
         $this->preflightMemberIds();
 
         //  Rev it up, no turning back!
@@ -724,17 +736,94 @@ class MemberImport extends Utilities
     }
 
     /**
-     * Authorize every effective role before importing any members.
+     * Get the roles the current member may import into, for the form.
+     *
+     * @return array Role names indexed by role ID
+     */
+    private function getRoleChoices()
+    {
+        $roles = ee('Model')->get('Role')->order('name', 'asc')->all();
+
+        if (! ee('Permission')->isSuperAdmin()) {
+            $this->loadRoleGrants($roles->filter(function ($role) {
+                return $role->is_locked != 'y';
+            })->getIds());
+        }
+
+        return $roles->filter(function ($role) {
+            return $this->canImportToRole($role);
+        })->getDictionary('role_id', 'name');
+    }
+
+    /**
+     * Check the roles named in the uploaded file before anything is created
+     * for it, so a file that will not be imported leaves nothing behind.
      *
      * @return void
      */
-    private function authorizeImportRoles()
+    private function authorizeRolesInFile()
+    {
+        if ($this->file_roles_checked) {
+            return;
+        }
+
+        $file_name = (! empty($this->xml_file_name)) ? $this->xml_file_name : ee('Encrypt')->decode(ee()->input->post('xml_file_name'));
+
+        if (empty($file_name)) {
+            return;
+        }
+
+        // A file that cannot be read is reported by the step that imports it
+        ee()->load->helper('file');
+        $contents = read_file($this->cache . '/' . $file_name);
+
+        if ($contents === false) {
+            return;
+        }
+
+        ee()->load->library('xmlparser');
+        $xml = ee()->xmlparser->parse_xml($contents);
+
+        if ($xml === false || ! isset($xml->children[0]) || ! is_array($xml->children[0]->children)) {
+            return;
+        }
+
+        $members = array();
+
+        foreach ($xml->children as $member) {
+            if ($member->tag != 'member' || ! is_array($member->children)) {
+                continue;
+            }
+
+            $roles = array();
+
+            foreach ($member->children as $tag) {
+                if ($tag->tag == 'role_id' || $tag->tag == 'pending_role_id') {
+                    $roles[$tag->tag] = $tag->value;
+                }
+            }
+
+            $members[] = $roles;
+        }
+
+        $this->authorizeImportRoles($members, $this->getAuthorizedRole(ee()->input->post('role_id'))->getId());
+        $this->file_roles_checked = true;
+    }
+
+    /**
+     * Authorize every effective role before importing any members.
+     *
+     * @param array $members Each member's values, as given in the file
+     * @param int $defaultRoleId The role for members the file gives none
+     * @return void
+     */
+    private function authorizeImportRoles(array $members, $defaultRoleId)
     {
         // Roles found here are reused when each member is saved
         $this->authorized_roles = array();
 
-        foreach ($this->members as $member) {
-            $roleIds = array((int) (isset($member['role_id']) ? $member['role_id'] : $this->default_fields['role_id']));
+        foreach ($members as $member) {
+            $roleIds = array((int) (isset($member['role_id']) ? $member['role_id'] : $defaultRoleId));
 
             // A pending role becomes the member's role once they are activated
             if (isset($member['pending_role_id']) && ($pendingRoleId = $this->getPendingRoleId($roleIds[0], $member['pending_role_id']))) {
@@ -914,18 +1003,74 @@ class MemberImport extends Utilities
     private function roleIsWithinImporterAccess($role)
     {
         $access = $this->getImporterAccess();
+        $roleId = $role->getId();
 
-        if (array_diff_key($this->getPermissionGrants(array($role)), $access['permissions'])) {
+        // Use what was loaded for the role with others, or else look it up
+        $grants = isset($this->role_grants[$roleId]) ? $this->role_grants[$roleId] : null;
+        $permissions = $grants ? $grants['permissions'] : $this->getPermissionGrants(array($role));
+
+        if (array_diff_key($permissions, $access['permissions'])) {
             return false;
         }
 
         foreach ($access['assignments'] as $relationship => $assignedIds) {
-            if (array_diff_key(array_fill_keys($role->{$relationship}->getIds(), true), $assignedIds)) {
+            $roleIds = $grants ? $grants['assignments'][$relationship] : array_fill_keys($role->{$relationship}->getIds(), true);
+
+            if (array_diff_key($roleIds, $assignedIds)) {
                 return false;
             }
         }
 
         return true;
+    }
+
+    /**
+     * Load what several roles grant with one query for each kind of grant,
+     * rather than several queries for each role.
+     *
+     * @param array $roleIds
+     * @return void
+     */
+    private function loadRoleGrants(array $roleIds)
+    {
+        $roleIds = array_values(array_diff($roleIds, array_keys($this->role_grants)));
+
+        if (empty($roleIds)) {
+            return;
+        }
+
+        $relationships = array_keys($this->assignment_getters);
+        $grants = array_fill_keys($roleIds, array(
+            'permissions' => array(),
+            'assignments' => array_fill_keys($relationships, array()),
+        ));
+
+        $permissions = ee('Model')->get('Permission')
+            ->fields('role_id', 'site_id', 'permission')
+            ->filter('role_id', 'IN', $roleIds)
+            ->all();
+
+        foreach ($permissions as $permission) {
+            if (isset($grants[$permission->role_id]) && ! $this->permissionIsForRemovedRecord($permission->permission)) {
+                $grants[$permission->role_id]['permissions'][$permission->site_id . ':' . $permission->permission] = true;
+            }
+        }
+
+        foreach ($relationships as $relationship) {
+            $roles = ee('Model')->get('Role')
+                ->with($relationship)
+                ->fields('role_id')
+                ->filter('role_id', 'IN', $roleIds)
+                ->all();
+
+            foreach ($roles as $role) {
+                if (isset($grants[$role->getId()])) {
+                    $grants[$role->getId()]['assignments'][$relationship] = array_fill_keys($role->{$relationship}->getIds(), true);
+                }
+            }
+        }
+
+        $this->role_grants += $grants;
     }
 
     /**
@@ -937,17 +1082,9 @@ class MemberImport extends Utilities
     {
         if ($this->importer_access === null) {
             $member = ee()->session->getMember();
-            $relationships = array(
-                'AssignedModules' => 'getAssignedModules',
-                'AssignedChannels' => 'getAssignedChannels',
-                'AssignedUploadDestinations' => 'getAssignedUploadDestinations',
-                'AssignedStatuses' => 'getAssignedStatuses',
-                'AssignedTemplateGroups' => 'getAssignedTemplateGroups',
-                'AssignedTemplates' => 'getAssignedTemplates',
-            );
             $assignments = array();
 
-            foreach ($relationships as $relationship => $getter) {
+            foreach ($this->assignment_getters as $relationship => $getter) {
                 $assignments[$relationship] = array_fill_keys($member->{$getter}()->getIds(), true);
             }
 
@@ -1102,6 +1239,7 @@ class MemberImport extends Utilities
     public function createCustomFields()
     {
         $this->authorizeImport();
+        $this->authorizeRolesInFile();
 
         $this->_create_custom_validation();
 
