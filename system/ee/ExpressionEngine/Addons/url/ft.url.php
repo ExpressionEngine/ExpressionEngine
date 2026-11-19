@@ -84,6 +84,15 @@ class Url_Ft extends EE_Fieldtype
                 return true;
             }
 
+            // tel: has no '//' or 'host' either (RFC 3966), only a 'path'
+            if (
+                isset($parsed_url['scheme'], $parsed_url['path']) &&
+                $parsed_url['scheme'] == 'tel' &&
+                in_array('tel:', $this->get_setting('allowed_url_schemes'))
+            ) {
+                return true;
+            }
+
             return sprintf(lang('url_ft_invalid_url_scheme'), '<code>' . implode('</code>, <code>', $this->get_setting('allowed_url_schemes')) . '</code>');
         }
 
@@ -245,6 +254,7 @@ class Url_Ft extends EE_Fieldtype
             'mailto:' => 'mailto:',
             'sftp://' => 'sftp://',
             'ssh://' => 'ssh://',
+            'tel:' => 'tel:',
             'tel://' => 'tel://',
         ];
 
