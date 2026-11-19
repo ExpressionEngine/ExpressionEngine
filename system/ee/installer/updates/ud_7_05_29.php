@@ -28,6 +28,7 @@ class Updater
             'addMfaSessionsTable',
             'addMfaLoginId',
             'recompileTemplateRoutes',
+            'clearRenderedCaches',
         ]);
 
         foreach ($steps as $step) {
@@ -78,6 +79,43 @@ class Updater
                 return false;
             }
         }
+
+        return true;
+    }
+
+    /**
+     * Rebuild select caches that are affected by updates in this release.
+     *
+     * The file and database cache drivers keep each site's items under its
+     * short name, so each site is cleared in turn. The other drivers keep
+     * them by URL, and are cleared for the site running the update.
+     *
+     * @return bool
+     */
+    private function clearRenderedCaches()
+    {
+        $sites = ee()->db->select('site_name')->get('sites')->result();
+
+        if (empty($sites)) {
+            return true;
+        }
+
+        ee()->load->driver('cache');
+
+        $current_site = ee()->config->item('site_short_name');
+
+        foreach ($sites as $site) {
+            ee()->config->set_item('site_short_name', $site->site_name);
+
+            foreach (['page_cache', 'tag_cache', 'resource_cache'] as $cache) {
+                ee()->cache->delete('/' . $cache . '/');
+            }
+        }
+
+        ee()->config->set_item('site_short_name', $current_site);
+
+        // With more than one site, this cache is kept for all of them together
+        ee()->cache->delete('/resource_cache/', \Cache::GLOBAL_SCOPE);
 
         return true;
     }

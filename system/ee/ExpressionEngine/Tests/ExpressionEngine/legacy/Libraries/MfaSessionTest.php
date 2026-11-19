@@ -643,8 +643,8 @@ class MfaSessionTest extends TestCase
         $db->method('select')->willReturnSelf();
         $db->method('join')->willReturnSelf();
         $db->method('where')->willReturnSelf();
-        $db->expects($expected ? $this->once() : $this->never())->method('get')
-            ->with('template_routes')->willReturn(new \eeDbResultMock([]));
+        $db->expects($expected ? $this->exactly(2) : $this->never())->method('get')
+            ->withConsecutive(['template_routes'], ['sites'])->willReturn(new \eeDbResultMock([]));
         $db->data_cache = ['table_names' => []];
         $db->method('table_exists')->with('mfa_sessions')->willReturn($exists);
         $db->expects(!$exists && !$written ? $this->never() : $this->once())->method('field_exists')

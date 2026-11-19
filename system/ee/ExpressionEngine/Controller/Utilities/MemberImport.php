@@ -10,6 +10,8 @@
 
 namespace ExpressionEngine\Controller\Utilities;
 
+use ExpressionEngine\Service\Member\Member;
+
 /**
  * Member Import Controller
  */
@@ -25,6 +27,7 @@ class MemberImport extends Utilities
     private $cache = '';
     private $importer_access = null;
     private $roles_within_access = array();
+    private $authorized_roles = array();
 
     public function __construct()
     {
@@ -659,8 +662,10 @@ class MemberImport extends Utilities
             // Recheck the effective role after XML values and form defaults have been merged.
             $data['role_id'] = $this->getAuthorizedRole($data['role_id'])->getId();
 
-            if (! empty($data['pending_role_id'])) {
-                $data['pending_role_id'] = $this->getAuthorizedRole($data['pending_role_id'])->getId();
+            // A pending role is only kept for a member who is imported as pending
+            if (isset($data['pending_role_id'])) {
+                $pendingRoleId = $this->getPendingRoleId($data['role_id'], $data['pending_role_id']);
+                $data['pending_role_id'] = $pendingRoleId ? $this->getAuthorizedRole($pendingRoleId)->getId() : 0;
             }
 
             /* -------------------------------------
@@ -726,25 +731,38 @@ class MemberImport extends Utilities
      */
     private function authorizeImportRoles()
     {
-        $checkedRoleIds = array();
+        // Roles found here are reused when each member is saved
+        $this->authorized_roles = array();
 
         foreach ($this->members as $member) {
             $roleIds = array((int) (isset($member['role_id']) ? $member['role_id'] : $this->default_fields['role_id']));
 
             // A pending role becomes the member's role once they are activated
-            if (! empty($member['pending_role_id'])) {
-                $roleIds[] = (int) $member['pending_role_id'];
+            if (isset($member['pending_role_id']) && ($pendingRoleId = $this->getPendingRoleId($roleIds[0], $member['pending_role_id']))) {
+                $roleIds[] = $pendingRoleId;
             }
 
             foreach ($roleIds as $roleId) {
-                if (isset($checkedRoleIds[$roleId])) {
-                    continue;
-                }
-
                 $this->getAuthorizedRole($roleId);
-                $checkedRoleIds[$roleId] = true;
             }
         }
+    }
+
+    /**
+     * Get the pending role that applies to an imported member.
+     *
+     * Only a member whose role is the pending role is activated into their
+     * pending role, so for every other member there is none.
+     *
+     * @param mixed $roleId The member's role
+     * @param mixed $pendingRoleId The pending role given for the member
+     * @return int Pending role ID, or 0 for none
+     */
+    private function getPendingRoleId($roleId, $pendingRoleId)
+    {
+        $pendingRoleId = is_scalar($pendingRoleId) ? (int) trim((string) $pendingRoleId) : 0;
+
+        return ((int) $roleId === Member::PENDING && $pendingRoleId > 0) ? $pendingRoleId : 0;
     }
 
     /**
@@ -788,13 +806,19 @@ class MemberImport extends Utilities
      */
     private function getAuthorizedRole($roleId)
     {
-        $role = ee('Model')->get('Role', (int) $roleId)->first();
+        $roleId = (int) $roleId;
+
+        if (isset($this->authorized_roles[$roleId])) {
+            return $this->authorized_roles[$roleId];
+        }
+
+        $role = ee('Model')->get('Role', $roleId)->first();
 
         if (! $role || ! $this->canImportToRole($role)) {
             show_error(lang('unauthorized_access'), 403);
         }
 
-        return $role;
+        return $this->authorized_roles[$roleId] = $role;
     }
 
     /**

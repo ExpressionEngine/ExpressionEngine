@@ -36,6 +36,8 @@ class RequestTest extends TestCase
             ['styles', true],
             ['site.min', true],
             ['a-b_c.9', true],
+            ['brand colors', true],
+            ["caf\u{e9}", true],
             ['', false],
             ['.', false],
             ['..', false],
@@ -85,6 +87,14 @@ class RequestTest extends TestCase
         $this->mockSiteShortName('default_site');
 
         $this->assertSame('resource_cache/default_site/site/', $this->invoke('_cache_path', 'site/'));
+    }
+
+    public function testCacheKeyIgnoresSpaceAroundNames()
+    {
+        $this->mockSiteShortName('default_site');
+
+        $this->assertSame('resource_cache/default_site/site/styles', $this->invoke('_cache_path', 'site /styles '));
+        $this->assertSame('resource_cache/second_site/site/styles', $this->invoke('_cache_path', ' second_site : site / styles'));
     }
 
     /**

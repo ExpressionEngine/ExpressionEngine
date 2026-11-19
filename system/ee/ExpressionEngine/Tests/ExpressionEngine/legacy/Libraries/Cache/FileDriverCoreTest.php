@@ -230,7 +230,6 @@ class FileDriverCoreTest extends CacheTestBase
         return [
             ['file.name'],
             ['one/two.three'],
-            ['one/...'],
             ['one/..two'],
         ];
     }

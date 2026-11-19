@@ -363,7 +363,8 @@ class EE_Functions
             if (! is_array(self::$protected_data)) {
                 self::$protected_data = array();
 
-                return ee()->output->show_form_error(['general' => lang('not_authorized')], 'submission');
+                // The form may have been rendered by an earlier version, so ask for it to be loaded again
+                return ee()->output->show_form_error(['general' => lang('csrf_token_expired')], 'submission');
             }
         }
 

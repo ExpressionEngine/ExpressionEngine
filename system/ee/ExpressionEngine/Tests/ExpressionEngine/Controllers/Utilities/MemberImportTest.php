@@ -416,6 +416,7 @@ class MemberImportTest extends TestCase
         });
 
         $this->mockImportRequest(array(
+            4 => $this->makeGrantingRole(4, 'n'),
             5 => $this->makeRole(5, 'n'),
             8 => $this->makeGrantingRole(8, 'n', array('1:can_edit_members')),
         ), $member);
@@ -427,7 +428,7 @@ class MemberImportTest extends TestCase
         $this->setControllerProperty($controller, 'default_fields', array('username' => '', 'role_id' => '', 'pending_role_id' => ''));
         $this->setControllerProperty($controller, 'members', array(
             array('username' => 'first', 'role_id' => 5),
-            array('username' => 'second', 'role_id' => 5, 'pending_role_id' => 8),
+            array('username' => 'second', 'role_id' => 4, 'pending_role_id' => 8),
         ));
 
         try {
@@ -457,6 +458,7 @@ class MemberImportTest extends TestCase
         $member->method('save')->willThrowException(new \RuntimeException('Member write reached.'));
 
         $this->mockImportRequest(array(
+            4 => $this->makeGrantingRole(4, 'n'),
             5 => $this->makeRole(5, 'n'),
             8 => $this->makeGrantingRole(8, 'n', array('1:can_access_cp')),
         ), $member);
@@ -467,7 +469,7 @@ class MemberImportTest extends TestCase
         $controller->localize = (object) array('now' => 1);
         $this->setControllerProperty($controller, 'default_fields', array('group_id' => '', 'role_id' => '', 'pending_role_id' => '', 'username' => ''));
         $this->setControllerProperty($controller, 'members', array(
-            array('username' => 'first', 'group_id' => '9', 'role_id' => '5', 'pending_role_id' => '8'),
+            array('username' => 'first', 'group_id' => '9', 'role_id' => '4', 'pending_role_id' => '8'),
         ));
 
         try {
@@ -477,9 +479,41 @@ class MemberImportTest extends TestCase
             $this->assertSame('Member write reached.', $exception->getMessage());
         }
 
-        $this->assertSame(5, $saved['role_id']);
+        $this->assertSame(4, $saved['role_id']);
         $this->assertSame(8, $saved['pending_role_id']);
         $this->assertArrayNotHasKey('group_id', $saved);
+    }
+
+    /**
+     * Keep a pending role only for a member whose role is the pending role.
+     *
+     * @dataProvider pendingRoleProvider
+     * @param mixed $roleId
+     * @param mixed $pendingRoleId
+     * @param int $expected
+     * @return void
+     */
+    public function testPendingRoleAppliesToPendingMembersOnly($roleId, $pendingRoleId, $expected)
+    {
+        $method = new ReflectionMethod(MemberImport::class, 'getPendingRoleId');
+        \TestReflectionHelper::makeAccessible($method);
+
+        $this->assertSame($expected, $method->invoke($this->makeController(), $roleId, $pendingRoleId));
+    }
+
+    public function pendingRoleProvider()
+    {
+        return array(
+            array(4, 8, 8),
+            array('4', ' 8 ', 8),
+            array(5, 8, 0),
+            array(1, '8', 0),
+            array(4, 0, 0),
+            array(4, '000', 0),
+            array(4, ' 0 ', 0),
+            array(4, '', 0),
+            array(4, array(8), 0),
+        );
     }
 
     /**

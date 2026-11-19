@@ -103,7 +103,7 @@ class Request
             list($site_name, $group) = array_map('trim', explode(':', $group, 2));
         }
 
-        // Sites, template groups and templates can only have certain names
+        // The site, template group and template each have to be usable as one part of a cache key
         if (! $this->isValidSiteName($site_name) || ! $this->isValidName($group) || ! $this->isValidName($name)) {
             show_404();
         }
@@ -201,11 +201,12 @@ class Request
             throw new \Exception('Invalid resource path provided');
         }
 
-        list($group, $name) = explode('/', $resource, 2);
+        // Names are trimmed the same way as when a resource is requested
+        list($group, $name) = array_map('trim', explode('/', $resource, 2));
         $site_name = '';
 
         if (false !== strpos($group, ':')) {
-            list($site_name, $group) = explode(':', $group, 2);
+            list($site_name, $group) = array_map('trim', explode(':', $group, 2));
         } elseif ($site_id != 0) {
             $site_name = ee()->config->get_cached_site_prefs($site_id)['site_short_name'];
         }
@@ -246,7 +247,9 @@ class Request
     }
 
     /**
-     * Whether a value is named the way a template group or template can be named
+     * Whether a template group or template name can be used as one part of a
+     * cache key. Names are otherwise matched against the saved templates, so
+     * any name a template already has keeps working.
      *
      * @param string $name
      * @return bool
@@ -257,20 +260,8 @@ class Request
             return false;
         }
 
-        // Most names are plain
-        if (preg_match('/^[a-z0-9_.-]+\z/i', $name)) {
-            return true;
-        }
-
-        // Anything else has to be well-formed text without separators or
-        // control characters before the naming rule is asked about it
-        if (preg_match('//u', $name) !== 1 || preg_match('#[\x00-\x1F\x7F/\\\\:]#', $name)) {
-            return false;
-        }
-
-        return (bool) ee('Validation')->make(array('name' => 'alphaDashPeriodEmoji'))
-            ->validate(array('name' => $name))
-            ->isValid();
+        // Well-formed text without separators or control characters
+        return preg_match('//u', $name) === 1 && ! preg_match('#[\x00-\x1F\x7F/\\\\:]#', $name);
     }
 
     /**

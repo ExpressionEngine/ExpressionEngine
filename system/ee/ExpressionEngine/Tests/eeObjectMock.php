@@ -137,6 +137,11 @@ class eeSingletonLoadMock
         return;
     }
 
+    public function driver()
+    {
+        return;
+    }
+
     public function model()
     {
         return;
