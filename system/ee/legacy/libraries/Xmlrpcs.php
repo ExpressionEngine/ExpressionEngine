@@ -26,6 +26,7 @@ class EE_Xmlrpcs extends EE_Xmlrpc
     public $controller_obj;
 
     public $object = false;
+    public $max_request_size = 0;	// Largest request body to read, in bytes. 0 for no limit.
 
     /**
      * Constructor
@@ -62,6 +63,10 @@ class EE_Xmlrpcs extends EE_Xmlrpc
 
         if (isset($config['xss_clean'])) {
             $this->xss_clean = $config['xss_clean'];
+        }
+
+        if (isset($config['max_request_size'])) {
+            $this->max_request_size = (int) $config['max_request_size'];
         }
     }
 
@@ -141,7 +146,21 @@ class EE_Xmlrpcs extends EE_Xmlrpc
             static $raw_post_data;
 
             if (empty($raw_post_data)) {
-                $raw_post_data = file_get_contents("php://input");
+                $max_size = (int) $this->max_request_size;
+
+                if ($max_size > 0) {
+                    // Stop at the limit rather than reading and parsing the whole body
+                    $declared_size = isset($_SERVER['CONTENT_LENGTH']) ? (int) $_SERVER['CONTENT_LENGTH'] : 0;
+                    $body = ($declared_size > $max_size) ? false : file_get_contents('php://input', false, null, 0, $max_size + 1);
+
+                    if ($body === false || strlen($body) > $max_size) {
+                        return new XML_RPC_Response(0, $this->xmlrpcerr['request_too_large'], $this->xmlrpcstr['request_too_large']);
+                    }
+
+                    $raw_post_data = $body;
+                } else {
+                    $raw_post_data = file_get_contents("php://input");
+                }
             }
 
             $data = $raw_post_data;
@@ -353,7 +372,7 @@ class EE_Xmlrpcs extends EE_Xmlrpc
     public function methodSignature($m)
     {
         $parameters = $m->output_parameters();
-        $method_name = $parameters[0];
+        $method_name = (isset($parameters[0]) && is_string($parameters[0])) ? $parameters[0] : '';
 
         if (isset($this->methods[$method_name])) {
             if ($this->methods[$method_name]['signature']) {
@@ -386,7 +405,7 @@ class EE_Xmlrpcs extends EE_Xmlrpc
     public function methodHelp($m)
     {
         $parameters = $m->output_parameters();
-        $method_name = $parameters[0];
+        $method_name = (isset($parameters[0]) && is_string($parameters[0])) ? $parameters[0] : '';
 
         if (isset($this->methods[$method_name])) {
             $docstring = isset($this->methods[$method_name]['docstring']) ? $this->methods[$method_name]['docstring'] : '';

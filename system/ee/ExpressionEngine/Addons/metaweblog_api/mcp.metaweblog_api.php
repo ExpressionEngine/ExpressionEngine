@@ -19,6 +19,7 @@ class Metaweblog_api_mcp
     public $status_array = array();
     public $group_array = array();
     public $_field_list = array();
+    protected $_channel_fields = array();
 
     /**
      * Constructor
@@ -41,8 +42,7 @@ class Metaweblog_api_mcp
 
         $api_url = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->cp->fetch_action_id('Metaweblog_api', 'incoming');
 
-        ee()->db->select('metaweblog_pref_name, metaweblog_id');
-        $metaweblogs = ee()->db->get('metaweblog_api');
+        $metaweblogs = $this->site_configurations();
 
         $table = ee('CP/Table', array('autosort' => true, 'autosearch' => false, 'limit' => 20));
         $table->setColumns(
@@ -62,7 +62,7 @@ class Metaweblog_api_mcp
 
         $data = array();
 
-        foreach ($metaweblogs->result() as $metaweblog) {
+        foreach ($metaweblogs as $metaweblog) {
             $checkbox = array(
                 'name' => 'selection[]',
                 'value' => $metaweblog->metaweblog_id,
@@ -121,6 +121,52 @@ class Metaweblog_api_mcp
     }
 
     /**
+     * Configurations of the current site, keyed by ID
+     *
+     * A configuration belongs to the site of its channel. One whose channel
+     * no longer exists has no site and can be managed from any of them.
+     *
+     * @access	private
+     * @return	array
+     */
+    private function site_configurations()
+    {
+        $channel_sites = ee('Model')->get('Channel')
+            ->fields('channel_id', 'site_id')
+            ->all()
+            ->getDictionary('channel_id', 'site_id');
+
+        $configurations = array();
+
+        foreach (ee()->db->order_by('metaweblog_id')->get('metaweblog_api')->result() as $row) {
+            if (! isset($channel_sites[$row->channel_id]) || $channel_sites[$row->channel_id] == ee()->config->item('site_id')) {
+                $configurations[$row->metaweblog_id] = $row;
+            }
+        }
+
+        return $configurations;
+    }
+
+    /**
+     * Channels of the current site that the member is assigned to
+     *
+     * @access	private
+     * @return	array	Channel titles keyed by channel ID
+     */
+    private function available_channels()
+    {
+        $channels = array();
+
+        foreach (ee()->session->getMember()->getAssignedChannels() as $channel) {
+            if ($channel->site_id == ee()->config->item('site_id')) {
+                $channels[$channel->channel_id] = $channel->channel_title;
+            }
+        }
+
+        return $channels;
+    }
+
+    /**
      * Delete Configuration(s)
      *
      * @access	public
@@ -132,9 +178,16 @@ class Metaweblog_api_mcp
         }
 
         $ids = array();
+        $configurations = $this->site_configurations();
 
-        foreach ($_POST['selection'] as $key => $val) {
-            $ids[] = "metaweblog_id = '" . ee()->db->escape_str($val) . "'";
+        foreach ((array) $_POST['selection'] as $key => $val) {
+            if (is_scalar($val) && isset($configurations[$val])) {
+                $ids[] = "metaweblog_id = '" . ee()->db->escape_str($val) . "'";
+            }
+        }
+
+        if (empty($ids)) {
+            show_error(lang('unauthorized_access'), 403);
         }
 
         $IDS = implode(" OR ", $ids);
@@ -176,14 +229,8 @@ class Metaweblog_api_mcp
             ee()->functions->redirect(ee('CP/URL')->make('addons/settings/metaweblog_api'));
         }
 
-        $channels = array();
-
-        ee('Model')->get('Channel')
-            ->fields('channel_id', 'channel_title')
-            ->all()
-            ->each(function ($channel) use (&$channels) {
-                $channels[$channel->channel_id] = $channel->channel_title;
-            });
+        // Channels and upload directories of this site that the member may use
+        $channels = $this->available_channels();
 
         $values = array();
 
@@ -194,26 +241,30 @@ class Metaweblog_api_mcp
             $create = false;
             $base_url = ee('CP/URL')->make('addons/settings/metaweblog_api/modify/' . (int) $id);
 
-            $query = ee()->db->get_where('metaweblog_api', array('metaweblog_id' => (int) $id));
+            $configurations = $this->site_configurations();
 
-            if ($query->num_rows() == 0) {
-                ee()->functions->redirect(ee('CP/URL')->make('addons/settings/metaweblog_api'));
+            if (! is_scalar($id) || ! isset($configurations[(int) $id])) {
+                show_error(lang('unauthorized_access'), 403);
             }
 
-            foreach ($query->row_array() as $name => $value) {
-                $values[$name] = $value;
-            }
+            $id = (int) $id;
+            $values = (array) $configurations[$id];
         }
 
         // Filtering Javascript
         $cid = ($id == 'new') ? null : $values['channel_id'];
-        $this->filtering_menus($cid);
+        $this->filtering_menus($cid, array_keys($channels));
         ee()->javascript->compile();
 
         // Get the directories
         $upload_directories = array(0 => lang('none'));
 
         foreach (ee()->session->getMember()->getAssignedUploadDestinations() as $destination) {
+            // Directories of the file manager on this site, not ones that belong to an add-on
+            if ($destination->module_id != 0 || ! in_array($destination->site_id, array(0, ee()->config->item('site_id')))) {
+                continue;
+            }
+
             $upload_directories[$destination->getId()] = (ee()->config->item('multiple_sites_enabled') === 'y')
                 ? ['label' => $destination->name, 'instructions' => $destination->Site->site_label]
                 : $destination->name;
@@ -277,7 +328,7 @@ class Metaweblog_api_mcp
         }
         $vars['sections'][0][] = $form_element;
 
-        $channel_options = ee('Model')->get('Channel')->all()->getDictionary('channel_id', 'channel_title');
+        $channel_options = $channels;
         if (empty($channel_options)) {
             $channel_options = array('0' => lang('none'));
         }
@@ -380,6 +431,14 @@ class Metaweblog_api_mcp
 
         ee()->load->library('form_validation');
 
+        // The mapped fields must be text fields of the submitted channel
+        $submitted_channel = ee()->input->post('channel_id');
+        $field_choices = '0';
+
+        if (is_scalar($submitted_channel) && isset($this->_channel_fields[$submitted_channel])) {
+            $field_choices = implode(',', array_merge(array(0), $this->_channel_fields[$submitted_channel]));
+        }
+
         ee()->form_validation->set_rules(array(
             array(
                 'field' => 'metaweblog_pref_name',
@@ -394,32 +453,37 @@ class Metaweblog_api_mcp
             array(
                 'field' => 'entry_status',
                 'label' => 'lang:metaweblog_entry_status',
-                'rules' => 'required'
+                'rules' => 'required|enum[null,open,closed]'
             ),
             array(
                 'field' => 'channel_id',
                 'label' => 'lang:metaweblog_channel',
-                'rules' => 'integer'
+                'rules' => 'required|integer|enum[' . implode(',', array_keys($channels)) . ']'
             ),
             array(
                 'field' => 'excerpt_field_id',
                 'label' => 'lang:metaweblog_excerpt_field',
-                'rules' => 'integer'
+                'rules' => 'integer|enum[' . $field_choices . ']'
             ),
             array(
                 'field' => 'content_field_id',
                 'label' => 'lang:metaweblog_content_field',
-                'rules' => 'integer'
+                'rules' => 'integer|enum[' . $field_choices . ']'
             ),
             array(
                 'field' => 'more_field_id',
                 'label' => 'lang:metaweblog_more_field',
-                'rules' => 'integer'
+                'rules' => 'integer|enum[' . $field_choices . ']'
             ),
             array(
                 'field' => 'keywords_field_id',
                 'label' => 'lang:metaweblog_keywords_field',
-                'rules' => 'integer'
+                'rules' => 'integer|enum[' . $field_choices . ']'
+            ),
+            array(
+                'field' => 'upload_dir',
+                'label' => 'lang:metaweblog_upload_dir',
+                'rules' => 'integer|enum[' . implode(',', array_keys($upload_directories)) . ']'
             )
         ));
 
@@ -453,7 +517,7 @@ class Metaweblog_api_mcp
             $data = array();
 
             foreach ($fields as $var) {
-                if (! isset($_POST[$var]) or $_POST[$var] == '') {
+                if (! isset($_POST[$var]) or ! is_scalar($_POST[$var]) or $_POST[$var] == '') {
                     return ee()->output->show_user_error('submission', lang('metaweblog_mising_fields'));
                 }
 
@@ -492,36 +556,24 @@ class Metaweblog_api_mcp
     // CREATE page
     //-----------------------------------------------------------
 
-    public function filtering_menus($id = null)
+    public function filtering_menus($id = null, $allowed_channels = array())
     {
         // In order to build our filtering options we need to gather
         // all the field groups and fields
 
-        $allowed_channels = ee()->functions->fetch_assigned_channels();
-        $allowed_groups = array();
-        $groups_exist = true;
-
-        if (! ee('Permission')->can('edit_other_entries') && count($allowed_channels) == 0) {
-            $groups_exist = false;
-        }
-
-        $channels = ee('Model')->get('Channel');
-
-        if (ee()->config->item('multiple_sites_enabled') !== 'y') {
-            $channels->filter('site_id', '1');
-        }
-
-        if (! ee('Permission')->can('edit_other_entries')) {
-            $channels->filter('channel_id', 'IN', $allowed_channels);
-        }
+        $channels = empty($allowed_channels)
+            ? array()
+            : ee('Model')->get('Channel')->filter('channel_id', 'IN', $allowed_channels)->all();
 
         $channel_info = array();
         $allowed_fieldtypes = array('text', 'textarea', 'rte');
 
-        foreach ($channels->all() as $channel) {
+        foreach ($channels as $channel) {
             $fields = array(
                 array('0', lang('none'))
             );
+
+            $this->_channel_fields[$channel->channel_id] = array();
 
             if (empty($id)) {
                 $id = $channel->channel_id;
@@ -535,6 +587,8 @@ class Metaweblog_api_mcp
                 if ($channel->channel_id == $id) {
                     $this->_field_list[$field->field_id] = $field->field_label;
                 }
+
+                $this->_channel_fields[$channel->channel_id][] = $field->field_id;
 
                 $fields[] = array($field->field_id, $field->field_label);
             }

@@ -65,7 +65,7 @@ class Metaweblog_api_upd extends Installer
                 'type' => 'varchar',
                 'constraint' => '50',
                 'null' => false,
-                'default' => 'NULL'
+                'default' => 'null'
             ),
             'channel_id' => array(
                 'type' => 'int',
@@ -107,7 +107,7 @@ class Metaweblog_api_upd extends Installer
                 'constraint' => 5,
                 'unsigned' => true,
                 'null' => false,
-                'default' => 1
+                'default' => 0
             ),
         );
 
@@ -115,10 +115,13 @@ class Metaweblog_api_upd extends Installer
         ee()->dbforge->add_key('metaweblog_id', true);
         ee()->dbforge->create_table('metaweblog_api', true);
 
+        // No status override and no upload directory until an administrator chooses them
         $data = array(
             'metaweblog_pref_name' => 'Default',
+            'entry_status' => 'null',
             'channel_id' => 1,
-            'content_field_id' => 2
+            'content_field_id' => 2,
+            'upload_dir' => 0
         );
         ee()->db->insert('metaweblog_api', $data);
 
