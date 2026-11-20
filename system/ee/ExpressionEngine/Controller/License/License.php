@@ -39,7 +39,7 @@ class License extends CP_Controller
     public function handleAccessResponse()
     {
         $response = ee()->input->post('licenseStatus');
-        $stored = is_array($response) && ee('License/Status')->store($response);
+        $stored = is_array($response) && ee('License/Status')->store($response, ee()->input->post('license'));
 
         return ee()->output->send_ajax_response(array(
             'messageType' => $stored ? 'success' : 'error',

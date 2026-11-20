@@ -709,6 +709,22 @@ class LicenseStatusTest extends TestCase
         $this->assertFalse($status->backupCheckDue(), 'The new key has its own retry delay');
     }
 
+    public function testAnAnswerAskedForBeforeTheLicenseKeyChangedIsNotTakenForTheNewKey()
+    {
+        $this->status()->store($this->response('success', ['pro' => 'valid']), self::LICENSE);
+
+        // A check made for the old key comes back after the new one was saved
+        $status = $this->statusForSite(['license' => 'WXYZ1234ABCD5678']);
+
+        $this->assertFalse($status->store($this->response('success', ['pro' => 'valid']), self::LICENSE));
+        $this->assertFalse($status->statusFor('pro'));
+        $this->assertTrue($status->backupCheckDue(), 'The new key is still waiting for an answer of its own');
+
+        // However the key was written when the check was made
+        $this->assertTrue($status->store($this->response('expired', ['pro' => 'valid']), ' wxyz-1234-abcd-5678 '));
+        $this->assertSame('expired', $this->statusForSite(['license' => 'WXYZ1234ABCD5678'])->statusFor('pro'));
+    }
+
     /**
      * One license key may serve several addresses: staging and production,
      * the sites of a multi-site install, or a site answering to more than one

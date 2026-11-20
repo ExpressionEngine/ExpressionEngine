@@ -228,11 +228,17 @@ class LicenseStatus
      * Stores a response from the license service
      *
      * @param array $response Response fields
+     * @param string|null $asked_for License key the check was made for, when whoever passes on the answer says
      * @return bool TRUE when the response was accepted and stored
      */
-    public function store($response)
+    public function store($response, $asked_for = null)
     {
         if (! is_array($response)) {
+            return false;
+        }
+
+        // The key may have changed while the check was on its way
+        if (is_string($asked_for) && $this->licenseFingerprint(['license' => $asked_for]) !== $this->licenseFingerprint($this->site)) {
             return false;
         }
 
