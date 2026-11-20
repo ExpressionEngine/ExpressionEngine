@@ -434,16 +434,10 @@ class Pro_search_fields
             // whole word? Regexp search
             if (substr($item, -2) == '\W') {
                 $operand = $exclude ? 'NOT REGEXP' : 'REGEXP';
-                $item = substr($item, 0, -2);
 
-                // A word boundary only exists beside a word character. Where the
-                // term begins or ends with anything else, look at the character
-                // outside the term instead. Combining marks are part of the
-                // word they are written on.
-                $before = ($item === '' || preg_match('/^[\w\p{M}]/u', $item)) ? '[[:<:]]' : '(^|[^[:alnum:]_])';
-                $after = ($item === '' || preg_match('/[\w\p{M}]$/u', $item)) ? '[[:>:]]' : '([^[:alnum:]_]|$)';
-
-                $item = ee()->db->escape($before . preg_quote($item) . $after);
+                // The term is the pattern, as it always has been, between the
+                // markers for the start and the end of a word
+                $item = ee()->db->escape('[[:<:]]' . substr($item, 0, -2) . '[[:>:]]');
             } else {
                 if (preg_match('/^([<>]=?)([\d\.]+)$/', $item, $match)) {
                     // Numeric operator!
