@@ -248,6 +248,15 @@ class Runner
             'is_system_on' => $config->get('is_system_on_before_updater', 'n'),
             'app_version' => $app_ver
         ];
+
+        $completing_cli_update = REQ === 'CLI' && ! $rollback;
+
+        if ($completing_cli_update) {
+            // Stays until the finishing steps below have run, so an update
+            // that stopped short of them is not later taken for a finished one
+            $setToConfig['updater_completion_pending'] = $app_ver;
+        }
+
         ee()->config->_update_config($setToConfig, $removeFromConfig);
 
         // Legacy logger lib to log to update_log table
@@ -258,12 +267,14 @@ class Runner
         ee()->logger->updater(($rollback ? 'Update rolled back. Now running version ' : 'Update complete. Now running version ') . $app_ver);
 
         $working_dir = $this->makeUpdaterService()->path();
-        $completing_cli_update = REQ === 'CLI' && ! $rollback;
 
         if ($completing_cli_update) {
             // The completion command requires the updater to be gone. Keep its backups until it succeeds.
             ee('Filesystem')->deleteDir(SYSPATH . 'ee/updater');
             $this->completeCliUpdate();
+
+            // The finishing steps have run, whichever way they were run
+            ee()->config->_update_config([], ['updater_completion_pending' => $app_ver]);
         }
 
         // A completion hook may have already cleared the cache.

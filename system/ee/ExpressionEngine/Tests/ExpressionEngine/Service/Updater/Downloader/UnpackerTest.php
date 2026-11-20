@@ -16,6 +16,7 @@ class UnpackerTest extends TestCase
     public $verifier;
     public $logger;
     public $requirements;
+    public $signature;
     public $unpacker;
 
     public function setUp(): void
@@ -26,10 +27,12 @@ class UnpackerTest extends TestCase
         $this->logger = Mockery::mock('ExpressionEngine\Service\Updater\Logger');
         $this->requirements = Mockery::mock('ExpressionEngine\Service\Updater\RequirementsCheckerLoader');
 
+        $this->signature = Mockery::mock('ExpressionEngine\Service\Updater\PackageSignature');
+
         $this->logger->shouldReceive('log'); // Logger's gonna log
         $this->filesystem->shouldReceive('mkDir'); // For update path creation
 
-        $this->unpacker = new Unpacker($this->filesystem, $this->zip_archive, $this->verifier, $this->logger, $this->requirements);
+        $this->unpacker = new Unpacker($this->filesystem, $this->zip_archive, $this->verifier, $this->logger, $this->requirements, $this->signature);
     }
 
     public function tearDown(): void
@@ -46,11 +49,22 @@ class UnpackerTest extends TestCase
 
     public function testUnzipPackage()
     {
+        // The package is hashed as it is on disk, so there has to be one
+        $path = tempnam(sys_get_temp_dir(), 'ee-package');
+        file_put_contents($path, 'some data');
+
+        $package = [
+            'path' => $path,
+            'signature' => 'signature',
+            'hash' => hash('sha384', 'some data')
+        ];
+
         $this->filesystem->shouldReceive('mkDir')->with(PATH_CACHE . 'ee_update/');
         $this->filesystem->shouldReceive('mkDir')->with(PATH_CACHE . 'ee_update/ExpressionEngine');
+        $this->signature->shouldReceive('verify')->with($package['hash'], 'signature')->andReturn(true);
 
         $this->zip_archive->shouldReceive('open')
-            ->with(PATH_CACHE . 'ee_update/ExpressionEngine.zip')
+            ->with($path)
             ->once()
             ->andReturn(true);
 
@@ -60,18 +74,20 @@ class UnpackerTest extends TestCase
 
         $this->zip_archive->shouldReceive('close')->once();
 
-        $this->unpacker->unzipPackage();
+        $this->unpacker->unzipPackage($package);
 
         $this->zip_archive->shouldReceive('open')
-            ->with(PATH_CACHE . 'ee_update/ExpressionEngine.zip')
+            ->with($path)
             ->once()
             ->andReturn(2);
 
         try {
-            $this->unpacker->unzipPackage();
+            $this->unpacker->unzipPackage($package);
             $this->fail();
         } catch (UpdaterException $e) {
             $this->assertEquals(8, $e->getCode());
+        } finally {
+            unlink($path);
         }
     }
 
@@ -129,7 +145,7 @@ class UnpackerTest extends TestCase
         // Reset mock expectations for second test case
         $this->filesystem = Mockery::mock('ExpressionEngine\Library\Filesystem\Filesystem');
         $this->verifier = Mockery::mock('ExpressionEngine\Service\Updater\Verifier');
-        $this->unpacker = new Unpacker($this->filesystem, $this->zip_archive, $this->verifier, $this->logger, $this->requirements);
+        $this->unpacker = new Unpacker($this->filesystem, $this->zip_archive, $this->verifier, $this->logger, $this->requirements, $this->signature);
 
         // Second test case - failed verification
         $this->filesystem->shouldReceive('mkDir')->with(PATH_CACHE . 'ee_update/');

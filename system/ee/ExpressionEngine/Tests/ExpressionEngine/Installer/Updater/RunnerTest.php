@@ -258,6 +258,7 @@ class RunnerTest extends TestCase
         $this->assertFalse($this->config->item('is_system_on_before_updater'));
         $this->assertSame(1, $this->runner->completions);
         $this->assertSame(['Update complete. Now running version 7.5.29'], $this->messages);
+        $this->assertFalse($this->config->item('updater_completion_pending'), 'A finished update was left marked as unfinished');
     }
 
     public function onlineStates()
@@ -299,6 +300,7 @@ class RunnerTest extends TestCase
         $this->assertSame('7.5.29', $this->config->item('app_version'));
         $this->assertSame('old core', file_get_contents($this->directory . 'cache/ee_update/backups/system_ee/core.txt'));
         $this->assertDirectoryDoesNotExist($this->directory . 'system/ee/updater');
+        $this->assertSame('7.5.29', $this->config->item('updater_completion_pending'), 'Nothing records that this update still has to be finished');
     }
 
     /**
@@ -322,6 +324,7 @@ class RunnerTest extends TestCase
 
         $this->assertSame('7.5.29', $this->config->item('app_version'));
         $this->assertSame('y', $this->config->item('is_system_on'));
+        $this->assertFalse($this->config->item('updater_completion_pending'), 'A finished update was left marked as unfinished');
     }
 
     public function testRollbackRestoresOriginalVersionWithNewCodeAlreadyLoaded()
@@ -337,6 +340,7 @@ class RunnerTest extends TestCase
         $this->assertSame([true], $this->runner->completionRollbacks);
         $this->assertSame(['Update rolled back. Now running version 7.5.28'], $this->messages);
         $this->assertSame($this->originalFiles['system/ee/core.txt'], file_get_contents($this->directory . 'system/ee/core.txt'));
+        $this->assertFalse($this->config->item('updater_completion_pending'), 'A rolled back update has nothing left to finish');
     }
 
     public function testCliCanFinishRollingBackAWebUpdateWithoutCliVersionMetadata()

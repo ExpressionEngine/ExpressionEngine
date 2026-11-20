@@ -97,6 +97,29 @@ Status code returned: %s',
 
 %s',
 
+    'missing_package_signature' =>
+    'Could not verify update file, the signature it was downloaded with was not found.',
+
+    'could_not_verify_before_unzip' =>
+    'Could not verify the update file before unzipping it. It is missing, incomplete or has changed since it was checked.',
+
+    'could_not_verify_package' =>
+    'Could not verify the signature or integrity of the update package. Got hash:
+
+%s',
+
+    'package_file_not_found' =>
+    'Could not find the file: %s',
+
+    'package_file_not_copied' =>
+    'Could not copy the update package into the update folder: %s',
+
+    'package_version_not_found' =>
+    'Could not read the ExpressionEngine version from the update package.',
+
+    'update_completion_pending' =>
+    'The last update, to ExpressionEngine %s, did not finish its final steps. Run <code>php eecli.php update --complete</code> from the command line before starting another update. If an add-on stops that command from finishing, disable its extension and run it again.',
+
     'try_again_later' =>
     'Try again in a few minutes or contact support if the problem persists.',
 

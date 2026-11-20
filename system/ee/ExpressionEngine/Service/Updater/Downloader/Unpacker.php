@@ -13,6 +13,7 @@ namespace ExpressionEngine\Service\Updater\Downloader;
 use ExpressionEngine\Service\Updater\Downloader\UpdaterPaths;
 use ExpressionEngine\Service\Updater\UpdaterException;
 use ExpressionEngine\Service\Updater\Verifier;
+use ExpressionEngine\Service\Updater\PackageSignature;
 use ExpressionEngine\Service\Updater\Logger;
 use ExpressionEngine\Service\Updater\RequirementsCheckerLoader;
 use ExpressionEngine\Library\Filesystem\Filesystem;
@@ -34,6 +35,7 @@ class Unpacker
     protected $verifier;
     protected $logger;
     protected $requirements;
+    protected $signature;
 
     protected $manifest_location = 'system/ee/installer/updater/hash-manifest';
 
@@ -45,9 +47,11 @@ class Unpacker
      * @param	Verifier $verifier File verifier object
      * @param	Logger $logger 	Updater logger object
      * @param	RequirementsCheckerLoader $requirements Requirements checker loader object
+     * @param	PackageSignature $signature Package signature checker, defaults to one using the bundled keys
      */
-    public function __construct(Filesystem $filesystem, ZipArchive $zip_archive, Verifier $verifier, Logger $logger, RequirementsCheckerLoader $requirements)
+    public function __construct(Filesystem $filesystem, ZipArchive $zip_archive, Verifier $verifier, Logger $logger, RequirementsCheckerLoader $requirements, ?PackageSignature $signature = null)
     {
+        $this->signature = $signature ?: new PackageSignature();
         $this->filesystem = $filesystem;
         $this->zip_archive = $zip_archive;
         $this->verifier = $verifier;
@@ -56,15 +60,21 @@ class Unpacker
     }
 
     /**
-     * Unzips package to extract folder
+     * Unzips package to extract folder, once it is known to be the package
+     * that was verified when it arrived
+     *
+     * @param	array	$package	Path of the package's zip file, with the
+     *   signature and hash it was verified with
      */
-    public function unzipPackage()
+    public function unzipPackage(array $package)
     {
+        $this->verifyPackage($package);
+
         $this->logger->log('Unzipping package');
 
         $this->filesystem->mkDir($this->getExtractedArchivePath());
 
-        if (($response = $this->zip_archive->open($this->getArchiveFilePath())) === true) {
+        if (($response = $this->zip_archive->open($package['path'])) === true) {
             $this->zip_archive->extractTo($this->getExtractedArchivePath());
             $this->zip_archive->close();
             $this->logger->log('Package unzipped');
@@ -77,6 +87,60 @@ class Unpacker
                 8
             );
         }
+    }
+
+    /**
+     * Nothing is extracted from a package unless it is still the file that
+     * was verified and its signature checks out here too. This step can be
+     * reached without the one that fetched the package having run first.
+     *
+     * @param	array	$package	Package path, signature and hash
+     */
+    private function verifyPackage(array $package)
+    {
+        $this->logger->log('Verifying package before unzipping');
+
+        $package += ['path' => '', 'signature' => '', 'hash' => ''];
+
+        // The filesystem service remembers what it has read, so the file is
+        // hashed as it is on disk now, which is what is about to be opened
+        $hash = (is_string($package['path']) && is_file($package['path']))
+            ? hash_file('sha384', $package['path'])
+            : false;
+
+        if (! is_string($hash)
+            || ! is_string($package['hash'])
+            || ! hash_equals($package['hash'], $hash)
+            || ! $this->signature->verify($hash, $package['signature'])) {
+            throw new UpdaterException(lang('could_not_verify_before_unzip') . "\n\n" . lang('try_again_later'), 7);
+        }
+    }
+
+    /**
+     * Reads the ExpressionEngine version a package holds, without extracting
+     * it or running anything inside it
+     *
+     * @param	string	$path	Path to the package's zip file
+     * @return	string	Version number, e.g. 7.5.29
+     */
+    public function packageVersion($path)
+    {
+        $source = false;
+
+        if ($this->zip_archive->open($path) === true) {
+            $source = $this->zip_archive->getFromName('system/ee/legacy/libraries/Core.php');
+            $this->zip_archive->close();
+        }
+
+        // One version, however it is quoted and however often it is stated,
+        // or the package cannot be trusted to say what it is
+        if (! is_string($source)
+            || ! preg_match_all('/define\(\s*([\'"])APP_VER\1\s*,\s*([\'"])([^\'"]+)\2\s*\)/', $source, $matches)
+            || count(array_unique($matches[3])) !== 1) {
+            throw new UpdaterException(lang('package_version_not_found'), 24);
+        }
+
+        return $matches[3][0];
     }
 
     /**

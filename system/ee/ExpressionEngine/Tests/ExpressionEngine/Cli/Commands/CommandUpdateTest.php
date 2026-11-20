@@ -129,6 +129,333 @@ class CommandUpdateTest extends TestCase
         $this->assertSame(['initialize', 'upgrade', 'postflight', 'complete'], $this->command->events);
         $this->assertSame(['updater_complete'], $this->extensions->calls);
     }
+
+    /** @dataProvider incompletePackageOptions */
+    public function testAPackageIsSuppliedWithItsSignatureAndExpectedVersionOrNotAtAll($flags)
+    {
+        $this->command->flags = $flags;
+
+        try {
+            $this->command->handle();
+            $this->fail('An update started with only some of the package options');
+        } catch (UpdateCommandFailure $e) {
+            $this->assertStringContainsString('package_options_together', $e->getMessage());
+        }
+
+        $this->assertSame([], $this->command->events);
+    }
+
+    public function incompletePackageOptions()
+    {
+        return [
+            'package alone' => [['--package' => 'ee.zip']],
+            'a package named 0, alone' => [['--package' => '0']],
+            'no expected version' => [['--package' => 'ee.zip', '--signature' => 'ee.sig']],
+            'no signature' => [['--package' => 'ee.zip', '--expect-version' => '7.5.29']],
+            'no package' => [['--signature' => 'ee.sig', '--expect-version' => '7.5.29']],
+        ];
+    }
+
+    /** @dataProvider packageVersions */
+    public function testASuppliedPackageIsOnlyAppliedWhenItIsNewerThanTheSite($packageVersion, $events, $failure)
+    {
+        $this->command->flags = ['--package' => 'ee.zip', '--signature' => 'ee.sig', '--expect-version' => $packageVersion];
+        $this->command->updateType = 'package';
+        $this->command->updateVersion = $packageVersion;
+
+        try {
+            $this->command->handle();
+            $this->assertNull($failure, 'An older package was reported as applied');
+        } catch (UpdateCommandFailure $e) {
+            $this->assertNotNull($failure, $e->getMessage());
+            $this->assertStringContainsString($failure, $e->getMessage());
+        }
+
+        $this->assertSame($events, $this->command->events);
+    }
+
+    public function packageVersions()
+    {
+        return [
+            'newer than the site' => ['7.5.29', ['initialize', 'upgrade', 'complete'], null],
+            'the version already installed' => ['7.5.28', ['initialize', 'complete'], null],
+            'older than the site' => ['7.5.27', ['initialize'], 'package_is_older'],
+            'an older major version' => ['6.4.17', ['initialize'], 'package_is_older'],
+        ];
+    }
+
+    public function testASuppliedPackageIsHandedToTheUpdaterBeforeItRuns()
+    {
+        $runner = new class {
+            public $events = [];
+            public function usePackage(array $package, $version) { $this->events[] = ['package', $package, $version]; }
+            public function run() { $this->events[] = 'run'; }
+        };
+        ee()->setMock('Updater/Runner', $runner);
+
+        $package = ['path' => 'copy.zip', 'signature' => 'signature', 'hash' => 'hash', 'folder' => 'copy/'];
+        $this->command->supply($package);
+        $this->command->download();
+
+        $this->assertSame([['package', $package, '7.5.29'], 'run'], $runner->events);
+    }
+
+    public function testAnUpdateWhoseFinishingStepsAreDueStopsAnotherFromStarting()
+    {
+        $this->config->values['updater_completion_pending'] = '7.5.28';
+
+        try {
+            $this->command->handle();
+            $this->fail('Another update started before the last one was finished');
+        } catch (UpdateCommandFailure $e) {
+            $this->assertStringContainsString('completion_pending', $e->getMessage());
+        }
+
+        $this->assertSame([], $this->command->events);
+        $this->assertSame('7.5.28', $this->config->item('updater_completion_pending'));
+    }
+
+    /** @dataProvider updatesWithARecordOfUnfinishedSteps */
+    public function testOnlyUpdatesThatClearWhatWasKeptAreHeldUntilTheLastOneIsFinished($flags, $installerPresent, $held)
+    {
+        $this->config->values['updater_completion_pending'] = '7.5.28';
+        $this->command->flags = $flags;
+        $this->command->installerPresent = $installerPresent;
+
+        try {
+            $this->command->handle();
+            $this->assertFalse($held, 'An update that clears what the last one kept was allowed to start');
+        } catch (UpdateCommandFailure $e) {
+            $this->assertTrue($held, $e->getMessage());
+            $this->assertStringContainsString('completion_pending', $e->getMessage());
+        }
+
+        $this->assertSame('7.5.28', $this->config->item('updater_completion_pending'));
+    }
+
+    public function updatesWithARecordOfUnfinishedSteps()
+    {
+        $package = ['--package' => 'ee.zip', '--signature' => 'ee.sig', '--expect-version' => '7.5.29'];
+
+        return [
+            'a downloaded update' => [[], false, true],
+            'a supplied package' => [$package, false, true],
+            'a supplied package, with new files also dropped in' => [$package, true, true],
+            'a supplied package named 0, with new files also dropped in' => [['--package' => '0'] + $package, true, true],
+            'new files dropped in' => [[], true, false],
+        ];
+    }
+
+    /** @dataProvider updateKinds */
+    public function testNothingIsAppliedToASiteThatWasUpdatedWhileTheCommandWaited($flags, $updateType)
+    {
+        $this->command->flags = $flags;
+        $this->command->updateType = $updateType;
+
+        // Another update finished after this command read the installed version
+        $this->command->versionOnDisk = '7.5.30';
+
+        try {
+            $this->command->handle();
+            $this->fail('An update was applied to a site that had changed since it was checked');
+        } catch (UpdateCommandFailure $e) {
+            $this->assertStringContainsString('site_changed_while_waiting', $e->getMessage());
+        }
+
+        $this->assertSame(['initialize'], $this->command->events);
+    }
+
+    public function updateKinds()
+    {
+        return [
+            'a supplied package' => [['--package' => 'ee.zip', '--signature' => 'ee.sig', '--expect-version' => '7.5.29'], 'package'],
+            'a downloaded update' => [[], 'curl'],
+        ];
+    }
+
+    /** @dataProvider configFiles */
+    public function testTheInstalledVersionIsReadFromTheConfigFileAsItIsNow($contents, $version)
+    {
+        $this->config->config_path = tempnam(sys_get_temp_dir(), 'ee-config');
+
+        if ($contents === null) {
+            unlink($this->config->config_path);
+        } else {
+            file_put_contents($this->config->config_path, $contents);
+        }
+
+        try {
+            $this->assertSame($version, $this->command->versionInConfigFile());
+        } finally {
+            @unlink($this->config->config_path);
+        }
+    }
+
+    public function configFiles()
+    {
+        return [
+            'as the updater writes it' => ["<?php\n\$config['save_tmpl_files'] = 'n';\n\$config['app_version'] = '7.5.30';\n", '7.5.30'],
+            'double quotes' => ['<?php $config["app_version"] = "7.5.30";', '7.5.30'],
+            'set more than once' => ["<?php \$config['app_version'] = '7.5.29';\n\$config['app_version'] = '7.5.30';", '7.5.30'],
+            'a file that is never run' => ["<?php exit('No direct script access allowed');\n\$config['app_version'] = '7.5.30';", '7.5.30'],
+            'no version in the file' => ["<?php \$config['site_label'] = 'Site';", '7.5.28'],
+            'no file' => [null, '7.5.28'],
+        ];
+    }
+
+    public function testASecondUpdateDoesNotStartWhileOneIsRunning()
+    {
+        // The first command is still at work: it has the lock and has not finished
+        $first = new UpdateCommandStub($this->config);
+        $first->lockPath = $this->command->lockPath;
+        $first->handle();
+
+        try {
+            $this->command->handle();
+            $this->fail('A second update started while the first was still running');
+        } catch (UpdateCommandFailure $e) {
+            $this->assertStringContainsString('already_running', $e->getMessage());
+        }
+
+        $this->assertSame([], $this->command->events);
+
+        // Once the first is gone, however it went, the next can run
+        unset($first);
+        gc_collect_cycles();
+        $this->command->handle();
+
+        $this->assertSame(['initialize', 'upgrade', 'complete'], $this->command->events);
+    }
+
+    /** @dataProvider stepsOfARunningUpdate */
+    public function testFinishingAndRollingBackAreNotHeldUpByTheUpdateTheyBelongTo($flags, $pending, $events)
+    {
+        // An update finishes itself by running this command again while it still holds the lock
+        $running = new UpdateCommandStub($this->config);
+        $running->lockPath = $this->command->lockPath;
+        $running->handle();
+
+        $this->command->flags = $flags;
+        $this->command->pending = $pending;
+        $this->command->handle();
+
+        $this->assertSame($events, $this->command->events);
+    }
+
+    public function stepsOfARunningUpdate()
+    {
+        return [
+            'finishing' => [['--complete' => true], false, ['postflight', 'complete']],
+            'rolling back' => [['--rollback' => true], true, ['rollback']],
+        ];
+    }
+
+    public function testAnUpdateStillRunsWhereNoLockCanBeHad()
+    {
+        $this->command->lockPath = sys_get_temp_dir() . '/no-such-folder-' . bin2hex(random_bytes(8)) . '/ee_update.lock';
+
+        $this->command->handle();
+
+        $this->assertSame(['initialize', 'upgrade', 'complete'], $this->command->events);
+    }
+
+    public function testRollbackIsOfferedInsteadWhileTheUpdaterIsStillInPlace()
+    {
+        $this->config->values['updater_completion_pending'] = '7.5.28';
+        $this->command->pending = true;
+
+        $this->expectException(UpdateCommandFailure::class);
+        $this->expectExceptionMessage('rollback');
+        $this->command->handle();
+    }
+
+    public function testAFinishingRecordForAnEarlierVersionNoLongerApplies()
+    {
+        // The site has since been updated another way
+        $this->config->values['updater_completion_pending'] = '7.5.27';
+
+        $this->command->handle();
+
+        $this->assertSame(['initialize', 'upgrade', 'complete'], $this->command->events);
+        $this->assertFalse($this->config->item('updater_completion_pending'));
+    }
+
+    public function testFinishingAnUpdateClearsItsRecordAndWhatWasKeptForIt()
+    {
+        $kept = $this->keepUpdateFiles();
+        $this->config->values['updater_completion_pending'] = '7.5.28';
+        $this->command->flags['--complete'] = true;
+
+        $this->command->handle();
+
+        $this->assertSame(['postflight', 'complete'], $this->command->events);
+        $this->assertSame(['updater_complete'], $this->extensions->calls);
+        $this->assertFalse($this->config->item('updater_completion_pending'));
+        $this->assertDirectoryDoesNotExist($kept);
+    }
+
+    public function testAFinishingStepThatFailsLeavesItsRecordAndWhatWasKept()
+    {
+        $kept = $this->keepUpdateFiles();
+        $this->config->values['updater_completion_pending'] = '7.5.28';
+        $this->extensions->error = new \Error('Completion hook failed');
+        $this->command->flags['--complete'] = true;
+
+        try {
+            $this->command->handle();
+            $this->fail('The completion failure was ignored.');
+        } catch (UpdateCommandFailure $e) {
+            $this->assertStringContainsString('Completion hook failed', $e->getMessage());
+        }
+
+        $this->assertSame('7.5.28', $this->config->item('updater_completion_pending'));
+        $this->assertFileExists($kept . 'backups/core.txt');
+
+        unlink($kept . 'backups/core.txt');
+        rmdir($kept . 'backups');
+        rmdir($kept);
+    }
+
+    public function testFinishingWithNothingRecordedLeavesTheUpdateFolderAlone()
+    {
+        $kept = $this->keepUpdateFiles();
+        $this->command->flags['--complete'] = true;
+
+        $this->command->handle();
+
+        $this->assertFileExists($kept . 'backups/core.txt');
+
+        unlink($kept . 'backups/core.txt');
+        rmdir($kept . 'backups');
+        rmdir($kept);
+    }
+
+    /**
+     * Stands in for the backups an update keeps until its finishing steps succeed
+     */
+    private function keepUpdateFiles()
+    {
+        $folder = sys_get_temp_dir() . '/ee-update-kept-' . bin2hex(random_bytes(8)) . '/';
+        mkdir($folder . 'backups', 0700, true);
+        file_put_contents($folder . 'backups/core.txt', 'old core');
+        $this->command->workingPath = $folder;
+
+        ee()->setMock('Filesystem', new class {
+            public function deleteDir($path)
+            {
+                $files = new \RecursiveIteratorIterator(
+                    new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS),
+                    \RecursiveIteratorIterator::CHILD_FIRST
+                );
+                foreach ($files as $file) {
+                    $file->isDir() ? rmdir($file->getPathname()) : unlink($file->getPathname());
+                }
+                rmdir($path);
+            }
+        });
+
+        return $folder;
+    }
 }
 
 class UpdateCommandFailure extends \RuntimeException {}
@@ -136,11 +463,17 @@ class UpdateCommandFailure extends \RuntimeException {}
 class UpdateConfigStub
 {
     public $values = ['app_version' => '7.5.28'];
+    public $config_path;
     public $writes = [];
     public function item($key) { return isset($this->values[$key]) ? $this->values[$key] : false; }
     public function set($key, $value, $write = false) {
         $this->values[$key] = $value;
         $this->writes[] = [$key, $value, $write];
+    }
+    public function _update_config($values = [], $remove = []) {
+        $this->values = array_merge($this->values, $values);
+        foreach ($remove as $key => $value) { unset($this->values[$key]); }
+        return true;
     }
 }
 
@@ -150,6 +483,10 @@ class UpdateCommandStub extends CommandUpdate
     public $events = [];
     public $pending = false;
     public $versionAtMigration;
+    public $workingPath = '/no/update/working/folder/';
+    public $installerPresent = false;
+    public $versionOnDisk;
+    public $lockPath;
     private $config;
 
     public function __construct($config)
@@ -159,9 +496,25 @@ class UpdateCommandStub extends CommandUpdate
         $this->updateVersion = '7.5.29';
         $this->updateType = 'curl';
         $this->defaultToYes = true;
+        $this->lockPath = sys_get_temp_dir() . '/ee-update-' . bin2hex(random_bytes(8)) . '.lock';
+    }
+
+    public function __destruct()
+    {
+        if (is_resource($this->lock)) {
+            fclose($this->lock);
+        }
+
+        @unlink($this->lockPath);
     }
 
     public function download() { return $this->upgradeFromDownloadedVersion(); }
+    public function supply(array $package) { $this->package = $package; }
+    protected function updateWorkingPath() { return $this->workingPath; }
+    protected function doesInstallerFolderExist() { return $this->installerPresent; }
+    protected function installedVersionNow() { return $this->versionOnDisk !== null ? $this->versionOnDisk : (string) $this->config->item('app_version'); }
+    public function versionInConfigFile() { return parent::installedVersionNow(); }
+    protected function updateLockPath() { return $this->lockPath; }
     protected function option($name, $default = null) { return isset($this->flags[$name]) ? $this->flags[$name] : $default; }
     protected function initUpgrade() { $this->events[] = 'initialize'; }
     protected function hasPendingUpdate() { return $this->pending; }

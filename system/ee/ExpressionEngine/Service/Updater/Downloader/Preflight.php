@@ -48,6 +48,50 @@ class Preflight
     }
 
     /**
+     * A command line update records the version it updated to until its
+     * finishing steps have run. While that record names the installed version,
+     * what was kept from that update is still needed.
+     */
+    public function checkLastUpdateCompleted()
+    {
+        $pending = self::unfinishedUpdate(
+            $this->config->get('updater_completion_pending'),
+            $this->config->get('app_version')
+        );
+
+        if ($pending !== null) {
+            throw new UpdaterException(sprintf(lang('update_completion_pending'), $pending), 25);
+        }
+    }
+
+    /**
+     * The version an update reached without its finishing steps having run,
+     * while that is still the installed version. A record of any other version
+     * no longer applies, the site having been updated another way since, and
+     * is removed.
+     *
+     * @param	mixed	$recorded	The site's updater_completion_pending setting
+     * @param	mixed	$installed	The site's app_version setting
+     * @return	string|null
+     */
+    public static function unfinishedUpdate($recorded, $installed)
+    {
+        $recorded = (string) $recorded;
+
+        if ($recorded === '') {
+            return null;
+        }
+
+        if ($recorded === (string) $installed) {
+            return $recorded;
+        }
+
+        ee()->config->_update_config([], ['updater_completion_pending' => $recorded]);
+
+        return null;
+    }
+
+    /**
      * Cleans up download and extract locations of any previous update artifacts
      */
     public function cleanUpOldUpgrades()
@@ -58,6 +102,10 @@ class Preflight
         if ($this->filesystem->isFile($this->getArchiveFilePath())) {
             $this->logger->log('Old zip archives found, deleting');
             $this->filesystem->delete($this->getArchiveFilePath());
+        }
+
+        if ($this->filesystem->isFile($this->getArchiveSignaturePath())) {
+            $this->filesystem->delete($this->getArchiveSignaturePath());
         }
 
         // Delete old extracted archives

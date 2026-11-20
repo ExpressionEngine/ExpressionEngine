@@ -1,6 +1,7 @@
 /// <reference types="Cypress" />
 
 import Installer from '../../elements/pages/installer/Installer';
+import { firstHalfChecks } from '../../support/updater_first_half';
 
 const page = new Installer
 
@@ -83,12 +84,23 @@ context('One-Click Updater', () => {
 
     cy.exec(`chmod 666 '../../system/user/config/config.php'`)
 
+    cy.intercept("POST", "**C=updater&M=run&step=download").as("download");
+    cy.intercept("POST", "**C=updater&M=run&step=unpack").as("unpack");
+    cy.intercept("POST", "**C=updater&M=run&step=selfDestruct").as("selfDestruct");
+
     cy.get('a:contains("Continue")').click()
 
-    cy.intercept("POST", "**C=updater&M=run&step=download").as("download");
-    cy.wait('@download', {timeout: 200000});
+    // Each step is a request of its own. Unpacking checks the package again,
+    // using what the download step kept for it.
+    const stepSucceeded = ({ response }) => {
+      const body = typeof response.body === 'string' ? JSON.parse(response.body) : response.body
+      expect(response.statusCode).to.eq(200)
+      expect(body.messageType).to.eq('success')
+    }
 
-    cy.intercept("POST", "**C=updater&M=run&step=selfDestruct").as("selfDestruct");
+    cy.wait('@download', {timeout: 200000}).then(stepSucceeded);
+    cy.wait('@unpack', {timeout: 200000}).then(stepSucceeded);
+
     cy.wait('@selfDestruct', {timeout: 200000});
     cy.visit('admin.php')
     cy.get('body').contains('Up to date!')
@@ -111,6 +123,17 @@ context('One-Click Updater', () => {
       expect(response.status).to.equal(200)
       expect(response.body.trim()).to.equal('category=news;entry=example')
     })
+  })
+
+  // The site is now running the release it was just updated to, and its files
+  // ask the public update server from here on. Setting the version it has on
+  // record back makes it offer the latest public release, which puts the new
+  // release's own code in charge of fetching and unpacking a package. The
+  // update is stopped before any of the site's files are replaced.
+  context('with the updated release doing the updating', () => {
+
+    firstHalfChecks()
+
   })
 
 })

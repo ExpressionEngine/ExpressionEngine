@@ -93,7 +93,37 @@ class DownloaderTest extends TestCase
             ->once()
             ->andReturn('fb7cc0d8a9c41a8ddf74bf7bc6f4e487a79c15c07f15116ad1ce3b0da7159577fff365db8ae7fe8cc463f15da7430d02');
 
-        $this->downloader->downloadPackage('ee_package_url');
+        // What the unpack step needs to check the package again is kept with it
+        $kept = null;
+        $this->filesystem->shouldReceive('write')
+            ->with(PATH_CACHE . 'ee_update/ExpressionEngine.zip.sig', Mockery::capture($kept), true)
+            ->once();
+
+        $package = $this->downloader->downloadPackage('ee_package_url');
+
+        $this->assertSame(PATH_CACHE . 'ee_update/ExpressionEngine.zip', $package['path']);
+        $this->assertSame('fb7cc0d8a9c41a8ddf74bf7bc6f4e487a79c15c07f15116ad1ce3b0da7159577fff365db8ae7fe8cc463f15da7430d02', $package['hash']);
+
+        // A later request, which did not download the package, gets the same details
+        $this->filesystem->shouldReceive('isFile')->with(PATH_CACHE . 'ee_update/ExpressionEngine.zip.sig')->andReturn(true);
+        $this->filesystem->shouldReceive('read')->with(PATH_CACHE . 'ee_update/ExpressionEngine.zip.sig')->andReturn($kept);
+
+        $this->assertSame($package, $this->downloader->downloadedPackage());
+    }
+
+    public function testAPackageWhoseSignatureWasNotKeptIsNotHandedOn()
+    {
+        $this->filesystem->shouldReceive('isFile')->andReturn(false, true, true);
+        $this->filesystem->shouldReceive('read')->andReturn('not what was saved', json_encode(['signature' => 'abc']));
+
+        for ($i = 0; $i < 3; $i++) {
+            try {
+                $this->downloader->downloadedPackage();
+                $this->fail('A package was handed on without the signature and hash it was verified with');
+            } catch (UpdaterException $e) {
+                $this->assertEquals(6, $e->getCode());
+            }
+        }
     }
 
     public function testDownloadPackageExceptions()
@@ -179,6 +209,11 @@ class DownloaderTest extends TestCase
             ->with('sha384', PATH_CACHE . 'ee_update/ExpressionEngine.zip')
             ->once()
             ->andReturn('bad hash');
+
+        // A download that fails verification is not left behind
+        $this->filesystem->shouldReceive('delete')
+            ->with(PATH_CACHE . 'ee_update/ExpressionEngine.zip')
+            ->once();
 
         try {
             $this->downloader->downloadPackage('ee_package_url');
@@ -289,7 +324,8 @@ class DownloaderTest extends TestCase
         $request->shouldReceive('getHeader')->with('Content-Type')->andReturn('application/zip');
         $request->shouldReceive('getHeader')->with('Package-Signature')->andReturn($signature);
 
-        $this->filesystem->shouldReceive('write')->once();
+        $this->filesystem->shouldReceive('write');
+        $this->filesystem->shouldReceive('delete');
         $this->filesystem->shouldReceive('hashFile')->once()->andReturn($hash);
     }
 }

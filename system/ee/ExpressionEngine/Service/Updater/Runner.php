@@ -24,6 +24,8 @@ class Runner
     }
 
     protected $logger;
+    protected $package;
+    protected $target_version;
 
     public function __construct()
     {
@@ -44,9 +46,25 @@ class Runner
         @ini_set('memory_limit', '256M');
     }
 
+    /**
+     * Updates from a package that is already on this server and has been
+     * verified, instead of downloading one
+     *
+     * @param	array	$package	Package details from Updater/Downloader's stagePackage()
+     * @param	string	$version	ExpressionEngine version the package holds
+     */
+    public function usePackage(array $package, $version)
+    {
+        $this->package = $package;
+        $this->target_version = $version;
+    }
+
     // She packed my bags last night...
     public function preflight()
     {
+        // Before the log or anything kept from the last update is cleared
+        ee('Updater/Preflight')->checkLastUpdateCompleted();
+
         $this->logger->truncate();
         $this->logger->log('Maximum execution time: ' . @ini_get('max_execution_time'));
         $this->logger->log('Memory limit: ' . @ini_get('memory_limit'));
@@ -64,6 +82,8 @@ class Runner
         //
         // -------------------------------------------
 
+        // Made here, as it reads the site's theme paths when it is made and
+        // the hook above may have changed them
         $preflight = ee('Updater/Preflight');
         $preflight->checkPermissions();
         $preflight->cleanUpOldUpgrades();
@@ -73,12 +93,22 @@ class Runner
 
     public function prepMajorUpgrade()
     {
-        ee('Updater/PrepMajorUpgrade')->prepMajorIfApplicable();
+        // A supplied package says which version it holds. Without one, the
+        // latest release is the one being updated to.
+        $major = $this->target_version ? (int) explode('.', $this->target_version, 2)[0] : null;
+
+        ee('Updater/PrepMajorUpgrade')->prepMajorIfApplicable($major);
     }
 
     public function download()
     {
-        ee('Updater/Downloader')->downloadPackage(
+        if ($this->package) {
+            $this->logger->log('Using the update package that was supplied');
+
+            return;
+        }
+
+        $this->package = ee('Updater/Downloader')->downloadPackage(
             'https://update.expressionengine.com'
         );
     }
@@ -86,7 +116,10 @@ class Runner
     public function unpack()
     {
         $unpacker = ee('Updater/Unpacker');
-        $unpacker->unzipPackage();
+
+        // In the control panel each step is its own request, so the package's
+        // details come from where the download step left them
+        $unpacker->unzipPackage($this->package ?: ee('Updater/Downloader')->downloadedPackage());
         $unpacker->verifyExtractedPackage();
         $unpacker->checkRequirements();
         $unpacker->moveUpdater();

@@ -38,6 +38,41 @@ class PreflightTest extends TestCase
         Mockery::close();
     }
 
+    /** @dataProvider completionRecords */
+    public function testAnUpdateWhoseFinishingStepsAreStillDueStopsTheNextOne($recorded, $installed, $stops)
+    {
+        $this->config->shouldReceive('get')->with('updater_completion_pending')->andReturn($recorded);
+        $this->config->shouldReceive('get')->with('app_version')->andReturn($installed);
+
+        $site = new class {
+            public $removed = [];
+            public function _update_config($values = [], $remove = []) { $this->removed += $remove; }
+        };
+        ee()->setMock('config', $site);
+
+        try {
+            $this->preflight->checkLastUpdateCompleted();
+            $this->assertFalse($stops, 'Another update was allowed to start');
+        } catch (UpdaterException $e) {
+            $this->assertTrue($stops, 'An update was stopped for no reason');
+            $this->assertEquals(25, $e->getCode());
+        } finally {
+            ee()->resetMocks();
+        }
+
+        // Only a record that no longer applies is removed
+        $this->assertSame($recorded && ! $stops ? ['updater_completion_pending' => $recorded] : [], $site->removed);
+    }
+
+    public function completionRecords()
+    {
+        return [
+            'nothing recorded' => [null, '7.5.29', false],
+            'the installed version is still to be finished' => ['7.5.29', '7.5.29', true],
+            'the site has been updated another way since' => ['7.5.29', '7.5.30', false],
+        ];
+    }
+
     public function testCheckDiskSpace()
     {
         $this->filesystem->shouldReceive('mkDir');
