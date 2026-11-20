@@ -12,15 +12,23 @@ body[data-theme="contrast"] {
     font-weight: 600;
   }
 
-  .jump-menu__link:hover,
-  .jump-menu__link.jump-menu__link--active,
-  .ee-sidebar__items .ee-sidebar__version:hover,
-  .dropdown__link:hover,
-  .select__dropdown-item:hover,
   .button__within-dropdown:hover,
-  .dropdown__link:focus,
-  .select__dropdown-item:focus,
   .button__within-dropdown:focus {
-    background: #F0F0FF;
+    background-color: var(--ee-bg-dropdown-hover);
+  }
+
+  // Custom statuses use saved text colors, so highlight the row without recoloring its background.
+  [data-input-value="status"] .select__dropdown-item {
+    &:hover,
+    &:focus {
+      background-color: var(--ee-bg-blank);
+      outline: 2px solid var(--ee-accent);
+    }
+  }
+
+  .selectable_buttons > label.active,
+  .file-grid__wrapper .file-grid__file:hover {
+    outline: 2px solid var(--ee-accent);
+    outline-offset: -2px;
   }
 }

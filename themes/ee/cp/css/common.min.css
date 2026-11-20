@@ -559,7 +559,7 @@ html.color-theme-in-transition *:after {
   --ee-bg-neutral-light: #ededed;
   --ee-bg-neutral-dark: #434249;
   --ee-bg-dropdown: #FFFFFF;
-  --ee-bg-dropdown-hover: #FDFDFE;
+  --ee-bg-dropdown-hover: #F0F0FF;
   --ee-bg-dropdown-selected: #eaebfd;
   --ee-dropdown-border: #e5e5f2;
   --ee-border: #e5e5f2;
@@ -574,7 +574,7 @@ html.color-theme-in-transition *:after {
   --ee-button-primary-border: #5D63F1;
   --ee-button-primary-hover-bg: #2e36ed;
   --ee-button-primary-hover-border: #2e36ed;
-  --ee-button-secondary-color: #4754DF;
+  --ee-button-secondary-color: #343FBB;
   --ee-button-secondary-bg: #e0e2fc;
   --ee-button-secondary-border: #e0e2fc;
   --ee-button-secondary-hover-bg: #cecffb;
@@ -632,7 +632,7 @@ html.color-theme-in-transition *:after {
   --ee-sidebar-bottom-border-top: #e5e5f2;
   --ee-sidebar-title-bg-hover: #FFFFFF;
   --ee-sidebar-version-bg: #FFFFFF;
-  --ee-sidebar-version-bg-hover: #FFFFFF;
+  --ee-sidebar-version-bg-hover: #F0F0FF;
   --ee-sidebar-border: #e5e5f2;
   --ee-secondary-sidebar-item-bg: #f3f3f9;
   --ee-secondary-sidebar-item-icon: #686988;
@@ -667,8 +667,8 @@ html.color-theme-in-transition *:after {
   --ee-ee-update-bg: #eaebfd;
   --ee-ee-update-dev: #FFB40B;
   --ee-ee-update-dev-bg: #FFFFFF;
-  --ee-ee-update-vital: #FA5252;
-  --ee-ee-update-vital-bg: #FFFFFF;
+  --ee-ee-update-vital: #FFFFFF;
+  --ee-ee-update-vital-bg: #CC2331;
   --ee-modal-overlay-bg: #FDFDFE;
 }
 
@@ -50077,16 +50077,18 @@ body[data-theme=contrast] .ee-sidebar__section-label {
   opacity: 1;
   font-weight: 600;
 }
-body[data-theme=contrast] .jump-menu__link:hover,
-body[data-theme=contrast] .jump-menu__link.jump-menu__link--active,
-body[data-theme=contrast] .ee-sidebar__items .ee-sidebar__version:hover,
-body[data-theme=contrast] .dropdown__link:hover,
-body[data-theme=contrast] .select__dropdown-item:hover,
 body[data-theme=contrast] .button__within-dropdown:hover,
-body[data-theme=contrast] .dropdown__link:focus,
-body[data-theme=contrast] .select__dropdown-item:focus,
 body[data-theme=contrast] .button__within-dropdown:focus {
-  background: #F0F0FF;
+  background-color: var(--ee-bg-dropdown-hover);
+}
+body[data-theme=contrast] [data-input-value=status] .select__dropdown-item:hover, body[data-theme=contrast] [data-input-value=status] .select__dropdown-item:focus {
+  background-color: var(--ee-bg-blank);
+  outline: 2px solid var(--ee-accent);
+}
+body[data-theme=contrast] .selectable_buttons > label.active,
+body[data-theme=contrast] .file-grid__wrapper .file-grid__file:hover {
+  outline: 2px solid var(--ee-accent);
+  outline-offset: -2px;
 }
 
 /*

@@ -99,7 +99,7 @@ $contrast-theme: (
 
   // Dropdowns
   bg-dropdown: $gray-blank,
-  bg-dropdown-hover: $gray-0,
+  bg-dropdown-hover: #F0F0FF,
   bg-dropdown-selected: lighten($brand-primary, 30%),
   dropdown-border: $gray-10,
 
@@ -120,7 +120,7 @@ $contrast-theme: (
 	button-primary-hover-bg: darken($brand-primary, 10%),
   button-primary-hover-border: darken($brand-primary, 10%),
 
-  button-secondary-color: #4754DF,
+  button-secondary-color: #343FBB,
 	button-secondary-bg: lighten($brand-primary, 28%),
   button-secondary-border: lighten($brand-primary, 28%),
 	button-secondary-hover-bg: lighten($brand-primary, 24%),
@@ -194,7 +194,7 @@ $contrast-theme: (
   sidebar-bottom-border-top: $gray-10,
   sidebar-title-bg-hover: $gray-blank,
   sidebar-version-bg: $gray-blank,
-  sidebar-version-bg-hover: $gray-blank,
+  sidebar-version-bg-hover: #F0F0FF,
   sidebar-border: $gray-10,
 
   secondary-sidebar-item-bg: $gray-5,
@@ -242,8 +242,8 @@ $contrast-theme: (
   ee-update-bg: lighten($brand-primary, 30%),
   ee-update-dev: $brand-warning,
   ee-update-dev-bg: $gray-blank,
-  ee-update-vital: $brand-danger,
-  ee-update-vital-bg: $gray-blank,
+  ee-update-vital: $gray-blank,
+  ee-update-vital-bg: #CC2331,
 
 	// LEGACY
 	modal-overlay-bg: $gray-0,
