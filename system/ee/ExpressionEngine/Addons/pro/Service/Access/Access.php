@@ -170,6 +170,12 @@ class Access
 
                     break;
 
+                case 'unverified':
+                    static::$hasValidLicense = false;
+                    $this->logLicenseError('pro_license_error_unverified', $showAlert);
+
+                    break;
+
                 default:
                     static::$hasValidLicense = false;
 
@@ -250,6 +256,20 @@ class Access
         }
 
         return $addonStatuses;
+    }
+
+    /**
+     * Determine whether to tell the member that license checks have not been succeeding
+     *
+     * @return boolean
+     */
+    public function hasVerificationNotice()
+    {
+        if (time() - (int) ee('Cookie')->getSignedCookie('license_notice_seen') <= $this->getLicenseBannerDuration()) {
+            return false;
+        }
+
+        return ee('License/Status')->verificationOverdue();
     }
 
     public function getLicenseBannerDuration()

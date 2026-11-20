@@ -37,6 +37,65 @@ class RequestTest extends TestCase
         $this->assertQuery('q=value', $payload, $method, $nested);
     }
 
+    public function testFieldsAreSeparatedTheSameWayWhateverPhpUsesForLinks()
+    {
+        $configured = ini_get('arg_separator.output');
+        ini_set('arg_separator.output', '&amp;');
+
+        try {
+            $post = new PostRequest('https://example.test/', ['license' => 'abc', 'addons' => ['pro' => ['slug' => 'pro']]]);
+            $get = new GetRequest('https://example.test/', ['a' => 1, 'b' => 2]);
+        } finally {
+            ini_set('arg_separator.output', $configured);
+        }
+
+        $this->assertSame('license=abc&addons%5Bpro%5D%5Bslug%5D=pro', $post->config[CURLOPT_POSTFIELDS]);
+        $this->assertSame('a=1&b=2', parse_url($get->config[CURLOPT_URL], PHP_URL_QUERY));
+    }
+
+    /** @dataProvider responsesWithHeaders */
+    public function testTheBodyIsWhatFollowsTheLastSetOfHeaders($before)
+    {
+        $headers = "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nX-Trace: abc";
+        $body = "{\"messageType\":\"success\"}\r\n\r\nwith a blank line of its own";
+
+        $request = new class('https://example.test/') extends GetRequest {
+            public function split($response, $header_size)
+            {
+                return $this->splitResponse($response, $header_size);
+            }
+        };
+
+        $all_headers = $before . $headers . "\r\n\r\n";
+
+        $this->assertSame([$headers, $body], $request->split($all_headers . $body, strlen($all_headers)));
+        $this->assertSame([$headers, ''], $request->split($all_headers, strlen($all_headers)));
+    }
+
+    public function testWithoutASizeFromCurlTheFirstBlankLineEndsTheHeaders()
+    {
+        $request = new class('https://example.test/') extends GetRequest {
+            public function split($response, $header_size)
+            {
+                return $this->splitResponse($response, $header_size);
+            }
+        };
+
+        $this->assertSame(['HTTP/1.1 200 OK', "body\r\n\r\nmore"], $request->split("HTTP/1.1 200 OK\r\n\r\nbody\r\n\r\nmore", 0));
+        $this->assertSame(['no blank line', ''], $request->split('no blank line', 0));
+    }
+
+    public function responsesWithHeaders()
+    {
+        return [
+            'nothing before the response' => [''],
+            'a proxy opening the connection' => ["HTTP/1.1 200 Connection established\r\n\r\n"],
+            'the server asking for the rest of a large request' => ["HTTP/1.1 100 Continue\r\n\r\n"],
+            'a redirect that was followed' => ["HTTP/1.1 301 Moved Permanently\r\nLocation: https://example.test/new\r\n\r\n"],
+            'a proxy and then an interim response' => ["HTTP/1.1 200 Connection established\r\n\r\nHTTP/1.1 100 Continue\r\n\r\n"],
+        ];
+    }
+
     public function requestShapes()
     {
         return [

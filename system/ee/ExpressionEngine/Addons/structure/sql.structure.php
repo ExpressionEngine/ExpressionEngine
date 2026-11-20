@@ -449,10 +449,13 @@ class Sql_structure
         if ($show_overview) {
             // add sql to get this entry
             $overview = $this->get_overview($branch_entry_id);
-            $rename_overview = ($rename_overview == 'title' && isset($overview['title'])) ? $overview['title'] : $rename_overview; // override if "title"
+            $overview_uses_title = ($rename_overview == 'title' && isset($overview['title']));
+            $rename_overview = $overview_uses_title ? $overview['title'] : $rename_overview; // override if "title"
 
             $overview['title'] = $rename_overview;
             $overview['overview'] = $rename_overview;
+            // Note when the label was written in the template rather than taken from the entry
+            $overview['overview_label'] = ! $overview_uses_title;
 
             array_unshift($results, $overview);
         }
@@ -772,6 +775,11 @@ class Sql_structure
                 $title = htmlspecialchars($title);
             }
 
+            // A label written in the template is left for the template to finish
+            if ($custom_title_fields !== false || empty($tree[$i]['overview_label'])) {
+                $title = Structure_Helper::encode_title_for_template($title);
+            }
+
             // Add span hook if desired
             $title_output = ee()->TMPL->fetch_param('add_span', false) == "yes" ? "<span>" . $title . "</span>" : $title;
 
@@ -789,7 +797,7 @@ class Sql_structure
                     if ($recursive_overview == "no") {
                         if ($tree[$i]['depth'] == $level) {
                             if ($rename_overview == "title") {
-                                $title = $tree[$i]['title'];
+                                $title = Structure_Helper::encode_title_for_template($tree[$i]['title']);
                             } else {
                                 $title = $rename_overview;
                             }
@@ -798,7 +806,7 @@ class Sql_structure
                         }
                     } else {
                         if ($rename_overview == "title") {
-                            $title = $tree[$i]['title'];
+                            $title = Structure_Helper::encode_title_for_template($tree[$i]['title']);
                         } else {
                             $title = $rename_overview;
                         }

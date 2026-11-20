@@ -28,6 +28,7 @@ class Updater
             'addMfaSessionsTable',
             'addMfaLoginId',
             'recompileTemplateRoutes',
+            'clearRenderedCaches',
         ]);
 
         foreach ($steps as $step) {
@@ -80,6 +81,81 @@ class Updater
         }
 
         return true;
+    }
+
+    /**
+     * Rebuild select caches that are affected by updates in this release.
+     *
+     * The file and database cache drivers keep each site's items under its
+     * short name and the other drivers keep them under its base URL, so each
+     * site is cleared in turn under both.
+     *
+     * @return bool
+     */
+    private function clearRenderedCaches()
+    {
+        $sites = ee()->db->select('site_id, site_name')->get('sites')->result();
+
+        if (empty($sites)) {
+            return true;
+        }
+
+        ee()->load->driver('cache');
+
+        $current_site = ee()->config->item('site_short_name');
+        $current_base_url = ee()->config->item('base_url');
+
+        // Start with the site running the update, as it is configured now
+        $targets = [[$current_site, $current_base_url]];
+        $base_urls = $this->savedBaseUrls();
+
+        foreach ($sites as $site) {
+            $base_url = isset($base_urls[$site->site_id]) ? $base_urls[$site->site_id] : $current_base_url;
+
+            if (! in_array([$site->site_name, $base_url], $targets, true)) {
+                $targets[] = [$site->site_name, $base_url];
+            }
+        }
+
+        // The cache library reads the site from these two settings. They are
+        // only changed for this request, and are put back whatever happens.
+        try {
+            foreach ($targets as list($site_name, $base_url)) {
+                ee()->config->set_item('site_short_name', $site_name);
+                ee()->config->set_item('base_url', $base_url);
+
+                foreach (['page_cache', 'tag_cache', 'resource_cache'] as $cache) {
+                    ee()->cache->delete('/' . $cache . '/');
+                }
+            }
+        } finally {
+            ee()->config->set_item('site_short_name', $current_site);
+            ee()->config->set_item('base_url', $current_base_url);
+        }
+
+        // With more than one site, this cache is kept for all of them together
+        ee()->cache->delete('/resource_cache/', \Cache::GLOBAL_SCOPE);
+
+        return true;
+    }
+
+    /**
+     * Get the base URL saved for each site.
+     *
+     * @return array Base URLs indexed by site ID.
+     */
+    private function savedBaseUrls()
+    {
+        $base_urls = [];
+        $rows = ee()->db->select('site_id, value')->where('key', 'base_url')->get('config')->result();
+
+        foreach ($rows as $row) {
+            if (is_string($row->value) && $row->value !== '') {
+                $base_urls[$row->site_id] = $row->value;
+            }
+        }
+
+        return $base_urls;
     }
 
     /**

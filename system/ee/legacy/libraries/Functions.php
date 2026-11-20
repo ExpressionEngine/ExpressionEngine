@@ -342,26 +342,29 @@ class EE_Functions
             return false;
         }
 
-        // JSON encode the data (as the encrypt system expects a string) and then encrypt it.
-        return ee('Encrypt')->encode(json_encode($data));
+        // Encode the data as an authenticated form token.
+        return ee('Encrypt')->encodeAuthenticated(json_encode($data), 'protected-form');
     }
 
     /**
      * Check for and decode protected form data for use after form submission.
-     * @return string|array|boolean The decoded data or false if no data exists.
+     *
+     * @return array|null The decoded data, or null if no token was submitted.
      */
     public function handle_protected()
     {
         // Grab the protected data from the posted form.
         $protected = ee()->input->get_post('P');
 
-        if (! empty($protected)) {
-            // Decrypt and json decode the resulting data.
-            self::$protected_data = json_decode(ee('Encrypt')->decode($protected), true);
+        if ($protected !== false && $protected !== null && $protected !== '') {
+            $decoded = ee('Encrypt')->decodeAuthenticated($protected, 'protected-form');
+            self::$protected_data = $decoded === false ? null : json_decode($decoded, true);
 
-            // Sanity check that the data decrypted / decoded properly.
             if (! is_array(self::$protected_data)) {
                 self::$protected_data = array();
+
+                // The form may have been rendered by an earlier version, so ask for it to be loaded again
+                return ee()->output->show_form_error(['general' => lang('csrf_token_expired')], 'submission');
             }
         }
 

@@ -338,6 +338,8 @@ class Structure extends Channel
                         $page_title = htmlspecialchars($page['title']);
                     }
 
+                    $page_title = Structure_Helper::encode_title_for_template($page_title);
+
                     $list_item = "<li$classes><a href='$item_uri'>" . $page_title . "</a></li>\n";
 
                     $html .= $list_item;
@@ -408,7 +410,7 @@ class Structure extends Channel
             if ($page['entry_id'] == $entry_id) {
                 if (array_key_exists($key - 1, $pages) && $page['depth'] == $pages[$key - 1]['depth']) {
                     $prev[] = array(
-                        'title' => $custom_title_fields !== false ? $custom_title_fields[$pages[$key - 1]['entry_id']] : $pages[$key - 1]['title'],
+                        'title' => Structure_Helper::encode_title_for_template($custom_title_fields !== false ? $custom_title_fields[$pages[$key - 1]['entry_id']] : $pages[$key - 1]['title']),
                         'url' => $pages[$key - 1]['uri'],
                         'entry_id' => $pages[$key - 1]['entry_id'],
                         'parent_id' => $pages[$key - 1]['parent_id'],
@@ -418,7 +420,7 @@ class Structure extends Channel
                 }
                 if (array_key_exists($key + 1, $pages) && $page['depth'] == $pages[$key + 1]['depth']) {
                     $next[] = array(
-                        'title' => $custom_title_fields !== false ? $custom_title_fields[$pages[$key + 1]['entry_id']] : $pages[$key + 1]['title'],
+                        'title' => Structure_Helper::encode_title_for_template($custom_title_fields !== false ? $custom_title_fields[$pages[$key + 1]['entry_id']] : $pages[$key + 1]['title']),
                         'url' => $pages[$key + 1]['uri'],
                         'entry_id' => $pages[$key + 1]['entry_id'],
                         'parent_id' => $pages[$key + 1]['parent_id'],
@@ -467,7 +469,7 @@ class Structure extends Channel
             if ($page['entry_id'] == $current_id) {
                 if (array_key_exists($key - 1, $pages)) {
                     $prev[] = array(
-                        'title' => $pages[$key - 1]['title'],
+                        'title' => Structure_Helper::encode_title_for_template($pages[$key - 1]['title']),
                         'url' => $pages[$key - 1]['uri'],
                         'entry_id' => $pages[$key - 1]['entry_id'],
                         'parent_id' => $pages[$key - 1]['parent_id'],
@@ -477,7 +479,7 @@ class Structure extends Channel
                 }
                 if (array_key_exists($key + 1, $pages)) {
                     $next[] = array(
-                        'title' => $pages[$key + 1]['title'],
+                        'title' => Structure_Helper::encode_title_for_template($pages[$key + 1]['title']),
                         'url' => $pages[$key + 1]['uri'],
                         'entry_id' => $pages[$key + 1]['entry_id'],
                         'parent_id' => $pages[$key + 1]['parent_id'],
@@ -617,7 +619,7 @@ class Structure extends Channel
                 continue;
             }
 
-            $title = $custom_title_fields !== false ? $custom_title_fields[$entry['entry_id']] : $entry['title'];
+            $title = Structure_Helper::encode_title_for_template($custom_title_fields !== false ? $custom_title_fields[$entry['entry_id']] : $entry['title']);
             $crumbs[] = '<a href="' . Structure_Helper::remove_double_slashes($home_link . $site_pages['uris'][$entry['entry_id']]) . '">' . $title . '</a>';
         }
 
@@ -630,6 +632,8 @@ class Structure extends Channel
                 if (ee()->TMPL->fetch_param('encode_titles', 'yes') === "yes") {
                     $title = htmlspecialchars($title);
                 }
+
+                $title = Structure_Helper::encode_title_for_template($title);
 
                 $crumbs[] = !empty($wrap_here) ? "<{$wrap_here}>$title</{$wrap_here}>" : $title;
             } else {
@@ -749,7 +753,7 @@ class Structure extends Channel
                 $title = htmlspecialchars($title);
             }
 
-            $title_array[] = $title;
+            $title_array[] = Structure_Helper::encode_title_for_template($title);
         }
 
         if ($site_name === 'yes') {
@@ -788,7 +792,7 @@ class Structure extends Channel
             if ($query->num_rows() == 1) {
                 $row = $query->row();
 
-                return $row->title;
+                return Structure_Helper::encode_title_for_template($row->title);
             }
         }
 
@@ -853,7 +857,7 @@ class Structure extends Channel
 
         $result_array = $result->result_array();
 
-        return @$result_array[0]['title'];
+        return Structure_Helper::encode_title_for_template(@$result_array[0]['title']);
     }
 
     /** -------------------------------------
@@ -1155,7 +1159,7 @@ class Structure extends Channel
 
         foreach (ee()->TMPL->var_single as $key => $val) {
             if (isset($row[$val])) {
-                $html = ee()->TMPL->swap_var_single($val, $row[$val], $html);
+                $html = ee()->TMPL->swap_var_single($val, Structure_Helper::encode_title_for_template($row[$val]), $html);
             }
         }
 
@@ -1201,7 +1205,7 @@ class Structure extends Channel
             }
         }
 
-        return form_dropdown($name, $data, $selected);
+        return Structure_Helper::encode_title_for_template(form_dropdown($name, $data, $selected));
     }
 
     public function order_entries()

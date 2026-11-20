@@ -122,7 +122,8 @@ class CommandAddonsInstall extends Cli
 
         ee()->load->remove_package_path($addon->getPath());
 
-        ee()->cache->file->delete('/addons-status');
+        // The installed add-ons are part of what the license is checked against
+        ee('License/Status')->checkAgain();
         ee('CP/JumpMenu')->clearAllCaches();
 
         $this->info(sprintf(lang('command_addons_install_complete'), $addon->getName()));

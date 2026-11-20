@@ -57,6 +57,10 @@ class Request
             }
         }
 
+        if (! is_string($resource)) {
+            show_404();
+        }
+
         // Remove anything after the semicolon
         if ($pos = strrpos($modified_since, ';') !== false) {
             $modified_since = substr($modified_since, 0, $pos);
@@ -99,11 +103,16 @@ class Request
             list($site_name, $group) = array_map('trim', explode(':', $group, 2));
         }
 
-        $cache_path = $this->_cache_path($resource);
+        // The site, template group and template each have to be usable as one part of a cache key
+        if (! $this->isValidSiteName($site_name) || ! $this->isValidName($group) || ! $this->isValidName($name)) {
+            show_404();
+        }
+
+        $cache_path = $this->cacheKey($site_name, $group, $name);
 
         $cached = ee()->cache->get($cache_path, $this->cache_scope);
 
-        if (!$cached || !isset($cached['edit_date']) || $cached['edit_date'] < $template_version) {
+        if (! $this->isCachedResource($cached) || $cached['edit_date'] < $template_version) {
             $template = ee('Model')->get('Template')
                 ->filter('template_name', $name)
                 ->filter('template_type', $this->type)
@@ -152,6 +161,7 @@ class Request
             ee()->cache->save(
                 $cache_path,
                 array(
+                    'type' => $this->type,
                     'edit_date' => $edit_date,
                     'template_data' => $template_data
                 ),
@@ -169,26 +179,115 @@ class Request
 
     public function clear_cache($resource = '', $site_id = 0)
     {
-        return (!empty($resource))
-            ? ee()->cache->delete($this->_cache_path($resource, $site_id), $this->cache_scope)
-            : ee()->cache->delete(self::CACHE_NAMESPACE, $this->cache_scope);
+        if (empty($resource)) {
+            return ee()->cache->delete(self::CACHE_NAMESPACE, $this->cache_scope);
+        }
+
+        $cache_path = $this->_cache_path($resource, $site_id);
+
+        return ($cache_path !== null) ? ee()->cache->delete($cache_path, $this->cache_scope) : false;
     }
 
+    /**
+     * Get the cache key for a resource given as `group/name` or `site:group/name`
+     *
+     * @param string $resource
+     * @param int $site_id Site the resource belongs to, when it has no site prefix
+     * @return string|null Cache key, or NULL when the resource is not validly named
+     */
     private function _cache_path($resource, $site_id = 0)
     {
-        switch (true) {
-            case (false === strpos($resource, '/')):
-                throw new \Exception('Invalid resource path provided');
-
-            case (false !== strpos($resource, ':')):
-                return self::CACHE_NAMESPACE . str_replace(':', '/', $resource);
-
-            case ($site_id != 0):
-                return self::CACHE_NAMESPACE . ee()->config->get_cached_site_prefs($site_id)['site_short_name'] . '/' . $resource;
-
-            default:
-                return self::CACHE_NAMESPACE . ee()->config->item('site_short_name') . '/' . $resource;
+        if (false === strpos($resource, '/')) {
+            throw new \Exception('Invalid resource path provided');
         }
+
+        // Names are trimmed the same way as when a resource is requested
+        list($group, $name) = array_map('trim', explode('/', $resource, 2));
+        $site_name = '';
+
+        if (false !== strpos($group, ':')) {
+            list($site_name, $group) = array_map('trim', explode(':', $group, 2));
+        } elseif ($site_id != 0) {
+            $site_name = ee()->config->get_cached_site_prefs($site_id)['site_short_name'];
+        }
+
+        if (! $this->isValidSiteName($site_name)) {
+            return null;
+        }
+
+        // Without a template group the key covers every resource cached for the site
+        if ($group === '' && $name === '') {
+            $site_name = ($site_name !== '') ? $site_name : ee()->config->item('site_short_name');
+
+            return self::CACHE_NAMESPACE . $site_name . '/';
+        }
+
+        if (! $this->isValidName($group) || ($name !== '' && ! $this->isValidName($name))) {
+            return null;
+        }
+
+        // Without a template name the key covers every resource cached for the group
+        return $this->cacheKey($site_name, $group, $name);
+    }
+
+    /**
+     * Build the cache key for a template of a site
+     *
+     * @param string $site_name Site short name, or an empty string for the current site
+     * @param string $group Template group name
+     * @param string $name Template name
+     * @return string
+     */
+    private function cacheKey($site_name, $group, $name)
+    {
+        $site_name = ($site_name !== '') ? $site_name : ee()->config->item('site_short_name');
+
+        return self::CACHE_NAMESPACE . $site_name . '/' . $group . '/' . $name;
+    }
+
+    /**
+     * Whether a value is named the way a site can be named. An empty value
+     * stands for the current site.
+     *
+     * @param string $site_name
+     * @return bool
+     */
+    private function isValidSiteName($site_name)
+    {
+        return $site_name === '' || (bool) preg_match('/^[a-z0-9_-]+\z/i', (string) $site_name);
+    }
+
+    /**
+     * Whether a template group or template name can be used as one part of a
+     * cache key. Names are otherwise matched against the saved templates, so
+     * any name a template already has keeps working.
+     *
+     * @param string $name
+     * @return bool
+     */
+    private function isValidName($name)
+    {
+        if (! is_string($name) || in_array($name, array('', '.', '..'), true)) {
+            return false;
+        }
+
+        // Well-formed text without separators or control characters
+        return preg_match('//u', $name) === 1 && ! preg_match('#[\x00-\x1F\x7F/\\\\:]#', $name);
+    }
+
+    /**
+     * Whether a cached value is a resource of the requested type as stored by this class
+     *
+     * @param mixed $cached
+     * @return bool
+     */
+    private function isCachedResource($cached)
+    {
+        return is_array($cached)
+            && isset($cached['type'], $cached['edit_date'], $cached['template_data'])
+            && $cached['type'] === $this->type
+            && is_numeric($cached['edit_date'])
+            && is_string($cached['template_data']);
     }
 
     /**

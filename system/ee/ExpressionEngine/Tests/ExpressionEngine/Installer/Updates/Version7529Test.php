@@ -19,8 +19,23 @@ class Version7529Test extends TestCase
         require_once SYSPATH . 'ee/installer/updates/ud_7_05_29.php';
         require_once BASEPATH . 'libraries/Progress.php';
         require_once BASEPATH . 'libraries/template_router/Match.php';
+        require_once BASEPATH . 'libraries/Driver.php';
+        require_once BASEPATH . 'libraries/Cache/Cache.php';
         ee()->setMock('Security/XSS', new class {
             public function clean($value) { return $value; }
+        });
+        ee()->setMock('config', new class extends \eeSingletonConfigMock {
+            public function set_item($item, $value) { $this->setItem($item, $value); }
+        });
+        ee()->setMock('cache', new class {
+            public $deleted = [];
+            public function delete($key, $scope = \Cache::LOCAL_SCOPE)
+            {
+                $site = ee()->config->item('site_short_name') . ' at ' . ee()->config->item('base_url');
+                $this->deleted[] = ($scope === \Cache::GLOBAL_SCOPE ? 'all sites' : $site) . ' ' . $key;
+
+                return true;
+            }
         });
     }
 
@@ -60,7 +75,9 @@ class Version7529Test extends TestCase
             ['template_groups', 'template_groups.group_id = templates.group_id']
         )->willReturnSelf();
         $db->method('where')->willReturnSelf();
-        $db->method('get')->willReturn(new \eeDbResultMock([$row]));
+        $db->method('get')->willReturnCallback(function ($table) use ($row) {
+            return new \eeDbResultMock($table === 'sites' ? [] : [$row]);
+        });
         $db->expects($this->once())->method('update')->willReturnCallback(function ($table, $data, $where) use (&$saved) {
             $this->assertSame('template_routes', $table);
             $this->assertSame(['route_id' => 42], $where);
@@ -114,11 +131,14 @@ class Version7529Test extends TestCase
             ['template_groups', 'template_groups.group_id = templates.group_id']
         )->willReturnSelf();
         $db->method('where')->willReturnSelf();
-        $db->method('get')->willReturn(new \eeDbResultMock([[
+        $routes = [[
             'route_id' => 42,
             'route' => '/articles/{category:alpha_dash}/{entry:alpha_dash}',
             'route_required' => 'y',
-        ]]));
+        ]];
+        $db->method('get')->willReturnCallback(function ($table) use ($routes) {
+            return new \eeDbResultMock($table === 'sites' ? [] : $routes);
+        });
         $db->expects($this->once())->method('update')->willReturnCallback(function ($table, $data) use (&$saved) {
             $saved = $data['route_parsed'];
         });
@@ -154,6 +174,95 @@ class Version7529Test extends TestCase
         $updater = new Updater();
         $this->assertSame(['template_routes'], $updater->affected_tables);
         $this->assertTrue($updater->do_update());
+    }
+
+    /**
+     * Clear select caches for each site, then return to the current site.
+     *
+     * @return void
+     */
+    public function testClearsSavedOutputForEachSite()
+    {
+        $db = $this->getMockBuilder(\eeDbArMock::class)->onlyMethods(['select', 'get'])->getMock();
+        $db->method('select')->willReturnSelf();
+        $db->method('get')->willReturnCallback(function ($table) {
+            return new \eeDbResultMock($table === 'sites' ? [
+                ['site_id' => 1, 'site_name' => 'default_site'],
+                ['site_id' => 2, 'site_name' => 'second_site'],
+            ] : [
+                // The first site's saved address differs from the one it is configured with
+                ['site_id' => 1, 'value' => 'https://saved.example/'],
+                ['site_id' => 2, 'value' => 'https://two.example/'],
+            ]);
+        });
+        ee()->setMock('db', $db);
+        ee()->config->set_item('site_short_name', 'default_site');
+        ee()->config->set_item('base_url', 'https://one.example/');
+
+        $method = new \ReflectionMethod(Updater::class, 'clearRenderedCaches');
+        \TestReflectionHelper::makeAccessible($method);
+
+        $this->assertTrue($method->invoke(new Updater()));
+        $this->assertSame([
+            'default_site at https://one.example/ /page_cache/',
+            'default_site at https://one.example/ /tag_cache/',
+            'default_site at https://one.example/ /resource_cache/',
+            'default_site at https://saved.example/ /page_cache/',
+            'default_site at https://saved.example/ /tag_cache/',
+            'default_site at https://saved.example/ /resource_cache/',
+            'second_site at https://two.example/ /page_cache/',
+            'second_site at https://two.example/ /tag_cache/',
+            'second_site at https://two.example/ /resource_cache/',
+            'all sites /resource_cache/',
+        ], ee()->cache->deleted);
+        $this->assertSame('default_site', ee()->config->item('site_short_name'));
+        $this->assertSame('https://one.example/', ee()->config->item('base_url'));
+    }
+
+    /**
+     * Put the site's settings back when clearing a cache fails part-way.
+     *
+     * @return void
+     */
+    public function testSiteSettingsAreRestoredWhenClearingFails()
+    {
+        $db = $this->getMockBuilder(\eeDbArMock::class)->onlyMethods(['select', 'get'])->getMock();
+        $db->method('select')->willReturnSelf();
+        $db->method('get')->willReturnCallback(function ($table) {
+            return new \eeDbResultMock($table === 'sites' ? [
+                ['site_id' => 1, 'site_name' => 'default_site'],
+                ['site_id' => 2, 'site_name' => 'second_site'],
+            ] : [
+                ['site_id' => 1, 'value' => 'https://one.example/'],
+                ['site_id' => 2, 'value' => 'https://two.example/'],
+            ]);
+        });
+        ee()->setMock('db', $db);
+        ee()->setMock('cache', new class {
+            public function delete($key, $scope = \Cache::LOCAL_SCOPE)
+            {
+                if (ee()->config->item('site_short_name') === 'second_site') {
+                    throw new \RuntimeException('Cache could not be cleared.');
+                }
+
+                return true;
+            }
+        });
+        ee()->config->set_item('site_short_name', 'default_site');
+        ee()->config->set_item('base_url', 'https://one.example/');
+
+        $method = new \ReflectionMethod(Updater::class, 'clearRenderedCaches');
+        \TestReflectionHelper::makeAccessible($method);
+
+        try {
+            $method->invoke(new Updater());
+            $this->fail('Expected the failure to be passed on.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('Cache could not be cleared.', $exception->getMessage());
+        }
+
+        $this->assertSame('default_site', ee()->config->item('site_short_name'));
+        $this->assertSame('https://one.example/', ee()->config->item('base_url'));
     }
 }
 

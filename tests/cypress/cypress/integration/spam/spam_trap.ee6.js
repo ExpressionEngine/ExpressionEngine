@@ -15,11 +15,10 @@ context('Spam Module', () => {
   it('can install Spam Module from add-on manager', () => {
     cy.auth();
     addon_manager.load()
-    cy.intercept('https://updates.expressionengine.com/check').as('check')
-    cy.intercept('**/license/handleAccessResponse').as('license')
     addon_manager.get('wrap').find('a[data-post-url*="cp/addons/install/spam"]').click()
-    cy.wait('@check')
-    cy.wait('@license')
+    cy.get('div.app-notice.app-notice--inline').first().invoke('text')
+      .should('include', 'Add-Ons Installed')
+      .and('include', 'Spam')
     cy.hasNoErrors()
   })
 

@@ -236,11 +236,26 @@ $(document).ready(function () {
  */
 EE.cp.validateLicense = function() {
 	// Verify we have a license validation URL and the last update check was more than a minute ago.
-	if (!EE.cp.lvUrl || (EE.cp.lastUpdateCheck && EE.cp.lastUpdateCheck <= 60)) {
+	if (!EE.cp.lvUrl || (typeof EE.cp.lastUpdateCheck === 'number' && EE.cp.lastUpdateCheck <= 60)) {
 		return;
 	}
 
 	var installedAddons = JSON.parse(EE.cp.installedAddons);
+
+	var meta = {
+		site_name: EE.site_name,
+		site_id: EE.site_id,
+		site_url: EE.site_url,
+		usesPro: EE.cp.usesPro,
+		source: 'browser'
+	};
+
+	// Server details are only present for members who manage licenses.
+	if (EE.cp.phpVersion) {
+		meta.php_version = EE.cp.phpVersion;
+		meta.database_engine = EE.cp.databaseEngine;
+		meta.database_version = EE.cp.databaseVersion;
+	}
 
 	$.ajax({
 		type: 'POST',
@@ -250,38 +265,35 @@ EE.cp.validateLicense = function() {
 			appVer: EE.cp.appVer,
 			license: EE.cp.licenseKey,
 			addons: installedAddons,
-			meta: [
-				{
-					site_name: EE.site_name,
-					site_id: EE.site_id,
-					site_url: EE.site_url,
-					php_version: EE.cp.phpVersion,
-					database_engine: EE.cp.databaseEngine,
-					database_version: EE.cp.databaseVersion,
-					usesPro: EE.cp.usesPro
-				}
-			]
+			meta: [meta]
 		},
 
 		success: function(result) {
 			if (EE.cp.accessResponseURL) {
-				// Fill in some missing data between the request and response.
-				for (var addon of result.addons) {
-					installedAddons[addon.slug].status = addon.status;
-					installedAddons[addon.slug].update = addon.update;
-				}
+				// The handler in earlier versions reads add-on statuses from the
+				// `addons` field; kept so a site mid-upgrade keeps working.
+				var legacyAddons = {};
+				var responseAddons = Array.isArray(result && result.addons) ? result.addons : [];
+				responseAddons.forEach(function(addon) {
+					if (addon && Object.prototype.hasOwnProperty.call(installedAddons, addon.slug)) {
+						legacyAddons[addon.slug] = {
+							slug: addon.slug,
+							version: installedAddons[addon.slug].version,
+							status: addon.status,
+							update: addon.update
+						};
+					}
+				});
 
-				// Post the response to the backend.
 				$.ajax({
 					type: 'POST',
 					url: EE.cp.accessResponseURL,
 					dataType: 'json',
 					data: {
+						licenseStatus: result,
 						appVer: EE.cp.appVer,
 						license: EE.cp.licenseKey,
-						licenseStatus: result,
-						addons: installedAddons,
-						site_name: EE.site_name,
+						addons: legacyAddons,
 						site_id: EE.site_id,
 						site_url: EE.site_url
 					},

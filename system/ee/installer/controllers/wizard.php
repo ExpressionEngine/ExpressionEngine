@@ -303,8 +303,15 @@ class Wizard extends CI_Controller
         // installation exists and we've done all our error trapping and
         // connected to the DB if needed
 
+        // Install actions only apply to a new installation, and the update
+        // action only applies to an existing one
+        $allowed_methods = array_diff(
+            $this->allowed_methods,
+            $this->is_installed ? array('install_form', 'do_install') : array('do_update')
+        );
+
         // Is the action allowed?
-        if (! in_array($action, $this->allowed_methods) || ! method_exists($this, $action)) {
+        if (! in_array($action, $allowed_methods, true) || ! method_exists($this, $action)) {
             show_error(lang('invalid_action'));
         }
 
@@ -734,6 +741,11 @@ class Wizard extends CI_Controller
      */
     private function do_install()
     {
+        // Existing installations are updated, not installed
+        if ($this->is_installed) {
+            show_error(lang('invalid_action'));
+        }
+
         // Make sure the current step is the correct number
         $this->current_step = 2;
 

@@ -434,9 +434,10 @@ class Pro_search_fields
             // whole word? Regexp search
             if (substr($item, -2) == '\W') {
                 $operand = $exclude ? 'NOT REGEXP' : 'REGEXP';
-                $item = preg_quote(substr($item, 0, -2));
-                $item = str_replace("'", "\'", $item);
-                $item = "'[[:<:]]{$item}[[:>:]]'";
+
+                // The term is the pattern, as it always has been, between the
+                // markers for the start and the end of a word
+                $item = ee()->db->escape('[[:<:]]' . substr($item, 0, -2) . '[[:>:]]');
             } else {
                 if (preg_match('/^([<>]=?)([\d\.]+)$/', $item, $match)) {
                     // Numeric operator!
@@ -454,17 +455,10 @@ class Pro_search_fields
                 } else {
                     // Use like operand in all other cases
                     $operand = $exclude ? 'NOT LIKE' : 'LIKE';
-                    $item = '%' . ee()->db->escape_like_str($item) . '%';
 
                     // Allow for starts/ends with matching
-                    if ($starts) {
-                        $item = ltrim($item, '%');
-                    }
-                    if ($ends) {
-                        $item = rtrim($item, '%');
-                    }
-
-                    $item = "'{$item}'";
+                    $item = ($starts ? '' : '%') . ee()->db->escape_like_str($item) . ($ends ? '' : '%');
+                    $item = "'{$item}' ESCAPE " . ee()->db->escape('\\');
 
                     // Account for `field` NOT LIKE '%foo%' where `field` can be NULL
                     if ($exclude) {

@@ -202,4 +202,94 @@ class DownloaderTest extends TestCase
             $this->assertEquals('Cannot upgrade', $e->getMessage());
         }
     }
+
+    public function testPackageSignedByAReserveKeyIsAccepted()
+    {
+        $keys = $this->generateKeys(3);
+        $downloader = $this->downloaderTrusting([$keys[0]['public'], $keys[1]['public']]);
+
+        $hash = hash('sha384', 'some data');
+        $this->expectDownloadOf($hash, $this->sign($hash, $keys[1]['private']));
+
+        $downloader->downloadPackage('ee_package_url');
+    }
+
+    public function testPackageSignedByAnUnknownKeyIsRejected()
+    {
+        $keys = $this->generateKeys(3);
+        $downloader = $this->downloaderTrusting([$keys[0]['public'], $keys[1]['public']]);
+
+        $hash = hash('sha384', 'some data');
+        $this->expectDownloadOf($hash, $this->sign($hash, $keys[2]['private']));
+
+        try {
+            $downloader->downloadPackage('ee_package_url');
+            $this->fail('A package signed by a key that is not bundled was accepted');
+        } catch (UpdaterException $e) {
+            $this->assertEquals(7, $e->getCode());
+        }
+    }
+
+    public function testSignatureForADifferentPackageIsRejected()
+    {
+        $keys = $this->generateKeys(1);
+        $downloader = $this->downloaderTrusting([$keys[0]['public']]);
+
+        $this->expectDownloadOf(hash('sha384', 'some data'), $this->sign(hash('sha384', 'other data'), $keys[0]['private']));
+
+        try {
+            $downloader->downloadPackage('ee_package_url');
+            $this->fail('A signature made for another package was accepted');
+        } catch (UpdaterException $e) {
+            $this->assertEquals(7, $e->getCode());
+        }
+    }
+
+    private function downloaderTrusting(array $public_keys)
+    {
+        return new Downloader($this->license, $this->curl, $this->filesystem, $this->logger, $this->config, $public_keys);
+    }
+
+    private function generateKeys($count)
+    {
+        $keys = [];
+
+        for ($i = 0; $i < $count; $i++) {
+            $private = openssl_pkey_new(['private_key_bits' => 2048, 'private_key_type' => OPENSSL_KEYTYPE_RSA]);
+
+            if ($private === false) {
+                $this->markTestSkipped('This PHP build cannot generate RSA keys');
+            }
+
+            $keys[] = ['private' => $private, 'public' => openssl_pkey_get_details($private)['key']];
+        }
+
+        return $keys;
+    }
+
+    private function sign($hash, $private_key)
+    {
+        openssl_sign($hash, $signature, $private_key, OPENSSL_ALGO_SHA384);
+
+        return base64_encode($signature);
+    }
+
+    private function expectDownloadOf($hash, $signature)
+    {
+        $request = Mockery::mock('ExpressionEngine\Library\Curl\PostRequest');
+
+        $this->license->shouldReceive('getRawLicense')->andReturn('1234');
+        $this->config->shouldReceive('get')->with('app_version')->andReturn('4.0.0');
+        $this->config->shouldReceive('get')->with('site_url')->andReturn('my_site_url');
+
+        $this->curl->shouldReceive('post')->andReturn($request);
+
+        $request->shouldReceive('exec')->andReturn('some data');
+        $request->shouldReceive('getHeader')->with('http_code')->andReturn('200');
+        $request->shouldReceive('getHeader')->with('Content-Type')->andReturn('application/zip');
+        $request->shouldReceive('getHeader')->with('Package-Signature')->andReturn($signature);
+
+        $this->filesystem->shouldReceive('write')->once();
+        $this->filesystem->shouldReceive('hashFile')->once()->andReturn($hash);
+    }
 }

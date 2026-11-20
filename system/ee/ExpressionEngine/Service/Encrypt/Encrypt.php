@@ -208,6 +208,57 @@ class Encrypt
     }
 
     /**
+     * Encode an authenticated token for a specific purpose.
+     *
+     * @param string $string The value to encode.
+     * @param string $purpose The token purpose.
+     * @param string $key An optional encryption key.
+     * @return string The versioned, base64-encoded token.
+     */
+    public function encodeAuthenticated($string, $purpose, $key = '')
+    {
+        $key = $key ?: $this->default_key;
+        $ciphertext = $this->encrypt($string, $key);
+        $versioned = 'EE1' . $ciphertext;
+        $mac_key = hash_hmac('sha256', 'form-token-mac', $key, true);
+        $mac = hash_hmac('sha256', $purpose . "\0" . $versioned, $mac_key, true);
+
+        return base64_encode($versioned . $mac);
+    }
+
+    /**
+     * Decode an authenticated token for a specific purpose.
+     *
+     * @param string $token The versioned, base64-encoded token.
+     * @param string $purpose The expected token purpose.
+     * @param string $key An optional encryption key.
+     * @return string|false The decoded value, or false for an invalid token.
+     */
+    public function decodeAuthenticated($token, $purpose, $key = '')
+    {
+        if (! is_string($token)) {
+            return false;
+        }
+
+        $data = base64_decode($token, true);
+        if ($data === false || strlen($data) <= 35 || substr($data, 0, 3) !== 'EE1') {
+            return false;
+        }
+
+        $key = $key ?: $this->default_key;
+        $versioned = substr($data, 0, -32);
+        $mac = substr($data, -32);
+        $mac_key = hash_hmac('sha256', 'form-token-mac', $key, true);
+        $expected = hash_hmac('sha256', $purpose . "\0" . $versioned, $mac_key, true);
+
+        if (! hash_equals($expected, $mac)) {
+            return false;
+        }
+
+        return $this->decrypt(substr($versioned, 3), $key);
+    }
+
+    /**
      * Creates a signed hash value using hash_hmac()
      *
      * @throws InvalidArgumentException when the algorithm is invalid

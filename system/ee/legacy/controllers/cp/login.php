@@ -170,6 +170,11 @@ class Login extends CP_Controller
         $this->view->render($view);
     }
 
+    /**
+     * Recover an enrolled account using its backup code.
+     *
+     * @return void
+     */
     public function mfa_reset()
     {
         if (ee()->session->userdata('member_id') == 0) {
@@ -179,7 +184,11 @@ class Login extends CP_Controller
         $member = ee()->session->getMember();
         $return_path = $member->getCPHomepageURL();
 
-        if (!ee('pro:Access')->hasRequiredLicense() || (ee()->config->item('enable_mfa') !== false && ee()->config->item('enable_mfa') !== 'y') || ee()->session->userdata('mfa_flag') == 'skip') {
+        if (
+            $member->enable_mfa !== true ||
+            (ee()->config->item('enable_mfa') !== false && ee()->config->item('enable_mfa') !== 'y') ||
+            ee()->session->userdata('mfa_flag') == 'skip'
+        ) {
             $this->functions->redirect($return_path);
         }
 
@@ -204,7 +213,10 @@ class Login extends CP_Controller
                     ->withTitle(lang('mfa_reset_success'))
                     ->addToBody(lang('mfa_reset_success_message'))
                     ->defer();
-                $this->functions->redirect(ee('CP/URL', 'members/profile/pro/mfa')->compile());
+                if (ee('pro:Access')->hasRequiredLicense()) {
+                    $return_path = ee('CP/URL', 'members/profile/pro/mfa')->compile();
+                }
+                $this->functions->redirect($return_path);
             } else {
                 ee()->session->save_password_lockout(ee()->session->userdata('username'));
                 ee('CP/Alert')->makeInline('shared-form')
@@ -388,9 +400,7 @@ class Login extends CP_Controller
         $after = !is_array($this->input->get('after')) ? $this->input->get('after') : '';
 
         $view = 'account/login';
-        if ($this->input->get('BK')) {
-            $this->view->return_path = ee('Encrypt')->encode($this->input->get('BK'));
-        } elseif ($return) {
+        if ($return) {
             $this->view->return_path = ee('Security/XSS')->clean($return);
 
             $return = json_decode(ee('Encrypt')->decode(str_replace(' ', '+', ee()->input->get('return'))));
@@ -1066,12 +1076,13 @@ class Login extends CP_Controller
         $this->session->set_flashdata('message', lang($lang_key));
 
         $redirect = [];
+        $return = ee()->input->get('return');
 
         // If we have a return argument, keep it
         if (ee()->input->post('return_path')) {
             $redirect = ['return' => ee()->input->post('return_path')];
-        } elseif (ee()->input->get('return')) {
-            $redirect = ['return' => ee('Encrypt')->encode(ee()->input->get('return'))];
+        } elseif (is_string($return) && $return !== '') {
+            $redirect = ['return' => $return];
         }
 
         $this->functions->redirect(ee('CP/URL')->make('login', $redirect)->compile());
