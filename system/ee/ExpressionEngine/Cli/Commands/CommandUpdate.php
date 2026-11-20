@@ -82,6 +82,12 @@ class CommandUpdate extends Cli
     protected $lock;
 
     /**
+     * What the config file gave as the installed version when this command started
+     * @var array
+     */
+    protected $versionsWhenStarted = [];
+
+    /**
      * Run the command
      * @return mixed
      */
@@ -104,6 +110,7 @@ class CommandUpdate extends Cli
         // Rolling back and finishing, above, belong to an update that has
         // already started and may be the one holding this
         $this->takeUpdateLock();
+        $this->versionsWhenStarted = $this->versionsInConfigFile();
 
         // A drop-in update leaves what was kept from the last update alone
         if ($this->suppliesPackage() || ! $this->doesInstallerFolderExist()) {
@@ -272,16 +279,18 @@ class CommandUpdate extends Cli
             $this->fail('An update is still pending. Run update --rollback before starting another update.');
         }
 
-        if ($this->installedVersionNow() !== (string) ee()->config->item('app_version')) {
+        if ($this->versionsInConfigFile() !== $this->versionsWhenStarted) {
             $this->fail('command_update_site_changed_while_waiting');
         }
     }
 
     /**
-     * The version in the config file as it is now, not as it was read when
-     * this command started
+     * Every version the config file gives as installed, as the file reads
+     * now. Which of them PHP would use is not worked out, so a version in a
+     * comment counts too: all that matters is whether any of them has changed
+     * since this command started.
      */
-    protected function installedVersionNow()
+    protected function versionsInConfigFile()
     {
         // Read as text. Including the file can give back a copy PHP compiled
         // before the file changed.
@@ -290,12 +299,11 @@ class CommandUpdate extends Cli
 
         if (! is_string($source)
             || ! preg_match_all('/\$config\[([\'"])app_version\1\]\s*=\s*([\'"])([^\'"]*)\2\s*;/', $source, $matches)) {
-            // Nothing to compare with, so the site is taken to be as it was
-            return (string) ee()->config->item('app_version');
+            // Nothing to compare, so the site is taken to be as it was
+            return [];
         }
 
-        // As in PHP, the last value given is the one that counts
-        return (string) end($matches[3]);
+        return $matches[3];
     }
 
     /**

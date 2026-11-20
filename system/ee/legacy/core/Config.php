@@ -1100,8 +1100,10 @@ class EE_Config
         // Remove values if needed
         if (count($remove_values) > 0) {
             foreach ($remove_values as $key => $val) {
+                // Up to the end of the line the value finishes on, however
+                // that line ends
                 $config_file = preg_replace(
-                    '#\$' . "config\[(\042|\047)" . $key . "\\1\].*?;\n#is",
+                    '#\$' . "config\[(\042|\047)" . $key . "\\1\].*?;\r?\n#is",
                     "",
                     $config_file
                 );

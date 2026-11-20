@@ -253,7 +253,9 @@ class CommandUpdateTest extends TestCase
         $this->command->updateType = $updateType;
 
         // Another update finished after this command read the installed version
-        $this->command->versionOnDisk = '7.5.30';
+        $this->command->whileWaiting = function () {
+            $this->command->versionOnDisk = '7.5.30';
+        };
 
         try {
             $this->command->handle();
@@ -274,7 +276,44 @@ class CommandUpdateTest extends TestCase
     }
 
     /** @dataProvider configFiles */
-    public function testTheInstalledVersionIsReadFromTheConfigFileAsItIsNow($contents, $version)
+    public function testAnUpdateFinishedElsewhereIsNoticedHoweverTheConfigFileIsWritten($before, $after)
+    {
+        $this->config->config_path = tempnam(sys_get_temp_dir(), 'ee-config');
+        file_put_contents($this->config->config_path, $before);
+
+        $this->command->whileWaiting = function () use ($after) {
+            file_put_contents($this->config->config_path, $after);
+        };
+
+        try {
+            $this->command->handle();
+            $this->fail('An update was applied to a site that had changed since it was checked');
+        } catch (UpdateCommandFailure $e) {
+            $this->assertStringContainsString('site_changed_while_waiting', $e->getMessage());
+        } finally {
+            @unlink($this->config->config_path);
+        }
+
+        $this->assertSame(['initialize'], $this->command->events);
+    }
+
+    public function configFiles()
+    {
+        $written = function ($version, $quote = "'") {
+            return "<?php\n\$config['save_tmpl_files'] = 'n';\n\$config[{$quote}app_version{$quote}] = {$quote}{$version}{$quote};\n";
+        };
+
+        return [
+            'as the updater writes it' => [$written('7.5.28'), $written('7.5.30')],
+            'double quotes' => [$written('7.5.28', '"'), $written('7.5.30', '"')],
+            'a file that is never run' => ["<?php exit('No direct script access allowed');\n\$config['app_version'] = '7.5.28';", "<?php exit('No direct script access allowed');\n\$config['app_version'] = '7.5.30';"],
+            'an earlier version noted in a comment' => [$written('7.5.28') . "// \$config['app_version'] = '7.5.20';\n", $written('7.5.30') . "// \$config['app_version'] = '7.5.20';\n"],
+            'a version that is first written while waiting' => ["<?php \$config['site_label'] = 'Site';", $written('7.5.30')],
+        ];
+    }
+
+    /** @dataProvider configFilesSayingMoreThanTheInstalledVersion */
+    public function testAVersionMentionedElsewhereInTheConfigFileDoesNotHoldUpAnUpdate($contents)
     {
         $this->config->config_path = tempnam(sys_get_temp_dir(), 'ee-config');
 
@@ -285,21 +324,23 @@ class CommandUpdateTest extends TestCase
         }
 
         try {
-            $this->assertSame($version, $this->command->versionInConfigFile());
+            $this->command->handle();
         } finally {
             @unlink($this->config->config_path);
         }
+
+        $this->assertContains('upgrade', $this->command->events);
     }
 
-    public function configFiles()
+    public function configFilesSayingMoreThanTheInstalledVersion()
     {
+        $installed = "<?php\n\$config['app_version'] = '7.5.28';\n";
+
         return [
-            'as the updater writes it' => ["<?php\n\$config['save_tmpl_files'] = 'n';\n\$config['app_version'] = '7.5.30';\n", '7.5.30'],
-            'double quotes' => ['<?php $config["app_version"] = "7.5.30";', '7.5.30'],
-            'set more than once' => ["<?php \$config['app_version'] = '7.5.29';\n\$config['app_version'] = '7.5.30';", '7.5.30'],
-            'a file that is never run' => ["<?php exit('No direct script access allowed');\n\$config['app_version'] = '7.5.30';", '7.5.30'],
-            'no version in the file' => ["<?php \$config['site_label'] = 'Site';", '7.5.28'],
-            'no file' => [null, '7.5.28'],
+            'an earlier version noted in a comment' => [$installed . "// Was: \$config['app_version'] = '7.5.20';\n"],
+            'a version for somewhere else' => [$installed . "if (getenv('EE_ENV') === 'elsewhere') {\n    \$config['app_version'] = '7.5.20';\n}\n"],
+            'no version in the file' => ["<?php \$config['site_label'] = 'Site';"],
+            'no file' => [null],
         ];
     }
 
@@ -486,6 +527,7 @@ class UpdateCommandStub extends CommandUpdate
     public $workingPath = '/no/update/working/folder/';
     public $installerPresent = false;
     public $versionOnDisk;
+    public $whileWaiting;
     public $lockPath;
     private $config;
 
@@ -512,11 +554,16 @@ class UpdateCommandStub extends CommandUpdate
     public function supply(array $package) { $this->package = $package; }
     protected function updateWorkingPath() { return $this->workingPath; }
     protected function doesInstallerFolderExist() { return $this->installerPresent; }
-    protected function installedVersionNow() { return $this->versionOnDisk !== null ? $this->versionOnDisk : (string) $this->config->item('app_version'); }
-    public function versionInConfigFile() { return parent::installedVersionNow(); }
+    protected function versionsInConfigFile() {
+        if ($this->versionOnDisk !== null) { return [$this->versionOnDisk]; }
+        return $this->config->config_path ? parent::versionsInConfigFile() : [(string) $this->config->item('app_version')];
+    }
     protected function updateLockPath() { return $this->lockPath; }
     protected function option($name, $default = null) { return isset($this->flags[$name]) ? $this->flags[$name] : $default; }
-    protected function initUpgrade() { $this->events[] = 'initialize'; }
+    protected function initUpgrade() {
+        $this->events[] = 'initialize';
+        if ($this->whileWaiting) { ($this->whileWaiting)(); }
+    }
     protected function hasPendingUpdate() { return $this->pending; }
     protected function runRecovery() { $this->events[] = 'rollback'; }
     protected function runUpgrade() { $this->events[] = 'upgrade'; }
