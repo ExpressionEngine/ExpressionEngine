@@ -105,6 +105,8 @@ class EE_Xmlrpc
         $this->xmlrpcstr['http_error'] = "Did not receive a '200 OK' response from remote server.";
         $this->xmlrpcerr['no_data'] = '6';
         $this->xmlrpcstr['no_data'] = 'No data received from server.';
+        $this->xmlrpcerr['request_too_large'] = '7';
+        $this->xmlrpcstr['request_too_large'] = 'The request is larger than this XML-RPC Server accepts.';
 
         $this->initialize($config);
 
@@ -774,8 +776,8 @@ class XML_RPC_Message extends EE_Xmlrpc
                 return;
             }
         } else {
-            // not top level element: see if parent is OK
-            if (! in_array($this->xh[$parser_name]['stack'][0], $this->valid_parents[$name], true)) {
+            // not top level element: see if it is a known element and its parent is OK
+            if (! isset($this->valid_parents[$name]) || ! in_array($this->xh[$parser_name]['stack'][0], $this->valid_parents[$name], true)) {
                 $this->xh[$parser_name]['isf'] = 2;
                 $this->xh[$parser_name]['isf_reason'] = "XML-RPC element $name cannot be child of " . $this->xh[$parser_name]['stack'][0];
 

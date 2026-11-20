@@ -103,7 +103,7 @@ class EE_Upload
 
         $_FILES['userfile'] = array(
             'name' => $name,
-            'size' => ee_mb_strlen($data),
+            'size' => strlen($data),
             'tmp_name' => $tmp,
             'error' => UPLOAD_ERR_OK
         );
