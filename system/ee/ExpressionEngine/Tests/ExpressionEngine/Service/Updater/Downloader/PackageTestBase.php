@@ -53,7 +53,11 @@ abstract class PackageTestBase extends TestCase
     {
         foreach (array_merge([$this->supplied, $this->working], $this->packageCopies()) as $folder) {
             if ($folder && is_link($folder)) {
-                unlink($folder);
+                // Windows removes a link to a folder the way it removes a folder,
+                // even once the folder it pointed to has gone
+                @rmdir($folder) || @unlink($folder);
+
+                continue;
             }
 
             if (! $folder || ! is_dir($folder)) {
