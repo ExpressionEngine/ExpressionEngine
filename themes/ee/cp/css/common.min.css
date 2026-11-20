@@ -21081,6 +21081,11 @@ span.CodeMirror-selectedtext {
   color: #8979ce;
 }
 
+body[data-theme=contrast] .cm-s-default .cm-variable-2,
+body[data-theme=contrast] .cm-s-default .cm-attribute {
+  color: #5e4c9f;
+}
+
 body[data-theme=dark] .cm-s-default.CodeMirror, .cm-dark.CodeMirror {
   background-color: #292D3E;
   color: #A6ACCD;
@@ -50085,10 +50090,44 @@ body[data-theme=contrast] [data-input-value=status] .select__dropdown-item:hover
   background-color: var(--ee-bg-blank);
   outline: 2px solid var(--ee-accent);
 }
+body[data-theme=contrast] [data-input-value=field_type] .select__dropdown-item {
+  --ee-keyboard-focus: var(--ee-accent);
+}
+body[data-theme=contrast] [data-input-value=field_type] .select__dropdown-item--selected {
+  background-color: var(--ee-bg-dropdown-selected);
+  border-inline-end: 4px solid var(--ee-accent);
+}
 body[data-theme=contrast] .selectable_buttons > label.active,
 body[data-theme=contrast] .file-grid__wrapper .file-grid__file:hover {
   outline: 2px solid var(--ee-accent);
   outline-offset: -2px;
+}
+body[data-theme=contrast] .f_manager-wrapper .file-grid__file.selected,
+body[data-theme=contrast] .f_manager-wrapper .app-listing__row.selected td:first-child {
+  box-shadow: inset 4px 0 0 var(--ee-accent);
+}
+body[data-theme=contrast] .f_manager-wrapper .file-grid__file.drop-target--over {
+  outline: 2px dashed var(--ee-accent);
+  outline-offset: -2px;
+}
+body[data-theme=contrast] .f_manager-wrapper .app-listing__row.drop-target--over > td {
+  position: relative;
+  z-index: auto;
+}
+body[data-theme=contrast] .f_manager-wrapper .app-listing__row.drop-target--over > td::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border: 0 dashed var(--ee-accent);
+  border-block-width: 2px;
+  z-index: 1001;
+}
+body[data-theme=contrast] .f_manager-wrapper .app-listing__row.drop-target--over > td:first-child::after {
+  border-inline-start-width: 2px;
+}
+body[data-theme=contrast] .f_manager-wrapper .app-listing__row.drop-target--over > td:last-child::after {
+  border-inline-end-width: 2px;
 }
 
 /*

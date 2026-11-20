@@ -76,6 +76,16 @@
 .cm-s-default .cm-variable-2, .cm-s-default .cm-attribute { color: #8979ce; }
 
 
+// Contrast theme
+// -------------------------------------------------------------------
+
+body[data-theme="contrast"] .cm-s-default {
+	.cm-variable-2,
+	.cm-attribute {
+		color: #5e4c9f;
+	}
+}
+
 
 // Dark theme
 // -------------------------------------------------------------------
