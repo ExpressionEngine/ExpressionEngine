@@ -462,6 +462,9 @@ class Pro_search_fields
                     // Use like operand in all other cases
                     $operand = $exclude ? 'NOT LIKE' : 'LIKE';
 
+                    // A backslash in the term is one to look for, not the start of an escape
+                    $item = str_replace('\\', '\\\\', $item);
+
                     // Allow for starts/ends with matching
                     $item = ($starts ? '' : '%') . ee()->db->escape_like_str($item) . ($ends ? '' : '%');
                     $item = "'{$item}' ESCAPE " . ee()->db->escape('\\');

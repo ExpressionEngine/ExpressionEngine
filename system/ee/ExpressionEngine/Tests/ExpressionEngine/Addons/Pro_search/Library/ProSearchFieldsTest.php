@@ -461,6 +461,51 @@ class ProSearchFieldsTest extends ProSearchTestBase
         $this->assertStringContainsString('LIKE', $sql);
     }
     
+    /** @dataProvider termsWithCharactersThatMeanSomethingToLike */
+    public function testATermIsLookedForAsItWasWritten($term, $found, $notFound)
+    {
+        ee()->setMock('db', new ProSearchFakeDb());
+
+        $sql = $this->fields->sql('field_id_5', $term);
+
+        $this->assertSame(1, preg_match("/ LIKE '(.*)' ESCAPE '(.)'\\)$/s", $sql, $like), $sql);
+        $this->assertTrue($this->likeMatches($like[1], $like[2], $found), "{$term} was not found in {$found}");
+        $this->assertFalse($this->likeMatches($like[1], $like[2], $notFound), "{$term} was found in {$notFound}");
+    }
+
+    public function termsWithCharactersThatMeanSomethingToLike()
+    {
+        return [
+            'a backslash' => ['D:\\Windows', 'Installed to D:\\Windows\\System32', 'Installed to D:Windows'],
+            'a backslash before a wildcard' => ['50\\%', 'Path 50\\% here', 'Path 50% here'],
+            'a percent sign' => ['100%', 'It is 100% done', 'It is 1000 done'],
+            'an underscore' => ['field_id', 'The field_id column', 'The fieldXid column'],
+        ];
+    }
+
+    /**
+     * What LIKE does with a pattern: % is any run of characters, _ is any one
+     * character, and the escape character makes the next one stand for itself
+     */
+    private function likeMatches($pattern, $escape, $text)
+    {
+        $regex = '';
+
+        for ($i = 0; $i < strlen($pattern); $i++) {
+            if ($pattern[$i] === $escape && $i + 1 < strlen($pattern)) {
+                $regex .= preg_quote($pattern[++$i], '/');
+            } elseif ($pattern[$i] === '%') {
+                $regex .= '.*';
+            } elseif ($pattern[$i] === '_') {
+                $regex .= '.';
+            } else {
+                $regex .= preg_quote($pattern[$i], '/');
+            }
+        }
+
+        return (bool) preg_match('/^' . $regex . '$/s', $text);
+    }
+
     public function testInvalidMethodCall()
     {
         $this->expectException(Exception::class);
