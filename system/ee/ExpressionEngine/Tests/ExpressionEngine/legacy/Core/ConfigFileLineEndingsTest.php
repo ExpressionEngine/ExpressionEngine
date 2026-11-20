@@ -95,10 +95,12 @@ namespace ExpressionEngine\Tests\ExpressionEngine\legacy\Core {
         {
             $unix = "\n";
             $windows = "\r\n";
+            $classic_mac = "\r";
 
             return [
                 'Unix' => [[$unix]],
                 'Windows' => [[$windows]],
+                'classic Mac' => [[$classic_mac]],
                 'Windows, then Unix from the fourth line' => [[$windows, $windows, $windows, $unix]],
                 'Unix, then Windows from the fourth line' => [[$unix, $unix, $unix, $windows]],
                 'alternating' => [[$unix, $windows, $unix, $windows, $unix, $windows, $unix, $windows, $unix, $windows]],

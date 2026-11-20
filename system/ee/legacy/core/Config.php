@@ -1101,9 +1101,9 @@ class EE_Config
         if (count($remove_values) > 0) {
             foreach ($remove_values as $key => $val) {
                 // Up to the end of the line the value finishes on, however
-                // that line ends
+                // that line ends, the last line of the file included
                 $config_file = preg_replace(
-                    '#\$' . "config\[(\042|\047)" . $key . "\\1\].*?;\r?\n#is",
+                    '#\$' . "config\[(\042|\047)" . $key . "\\1\].*?;(?:\r\n|\r|\n|\z)#is",
                     "",
                     $config_file
                 );
