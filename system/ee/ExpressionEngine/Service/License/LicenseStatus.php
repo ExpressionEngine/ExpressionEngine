@@ -237,6 +237,11 @@ class LicenseStatus
             return false;
         }
 
+        // A site without a key gives its pages FALSE, which they send back as text
+        if ($asked_for === 'false') {
+            $asked_for = '';
+        }
+
         // The key may have changed while the check was on its way
         if (is_string($asked_for) && $this->licenseFingerprint(['license' => $asked_for]) !== $this->licenseFingerprint($this->site)) {
             return false;

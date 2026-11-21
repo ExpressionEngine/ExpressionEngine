@@ -726,6 +726,37 @@ class LicenseStatusTest extends TestCase
     }
 
     /**
+     * @dataProvider sitesWithoutALicenseKey
+     */
+    public function testASiteWithoutALicenseKeyKeepsTheAnswerItsPageAskedFor($configured, $posted)
+    {
+        $status = $this->statusForSite(['license' => $configured]);
+
+        $this->assertTrue($status->store($this->response('missing_license_key', ['pro' => 'valid']), $posted));
+        $this->assertSame('missing_license_key', $status->statusFor('pro'));
+
+        // A key saved while a check made without one was on its way
+        $licensed = $this->statusForSite(['license' => self::LICENSE]);
+        $this->assertFalse($licensed->store($this->response('missing_license_key', ['pro' => 'valid']), $posted));
+
+        // A key removed while a check made with it was on its way
+        $this->assertFalse($status->store($this->response('success', ['pro' => 'valid']), self::LICENSE));
+        $this->assertSame('missing_license_key', $status->statusFor('pro'));
+    }
+
+    /**
+     * How a key that is not set reaches the page, and how the page sends it back
+     */
+    public function sitesWithoutALicenseKey()
+    {
+        return [
+            'never set' => [false, 'false'],
+            'saved as empty' => ['', ''],
+            'null' => [null, ''],
+        ];
+    }
+
+    /**
      * One license key may serve several addresses: staging and production,
      * the sites of a multi-site install, or a site answering to more than one
      * hostname.
