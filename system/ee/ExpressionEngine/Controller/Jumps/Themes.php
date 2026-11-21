@@ -18,6 +18,7 @@ class Themes extends Jumps
         'light' => 'fa-sun',
         'dark' => 'fa-moon',
         'slate' => 'fa-mountain-sun',
+        'contrast' => 'fa-solid fa-circle-half-stroke',
         // 'snow' => 'fa-snowflake',
     );
 

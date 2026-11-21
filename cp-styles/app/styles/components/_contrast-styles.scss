@@ -1,0 +1,508 @@
+body[data-theme="contrast"] {
+  .ee-sidebar__section-label {
+    opacity: 1;
+    font-weight: 600;
+  }
+
+  .button__within-dropdown:hover,
+  .button__within-dropdown:focus {
+    background-color: var(--ee-bg-dropdown-hover);
+  }
+
+  // Selected and focused items
+  // -------------------------------------------------------------------
+
+  // Mark the chosen option in every Dropdown. The 4px bar is the non-color cue. A border, not a
+  // box-shadow, so the inset keyboard-focus ring still shows on the selected option.
+  .select__dropdown-item--selected {
+    background-color: var(--ee-bg-dropdown-selected);
+    border-inline-end: 4px solid var(--ee-accent);
+  }
+
+  // Custom statuses use saved text colors, so highlight the row without recoloring its background.
+  [data-input-value="status"] .select__dropdown-item {
+    &:hover,
+    &:focus {
+      background-color: var(--ee-bg-blank);
+      outline: 2px solid var(--ee-accent);
+    }
+  }
+
+  // The same goes for the selected status option, and for the status tag in the closed button,
+  // which otherwise takes the button's hover fill. [class~="status-tag"] matches the same tags
+  // as .status-tag without the 15 legacy .st-* @extend copies.
+  [data-input-value="status"] .select__dropdown-item--selected {
+    background-color: var(--ee-bg-blank);
+  }
+
+  .select__button [class~="status-tag"] {
+    background-color: var(--ee-bg-blank) !important;
+  }
+
+  // The Jump menu result chosen with the arrow keys is otherwise only a faint tint.
+  .jump-menu__link.jump-menu__link--active {
+    box-shadow: inset 0 0 0 2px var(--ee-keyboard-focus);
+  }
+
+  // Selected rows in every listing: bulk selection, the post-save row and the file picker.
+  tr.selected td:first-child {
+    box-shadow: inset 4px 0 0 var(--ee-accent);
+  }
+
+  // Collapsed tables (400px and below) hide their checkboxes and stack the cells as blocks, so
+  // mark the whole card instead. Keep this after the rule above: the td rules tie on specificity.
+  @include m-custom-down(400px) {
+    .table-responsive--collapsible {
+      tr.selected {
+        border-color: var(--ee-accent);
+        background-color: var(--ee-accent-light);
+        box-shadow: inset 4px 0 0 var(--ee-accent);
+      }
+
+      tr.selected td {
+        background: transparent;
+        box-shadow: none;
+      }
+
+      // Missing files and auto-saved entries keep their warning tint while selected.
+      tr.selected.missing,
+      tr.selected.auto-saved {
+        background-color: var(--ee-warning-light);
+      }
+    }
+  }
+
+  .selectable_buttons > label.active,
+  .file-grid__wrapper .file-grid__file:hover {
+    outline: 2px solid var(--ee-accent);
+    outline-offset: -2px;
+  }
+
+  // Same card outline while the thumbnail link or checkbox has keyboard focus.
+  // A separate rule, so a browser without :has() drops only this one.
+  .file-grid__wrapper .file-grid__file:has(:focus-visible) {
+    outline: 2px solid var(--ee-keyboard-focus);
+    outline-offset: -2px;
+  }
+
+  .f_manager-wrapper {
+    .file-grid__file.selected {
+      box-shadow: inset 4px 0 0 var(--ee-accent);
+    }
+
+    .file-grid__file.drop-target--over {
+      outline: 2px dashed var(--ee-accent);
+      outline-offset: -2px;
+    }
+
+    .app-listing__row.drop-target--over > td {
+      position: relative;
+      z-index: auto;
+
+      &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        border: 0 dashed var(--ee-accent);
+        border-block-width: 2px;
+        // Paint the border above the sortable helper at z-index 1000.
+        z-index: 1001;
+      }
+
+      &:first-child::after {
+        border-inline-start-width: 2px;
+      }
+
+      &:last-child::after {
+        border-inline-end-width: 2px;
+      }
+    }
+  }
+
+  // Tabs have no focus indicator in any theme.
+  .tab-bar__tab:focus-visible {
+    outline: 2px solid var(--ee-keyboard-focus);
+    outline-offset: 2px;
+  }
+
+  @include m-tablet-up {
+    // The publish tab bar sticks at top: 0, where an outer ring loses its top edge.
+    // Draw the ring inside the 20px vertical padding and outside the unpadded sides.
+    .tab-bar--sticky .tab-bar__tab:focus-visible {
+      outline: none;
+
+      &::after {
+        content: "";
+        position: absolute;
+        inset: 8px -6px;
+        border: 2px solid var(--ee-keyboard-focus);
+        border-radius: $border-radius-base;
+        pointer-events: none;
+      }
+    }
+  }
+
+  @include m-tablet-down {
+    // .tab-bar__tabs clips with overflow: hidden here, so keep the ring inside the tab.
+    .tab-bar:not(.tab-bar--editable) .tab-bar__tab:focus-visible {
+      outline-offset: -3px;
+    }
+
+    // The collapsed bar drops the active underline, and the active and inactive label colors
+    // have the same lightness, so put the underline back inside the active tab.
+    .tab-bar:not(.tab-bar--editable) .tab-bar__tab.active {
+      box-shadow: inset 0 -2px 0 var(--ee-accent);
+    }
+  }
+
+  // The focus ring is 1.00 to 1.73:1 against these filled controls, so separate the two with a
+  // white band. [class~=] selectors, so @extend does not multiply this rule. Add-on module pages
+  // (body.add-on-layout) style a bare .btn as a primary button.
+  [class~="button--primary"],
+  [class~="button--success"],
+  [class~="button--action"],
+  [class~="button--danger"],
+  [class~="license-status-invalid"],
+  &.add-on-layout .btn,
+  input[type="checkbox"]:checked,
+  input[type="radio"]:checked,
+  .toggle-btn.on {
+    &:focus-visible {
+      box-shadow: 0 0 0 2px var(--ee-bg-blank), 0 0 0 4px var(--ee-keyboard-focus);
+    }
+  }
+
+  // On the brand-primary, warning and error fills around these controls, put the white band
+  // outside the ring instead. Element selectors, not .button, so @extend does not multiply this
+  // rule; at (0,3,2) it also beats the filled-control rule above.
+  .widget--support a:focus-visible,
+  .app-about__status a:focus-visible,
+  .app-about__status input:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--ee-keyboard-focus), 0 0 0 4px var(--ee-bg-blank);
+  }
+
+  .ee-sidebar__version--update-vital:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--ee-keyboard-focus), inset 0 0 0 4px var(--ee-bg-blank);
+  }
+
+  // Invalid fields keep their error border on focus, and the error-light ring is 1.18:1.
+  .fieldset-invalid > .field-control {
+    > input,
+    > textarea,
+    .fields-select,
+    .field-drop-selected,
+    .field-drop-choices,
+    > div > input,
+    > div > textarea,
+    .c-colorpicker-input {
+      &:focus {
+        box-shadow: 0 0 0 2px var(--ee-error);
+      }
+    }
+  }
+
+  // Panels
+  // -------------------------------------------------------------------
+
+  // Nested bordered panels (entry Revisions tab, file Usage tab), as in the light themes.
+  .panel__with-border {
+    border: 1px solid var(--ee-border);
+  }
+
+  // Form controls
+  // -------------------------------------------------------------------
+
+  // The base arrow bakes in Snow's text-secondary (#8f90b0), which is 2.74:1 on the
+  // #F0F0FF hover and focus fill. Use this theme's secondary text color.
+  select:not([multiple]),
+  .select-popup:not([multiple]) {
+    // Encode the hashtag so it works in the data uri
+    $color: str-replace("#{raw-color(text-secondary, $contrast-theme)}", '#', '\%23');
+    @include select-popup-arrow($color);
+  }
+
+  // Read-only and disabled inputs are striped with input-disabled-bg, where a text-secondary
+  // placeholder is 4.24:1.
+  :read-only::placeholder {
+    color: var(--ee-text-tertiary);
+  }
+
+  // input-toggle-bg is now close to the on fill (1.29:1), so draw the off state as an outline:
+  // a white track with an input-border edge and knob.
+  .toggle-btn.off {
+    background: var(--ee-bg-blank);
+
+    .slider {
+      background: var(--ee-input-border);
+    }
+
+    &:not(:focus) {
+      border-color: var(--ee-input-border);
+    }
+  }
+
+  .invalid .toggle-btn.off:not(:focus) {
+    border-color: var(--ee-error);
+  }
+
+  // The same for CKEditor's switch buttons (the link "Open in a new tab" decorator). The edge
+  // uses the toggle's own transparent border, because CKEditor draws its focus halo as a box-shadow.
+  .ck.ck-button.ck-switchbutton:not(.ck-on) .ck-button__toggle {
+    background: var(--ee-bg-blank) !important;
+    border-color: var(--ee-input-border);
+
+    .ck-button__toggle__inner {
+      background: var(--ee-input-border) !important;
+    }
+  }
+
+  .range-slider {
+    // input-toggle-bg also colors the unfilled track. Keep the track light so the filled
+    // range stays distinct, and outline it instead.
+    --progress-background: var(--ee-bg-5);
+    --progress-shadow: inset 0 0 0 1px var(--ee-input-border);
+    --ticks-color: var(--ee-input-border);
+    // The min and max labels are drawn at half opacity.
+    --min-max-opacity: 1;
+
+    &::before,
+    &::after {
+      color: var(--ee-text-secondary);
+    }
+
+    // The vendor slider sets outline: none on its inputs and has no focus style.
+    > input:focus-visible {
+      --thumb-shadow: var(--thumb-shadow-hover), 0 0 0 2px var(--ee-bg-blank), 0 0 0 4px var(--ee-keyboard-focus);
+    }
+  }
+
+  // The URL title refresh button overlaps the input's end edge by 1px.
+  .panel-body__publish .js-update-url-title {
+    &,
+    &:hover {
+      border-color: var(--ee-input-border);
+    }
+  }
+
+  // The date picker's time field is an input; the base rule also removes its focus style.
+  .date-picker-wrap .date-picker-footer input[type="time"] {
+    border-color: var(--ee-input-border);
+
+    &:focus {
+      border-color: var(--ee-input-focus-border);
+      @include focus-outline;
+    }
+  }
+
+  // CKEditor balloon inputs (link URL, image alt text, table properties) use list-item-border,
+  // and that !important rule also hides CKEditor's focus and error borders.
+  .ck.ck-input {
+    border-color: var(--ee-input-border) !important;
+
+    &:focus {
+      border-color: var(--ee-input-focus-border) !important;
+      @include focus-outline;
+    }
+
+    // After :focus so a focused invalid field keeps its red border and gains the ring.
+    &.ck-error {
+      border-color: var(--ee-error) !important;
+    }
+  }
+
+  // _rte.scss forces the editing area's border to input-border with !important, which also
+  // replaces CKEditor's focus border.
+  .ck.ck-editor__main > .ck-editor__editable.ck-focused {
+    border-color: var(--ee-input-focus-border) !important;
+    @include focus-outline;
+  }
+
+  // Redactor X wraps its editing area in dropdown-border.
+  .rx-container {
+    border-color: var(--ee-input-border) !important;
+  }
+
+  // Redactor Classic: the vendor focus border (#82b7ec) is lighter than the input border.
+  .redactor-box.redactor-focus.redactor-styles-on {
+    border-color: var(--ee-input-focus-border) !important;
+    @include focus-outline;
+  }
+
+  // Redactor Classic modal fields use a vendor #cacfd4 border. :where() keeps this at (0,2,2),
+  // above the vendor base rule, and leaves the vendor hover, focus, error and success states alone.
+  :where(.redactor-modal) :is(input:not([type="checkbox"]), select, textarea):where(:not(:hover, :focus, .error, .success)) {
+    border-color: var(--ee-input-border);
+  }
+
+  // Text and links
+  // -------------------------------------------------------------------
+
+  // Links set inside secondary, tertiary or semantic-color running text have about the same
+  // luminance as that text, so color alone marks them. Underline them.
+  .field-instruct em a,
+  .grid-instruct a,
+  .grid-field__column-label em a,
+  .meta-info a,
+  .note-fieldtype__content a,
+  .app-notice__content p a:not(.button),
+  .alert__content p a:not(.button),
+  .ee-form-error-message a,
+  .list-item__body a,
+  .app-about__subtitle a,
+  .four-o-four__body a {
+    text-decoration: underline;
+  }
+
+  // Link text on the red "new major version" panel: use the panel's white text.
+  .app-about__status--update-major a:not(.button) {
+    color: inherit;
+    text-decoration: underline;
+  }
+
+  // Text and icons faded with opacity drop below 4.5:1 (text) or 3:1 (icons).
+  .add-on-card--uninstalled {
+    .add-on-card__title,
+    .add-on-card__desc {
+      opacity: 1;
+    }
+  }
+
+  .app-modal__dismiss span {
+    opacity: 1;
+  }
+
+  .rx-popup .rx-popup-items .rx-popup-item .rx-popup-item-shortcut {
+    color: var(--ee-text-secondary);
+    opacity: 1;
+  }
+
+  .fluid__item--collapsed .field-instruct label {
+    opacity: 1;
+  }
+
+  .widget--support .widget-icon--reorder::before {
+    opacity: 1;
+  }
+
+  // The remove button is hidden until hover, but it can still take keyboard focus.
+  .field-conditionset .rules .rule:focus-within .delete_rule {
+    opacity: 1;
+  }
+
+  // Status and license colors
+  // -------------------------------------------------------------------
+
+  // accent-medium is the accent itself in this theme, so the badge needs its own pair.
+  .badge--info {
+    background-color: var(--ee-accent-light);
+    color: var(--ee-accent-dark);
+  }
+
+  // Pro license states read brand-warning directly; brand-warning stays light for the RTE mark.
+  .app-pro-validation .pro-message em.license-status-text-expired {
+    color: var(--ee-warning);
+  }
+
+  .ee-sidebar__items-bottom .ee-pro__indicator-badge.ee-pro__indicator-badge-expired {
+    background-color: var(--ee-warning);
+  }
+
+  // The license-problem icon is the non-color cue, so draw it at full strength.
+  .ee-sidebar__items-bottom .ee-pro__indicator-badge i {
+    opacity: 1;
+  }
+
+  // Add-on license ribbons: #f0f0f0 text is 4.33:1 on the expired (warning) fill; white is 4.93:1.
+  .corner-ribbon {
+    color: #fff;
+  }
+
+  // Statuses with no fill rule (such as invalid_domain) fall back to a hard-coded #e43 (3.81:1
+  // with white). :where() keeps this below the .trial, .update_available, .invalid and .expired fills.
+  :where(.corner-ribbon) {
+    background: var(--ee-danger);
+  }
+
+  // Built-in roles without a saved color get Snow hex values inline (Role::get__highlight()),
+  // which the theme tokens cannot reach. Swap the four that fail on the tag's white background.
+  [class~="status-tag"] {
+    &[style*="#00C571" i] {
+      color: var(--ee-success) !important;
+      border-color: var(--ee-success) !important;
+    }
+
+    &[style*="#FA5252" i] {
+      color: var(--ee-danger) !important;
+      border-color: var(--ee-danger) !important;
+    }
+
+    &[style*="#FFB40B" i] {
+      color: var(--ee-warning) !important;
+      border-color: var(--ee-warning) !important;
+    }
+
+    &[style*="#8F90B0" i] {
+      color: var(--ee-text-secondary) !important;
+      border-color: var(--ee-text-secondary) !important;
+    }
+  }
+
+  // Relationship status pills color their text with the raw status highlight (the default
+  // "open" is #009933, 3.75:1). Keep that color on the border and use primary text.
+  .dropdown__link-status-indicator,
+  .list-item__secondary .status-indicator {
+    color: var(--ee-text-primary) !important;
+  }
+
+  // Code highlighting
+  // -------------------------------------------------------------------
+
+  // Output profiler SQL (highlight.js) sits on bg-5 (#f3f3f9): every token color at least 4.5:1.
+  .hljs {
+    .hljs-built_in,
+    .hljs-literal,
+    .hljs-bullet,
+    .hljs-code,
+    .hljs-addition {
+      color: #a84f00;
+    }
+
+    .hljs-regexp,
+    .hljs-symbol,
+    .hljs-variable,
+    .hljs-template-variable,
+    .hljs-link,
+    .hljs-selector-attr,
+    .hljs-selector-pseudo {
+      color: #257468;
+    }
+
+    .hljs-type,
+    .hljs-string,
+    .hljs-selector-id,
+    .hljs-selector-class,
+    .hljs-quote,
+    .hljs-template-tag,
+    .hljs-deletion {
+      color: #9a5803;
+    }
+
+    .hljs-comment {
+      color: #686868;
+    }
+
+    .hljs-meta-keyword {
+      color: #0f6259;
+    }
+
+    .hljs-meta {
+      color: #575757;
+    }
+
+    .hljs-number {
+      color: #00783f;
+    }
+  }
+}

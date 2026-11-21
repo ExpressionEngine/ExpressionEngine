@@ -37,6 +37,21 @@ context('Jump Menu', () => {
 
     })
 
+	it('keeps the existing Consents shortcut as the first match', function() {
+		page.get('primary_input').type('con');
+		page.get('primary_results').find('.jump-menu__link--active').should('contain.text', 'Consents');
+		page.get('primary_input').type('{enter}');
+		cy.url().should('include', '/members/profile/consent');
+	});
+
+	it('switches to Contrast from the theme picker and remembers it', function() {
+		page.get('primary_input').type('switch theme{enter}');
+		page.get('secondary_results').contains('.jump-menu__link', /^\s*contrast\s*$/i).click();
+		cy.get('body').should('have.attr', 'data-theme', 'contrast');
+		cy.reload();
+		cy.get('body').should('have.attr', 'data-theme', 'contrast');
+	});
+
 	describe('entry edit jumps', function() {
 		beforeEach(function() {
 			page.get('primary_input').type('entr');
