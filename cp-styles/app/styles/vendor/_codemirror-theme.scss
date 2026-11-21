@@ -79,10 +79,72 @@
 // Contrast theme
 // -------------------------------------------------------------------
 
+// Token colors are at least 6.6:1 on the #fff editor, so they stay at least 4.5:1 on a
+// selection (#c4daff, #d9d9d9) or a search match. A token can carry several classes
+// ("tag bracket", "tag error", "string property", "property error"); these rules keep the
+// order of the shared rules above, so the same class wins as in the other themes.
 body[data-theme="contrast"] .cm-s-default {
+	.cm-variable-3,
+	.cm-type {
+		color: #006958;
+	}
+
+	.cm-string-2 {
+		color: #a63700;
+	}
+
+	.cm-bracket {
+		color: #5e5e47;
+	}
+
+	.cm-error,
+	.cm-invalidchar {
+		color: #bd0000;
+	}
+
+	.cm-comment {
+		color: #535c76;
+	}
+
+	.cm-keyword,
+	.cm-property {
+		color: #186194;
+	}
+
+	.cm-node,
+	.cm-tag {
+		color: #b32130;
+	}
+
+	// Unchanged color, repeated so strings still win over .cm-property and .cm-error.
+	.cm-string {
+		color: #0d2b69;
+	}
+
+	.cm-variable,
+	.cm-qualifier {
+		color: #375e91;
+	}
+
 	.cm-variable-2,
 	.cm-attribute {
 		color: #5e4c9f;
+	}
+
+	.CodeMirror-guttermarker,
+	.CodeMirror-guttermarker-subtle,
+	.CodeMirror-linenumber {
+		color: #5e7185;
+	}
+
+	// search.js colors the search dialog hint inline with #888 (3.49:1 on bg-0).
+	.CodeMirror-dialog span {
+		color: var(--ee-text-secondary) !important;
+	}
+
+	// The same 2px ring text inputs and textareas get on focus.
+	&.CodeMirror-wrap.CodeMirror-focused {
+		@include focus-outline;
 	}
 }
 

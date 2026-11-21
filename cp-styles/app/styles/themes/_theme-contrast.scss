@@ -7,7 +7,7 @@
 $brand-primary: #5D63F1;
 $brand-success: #008739;
 $brand-warning: #FFB40B;
-$brand-danger: #FA5252;
+$brand-danger: #CC2331;
 
 // Base Grays - Accessibility contrast Theme
 $gray-blank: #FFFFFF;
@@ -26,8 +26,8 @@ $text-primary: $gray-70;
 $text-normal: $gray-70;
 $text-secondary: #686988;
 $text-tertiary: #4D4E71;
-$text-placeholder: $gray-30;
-$text-selection: inherit;
+$text-placeholder: $text-secondary;
+$text-selection: $text-primary;
 $text-selection-bg: lighten($brand-primary, 25%);
 $link: $brand-primary;
 $link-hover: darken($link, 15%);
@@ -42,8 +42,8 @@ $contrast-theme: (
 
   accent: #515AE7,
   accent-dark: darken($brand-primary, 15%),
-	accent-medium: lighten($brand-primary, 20%),
-  accent-light: $gray-0,
+	accent-medium: #515AE7, // Focus-outline ring color, also the .st-info and selected file-tile borders. .badge--info gets its own pair in _contrast-styles.scss.
+  accent-light: #EDEEFE,
 
   // Grays
   gray-blank: $gray-blank,
@@ -60,17 +60,17 @@ $contrast-theme: (
 	// Semantic
 	success-dark: darken($brand-success, 15%),
   success: #007B2E,
-  success-light: lighten($brand-success, 55%),
-  warning-dark: darken($brand-warning, 15%),
+  success-light: #E6F6EC,
+  warning-dark: darken(#9F6300, 10%),
   warning: #9F6300,
 	warning-light: lighten($brand-warning, 42%),
-  error-dark: darken($brand-danger, 15%),
+  error-dark: darken($brand-danger, 10%),
   error: #CC2331,
   error-light: #FEE7E7,
-	security-caution: $brand-warning,
-  danger: #DA333B,
-	keyboard-focus: lighten($brand-primary, 20%),
-	notification: #fa5252,
+	security-caution: #9F6300,
+  danger: #CC2331,
+	keyboard-focus: #515AE7, // Focus-outline-inset ring color, also used by the hand-written focus rings in _contrast-styles.scss.
+	notification: #CC2331,
   notification-generic: #EDEDFF,
 
   // Text
@@ -100,18 +100,18 @@ $contrast-theme: (
   // Dropdowns
   bg-dropdown: $gray-blank,
   bg-dropdown-hover: #F0F0FF,
-  bg-dropdown-selected: lighten($brand-primary, 30%),
+  bg-dropdown-selected: #EDEEFE,
   dropdown-border: $gray-10,
 
 	// Borders
 	border: $gray-10,
-	border-dark: $gray-20,
+	border-dark: #8484A5,
 
 	// Buttons
   button-default-color: $text-primary,
   button-default-bg: $gray-blank,
   button-default-border: $gray-20,
-  button-default-hover-bg: $gray-0,
+  button-default-hover-bg: #F0F0FF,
   button-default-hover-border: $gray-20,
 
   button-primary-color: #ffffff,
@@ -130,7 +130,7 @@ $contrast-theme: (
   button-secondary-alt-color: $text-primary,
 	button-secondary-alt-bg: $gray-blank,
 	button-secondary-alt-border: $gray-20,
-	button-secondary-alt-hover-bg: $gray-0,
+	button-secondary-alt-hover-bg: #F0F0FF,
   button-secondary-alt-hover-border: $gray-20,
 	// button-secondary-alt-shadow: 0 1px 0 #eee,
 
@@ -147,7 +147,7 @@ $contrast-theme: (
   button-action-hover-bg: darken($brand-success, 10%),
   button-action-hover-border: darken($brand-success, 10%),
 
-  button-warning-color: #ffffff,
+  button-warning-color: $text-primary,
 	button-warning-bg: $brand-warning,
   button-warning-border: $brand-warning,
 	button-warning-hover-bg: darken($brand-warning, 10%),
@@ -155,27 +155,27 @@ $contrast-theme: (
 
 	button-danger-color: #ffffff,
 	button-danger-bg: #DF3035,
-  button-danger-border: $brand-danger,
-	button-danger-hover-bg: darken($brand-danger, 10%),
-  button-danger-hover-border: darken($brand-danger, 10%),
+  button-danger-border: #DF3035,
+	button-danger-hover-bg: darken(#DF3035, 10%),
+  button-danger-hover-border: darken(#DF3035, 10%),
 
   // Inputs
   input-color: $text-primary,
   input-bg: $gray-blank,
 	input-placeholder: $text-placeholder,
-	input-border: $gray-20,
+	input-border: #8484A5,
 	input-border-accent: $gray-5,
 	input-focus-border: $brand-primary,
 	input-focus-shadow: (0 3px 6px -3px rgba(#AE97FF, 0.14), 0 5px 10px -3px rgba(rgb(97, 114, 242), 0.05)),
 
-	input-toggle-bg: $gray-20,
+	input-toggle-bg: #8484A5,
 	input-toggle-fg: #ffffff,
 	input-toggle-shadow: rgba(120, 119, 140, 0.077),
 
 	input-toggle-active-bg: $brand-primary,
 	input-toggle-active-fg: #ffffff,
 
-  input-disabled-bg: $gray-0,
+  input-disabled-bg: $gray-10,
 
   input-jump-bg: $gray-blank,
 
@@ -240,7 +240,7 @@ $contrast-theme: (
   // EE Update Indicators
   ee-update: #000,
   ee-update-bg: lighten($brand-primary, 30%),
-  ee-update-dev: $brand-warning,
+  ee-update-dev: #9F6300,
   ee-update-dev-bg: $gray-blank,
   ee-update-vital: $gray-blank,
   ee-update-vital-bg: #CC2331,
