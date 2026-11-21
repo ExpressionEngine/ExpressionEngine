@@ -121,6 +121,42 @@ class BootTest extends TestCase
         ];
     }
 
+    /**
+     * Recovery continuations must boot the installed site even when its installer remains.
+     *
+     * @return void
+     */
+    public function testRollbackKeepsApplicationModeInEachRecoveryProcess(): void
+    {
+        $updater = $this->directory . 'ee/updater/';
+        mkdir($this->directory . 'ee/installer', 0700, true);
+        mkdir($this->directory . 'user/config', 0700, true);
+        touch($this->directory . 'user/config/config.php');
+        mkdir($updater . 'legacy/helpers', 0700, true);
+        copy(SYSPATH . 'ee/legacy/helpers/cli_helper.php', $updater . 'legacy/helpers/cli_helper.php');
+        copy($this->source . 'recovery.php', $updater . 'recovery.php');
+        copy(SYSPATH . 'ee/eecli.php', $this->directory . 'ee/eecli.php');
+
+        // Exercise the real CLI handoff and subprocesses without replacing files or opening a database.
+        file_put_contents($updater . 'boot.php', '<?php
+            namespace ExpressionEngine\Updater\Service\Updater;
+            class Runner {
+                public function runStep($step) {
+                    echo $step . ":" . (defined("INSTALL_MODE") && INSTALL_MODE === false ? "app" : "installer") . "\n";
+                }
+                public function getNextStep() {
+                    $next = ["rollback" => "restoreDatabase", "restoreDatabase" => "selfDestruct[rollback]"];
+                    return $next[$_GET["step"]] ?? false;
+                }
+            }
+        ');
+
+        $entry = var_export($this->directory . 'ee/eecli.php', true);
+        $output = $this->runPhp('<?php $argv = ["eecli.php", "update", "--rollback"]; require ' . $entry . ';');
+
+        $this->assertSame("rollback:app\nrestoreDatabase:app\nselfDestruct[rollback]:app\n", $output);
+    }
+
     private function runBoot($requestType, $step)
     {
         $script = '<?php
