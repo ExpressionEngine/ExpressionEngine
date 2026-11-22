@@ -74,8 +74,11 @@ class File
     }
 
     /**
-      *  Build SQL Query
-      */
+     * Build the file query with its filters and pagination.
+     *
+     * @param Pagination_object|string $pagination
+     * @return CI_DB_result|array
+     */
     private function _get_file_data($pagination = '')
     {
         $file_id = '';
@@ -166,6 +169,20 @@ class File
         // Specify category and category group ID(s) if supplied
         foreach ($category_params as $param => $variable) {
             if ($$variable) {
+                if ($param == 'category' && strpos($$variable, '&') !== false) {
+                    $category = trim($$variable);
+                    $not = (strncasecmp($category, 'not ', 4) == 0) ? 'NOT ' : '';
+                    $category_ids = array_unique(array_map('trim', explode('&', $not ? substr($category, 4) : $category)));
+                    $category_ids = array_map(array(ee()->db, 'escape'), $category_ids);
+
+                    $sql = 'exp_files.file_id ' . $not . 'IN (SELECT file_id FROM exp_file_categories' .
+                        ' WHERE cat_id IN (' . implode(', ', $category_ids) . ')' .
+                        ' GROUP BY file_id HAVING COUNT(DISTINCT cat_id) = ' . count($category_ids) . ')';
+                    ee()->db->where($sql, null, false);
+
+                    continue;
+                }
+
                 $cat_field_name = ($param == 'category') ? 'exp_categories.cat_id' : 'exp_categories.group_id';
 
                 $include_uncategorized = (substr($$variable, 0, 3) == 'not'
