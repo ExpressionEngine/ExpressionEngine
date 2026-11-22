@@ -903,7 +903,9 @@ class Set
     private function importGrid($field, $columns, $type = 'grid')
     {
         $that = $this;
-        $fn = function () use ($columns, $that, $type) {
+        $field_name = $field->field_name;
+        
+        $fn = function () use ($columns, $that, $type, $field_name) {
             unset($_POST[$type]);
 
             // grid[cols][new_0][col_label]
@@ -914,9 +916,35 @@ class Set
                         $column['settings']['channels'] = $channel_ids;
                     }
                 }
+                
+                // Fix empty allowed_directories and field_content_type for file fieldtypes in grid columns
+                if (isset($column['type']) && $column['type'] == 'file') {
+                    if (isset($column['settings']['allowed_directories']) && empty($column['settings']['allowed_directories'])) {
+                        $column['settings']['allowed_directories'] = 'all';
+                    } elseif (!isset($column['settings']['allowed_directories'])) {
+                        $column['settings']['allowed_directories'] = 'all';
+                    }
+                    
+                    // Also fix empty field_content_type (defaults to 'image' for file_grid)
+                    if (isset($column['settings']['field_content_type']) && empty($column['settings']['field_content_type'])) {
+                        $column['settings']['field_content_type'] = 'image';
+                    } elseif (!isset($column['settings']['field_content_type'])) {
+                        $column['settings']['field_content_type'] = 'image';
+                    }
+                }
+                
+                // Fix RTE fieldtype settings structure - needs to be wrapped in 'rte' key within col_settings
+                if (isset($column['type']) && $column['type'] == 'rte' && isset($column['settings'])) {
+                    // RTE grid_save_settings expects col_settings['rte'], so wrap the settings
+                    if (!isset($column['settings']['rte'])) {
+                        $column['settings'] = array('rte' => $column['settings']);
+                    }
+                }
 
                 foreach ($column as $col_label => $col_value) {
-                    $_POST[$type]['cols']["new_{$i}"]['col_' . $col_label] = $col_value;
+                    // Convert 'settings' key to 'col_settings' for POST structure
+                    $post_key_label = ($col_label == 'settings') ? 'col_settings' : 'col_' . $col_label;
+                    $_POST[$type]['cols']["new_{$i}"][$post_key_label] = $col_value;
                 }
             }
         };
