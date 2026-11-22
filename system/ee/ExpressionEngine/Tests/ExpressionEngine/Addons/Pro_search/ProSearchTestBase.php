@@ -144,6 +144,7 @@ if (!class_exists('Pagination_test')) {
 class ProSearchFakeDb extends FakeDb
 {
     public $dbprefix = 'exp_';
+    public $versionString = false;
 
     public function get($table = null)
     {
@@ -160,6 +161,30 @@ class ProSearchFakeDb extends FakeDb
     public function escape_like_str($str)
     {
         return addcslashes($str, '%_');
+    }
+
+    public function escape_str($str, $like = false)
+    {
+        return addslashes($str);
+    }
+
+    public function version()
+    {
+        return $this->versionString;
+    }
+
+    public function word_boundary_regex($term)
+    {
+        $term = preg_quote((string) $term);
+
+        if (is_string($this->versionString)
+            && stripos($this->versionString, 'mariadb') === false
+            && preg_match('/\d+(?:\.\d+){1,2}/', $this->versionString, $match)
+            && version_compare($match[0], '8.0.4', '>=')) {
+            return '(\\b|^)' . $term . '(\\b|$)';
+        }
+
+        return '([[:<:]]|^)' . $term . '([[:>:]]|$)';
     }
 }
 

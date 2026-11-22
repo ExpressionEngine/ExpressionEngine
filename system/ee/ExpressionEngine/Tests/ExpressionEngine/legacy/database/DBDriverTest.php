@@ -106,6 +106,50 @@ class DBDriverTest extends TestCase
         $this->assertSame('8.0.0', $driver->version());
     }
 
+    /**
+     * @dataProvider wordBoundaryRegexProvider
+     */
+    public function testWordBoundaryRegexUsesDatabaseCompatibleBoundaries($version, $expected): void
+    {
+        $driver = new DBDriverMethodHarness([]);
+        $driver->queryResponse = new DBDriverQueryResultStub(1, [], (object) ['ver' => $version], []);
+
+        $this->assertSame($expected, $driver->word_boundary_regex('term'));
+    }
+
+    public function wordBoundaryRegexProvider()
+    {
+        return [
+            'mysql 8.0.4' => ['8.0.4', '(\\b|^)term(\\b|$)'],
+            'mysql 8.0.44' => ['8.0.44', '(\\b|^)term(\\b|$)'],
+            'mysql 8.0.44 suffix' => ['8.0.44-commercial', '(\\b|^)term(\\b|$)'],
+            'mysql 8.0.3' => ['8.0.3', '([[:<:]]|^)term([[:>:]]|$)'],
+            'mysql 5.7' => ['5.7.44', '([[:<:]]|^)term([[:>:]]|$)'],
+            'mariadb' => ['10.6.18-MariaDB', '([[:<:]]|^)term([[:>:]]|$)'],
+            'prefixed mariadb' => ['5.5.5-10.6.18-MariaDB', '([[:<:]]|^)term([[:>:]]|$)'],
+            'unknown' => ['', '([[:<:]]|^)term([[:>:]]|$)'],
+        ];
+    }
+
+    public function testWordBoundaryRegexEscapesTermAndFallsBackWhenVersionUnsupported(): void
+    {
+        $driver = new DBDriverMethodHarness([]);
+        $driver->versionSql = false;
+        $driver->db_debug = false;
+
+        $this->assertSame('([[:<:]]|^)term\\.one([[:>:]]|$)', $driver->word_boundary_regex('term.one'));
+    }
+
+    public function testWordBoundaryRegexCachesVersionDetection(): void
+    {
+        $driver = new DBDriverMethodHarness([]);
+        $driver->queryResponse = new DBDriverQueryResultStub(1, [], (object) ['ver' => '8.0.44'], []);
+
+        $this->assertSame('(\\b|^)one(\\b|$)', $driver->word_boundary_regex('one'));
+        $this->assertSame('(\\b|^)two(\\b|$)', $driver->word_boundary_regex('two'));
+        $this->assertCount(1, $driver->querySqls);
+    }
+
     public function testQueryHandlesEmptySqlFailureWriteAndReadPaths(): void
     {
         $driver = new DBDriverQueryHarness([]);
