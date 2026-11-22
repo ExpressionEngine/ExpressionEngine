@@ -314,7 +314,7 @@ context('Entry Manager', () => {
 			//Real quick add in a text field to one of our channels
 			cy.visit('admin.php?/cp/fields')
 			cy.dismissLicenseAlert()
-			cy.get('a').contains('New Field').click()
+			cy.get('a').contains('Add Field').click()
 			cy.get('input[name="field_label"]').type('Simple Text')
 			cy.get('body').type('{ctrl}', {release: false}).type('s')
 			cy.get('p').contains('has been created')

@@ -34,6 +34,14 @@
                 </form>
             <?php endif ?>
             <?php if (isset($header['action_button'])): ?>
+                <?php
+                if (!isset($header['action_button']['attrs'])) {
+                    $header['action_button']['attrs'] = '';
+                }
+                if (isset($header['action_button']['shortcut']) && !empty($header['action_button']['shortcut'])) {
+                    $header['action_button']['attrs'] .= ' data-shortcut="' . (string) $header['action_button']['shortcut'] . '"';
+                }
+                ?>
                 <?php if (isset($header['action_button']['choices'])): ?>
                     <button type="button" class="button button--primary js-dropdown-toggle has-sub" data-dropdown-pos="bottom-end"><?=$header['action_button']['text']?></button>
                     <div class="dropdown">
@@ -69,36 +77,44 @@
                         </div>
                     </div>
                 <?php else: ?>
-                    <a class="button button--primary" href="<?=$header['action_button']['href']?>"><?=$header['action_button']['text']?></a>
+                    <a class="button button--primary" <?=$header['action_button']['attrs']?> href="<?=$header['action_button']['href']?>"><?=$header['action_button']['text']?></a>
                 <?php endif ?>
             <?php endif ?>
         <?php endif ?>
 
-		<?php if (isset($header['action_buttons']) && count($header['action_buttons'])): ?>
-				<?php foreach ($header['action_buttons'] as $button): ?>
-						<?php if (isset($button['choices'])): ?>
-							<button type="button" class="button button--primary js-dropdown-toggle" data-dropdown-pos="bottom-end"><?=$button['text']?> <i class="fal fa-caret-down icon-right"></i></button>
-							<div class="dropdown">
-								<?php if (count($button['choices']) > 8): ?>
-									<div class="dropdown__search">
-										<div class="search-input">
-											<input type="text" value="" class="search-input__input input--small" data-fuzzy-filter="true" placeholder="<?=$button['filter_placeholder']?>">
-										</div>
-									</div>
-								<?php endif ?>
-								<div class="dropdown__scroll">
-								<?php foreach ($button['choices'] as $link => $text): ?>
-									<a href="<?=$link?>" class="dropdown__link"><?=$text?></a>
-								<?php endforeach ?>
-								</div>
-							</div>
-						<?php else: ?>
-							<a class="button button--<?=isset($button['type']) ? $button['type'] : 'primary'?>" href="<?=$button['href']?>" rel="<?=isset($button['rel']) ? $button['rel'] : ''?>"><?=$button['text']?></a>
-						<?php endif ?>
-				<?php endforeach ?>
-			<?php endif ?>
-	</div>
-	</div>
+        <?php if (isset($header['action_buttons']) && count($header['action_buttons'])): ?>
+                <?php foreach ($header['action_buttons'] as $button): ?>
+                    <?php
+                    if (!isset($button['attrs'])) {
+                        $button['attrs'] = '';
+                    }
+                    if (isset($button['shortcut']) && !empty($button['shortcut'])) {
+                        $button['attrs'] .= ' data-shortcut="' . (string) $button['shortcut'] . '"';
+                    }
+                    ?>
+                    <?php if (isset($button['choices'])): ?>
+                        <button type="button" class="button button--primary js-dropdown-toggle" data-dropdown-pos="bottom-end"><?=$button['text']?> <i class="fal fa-caret-down icon-right"></i></button>
+                        <div class="dropdown">
+                            <?php if (count($button['choices']) > 8): ?>
+                                <div class="dropdown__search">
+                                    <div class="search-input">
+                                        <input type="text" value="" class="search-input__input input--small" data-fuzzy-filter="true" placeholder="<?=$button['filter_placeholder']?>">
+                                    </div>
+                                </div>
+                            <?php endif ?>
+                            <div class="dropdown__scroll">
+                            <?php foreach ($button['choices'] as $link => $text): ?>
+                                <a href="<?=$link?>" class="dropdown__link"><?=$text?></a>
+                            <?php endforeach ?>
+                            </div>
+                        </div>
+                    <?php else: ?>
+                        <a class="button button--<?=isset($button['type']) ? $button['type'] : 'primary'?>" <?=$button['attrs']?> href="<?=$button['href']?>" rel="<?=isset($button['rel']) ? $button['rel'] : ''?>"><?=$button['text']?></a>
+                    <?php endif ?>
+                <?php endforeach ?>
+            <?php endif ?>
+    </div>
+    </div>
 
 
 </div>

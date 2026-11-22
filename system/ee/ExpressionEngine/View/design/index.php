@@ -8,7 +8,7 @@
     			<h3 class="title-bar__title"><?=$cp_heading?></h3>
           <div class="title-bar__extra-tools">
     				<?php if ($show_new_template_button): ?>
-    				<a class="button button--primary" href="<?=ee('CP/URL')->make('design/template/create/' . $group_id)?>"><?= lang('create_new_template') ?></a>
+    				<a class="button button--primary" href="<?=ee('CP/URL')->make('design/template/create/' . $group_id)?>" data-shortcut="a"><?= lang('create_new_template') ?></a>
     			<?php endif; ?>
     			</div>
     			<?php if (isset($filters)) {

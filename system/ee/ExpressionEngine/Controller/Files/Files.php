@@ -132,6 +132,7 @@ class Files extends AbstractFilesController
                 'data-upload_location_id' => $id,
                 'data-directory_id' => (int) ee('Request')->get('directory_id'),
                 'content' => lang('upload'),
+                'data-shortcut' => 'u'
             ];
 
             // Generate the contents of the new folder modal
