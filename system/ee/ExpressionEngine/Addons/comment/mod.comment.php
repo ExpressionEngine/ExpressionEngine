@@ -901,10 +901,6 @@ class Comment
 
                 $url = ee()->functions->encode_ee_tags($url, true);
 
-                if ($url == '') {
-                    $url = 'http://';
-                }
-
                 $tagdata = ee()->TMPL->swap_var_single($key, form_prep($url), $tagdata);
             }
 
