@@ -101,6 +101,12 @@ class CP_Controller extends EE_Controller
     {
         parent::__construct();
         ee()->core->run_cp();
+
+        if (ee('Request')->isPost()) {
+            if (count($_POST, COUNT_RECURSIVE) > ini_get('max_input_vars')) {
+                show_error(lang('max_input_vars_error'), 413);
+            }
+        }
     }
 
     /**
