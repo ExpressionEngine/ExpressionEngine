@@ -14,11 +14,12 @@ use CP_Controller;
 
 class Caches extends Jumps
 {
-    private $themes = array('light' => 'fa-sun', 'dark' => 'fa-moon');
-
     public function __construct()
     {
         parent::__construct();
+        if (!ee('Permission')->has('can_access_data')) {
+            $this->sendResponse([]);
+        }
     }
 
     /**
@@ -47,7 +48,11 @@ class Caches extends Jumps
                 'command_title' => $command,
                 'dynamic' => false,
                 'addon' => false,
-                'target' => 'utilities/cache&cache_type=' . $key
+                'action' => true,
+                'target' => 'utilities/cache',
+                'data' => [
+                    'cache_type' => $key
+                ]
             );
         }
 
