@@ -719,11 +719,8 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
                 'desc' => sprintf(lang('rel_ft_order_desc'), strtolower(lang('entries'))),
                 'fields' => array(
                     'relationship_order_field' => array(
-                        'type' => 'radio',
-                        'choices' => array(
-                            'title' => lang('rel_ft_order_title'),
-                            'entry_date' => lang('rel_ft_order_date')
-                        ),
+                        'type' => 'select',
+                        'choices' => $util->all_order_options(),
                         'value' => $values['order_field']
                     ),
                     'relationship_order_dir' => array(
