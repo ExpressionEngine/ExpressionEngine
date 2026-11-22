@@ -92,6 +92,10 @@ $lang = array(
 
     'show_ee_news_desc' => 'When enabled, the latest news about ExpressionEngine will appear on the control panel\'s homepage.',
 
+    'cp_theme' => 'CP Theme',
+
+    'cp_theme_desc' => 'Select the default Control Panel theme for users who have not selected a personal theme.',
+
     'site_default' => 'Use site default',
 
     'site_license_key' => 'Site License Key',
