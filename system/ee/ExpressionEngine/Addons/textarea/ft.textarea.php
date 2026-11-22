@@ -211,6 +211,10 @@ class Textarea_ft extends EE_Fieldtype
             $params['disabled'] = 'disabled';
         }
 
+        if (isset($this->settings['field_placeholder']) && $this->settings['field_placeholder'] != '') {
+            $params['placeholder'] = $this->settings['field_placeholder'];
+        }
+
         return form_textarea($params);
     }
 
@@ -258,6 +262,15 @@ class Textarea_ft extends EE_Fieldtype
                     'field_ta_rows' => array(
                         'type' => 'text',
                         'value' => (! isset($data['field_ta_rows']) or $data['field_ta_rows'] == '') ? 6 : $data['field_ta_rows']
+                    )
+                )
+            ),
+            array(
+                'title' => 'field_placeholder',
+                'fields' => array(
+                    'field_placeholder' => array(
+                        'type' => 'text',
+                        'value' => $data['field_placeholder'] ?? ''
                     )
                 )
             ),
@@ -372,6 +385,7 @@ class Textarea_ft extends EE_Fieldtype
     public function save_settings($data)
     {
         $defaults = array(
+            'field_placeholder' => '',
             'field_show_file_selector' => 'n',
             'db_column_type' => 'text',
             'field_show_smileys' => 'n',
