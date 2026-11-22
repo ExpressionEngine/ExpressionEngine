@@ -17,7 +17,8 @@
         <?php foreach ($field_group_fields as $field) : ?>
             <?php if ($field->getType() !== 'fluid_field'): ?>
                 <div class="fluid__item-field no-drag <?=($field->getType() == 'grid' || $field->getType() == 'file_grid') ? 'fieldset-faux' : ''?>" data-field-type="<?= $field->getType() ?>">
-
+                <?php $required = $field->isRequired() ? 'fieldset-required' : '';?>
+                <div class= <?=$required?>>
                     <div class="field-instruct">
                         <label>
                             <?=$field->getItem('field_label')?> <?php if ($show_field_type): ?><span class="faded">(<?=$field->getType()?>)</span><?php endif ?>
@@ -25,6 +26,7 @@
                         <?=(isset($field_name_prefix) ? $field->getNameBadge(['prefix' => $field_name_prefix, 'content_type' => 'fluid_field', 'fluid_id' => $fluid_field_id]) : '')?>
                 <em><?=$field->getItem('field_instructions')?></em>
                     </div>
+                </div>
                     <?php
                         $field_name = $field->getName();
                         $form = $field->getForm();
