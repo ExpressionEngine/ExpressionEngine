@@ -47,7 +47,7 @@ context('Template Variables', () => {
     })
 
     it('Validate variable form', function() {
-        cy.get('a').contains('Template Variable').first().click()
+        cy.get('a.sidebar__link').contains('Template Variable').first().click()
         //page.get('create_new_button').click()
         cy.get('a').contains('Create New').first().click()
 
@@ -58,7 +58,7 @@ context('Template Variables', () => {
 
     it('Create new variable', function() {
         // 'Cannot figure out how to populate a codemirror form element'
-        cy.get('a').contains('Template Variable').first().click()
+        cy.get('a.sidebar__link').contains('Template Variable').first().click()
 
         //page.get('create_new_button').click()
         cy.get('a').contains('Create New').first().click()
