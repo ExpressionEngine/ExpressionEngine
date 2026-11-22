@@ -307,6 +307,10 @@ $lang = array(
 
     'redirect_method_opt_refresh' => 'Refresh (Windows only)',
 
+    'redirect_forward_url_parameters' => 'Forward URL parameters in template redirect tags?',
+
+    'redirect_forward_url_parameters_desc' => 'When enabled, <code>{redirect=\'\'}</code> tags in templates will forward all URL parameters to the destination URL.',
+
     'send_headers' => 'Use <abbr title="Hypertext Transfer Protocol">HTTP</abbr> page headers?',
 
     'send_headers_desc' => 'When enabled, your website will generate <abbr title="Hypertext Transfer Protocol">HTTP</abbr> headers for all pages.',
