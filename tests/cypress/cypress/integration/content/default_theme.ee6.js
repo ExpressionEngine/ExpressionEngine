@@ -23,7 +23,7 @@ context('Install with default theme', () => {
         }
       })
     })
-    
+
     // Delete existing config and create a new one
     cy.task('db:clear')
     cy.task('cache:clear')
@@ -34,7 +34,7 @@ context('Install with default theme', () => {
       //cy.screenshot({capture: 'runner'})
       //cy.screenshot({capture: 'fullPage'})
       cy.hasNoErrors()
-  
+
       install_form.get('db_hostname').clear().type(Cypress.env("DB_HOST"))
       install_form.get('db_name').clear().type(Cypress.env("DB_DATABASE"))
       install_form.get('db_username').clear().type(Cypress.env("DB_USER"))
@@ -48,7 +48,7 @@ context('Install with default theme', () => {
       install_form.get('password').clear().type('1Password')
       install_form.get('license_agreement').click()
       install_form.get('install_submit').click()
-  
+
       cy.hasNoErrors()
     })
 
@@ -70,7 +70,7 @@ context('Install with default theme', () => {
     cy.task('installer:disable')
     cy.task('installer:revert_config').then(()=>{
         cy.task('installer:replace_config', {
-            file: 'support/config/config.php', 
+            file: 'support/config/config.php',
             options: {
                 database: {
                     hostname: Cypress.env("DB_HOST"),
@@ -108,7 +108,7 @@ context('Install with default theme', () => {
       cy.wait(2000)
       cy.login({ email: 'admin', password: '1Password' });
       cy.get('.ee-wrapper').should('exist')
-      cy.get('.app-notice-missing-files').should('not.exist')
+      cy.get('.app-notice-missing-files').should('not.be.visible')
       cy.hasNoErrors()
     })
 
@@ -210,7 +210,7 @@ context('Install with default theme', () => {
         // failing this test
         return false
       })
-      
+
       cy.visit('/index.php/blog/category/news')
       cy.hasNoErrors()
       cy.logFrontendPerformance()
@@ -302,7 +302,7 @@ context('Install with default theme', () => {
       cy.log('turn on compatibility mode and make sure everything still works')
       cy.eeConfig({ item: 'file_manager_compatibility_mode', value: 'y' })
       cy.wait(1000)
-      
+
       cy.visit('/index.php/about')
       cy.hasNoErrors()
       cy.get('figure.right img').should('be.visible').and(($img) => {

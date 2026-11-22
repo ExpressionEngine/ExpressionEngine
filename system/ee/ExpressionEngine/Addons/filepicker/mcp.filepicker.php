@@ -250,11 +250,21 @@ class Filepicker_mcp
         $result = $file->getValues();
 
         $result['path'] = $file->getAbsoluteURL();
-        $result['thumb_path'] = ee('Thumbnail')->get($file)->url;
+        $result = array_merge($result, $this->getThumbnailResponseData($file));
         $result['isImage'] = $file->isImage();
         $result['isSVG'] = $file->isSVG();
 
         ee()->output->send_ajax_response($result);
+    }
+
+    private function getThumbnailResponseData($file)
+    {
+        $thumb = ee('Thumbnail')->get($file);
+
+        return [
+            'thumb_path' => $thumb->url,
+            'thumb_fallback_path' => $file->getAbsoluteURL(),
+        ];
     }
 
     public function upload()
@@ -377,7 +387,7 @@ class Filepicker_mcp
 
                 return [
                     'ajax' => true,
-                    'body' => [
+                    'body' => array_merge([
                         // Inconsistent casing for backwards compatibility
                         'status' => 'success',
                         'title' => $file->file_name,
@@ -385,10 +395,10 @@ class Filepicker_mcp
                         'file_name' => $file->file_name,
                         'isImage' => $file->isImage(),
                         'isSVG' => $file->isSVG(),
-                        'thumb_path' => $file->getAbsoluteThumbnailURL(),
+                    ], $this->getThumbnailResponseData($file), [
                         'upload_location_id' => $file->upload_location_id,
                         'file_hw_original' => $result['upload_response']['file_hw_original'],
-                    ]
+                    ])
                 ];
             }
         }

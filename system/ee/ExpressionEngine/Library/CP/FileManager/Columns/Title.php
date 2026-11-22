@@ -30,9 +30,9 @@ class Title extends EntryManager\Columns\Title
             }
         }
 
-        if (! $file->exists()) {
-            $title .= '<br><em class="faded">' . lang('file_not_found') . '</em>';
-        }
+        // Append "file not found" text for JS display if needed
+        $title .= '<div class="hidden file-not-found"><em class="faded">' . lang('file_not_found') . '</em></div>';
+
 
         return $title;
     }

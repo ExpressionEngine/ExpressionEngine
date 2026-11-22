@@ -30,7 +30,8 @@
 				<td>
 					<a data-id="<?=$file->file_id ?: $file->file_name ?>" data-url="<?=ee('CP/URL')->make($data_url_base, array('file' => $file->file_id))?>" class="filepicker-item" href="#">
 						<?php if ($file->isEditableImage() || $file->isSVG()): ?>
-							<img src="<?=ee('Thumbnail')->get($file)->url?>" alt="<?=$file->file_name?>">
+							<?php $thumb = ee('Thumbnail')->get($file); ?>
+							<img src="<?=$thumb->url?>" fallback-src="<?=$file->getAbsoluteURL()?>" data-file-id="<?=$file->file_id?>" class="thumbnail_img" alt="<?=$file->file_name?>" onerror="window.EE.cp.fallbackImage(this)">
 						<?php else: ?>
 							<?php if (in_array($file->mime_type, ['text/plain', 'text/markdown'])): ?>
 								<i class="fal fa-file-alt fa-5x"></i>

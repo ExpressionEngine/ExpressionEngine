@@ -162,7 +162,8 @@ class Pro_select_files extends Pro_variables_type
                 'id'    => $file->file_id,
                 'name'  => $file->title,
                 'url'   => $file->getAbsoluteURL(),
-                'thumb' => $file->getAbsoluteThumbnailURL()
+                'thumb' => $file->getAbsoluteThumbnailURL(),
+                'thumb_fallback' => $file->getAbsoluteURL()
             );
         }
 
@@ -204,7 +205,12 @@ class Pro_select_files extends Pro_variables_type
                 $name = htmlspecialchars($file['name'], ENT_QUOTES);
 
                 if ($data['thumbs'] && $file['thumb']) {
-                    $name = sprintf('<img src="%s" alt="" />', $file['thumb']) . $name;
+                    $name = sprintf(
+                        '<img src="%s" fallback-src="%s" data-file-id="%s" class="thumbnail_img" alt="" onerror="window.EE.cp.fallbackImage(this)" />',
+                        htmlspecialchars($file['thumb'], ENT_QUOTES),
+                        htmlspecialchars($file['thumb_fallback'], ENT_QUOTES),
+                        htmlspecialchars($file['id'], ENT_QUOTES)
+                    ) . $name;
                 }
 
                 $data['choices'][$file['url']] = $name;
