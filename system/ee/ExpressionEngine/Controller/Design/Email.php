@@ -139,6 +139,7 @@ class Email extends AbstractDesignController
                     'name' => 'submit',
                     'type' => 'submit',
                     'value' => 'update',
+                    'shortcut' => 's',
                     'text' => sprintf(lang('btn_save'), lang('template')),
                     'working' => 'btn_saving'
                 ),
