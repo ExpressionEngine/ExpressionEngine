@@ -322,6 +322,16 @@ class FilterFactory
     }
 
     /**
+     * This will instantiate and return a default EntryDate filter
+     *
+     * @return Filter\EntryDate a EntryDate Filter object
+     */
+    protected function createDefaultEntryDate()
+    {
+        return new Filter\EntryDate();
+    }
+
+    /**
      * This will instantiate and return a default Keyword filter
      *
      * @return Filter\Keyword a Keyword Filter object
