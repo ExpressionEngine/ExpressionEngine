@@ -15,10 +15,14 @@ return array(
     ],
     'cookies.functionality' => [
         'frontedit',
+        'license_notice_seen',
     ],
     'cookie_settings' => [
         'frontedit' => [
             'description' => 'lang:cookie_frontedit_desc'
+        ],
+        'license_notice_seen' => [
+            'description' => 'lang:cookie_license_notice_seen_desc'
         ],
     ],
     'models'       => [

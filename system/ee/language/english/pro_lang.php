@@ -47,6 +47,7 @@ $lang = array(
     // Pro Cookies
     'cookie_frontedit' => 'Front-end editing',
     'cookie_frontedit_desc' => 'Determines whether ExpressionEngine front-end editing features should be enabled.',
+    'cookie_license_notice_seen_desc' => 'Tracks whether the Pro license notice has been acknowledged in the Control Panel.',
 
     'export_consent_log' => 'Export Consent Audit Logs',
     'exported_consent_log' => 'Exported Consent Audit Logs',
