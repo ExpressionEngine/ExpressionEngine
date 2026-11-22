@@ -104,6 +104,8 @@ class Comment_upd
 
         ee()->load->library('smartforge');
         ee()->smartforge->add_key('comments', 'comment_date', 'comment_date_idx');
+        ee()->smartforge->add_key('comments', 'author_id', 'author_id');
+        ee()->smartforge->add_key('comments', array('site_id', 'comment_date'), 'site_id_comment_date');
 
         $fields = array(
             'subscription_id' => array('type' => 'int', 'constraint' => '10', 'unsigned' => true, 'auto_increment' => true),
@@ -280,6 +282,15 @@ class Comment_upd
             ee()->smartforge->modify_column('comments', $fields);
 
             ee()->smartforge->modify_column('comment_subscriptions', $fields);
+        }
+
+        if (version_compare($current, '2.3.4', '<')) {
+            ee()->load->library('smartforge');
+
+            // Add performance indexes for comment queries
+            ee()->smartforge->add_key('comments', 'author_id', 'author_id');
+            // Add composite key on (site_id, comment_date) to optimize queries filtering recent comments per site
+            ee()->smartforge->add_key('comments', array('site_id', 'comment_date'), 'site_id_comment_date');
         }
 
         return true;
