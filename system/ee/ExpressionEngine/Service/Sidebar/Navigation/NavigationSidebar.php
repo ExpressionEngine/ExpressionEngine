@@ -174,6 +174,10 @@ class NavigationSidebar extends AbstractSidebar
                 }
             }
 
+            if (ee('Permission')->has('can_access_addons') && ee('Permission')->has('can_admin_addons')) {
+                $tools['addons_kiosk'] = ee('CP/URL')->make('addons/kiosk');
+            }
+
             if (ee('Permission')->has('can_access_logs')) {
                 $tools['logs'] = ee('CP/URL')->make('logs');
             }
