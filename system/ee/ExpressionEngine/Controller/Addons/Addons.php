@@ -11,6 +11,7 @@
 namespace ExpressionEngine\Controller\Addons;
 
 use CP_Controller;
+use Cache;
 use Michelf\MarkdownExtra;
 use ExpressionEngine\Library\CP\Table;
 use ExpressionEngine\Service\Addon\Mcp;
@@ -222,6 +223,87 @@ class Addons extends CP_Controller
         $vars['updates'] = array_filter($addons, function ($addon) {
             return isset($addon['update']);
         });
+
+        // Get the list of licensed add-ons
+        $vars['licenses'] = [];
+        $licensedAddons = ee('Addon')->getLicensedAddons();
+
+        $licensedAddons = ['tagger' => ['license_status' => 'trial']]; // Temporary hardcode for testing; I don't really know the response format yet
+
+        if (!empty($licensedAddons)) {
+
+            // Get the add-on licenses info from the feed
+            $feed = ee()->cache->get('addon-feed', Cache::GLOBAL_SCOPE);
+
+            if (! $feed) {
+                try {
+                    $feed = ee('Curl')->get(
+                        'https://expressionengine.com/add-ons/addon-feed'
+                    )->exec();
+
+                    $feed = json_decode($feed, true);
+
+                    ee()->cache->save(
+                        'addon-feed',
+                        $feed,
+                        60 * 60 * 24,
+                        Cache::GLOBAL_SCOPE
+                    );
+                } catch (\Exception $e) {
+                    if (empty($feed)) {
+                        $feed = ['items' => []];
+                    }
+                }
+            }
+
+            $addonsByKey = array_filter($feed['items'], function ($item) use ($licensedAddons) {
+                return array_key_exists($item['id'], $licensedAddons);
+            });
+
+            $addonIconActionId = ee()->db->select('action_id')
+                ->where('class', 'File')
+                ->where('method', 'addonIcon')
+                ->get('actions');
+
+            foreach ($addonsByKey as $addon) {
+                $slug = $addon['id'];
+                $addon = array_merge($addon, $licensedAddons[$slug]);
+                $addon['package'] = $slug;
+                $addon['name'] = $addon['title'];
+                $addon['description'] = strip_quotes(strip_tags(ee('Security/XSS')->entity_decode($addon['summary'])));
+                $addon['installed'] = array_key_exists($slug, $vars['installed']);
+                $addon['install_url'] = ee('CP/URL')->make('addons/download/' . $slug)->compile();
+                $addon['update_url'] = ee('CP/URL')->make('addons/download/' . $slug, ['return' => $return_url->encode()]);
+                $addon['remove_url'] = ee('CP/URL')->make('addons/remove/' . $slug, ['return' => $return_url->encode()]);
+                $addon['confirm_url'] = ee('CP/URL')->make('addons/confirm/' . $slug);
+                // does the icon file exist? if not, cache for a month
+                $icon = ee()->cache->get('store/' . $slug . '/icon', Cache::GLOBAL_SCOPE);
+                if (! $icon) {
+                    try {
+                        $icon = ee('Curl')->get(
+                            $addon['image']
+                        )->exec();
+
+                        ee()->cache->save(
+                            'store/' . $slug . '/icon',
+                            $icon,
+                            30 * 60 * 60 * 24,
+                            Cache::GLOBAL_SCOPE
+                        );
+                    } catch (\Exception $e) {
+
+                    }
+                }
+                $addon['icon_url'] = ee()->functions->fetch_site_index() . QUERY_MARKER . 'ACT=' . $addonIconActionId->row('action_id') . AMP . 'addon=' . $slug;
+                $addon['show_license_status'] = true;
+                if ($addon['installed'] && version_compare($vars['installed'][$slug]['version'], $addon['version'], '<')) {
+                    $addon['update'] = $addon['version'];
+                    $addon['version'] = $vars['installed'][$slug]['version'];
+                }
+                $vars['licenses'][] = $addon;
+            }
+
+        }
 
         $vars['header'] = array(
             'search_button_value' => lang('search_addons_button'),
