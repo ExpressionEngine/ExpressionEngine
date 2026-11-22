@@ -621,6 +621,8 @@ We reserve the right to remove, edit, or move any messages for any reason.',
 
     'mbr_missing_password' => 'Please enter a new password.',
 
+    'mbr_missing_password_reset_url' => 'Unable to send a password reset link because no reset URL is configured. Specify the `password_reset_url` parameter or enable legacy member templates.',
+
     'mbr_password_changed' => 'Password Successfully Changed',
 
     'mbr_reset_password' => 'Please enter a new password',
