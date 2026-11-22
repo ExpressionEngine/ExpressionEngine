@@ -179,12 +179,23 @@ abstract class AbstractFiles extends CP_Controller
             ee()->session->set_flashdata('file_id', $file->file_id);
         }
 
+        $qs = $_GET;
+        unset($qs['S'], $qs['D'], $qs['C'], $qs['M'], $qs['upload_location_id']);
+
+        // Loop through and clean GET values
+        foreach ($qs as $key => $value) {
+            $qs[$key] = ee('Security/XSS')->clean($value);
+        }
+
         if (ee()->input->post('submit') == 'save_and_close') {
-            $params = [];
             if ($file->directory_id != 0) {
-                $params['directory_id'] = $file->directory_id;
+                $qs['directory_id'] = $file->directory_id;
             }
-            ee()->functions->redirect(ee('CP/URL')->make('files/directory/' . $file->upload_location_id, $params));
+            if (isset($_GET['upload_location_id'])) {
+                ee()->functions->redirect(ee('CP/URL')->make('files/directory/' . (int) ee('Request')->get('upload_location_id'), $qs));
+            } else {
+                ee()->functions->redirect(ee('CP/URL')->make('files'), $qs);
+            }
         } else {
             ee()->functions->redirect(ee('CP/URL')->make('files/file/view/' . $file->getId()));
         }
