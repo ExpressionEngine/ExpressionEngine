@@ -32,6 +32,7 @@ class FieldFacade
     private $api;
     private $icon;
     private $conditionSets;
+    private $required_condition = true;
 
     /**
      * @var Flag to ensure defaults are only loaded once

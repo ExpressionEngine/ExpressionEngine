@@ -51,13 +51,15 @@ class DefaultChannelLayout extends DefaultLayout
                     'field' => 'title',
                     'visible' => true,
                     'collapsed' => false,
-                    'width' => 100
+                    'width' => 100,
+                    'required_condition' => false
                 ),
                 array(
                     'field' => 'url_title',
                     'visible' => true,
                     'collapsed' => false,
-                    'width' => 100
+                    'width' => 100,
+                    'required_condition' => false
                 )
             )
         );
@@ -71,13 +73,15 @@ class DefaultChannelLayout extends DefaultLayout
                 'field' => 'entry_date',
                 'visible' => true,
                 'collapsed' => false,
-                'width' => 100
+                'width' => 100,
+                'required_condition' => false
             ),
             array(
                 'field' => 'expiration_date',
                 'visible' => true,
                 'collapsed' => false,
-                'width' => 100
+                'width' => 100,
+                'required_condition' => false
             )
         );
 
@@ -86,7 +90,8 @@ class DefaultChannelLayout extends DefaultLayout
                 'field' => 'comment_expiration_date',
                 'visible' => true,
                 'collapsed' => false,
-                'width' => 100
+                'width' => 100,
+                'required_condition' => false
             );
         }
 
@@ -105,7 +110,8 @@ class DefaultChannelLayout extends DefaultLayout
                 'field' => 'categories[cat_group_id_' . $cat_group->getId() . ']',
                 'visible' => true,
                 'collapsed' => false,
-                'width' => 100
+                'width' => 100,
+                'required_condition' => false
             );
         }
 
@@ -123,19 +129,22 @@ class DefaultChannelLayout extends DefaultLayout
                 'field' => 'channel_id',
                 'visible' => true,
                 'collapsed' => false,
-                'width' => 100
+                'width' => 100,
+                'required_condition' => false
             ),
             array(
                 'field' => 'status',
                 'visible' => true,
                 'collapsed' => false,
-                'width' => 100
+                'width' => 100,
+                'required_condition' => false
             ),
             array(
                 'field' => 'author_id',
                 'visible' => true,
                 'collapsed' => false,
-                'width' => 100
+                'width' => 100,
+                'required_condition' => false
             )
         );
 
@@ -144,7 +153,8 @@ class DefaultChannelLayout extends DefaultLayout
                 'field' => 'sticky',
                 'visible' => true,
                 'collapsed' => false,
-                'width' => 100
+                'width' => 100,
+                'required_condition' => false
             );
         }
 
@@ -153,7 +163,8 @@ class DefaultChannelLayout extends DefaultLayout
                 'field' => 'allow_comments',
                 'visible' => true,
                 'collapsed' => false,
-                'width' => 100
+                'width' => 100,
+                'required_condition' => false
             );
         }
 
@@ -174,6 +185,7 @@ class DefaultChannelLayout extends DefaultLayout
             );
             $module_tabs = $module_tabs ?: array();
 
+
             foreach ($module_tabs as $tab_id => $fields) {
                 $tab = array(
                     'id' => $tab_id,
@@ -187,7 +199,8 @@ class DefaultChannelLayout extends DefaultLayout
                         'field' => $field['field_id'],
                         'visible' => true,
                         'collapsed' => false,
-                        'width' => 100
+                        'width' => 100,
+                        'required_condition' => false
                     );
                 }
 
@@ -205,13 +218,15 @@ class DefaultChannelLayout extends DefaultLayout
                         'field' => 'versioning_enabled',
                         'visible' => true,
                         'collapsed' => false,
-                        'width' => 100
+                        'width' => 100,
+                        'required_condition' => false
                     ),
                     array(
                         'field' => 'revisions',
                         'visible' => true,
                         'collapsed' => false,
-                        'width' => 100
+                        'width' => 100,
+                        'required_condition' => false
                     )
                 )
             );
