@@ -163,6 +163,8 @@ class EE_Channel_category_parser implements EE_Channel_parser_component
                     // $v[4] = cat_description
                     // $v[5] = group_id
                     // $v[6] = cat_url_title
+                    // $v[7] = group_id
+                    // $v[8] = group_name
 
                     ee()->load->library('file_field');
                     $cat_image = ee()->file_field->parse_field($v[3]);
@@ -179,6 +181,8 @@ class EE_Channel_category_parser implements EE_Channel_parser_component
                         'category_group' => (isset($v[5])) ? $v[5] : '',
                         'category_image' => (isset($v[3])) ? (string) $v[3] : '',
                         'category_id' => $v[0],
+                        'category_group_id' => $v[7],
+                        'category_group_name' => $v[8],
                         'parent_id' => $v[1],
                         'active' => ($active_cat == $v[0] || $active_cat == $v[6])
                     );
