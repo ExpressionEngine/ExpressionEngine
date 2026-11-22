@@ -224,6 +224,8 @@ class Tag
             }
 
             $tagdata = $field->replaceTag($tagdata);
+            $tagdata = $this->parseConditionals($field, $tagdata, $meta);
+
             $field->setName($name);
             return $tagdata;
         }
