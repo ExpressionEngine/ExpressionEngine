@@ -479,6 +479,12 @@ $lang = array(
     'username_banning_instructions' => '<b>Place each username on a separate line</b><br> These usernames will not be allowed.',
 
     /* Role settings */
+    'pending_role' => 'Pending primary role',
+
+    'pending_role_desc' => 'Primary role that will be assigned to member upon activation.',
+
+    'pending_role_warning' => 'This member is still pending activation. You can change the role they will be moved to upon activation.',
+
     'access_privilege_caution' => 'Any setting marked with <span class="icon--caution" title="exercise caution"></span> should only be granted to people you trust implicitly.',
 
     'access_privilege_warning' => '<b>Warning</b>: Please be very careful with the access privileges you grant.',
