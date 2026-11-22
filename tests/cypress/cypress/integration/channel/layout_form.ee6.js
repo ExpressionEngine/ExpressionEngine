@@ -121,7 +121,8 @@ context('Channel Layouts: Create/Edit', () => {
 
     it('can move a field out of the Options tab', function() {
         page.get('options_tab').click().then(function() {
-            let field_text = page.$('fields').filter(':visible').eq(0).find('label.layout-item__title').eq(0).contents().filter(function(){ return this.nodeType == 3; }).text()
+            // let field_text = page.$('fields').filter(':visible').eq(0).find('label.layout-item__title').eq(0).contents().filter(function(){ return this.nodeType == 3; }).text()
+            let field_text = page.$('fields').filter(':visible').eq(0).find('label.layout-item__title').eq(0).find('span.title').text();
             page.get('fields').filter(':visible').eq(0).find('.ui-sortable-handle').dragTo(page.$('publish_tab'))
             page.get('publish_tab').should('have.class', 'active')
             page.get('options_tab').should('not.have.class', 'active')
@@ -165,7 +166,8 @@ context('Channel Layouts: Create/Edit', () => {
             page.get('tabs').its('length').should('eq', tabCount + 1)
             page.get('tabs').eq(-1).contains(new_tab_name)
 
-            let field_text = page.$('fields').eq(0).find('label.layout-item__title').eq(0).contents().filter(function(){ return this.nodeType == 3; }).text().trim()
+            // let field_text = page.$('fields').eq(0).find('label.layout-item__title').eq(0).contents().filter(function(){ return this.nodeType == 3; }).text().trim()
+            let field_text = page.$('fields').eq(0).find('label.layout-item__title').eq(0).find('span.title').text().trim()
             cy.wait(600)
             page.get('fields').filter(':visible').eq(0).find('.ui-sortable-handle').dragTo(page.$('tabs').eq(-1))
             page.get('tabs').eq(-1).should('have.class', 'active')
@@ -184,7 +186,7 @@ context('Channel Layouts: Create/Edit', () => {
             page.get('tabs').eq(-1).contains(new_tab_name)
         })
 
-        page.get('fields').eq(0).find('label.layout-item__title').eq(0).invoke('text').then((field_text) => {
+        page.get('fields').eq(0).find('label.layout-item__title').eq(0).find('span.title').invoke('text').then((field_text) => {
             cy.log(field_text);
             console.log(field_text)
             cy.wait(600)
