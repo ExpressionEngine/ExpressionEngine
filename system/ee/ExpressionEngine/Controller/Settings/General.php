@@ -173,6 +173,13 @@ class General extends Settings
                         'include_seconds' => array('type' => 'yes_no')
                     )
                 ),
+                array(
+                    'title' => 'show_anchor_links',
+                    'desc' => 'show_anchor_links_desc',
+                    'fields' => array(
+                        'show_anchor_links' => array('type' => 'yes_no')
+                    )
+                ),
             ),
         );
 
