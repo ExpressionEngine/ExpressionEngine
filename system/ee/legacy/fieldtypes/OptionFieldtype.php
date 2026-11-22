@@ -59,6 +59,50 @@ abstract class OptionFieldtype extends EE_Fieldtype
         return $grid;
     }
 
+
+    /**
+     * Creates a mini Grid field based on the data in the 'default_field_value' key
+     *
+     * @return MiniGridInput object
+     */
+    protected function getDefaultValueMiniGrid($data)
+    {
+        $grid = ee('CP/MiniGridInput', array(
+            'field_name' => 'field_default_value'
+        ));
+        $grid->loadAssets();
+        $grid->setColumns(array(
+            'Value'
+        ));
+        $grid->setNoResultsText(lang('no_rows_returned'), lang('add_new'));
+        $grid->setBlankRow(array(
+            array('html' => form_input('value', ''))
+        ));
+        $grid->setData(array());
+
+        if (isset($data['field_default_value'])) {
+            if (isset($data['field_default_value']['rows'])) {
+                $data['field_default_value'] = $data['field_default_value']['rows'];
+            }
+
+            $pairs = array();
+            $i = 1;
+            foreach ($data['field_default_value'] as $value) {
+                $pairs[] = array(
+                    'attrs' => array('row_id' => $i),
+                    'columns' => array(
+                        array('html' => form_input('value', $value))
+                    )
+                );
+                $i++;
+            }
+
+            $grid->setData($pairs);
+        }
+
+        return $grid;
+    }
+
     /**
      * Saves settings for a field that allows its options to be specified in
      * a mini Grid field
@@ -67,6 +111,19 @@ abstract class OptionFieldtype extends EE_Fieldtype
      */
     public function save_settings($data)
     {
+        if (!isset($data['field_default_value'])) {
+            $data['field_default_value'] = '';
+        }
+        if (is_array($data['field_default_value'])) {
+            $defaultValues = [];
+            if (isset($data['field_default_value']['rows'])) {
+                array_walk_recursive($data['field_default_value']['rows'], function ($value) use (&$defaultValues) {
+                    $defaultValues[] = $value;
+                });
+            }
+            $data['field_default_value'] = implode('|', $defaultValues);
+        }
+
         if (isset($data['field_pre_populate']) && $data['field_pre_populate'] == 'v') {
             $pairs = array();
 
@@ -85,12 +142,14 @@ abstract class OptionFieldtype extends EE_Fieldtype
                     'field_fmt' => $data['field_fmt'],
                     'field_pre_populate' => $data['field_pre_populate'],
                     'field_list_items' => '',
-                    'value_label_pairs' => $pairs
+                    'value_label_pairs' => $pairs,
+                    'field_default_value' => $data['field_default_value']
                 );
             }
 
             return array(
-                'value_label_pairs' => $pairs
+                'value_label_pairs' => $pairs,
+                'field_default_value' => $data['field_default_value']
             );
         } else {
             if ($this->content_type() == 'grid') {
@@ -109,7 +168,8 @@ abstract class OptionFieldtype extends EE_Fieldtype
                     'field_pre_channel_id' => $field_pre_channel_id,
                     'field_pre_field_id' => $field_pre_field_id,
                     'field_list_items' => $data['field_list_items'],
-                    'value_label_pairs' => array()
+                    'value_label_pairs' => array(),
+                    'field_default_value' => $data['field_default_value']
                 );
             }
 
@@ -124,9 +184,10 @@ abstract class OptionFieldtype extends EE_Fieldtype
      * @param   array   $data   Fieldtype settings array
      * @param   string  $title  Lang key for settings section title
      * @param   string  $desc   Lang key or string for settings section description
+     * @param   bool    $isMultiSelect Whether the field is a multi-select field
      * @return array Array in shared form view format for settings form
      */
-    protected function getSettingsForm($field_type, $data, $title, $desc)
+    protected function getSettingsForm($field_type, $data, $title, $desc, $isMultiSelect = false)
     {
         $format_options = ee()->addons_model->get_plugin_formatting(true);
 
@@ -135,8 +196,13 @@ abstract class OptionFieldtype extends EE_Fieldtype
             'field_pre_populate' => false,
             'field_list_items' => '',
             'field_pre_channel_id' => 0,
-            'field_pre_field_id' => 0
+            'field_pre_field_id' => 0,
+            'field_default_value' => array()
         );
+
+        if (isset($data['field_default_value']) && !is_array($data['field_default_value'])) {
+            $data['field_default_value'] = explode('|', $data['field_default_value']);
+        }
 
         foreach ($defaults as $setting => $value) {
             $data[$setting] = isset($data[$setting]) ? $data[$setting] : $value;
@@ -151,6 +217,15 @@ abstract class OptionFieldtype extends EE_Fieldtype
                 $data['value_label_pairs'][$row['value']] = $row['label'];
             }
         }
+        if (
+            isset($_POST['field_default_value']['rows']) &&
+            ((isset($_POST['field_type']) && $_POST['field_type'] == $field_type) or (isset($_POST['m_field_type']) && $_POST['m_field_type'] == $field_type))
+        ) {
+            foreach ($_POST['field_default_value']['rows'] as $row) {
+                $data['field_default_value'][] = $row['value'];
+            }
+        }
+        $data['field_default_value'] = array_unique($data['field_default_value']);
 
         if ((isset($data['value_label_pairs']) && ! empty($data['value_label_pairs'])) or ! $this->field_id) {
             $data['field_pre_populate'] = 'v';
@@ -159,6 +234,8 @@ abstract class OptionFieldtype extends EE_Fieldtype
         }
 
         $grid = $this->getValueLabelMiniGrid($data);
+
+        $defaultsGrid = $this->getDefaultValueMiniGrid($data);
 
         $settings = array(
             array(
@@ -232,6 +309,21 @@ abstract class OptionFieldtype extends EE_Fieldtype
             );
         }
 
+        if ($isMultiSelect) {
+            $settings[] = array(
+                'title' => 'default_value',
+                'desc' => 'default_value_desc',
+                'fields' => array(
+                    'field_default_value' => array(
+                        'type' => 'html',
+                        'margin_left' => true,
+                        'content' => ee('View')->make('ee:_shared/form/mini_grid')
+                            ->render($defaultsGrid->viewData())
+                    )
+                )
+            );
+        }
+
         // Only show the update existing fields note when editing.
         if (! $this->field_id) {
             unset($settings[0]['fields']['field_fmt']['note']);
@@ -247,9 +339,10 @@ abstract class OptionFieldtype extends EE_Fieldtype
      * @param   array   $data   Fieldtype settings array
      * @param   string  $title  Lang key for settings section title
      * @param   string  $desc   Lang key or string for settings section description
+     * @param   bool    $isMultiSelect Whether the field is a multi-select field
      * @return  array Array in shared form view format for Grid settings form
      */
-    protected function getGridSettingsForm($field_type, $data, $title, $desc)
+    protected function getGridSettingsForm($field_type, $data, $title, $desc, $isMultiSelect = false)
     {
         $format_options = ee()->addons_model->get_plugin_formatting(true);
 
@@ -271,11 +364,27 @@ abstract class OptionFieldtype extends EE_Fieldtype
             unset($data['value_label_pairs']['rows']);
         }
 
+        if (isset($data['field_default_value']) && !is_array($data['field_default_value'])) {
+            $data['field_default_value'] = explode('|', $data['field_default_value']);
+        }
+
+        if (isset($data['field_default_value']['rows'])) {
+            foreach ($data['field_default_value']['rows'] as $key => $row) {
+                $data['field_default_value'][] = $row['value'];
+            }
+            unset($data['field_default_value']['rows']);
+            $data['field_default_value'] = array_unique($data['field_default_value']);
+        }
+
         $grid = $this->getValueLabelMiniGrid($data);
+
+        $defaultsGrid = $this->getDefaultValueMiniGrid($data);
 
         ee()->javascript->output("
 			var miniGridInit = function(context) {
-				$('.fields-keyvalue', context).miniGrid({grid_min_rows:0,grid_max_rows:''});
+				$('.fields-keyvalue', context).each(function() {
+                    $(this).miniGrid({grid_min_rows:0,grid_max_rows:''})
+                });
 			}
 			Grid.bind('" . $field_type . "', 'displaySettings', function(column) {
 				miniGridInit(column);
@@ -286,7 +395,7 @@ abstract class OptionFieldtype extends EE_Fieldtype
 			});
 		");
 
-        return array(
+        $settings = array(
             'field_options' => array(
                 array(
                     'title' => 'field_fmt',
@@ -351,6 +460,23 @@ abstract class OptionFieldtype extends EE_Fieldtype
                 )
             )
         );
+
+        if ($isMultiSelect) {
+            $settings['field_options'][] = array(
+                'title' => 'default_value',
+                'desc' => 'default_value_desc',
+                'fields' => array(
+                    'field_default_value' => array(
+                        'type' => 'html',
+                        'margin_left' => true,
+                        'content' => ee('View')->make('ee:_shared/form/mini_grid')
+                            ->render($defaultsGrid->viewData())
+                    )
+                )
+            );
+        }
+
+        return $settings;
     }
 
     /**

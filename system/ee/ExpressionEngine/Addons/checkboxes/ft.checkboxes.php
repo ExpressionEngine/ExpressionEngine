@@ -38,7 +38,8 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
         'field_pre_populate' => 'n',
         'field_list_items' => array(),
         'field_pre_field_id' => '',
-        'field_pre_channel_id' => ''
+        'field_pre_channel_id' => '',
+        'field_default_value' => ''
     );
 
     /**
@@ -127,6 +128,13 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
 
         if (isset($this->settings['string_override']) && $this->settings['string_override'] != '') {
             return $this->settings['string_override'];
+        }
+
+        if (
+            (empty($this->content_id) || (isset($this->settings['grid_field_id']) && !isset($this->settings['grid_row_id'])))
+            && isset($this->settings['field_default_value']) && $this->settings['field_default_value'] != ''
+        ) {
+            $data = $this->settings['field_default_value'];
         }
 
         $values = decode_multi_field($data);
@@ -291,7 +299,8 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
             'checkboxes',
             $data,
             'checkbox_options',
-            lang('options_field_desc') . lang('checkbox_options_desc')
+            lang('options_field_desc') . lang('checkbox_options_desc'),
+            true
         );
 
         return array('field_options_checkboxes' => array(
@@ -307,7 +316,8 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
             'checkboxes',
             $data,
             'checkbox_options',
-            'grid_checkbox_options_desc'
+            'grid_checkbox_options_desc',
+            true
         );
     }
 

@@ -115,6 +115,13 @@ class Url_Ft extends EE_Fieldtype
      */
     public function display_field($data)
     {
+        if (
+            (empty($this->content_id) || (isset($this->settings['grid_field_id']) && !isset($this->settings['grid_row_id'])))
+            && isset($this->settings['field_default_value']) && $this->settings['field_default_value'] != ''
+        ) {
+            $data = $this->settings['field_default_value'];
+        }
+
         $default_scheme = $this->get_setting('url_scheme_placeholder');
 
         $field = array(
@@ -181,6 +188,17 @@ class Url_Ft extends EE_Fieldtype
             )
         );
 
+        $settings[] = array(
+            'title' => 'default_value',
+            'desc' => 'default_value_desc',
+            'fields' => array(
+                'field_default_value' => array(
+                    'type' => 'text',
+                    'value' => (! isset($data['field_default_value'])) ? '' : (string) $data['field_default_value']
+                )
+            )
+        );
+
         if ($this->content_type() == 'grid') {
             return array('field_options' => $settings);
         }
@@ -202,7 +220,8 @@ class Url_Ft extends EE_Fieldtype
     {
         $defaults = array(
             'allowed_url_schemes' => $this->getSchemes(true),
-            'url_scheme_placeholder' => ''
+            'url_scheme_placeholder' => '',
+            'field_default_value' => ''
         );
 
         $all = array_merge($defaults, $data);

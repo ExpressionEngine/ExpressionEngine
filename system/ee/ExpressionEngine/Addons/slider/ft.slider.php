@@ -52,6 +52,13 @@ class Slider_ft extends Text_ft
             }
         }
 
+        if (
+            (empty($this->content_id) || (isset($this->settings['grid_field_id']) && !isset($this->settings['grid_row_id'])))
+            && isset($this->settings['field_default_value']) && $this->settings['field_default_value'] != ''
+        ) {
+            $data = $this->settings['field_default_value'];
+        }
+
         $field = array(
             'name' => $this->field_name,
             'value' => is_numeric($data) ? $data : $this->settings['field_min_value'],
@@ -140,6 +147,7 @@ class Slider_ft extends Text_ft
             'field_suffix' => '',
             'datalist_items' => '',
             'field_content_type' => $this->default_field_content_type,
+            'field_default_value' => ''
         );
     }
 
@@ -199,6 +207,17 @@ class Slider_ft extends Text_ft
                     )
                 )
             ),
+        );
+
+        $settings[] = array(
+            'title' => 'default_value',
+            'desc' => 'default_value_desc',
+            'fields' => array(
+                'field_default_value' => array(
+                    'type' => 'text',
+                    'value' => (! isset($data['field_default_value'])) ? '' : (string) $data['field_default_value']
+                )
+            )
         );
 
         if ($this->settings_form_field_name == 'slider' && $this->content_type() != 'category' && $this->content_type() != 'member') {

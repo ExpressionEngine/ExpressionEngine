@@ -107,6 +107,13 @@ class Text_ft extends EE_Fieldtype
 
     public function display_field($data)
     {
+        if (
+            (empty($this->content_id) || (isset($this->settings['grid_field_id']) && !isset($this->settings['grid_row_id'])))
+            && isset($this->settings['field_default_value']) && $this->settings['field_default_value'] != ''
+        ) {
+            $data = $this->settings['field_default_value'];
+        }
+
         $type = $this->get_setting('field_content_type', $this->default_field_content_type);
         $field = array(
             'name' => $this->field_name,
@@ -287,6 +294,17 @@ class Text_ft extends EE_Fieldtype
             }
         }
 
+        $settings[] = array(
+            'title' => 'default_value',
+            'desc' => 'default_value_desc',
+            'fields' => array(
+                'field_default_value' => array(
+                    'type' => 'text',
+                    'value' => (! isset($data['field_default_value'])) ? '' : (string) $data['field_default_value']
+                )
+            )
+        );
+
         if ($this->content_type() == 'grid') {
             return array('field_options' => $settings);
         }
@@ -324,7 +342,8 @@ class Text_ft extends EE_Fieldtype
             'field_maxl' => 256,
             'field_content_type' => '',
             'field_show_smileys' => 'n',
-            'field_show_file_selector' => 'n'
+            'field_show_file_selector' => 'n',
+            'field_default_value' => ''
         );
 
         $all = array_merge($defaults, $data);
