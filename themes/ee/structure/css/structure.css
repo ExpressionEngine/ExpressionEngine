@@ -1255,33 +1255,43 @@ table.zebra-striped tr:nth-child(even) td {
     }
 
 
- /*EE6 + 7 Styles */
-body[data-ee-version^="6."] #structure-ui div, body[data-ee-version^="6."] #structure-ui span,
-body[data-ee-version^="6."] #structure-ui h1, body[data-ee-version^="6."] #structure-ui h2, body[data-ee-version^="6."] #structure-ui h3,
-body[data-ee-version^="6."] #structure-ui h4, body[data-ee-version^="6."] #structure-ui h5, body[data-ee-version^="6."] #structure-ui h6, body[data-ee-version^="6."] #structure-ui p,
-body[data-ee-version^="6."] #structure-ui a, body[data-ee-version^="6."] #structure-ui img, body[data-ee-version^="6."] #structure-ui strong,
-body[data-ee-version^="6."] #structure-ui dl, body[data-ee-version^="6."] #structure-ui dt, body[data-ee-version^="6."] #structure-ui dd,
-body[data-ee-version^="6."] #structure-ui ol, body[data-ee-version^="6."] #structure-ui ul, body[data-ee-version^="6."] #structure-ui li,
-body[data-ee-version^="6."] #structure-ui fieldset, body[data-ee-version^="6."] #structure-ui form, body[data-ee-version^="6."] #structure-ui label, body[data-ee-version^="6."] #structure-ui legend,
-body[data-ee-version^="6."] #structure-ui table, body[data-ee-version^="6."] #structure-ui caption, body[data-ee-version^="6."] #structure-ui tbody,
-body[data-ee-version^="6."] #structure-ui tfoot, body[data-ee-version^="6."] #structure-ui thead, body[data-ee-version^="6."] #structure-ui tr, body[data-ee-version^="6."] #structure-ui th, body[data-ee-version^="6."] #structure-ui td,
-body[data-ee-version^="7."] #structure-ui div, body[data-ee-version^="7."] #structure-ui span,
-body[data-ee-version^="7."] #structure-ui h1, body[data-ee-version^="7."] #structure-ui h2, body[data-ee-version^="7."] #structure-ui h3,
-body[data-ee-version^="7."] #structure-ui h4, body[data-ee-version^="7."] #structure-ui h5, body[data-ee-version^="7."] #structure-ui h6, body[data-ee-version^="7."] #structure-ui p,
-body[data-ee-version^="7."] #structure-ui a, body[data-ee-version^="7."] #structure-ui img, body[data-ee-version^="7."] #structure-ui strong,
-body[data-ee-version^="7."] #structure-ui dl, body[data-ee-version^="7."] #structure-ui dt, body[data-ee-version^="7."] #structure-ui dd,
-body[data-ee-version^="7."] #structure-ui ol, body[data-ee-version^="7."] #structure-ui ul, body[data-ee-version^="7."] #structure-ui li,
-body[data-ee-version^="7."] #structure-ui fieldset, body[data-ee-version^="7."] #structure-ui form, body[data-ee-version^="7."] #structure-ui label, body[data-ee-version^="7."] #structure-ui legend,
-body[data-ee-version^="7."] #structure-ui table, body[data-ee-version^="7."] #structure-ui caption, body[data-ee-version^="7."] #structure-ui tbody,
-body[data-ee-version^="7."] #structure-ui tfoot, body[data-ee-version^="7."] #structure-ui thead, body[data-ee-version^="7."] #structure-ui tr, body[data-ee-version^="7."] #structure-ui th, body[data-ee-version^="7."] #structure-ui td {
+ /*EE6+ Styles */
+body[data-ee-version] #structure-ui div,
+body[data-ee-version] #structure-ui span,
+body[data-ee-version] #structure-ui h1,
+body[data-ee-version] #structure-ui h2,
+body[data-ee-version] #structure-ui h3,
+body[data-ee-version] #structure-ui h4,
+body[data-ee-version] #structure-ui h5,
+body[data-ee-version] #structure-ui h6,
+body[data-ee-version] #structure-ui p,
+body[data-ee-version] #structure-ui a,
+body[data-ee-version] #structure-ui img,
+body[data-ee-version] #structure-ui strong,
+body[data-ee-version] #structure-ui dl,
+body[data-ee-version] #structure-ui dt,
+body[data-ee-version] #structure-ui dd,
+body[data-ee-version] #structure-ui ol,
+body[data-ee-version] #structure-ui ul,
+body[data-ee-version] #structure-ui li,
+body[data-ee-version] #structure-ui fieldset,
+body[data-ee-version] #structure-ui form,
+body[data-ee-version] #structure-ui label,
+body[data-ee-version] #structure-ui legend,
+body[data-ee-version] #structure-ui table,
+body[data-ee-version] #structure-ui caption,
+body[data-ee-version] #structure-ui tbody,
+body[data-ee-version] #structure-ui tfoot,
+body[data-ee-version] #structure-ui thead,
+body[data-ee-version] #structure-ui tr,
+body[data-ee-version] #structure-ui th,
+body[data-ee-version] #structure-ui td {
     font-size:  12px;
 }
 
-body[data-ee-version^="6."] #structure-ui .page-ui li div.item-inner,
-body[data-ee-version^="7."] #structure-ui .page-ui li div.item-inner { padding-left: 0; }
+body[data-ee-version] #structure-ui .page-ui li div.item-inner { padding-left: 0; }
 
-body[data-ee-version^="6."] #structure-ui #tree-header,
-body[data-ee-version^="7."] #structure-ui #tree-header {
+body[data-ee-version] #structure-ui #tree-header {
     margin-bottom: 0;
     height: auto;
     display: flex;
@@ -1289,8 +1299,7 @@ body[data-ee-version^="7."] #structure-ui #tree-header {
     align-items: flex-end;
 }
 
-body[data-ee-version^="6."] #structure-ui #tree-controls,
-body[data-ee-version^="7."] #structure-ui #tree-controls {
+body[data-ee-version] #structure-ui #tree-controls {
     display: flex;
     position: static;
     flex-wrap: wrap;
@@ -1299,26 +1308,21 @@ body[data-ee-version^="7."] #structure-ui #tree-controls {
     margin-bottom: 5px;
 }
 
-body[data-ee-version^="6."] #structure-ui #tree-controls li,
-body[data-ee-version^="7."] #structure-ui #tree-controls li {
+body[data-ee-version] #structure-ui #tree-controls li {
     height: auto;
     margin-bottom: 5px;
 }
 
-body[data-ee-version^="6."] #structure-ui #tree-controls li.tree-expand a,
-body[data-ee-version^="6."] #structure-ui #tree-controls li.tree-collapse a,
-body[data-ee-version^="7."] #structure-ui #tree-controls li.tree-expand a,
-body[data-ee-version^="7."] #structure-ui #tree-controls li.tree-collapse a
+body[data-ee-version] #structure-ui #tree-controls li.tree-expand a,
+body[data-ee-version] #structure-ui #tree-controls li.tree-collapse a
  {
     color: var(--ee-button-secondary-color);
     background-color: var(--ee-button-secondary-bg);
     border-color: var(--ee-button-secondary-border);
 }
 
-body[data-ee-version^="6."] #structure-ui #tree-controls li.tree-expand a:hover,
-body[data-ee-version^="6."] #structure-ui #tree-controls li.tree-collapse a:hover,
-body[data-ee-version^="7."] #structure-ui #tree-controls li.tree-expand a:hover,
-body[data-ee-version^="7."] #structure-ui #tree-controls li.tree-collapse a:hover
+body[data-ee-version] #structure-ui #tree-controls li.tree-expand a:hover,
+body[data-ee-version] #structure-ui #tree-controls li.tree-collapse a:hover
 {
     color: var(--ee-button-secondary-color);
     background-color: var(--ee-button-secondary-hover-bg);
@@ -1326,8 +1330,7 @@ body[data-ee-version^="7."] #structure-ui #tree-controls li.tree-collapse a:hove
 }
 
 
-body[data-ee-version^="6."] #structure-ui #tree-switcher,
-body[data-ee-version^="7."] #structure-ui #tree-switcher {
+body[data-ee-version] #structure-ui #tree-switcher {
     padding: 0;
     display: flex;
     flex-wrap: wrap;
@@ -1335,13 +1338,11 @@ body[data-ee-version^="7."] #structure-ui #tree-switcher {
     margin-left: auto;
 }
 
-body[data-ee-version^="6."] #structure-ui #tree-switcher li,
-body[data-ee-version^="7."] #structure-ui #tree-switcher li {
+body[data-ee-version] #structure-ui #tree-switcher li {
     display: inline-block;
 }
 
-body[data-ee-version^="6."] #structure-ui #tree-switcher li a,
-body[data-ee-version^="7."] #structure-ui #tree-switcher li a {
+body[data-ee-version] #structure-ui #tree-switcher li a {
     -webkit-appearance: none;
     appearance: none;
     background: none !important;
@@ -1355,26 +1356,19 @@ body[data-ee-version^="7."] #structure-ui #tree-switcher li a {
     font-size: 15px;
 }
 
-body[data-ee-version^="6."] #structure-ui #tree-switcher-select-box.here,
-body[data-ee-version^="6."] #structure-ui #tree-switcher li.here a:link,
-body[data-ee-version^="6."] #structure-ui #tree-switcher li.here a:visited,
-body[data-ee-version^="6."] #structure-ui #tree-switcher li.here a:hover,
-body[data-ee-version^="7."] #structure-ui #tree-switcher-select-box.here,
-body[data-ee-version^="7."] #structure-ui #tree-switcher li.here a:link,
-body[data-ee-version^="7."] #structure-ui #tree-switcher li.here a:visited,
-body[data-ee-version^="7."] #structure-ui #tree-switcher li.here a:hover
+body[data-ee-version] #structure-ui #tree-switcher-select-box.here,
+body[data-ee-version] #structure-ui #tree-switcher li.here a:link,
+body[data-ee-version] #structure-ui #tree-switcher li.here a:visited,
+body[data-ee-version] #structure-ui #tree-switcher li.here a:hover
 {
     color: var(--ee-accent);
     border-bottom: 2px solid var(--ee-accent);
     margin-bottom: -2px;
 }
 
-body[data-ee-version^="6."]  #structure-ui .page-ui,
-body[data-ee-version^="6."] #structure-ui #assets,
-body[data-ee-version^="6."] #structure-ui #structure-assets ul.asset-list,
-body[data-ee-version^="7."]  #structure-ui .page-ui,
-body[data-ee-version^="7."] #structure-ui #assets,
-body[data-ee-version^="7."] #structure-ui #structure-assets ul.asset-list
+body[data-ee-version]  #structure-ui .page-ui,
+body[data-ee-version] #structure-ui #assets,
+body[data-ee-version] #structure-ui #structure-assets ul.asset-list
 {
     border: 1px solid var(--ee-panel-border);
     -moz-border-radius: 0px;
@@ -1382,8 +1376,7 @@ body[data-ee-version^="7."] #structure-ui #structure-assets ul.asset-list
     background: var(--ee-panel-bg);
 }
 
-body[data-ee-version^="6."] #structure-ui .page-ui li .item-wrapper,
-body[data-ee-version^="7."] #structure-ui .page-ui li .item-wrapper 
+body[data-ee-version] #structure-ui .page-ui li .item-wrapper 
 {
     border: none;
     background: none;
@@ -1391,39 +1384,30 @@ body[data-ee-version^="7."] #structure-ui .page-ui li .item-wrapper
     border-radius:  0;
 }
 
-
-body[data-ee-version^="6."] #structure-ui #assets li,
-body[data-ee-version^="6."] #structure-ui .page-ui li,
-body[data-ee-version^="7."] #structure-ui #assets li,
-body[data-ee-version^="7."] #structure-ui .page-ui li
+body[data-ee-version] #structure-ui #assets li,
+body[data-ee-version] #structure-ui .page-ui li
 {
     background: var(--ee-bg-0);
 }
 
-body[data-ee-version^="6."] #structure-ui #assets li,
-body[data-ee-version^="6."] #structure-ui .page-ui li .item-wrapper,
-body[data-ee-version^="7."] #structure-ui #assets li,
-body[data-ee-version^="7."] #structure-ui .page-ui li .item-wrapper
+body[data-ee-version] #structure-ui #assets li,
+body[data-ee-version] #structure-ui .page-ui li .item-wrapper
 {
     border-bottom: 1px solid var(--ee-list-item-border);
     height: 38px;
     padding-left: 15px;
 }
 
-body[data-ee-version^="6."] #structure-ui #assets li,
-body[data-ee-version^="7."] #structure-ui #assets li
+body[data-ee-version] #structure-ui #assets li
 {
     padding: 0;
     border: none;
     border-bottom: 1px solid var(--ee-list-item-border);
 }
-body[data-ee-version^="6."] #structure-ui #assets li:last-child { border-bottom: none; }
-body[data-ee-version^="7."] #structure-ui #assets li:last-child { border-bottom: none; }
+body[data-ee-version] #structure-ui #assets li:last-child { border-bottom: none; }
 
-body[data-ee-version^="6."] #structure-ui #assets li .listing-title,
-body[data-ee-version^="6."] #structure-ui .page-ui .page-title,
-body[data-ee-version^="7."] #structure-ui #assets li .listing-title,
-body[data-ee-version^="7."] #structure-ui .page-ui .page-title
+body[data-ee-version] #structure-ui #assets li .listing-title,
+body[data-ee-version] #structure-ui .page-ui .page-title
 {
     height: 38px;
     display: inline-flex;
@@ -1433,46 +1417,36 @@ body[data-ee-version^="7."] #structure-ui .page-ui .page-title
     padding: 0;
 }
 
-body[data-ee-version^="6."] #structure-ui .page-ui .page-title .hidden-page,
-body[data-ee-version^="7."] #structure-ui .page-ui .page-title .hidden-page
+body[data-ee-version] #structure-ui .page-ui .page-title .hidden-page
 {
     font-weight: 400;
     margin-left: 5px;
 }
 
-body[data-ee-version^="6."] #structure-ui .page-ui ul .page-title { font-weight: 400; }
-body[data-ee-version^="7."] #structure-ui .page-ui ul .page-title { font-weight: 400; }
+body[data-ee-version] #structure-ui .page-ui ul .page-title { font-weight: 400; }
 
-body[data-ee-version^="6."] #structure-ui #assets li .listing-title,
-body[data-ee-version^="7."] #structure-ui #assets li .listing-title
+body[data-ee-version] #structure-ui #assets li .listing-title
 {
     margin: 0;
     padding: 0 15px;
     font-weight: 400;
 }
 
-body[data-ee-version^="6."] #structure-ui #assets li .listing-title a,
-body[data-ee-version^="7."] #structure-ui #assets li .listing-title a
+body[data-ee-version] #structure-ui #assets li .listing-title a
 {
     color: var(--ee-text-normal);
 }
 
-body[data-ee-version^="6."] #structure-ui .page-ui li .item-wrapper:hover,
-body[data-ee-version^="6."] #structure-ui .page-ui li .item-wrapper.hover .page-expand-collapse,
-body[data-ee-version^="6."] #structure-ui .page-ui li .item-wrapper:hover .page-expand-collapse,
-body[data-ee-version^="6."] #structure-ui #assets li:hover,
-body[data-ee-version^="7."] #structure-ui .page-ui li .item-wrapper:hover,
-body[data-ee-version^="7."] #structure-ui .page-ui li .item-wrapper.hover .page-expand-collapse,
-body[data-ee-version^="7."] #structure-ui .page-ui li .item-wrapper:hover .page-expand-collapse,
-body[data-ee-version^="7."] #structure-ui #assets li:hover
+body[data-ee-version] #structure-ui .page-ui li .item-wrapper:hover,
+body[data-ee-version] #structure-ui .page-ui li .item-wrapper.hover .page-expand-collapse,
+body[data-ee-version] #structure-ui .page-ui li .item-wrapper:hover .page-expand-collapse,
+body[data-ee-version] #structure-ui #assets li:hover
 {
     background-color: var(--ee-bg-5);
 }
 
-body[data-ee-version^="6."] #structure-ui .page-ui .page-listing,
-body[data-ee-version^="6."] #structure-ui #assets .page-listing,
-body[data-ee-version^="7."] #structure-ui .page-ui .page-listing,
-body[data-ee-version^="7."] #structure-ui #assets .page-listing
+body[data-ee-version] #structure-ui .page-ui .page-listing,
+body[data-ee-version] #structure-ui #assets .page-listing
 {
     padding-top: 0;
     background-position: 0 center;
@@ -1482,31 +1456,25 @@ body[data-ee-version^="7."] #structure-ui #assets .page-listing
     align-items: center;
 }
 
-body[data-ee-version^="6."] #structure-ui .page-ui .page-listing a,
-body[data-ee-version^="6."] #structure-ui #assets .page-listing a,
-body[data-ee-version^="7."] #structure-ui .page-ui .page-listing a,
-body[data-ee-version^="7."] #structure-ui #assets .page-listing a
+body[data-ee-version] #structure-ui .page-ui .page-listing a,
+body[data-ee-version] #structure-ui #assets .page-listing a
 {
     color: var(--ee-link);
     margin: 0 3px;
 }
 
-body[data-ee-version^="6."] #structure-ui .page-ui .page-listing a:hover,
-body[data-ee-version^="6."] #structure-ui #assets .page-listing a:hover,
-body[data-ee-version^="7."] #structure-ui .page-ui .page-listing a:hover,
-body[data-ee-version^="7."] #structure-ui #assets .page-listing a:hover
+body[data-ee-version] #structure-ui .page-ui .page-listing a:hover,
+body[data-ee-version] #structure-ui #assets .page-listing a:hover
 {
     text-decoration: underline;
 }
 
-body[data-ee-version^="6."] #structure-ui .page-ui .page-title a:link, #structure-ui .page-ui .page-title a:visited,
-body[data-ee-version^="7."] #structure-ui .page-ui .page-title a:link, #structure-ui .page-ui .page-title a:visited
+body[data-ee-version] #structure-ui .page-ui .page-title a:link, #structure-ui .page-ui .page-title a:visited
 {
     color: var(--ee-text-normal);
 }
 
-body[data-ee-version^="6."] #structure-ui .page-ui div.page-controls,
-body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls
+body[data-ee-version] #structure-ui .page-ui div.page-controls
 {
     padding: 7px 0 0 0;
     margin: 0;
@@ -1516,8 +1484,7 @@ body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls
     z-index: 5;
 }
 
-body[data-ee-version^="6."] #structure-ui .page-ui div.page-controls span,
-body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls span
+body[data-ee-version] #structure-ui .page-ui div.page-controls span
 {
     height: auto;
     background: none;
@@ -1526,9 +1493,7 @@ body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls span
     border:  none;
 }
 
-
-body[data-ee-version^="6."] #structure-ui .page-ui div.page-controls span a,
-body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls span a
+body[data-ee-version] #structure-ui .page-ui div.page-controls span a
 {
     padding: 2px 10px!important;
     font-size: .8rem;
@@ -1554,16 +1519,14 @@ body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls span a
     user-select: none;
 }
 
-body[data-ee-version^="6."] #structure-ui .page-ui div.page-controls span a:hover,
-body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls span a:hover
+body[data-ee-version] #structure-ui .page-ui div.page-controls span a:hover
 {
     color: var(--ee-button-primary-color);
     background-color: var(--ee-button-primary-hover-bg);
     border-color: var(--ee-button-primary-hover-border);
 }
 
-body[data-ee-version^="6."] #structure-ui .page-ui .page-handle,
-body[data-ee-version^="7."] #structure-ui .page-ui .page-handle
+body[data-ee-version] #structure-ui .page-ui .page-handle
 {
     display: inline-block;
     float: none;
@@ -1574,8 +1537,7 @@ body[data-ee-version^="7."] #structure-ui .page-ui .page-handle
     flex: 0 0 30px;
 }
 
-body[data-ee-version^="6."] #structure-ui .page-handle a,
-body[data-ee-version^="7."] #structure-ui .page-handle a
+body[data-ee-version] #structure-ui .page-handle a
 {
     width: 15px;
     position: relative;
@@ -1584,8 +1546,7 @@ body[data-ee-version^="7."] #structure-ui .page-handle a
     margin: 0 auto;
 }
 
-body[data-ee-version^="6."] #structure-ui .page-handle a:before,
-body[data-ee-version^="7."] #structure-ui .page-handle a:before
+body[data-ee-version] #structure-ui .page-handle a:before
 {
     position: absolute;
     display: inline-block;
@@ -1593,26 +1554,24 @@ body[data-ee-version^="7."] #structure-ui .page-handle a:before
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    font-family: 'Font Awesome 5 Free';
+    font-family: 'Font Awesome 6 Pro';
     font-weight: 900;
     color: var(--ee-text-secondary);
     text-indent: 0;
     font-size: 12px;
 }
 
-body[data-ee-version^="7."] #structure-ui .page-handle a:before {
-    font-family: "Font Awesome 6 Pro";
+body[data-ee-version^="6."] #structure-ui .page-handle a:before {
+    font-family: 'Font Awesome 5 Free';
 }
 
-body[data-ee-version^="6."] #structure-ui li ul li .page-handle a:before,
-body[data-ee-version^="7."] #structure-ui li ul li .page-handle a:before
+body[data-ee-version] #structure-ui li ul li .page-handle a:before
 {
     opacity: 0;
     content: "\f0c9";
 }
 
-body[data-ee-version^="6."] #structure-ui li ul li .page-handle a:after,
-body[data-ee-version^="7."] #structure-ui li ul li .page-handle a:after
+body[data-ee-version] #structure-ui li ul li .page-handle a:after
 {
     position: absolute;
     display: inline-block;
@@ -1620,44 +1579,37 @@ body[data-ee-version^="7."] #structure-ui li ul li .page-handle a:after
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%) rotate(90deg);
-    font-family: 'Font Awesome 5 Free';
+    font-family: 'Font Awesome 6 Pro';
     font-weight: 900;
     color: var(--ee-text-secondary);
     text-indent: 0;
     font-size: 10px;
 }
 
-body[data-ee-version^="7."] #structure-ui li ul li .page-handle a:after
+body[data-ee-version^="6."] #structure-ui li ul li .page-handle a:after
 {
-    font-family: "Font Awesome 6 Pro";
+    font-family: "Font Awesome 5 Free";
 }
 
-body[data-ee-version^="6."] #structure-ui li div.item-wrapper.hover .drag-handle a,
-body[data-ee-version^="6."] #structure-ui li div.item-wrapper:hover .drag-handle a,
-body[data-ee-version^="7."] #structure-ui li div.item-wrapper.hover .drag-handle a,
-body[data-ee-version^="7."] #structure-ui li div.item-wrapper:hover .drag-handle a
+body[data-ee-version] #structure-ui li div.item-wrapper.hover .drag-handle a,
+body[data-ee-version] #structure-ui li div.item-wrapper:hover .drag-handle a
 {
     background: none;
 }
 
-body[data-ee-version^="6."] #structure-ui li div.item-wrapper.hover .drag-handle a:after,
-body[data-ee-version^="6."] #structure-ui li div.item-wrapper:hover .drag-handle a:after,
-body[data-ee-version^="7."] #structure-ui li div.item-wrapper.hover .drag-handle a:after,
-body[data-ee-version^="7."] #structure-ui li div.item-wrapper:hover .drag-handle a:after
+body[data-ee-version] #structure-ui li div.item-wrapper.hover .drag-handle a:after,
+body[data-ee-version] #structure-ui li div.item-wrapper:hover .drag-handle a:after
 {
     opacity: 0;
 }
 
-body[data-ee-version^="6."] #structure-ui li div.item-wrapper.hover .drag-handle a:before,
-body[data-ee-version^="6."] #structure-ui li div.item-wrapper:hover .drag-handle a:before,
-body[data-ee-version^="7."] #structure-ui li div.item-wrapper.hover .drag-handle a:before,
-body[data-ee-version^="7."] #structure-ui li div.item-wrapper:hover .drag-handle a:before
+body[data-ee-version] #structure-ui li div.item-wrapper.hover .drag-handle a:before,
+body[data-ee-version] #structure-ui li div.item-wrapper:hover .drag-handle a:before
 {
     opacity: 1;
 }
 
-body[data-ee-version^="6."] #structure-ui .page-ui li .page-expand-collapse,
-body[data-ee-version^="7."] #structure-ui .page-ui li .page-expand-collapse {
+body[data-ee-version] #structure-ui .page-ui li .page-expand-collapse {
     display: inline-block;
     height: 38px;
     top: 0;
@@ -1668,11 +1620,9 @@ body[data-ee-version^="7."] #structure-ui .page-ui li .page-expand-collapse {
     border-bottom-right-radius: 0;
 }
 
-body[data-ee-version^="6."] #structure-ui .page-ui li .page-expand-collapse.ec-none a:before { display: none; }
-body[data-ee-version^="7."] #structure-ui .page-ui li .page-expand-collapse.ec-none a:before { display: none; }
+body[data-ee-version] #structure-ui .page-ui li .page-expand-collapse.ec-none a:before { display: none; }
 
-body[data-ee-version^="6."] #structure-ui .page-ui .page-expand-collapse a,
-body[data-ee-version^="7."] #structure-ui .page-ui .page-expand-collapse a
+body[data-ee-version] #structure-ui .page-ui .page-expand-collapse a
 {
     display: inline-block;
     margin-top: 0;
@@ -1685,8 +1635,7 @@ body[data-ee-version^="7."] #structure-ui .page-ui .page-expand-collapse a
     border-bottom:  1px solid var(--ee-list-item-border);
 }
 
-body[data-ee-version^="6."] #structure-ui .page-ui .page-expand-collapse a:before,
-body[data-ee-version^="7."] #structure-ui .page-ui .page-expand-collapse a:before
+body[data-ee-version] #structure-ui .page-ui .page-expand-collapse a:before
 {
     position: absolute;
     display: inline-block;
@@ -1694,45 +1643,39 @@ body[data-ee-version^="7."] #structure-ui .page-ui .page-expand-collapse a:befor
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    font-family: 'Font Awesome 5 Free';
+    font-family: "Font Awesome 6 Pro";
     font-weight: 900;
     color: var(--ee-text-secondary);
     text-indent: 0;
     font-size: 12px;
 }
 
-body[data-ee-version^="7."] #structure-ui .page-ui .page-expand-collapse a:before
+body[data-ee-version^="6."] #structure-ui .page-ui .page-expand-collapse a:before
 {
-    font-family: "Font Awesome 6 Pro";
+    font-family: 'Font Awesome 5 Free';
 }
 
-body[data-ee-version^="6."] #structure-ui .page-ui .page-expand-collapse a.collapsed { background-image: none;}
-body[data-ee-version^="7."] #structure-ui .page-ui .page-expand-collapse a.collapsed { background-image: none;}
+body[data-ee-version] #structure-ui .page-ui .page-expand-collapse a.collapsed { background-image: none;}
 
-body[data-ee-version^="6."] #structure-ui .page-ui .page-expand-collapse a.collapsed:before { content: '\f067'}
-body[data-ee-version^="7."] #structure-ui .page-ui .page-expand-collapse a.collapsed:before { content: '\f067'}
+body[data-ee-version] #structure-ui .page-ui .page-expand-collapse a.collapsed:before { content: '\f067'}
 
-body[data-ee-version^="6."] #structure-ui .page-ui .page-expand-collapse a.collapsed:active {background-position: center center;}
-body[data-ee-version^="7."] #structure-ui .page-ui .page-expand-collapse a.collapsed:active {background-position: center center;}
+body[data-ee-version] #structure-ui .page-ui .page-expand-collapse a.collapsed:active {background-position: center center;}
 
-body[data-ee-version^="6."] #structure-ui .page-ui li.final-child .item-wrapper,
-body[data-ee-version^="6."] #structure-ui .page-ui li.final-child .item-wrapper .page-expand-collapse,
-body[data-ee-version^="6."] #structure-ui .page-ui li.final-child .page-expand-collapse a,
-body[data-ee-version^="7."] #structure-ui .page-ui li.final-child .item-wrapper,
-body[data-ee-version^="7."] #structure-ui .page-ui li.final-child .item-wrapper .page-expand-collapse,
-body[data-ee-version^="7."] #structure-ui .page-ui li.final-child .page-expand-collapse a
+body[data-ee-version] #structure-ui .page-ui li.final-child .item-wrapper,
+body[data-ee-version] #structure-ui .page-ui li.final-child .item-wrapper .page-expand-collapse,
+body[data-ee-version] #structure-ui .page-ui li.final-child .page-expand-collapse a
 { border-bottom: none; }
 
-body[data-ee-version^="6."] #structure-ui .page-ui, body[data-ee-version^="6."] #structure-ui #assets,
-body[data-ee-version^="7."] #structure-ui .page-ui, body[data-ee-version^="6."] #structure-ui #assets
+body[data-ee-version] #structure-ui .page-ui,
+body[data-ee-version] #structure-ui #assets
 {
   position: relative;
   overflow: visible;
   margin: 20px;
 }
 
-body[data-ee-version^="6."] #structure-ui .page-ui:before, body[data-ee-version^="6."] #structure-ui #assets:before,
-body[data-ee-version^="7."] #structure-ui .page-ui:before, body[data-ee-version^="7."] #structure-ui #assets:before
+body[data-ee-version] #structure-ui .page-ui:before,
+body[data-ee-version] #structure-ui #assets:before
 {
   position: absolute;
   content: '';
@@ -1746,8 +1689,7 @@ body[data-ee-version^="7."] #structure-ui .page-ui:before, body[data-ee-version^
   z-index: -1;
 }
 
-body[data-ee-version^="6."]  #structure-shadow,
-body[data-ee-version^="7."]  #structure-shadow
+body[data-ee-version]  #structure-shadow
 {
     background-color: var(--ee-bg-0);
     border-color: var(--ee-list-item-border);
@@ -1755,16 +1697,14 @@ body[data-ee-version^="7."]  #structure-shadow
 
 /*************************/
 
-body[data-ee-version^="6."] table.structure-table,
-body[data-ee-version^="7."] table.structure-table
+body[data-ee-version] table.structure-table
 {
     border: 1px solid var(--ee-panel-border);
     background: var(--ee-panel-bg);
     font-size: 15px;
 }
 
-body[data-ee-version^="6."] table.structure-table th,
-body[data-ee-version^="7."] table.structure-table th
+body[data-ee-version] table.structure-table th
 {
     background: var(--ee-panel-bg);
     color: var(--ee-text-secondary);
@@ -1778,89 +1718,73 @@ body[data-ee-version^="7."] table.structure-table th
     text-transform: capitalize;
 }
 
-body[data-ee-version^="6."] table.structure-table td,
-body[data-ee-version^="7."] table.structure-table td
+body[data-ee-version] table.structure-table td
 {
     border:1px solid var(--ee-panel-border);
 }
 
-body[data-ee-version^="6."] table.structure-table td.success,
-body[data-ee-version^="6."] div.success,
-body[data-ee-version^="6."] .nav_history_table tr.current,
-body[data-ee-version^="6."] .nav_history_table tr.current td,
-body[data-ee-version^="7."] table.structure-table td.success,
-body[data-ee-version^="7."] div.success,
-body[data-ee-version^="7."] .nav_history_table tr.current,
-body[data-ee-version^="7."] .nav_history_table tr.current td
+body[data-ee-version] table.structure-table td.success,
+body[data-ee-version] div.success,
+body[data-ee-version] .nav_history_table tr.current,
+body[data-ee-version] .nav_history_table tr.current td
 {
     background-color: var(--ee-success-light) !important;
     color: var(--ee-text-normal);
 }
 
-body[data-ee-version^="6."] table.structure-table td.error,
-body[data-ee-version^="6."] div.error,
-body[data-ee-version^="7."] table.structure-table td.error,
-body[data-ee-version^="7."] div.error
+body[data-ee-version] table.structure-table td.error,
+body[data-ee-version] div.error
 {
     background-color: var(--ee-error-light) !important;
     color: var(--ee-text-normal);
 }
 
-body[data-ee-version^="6."] table.zebra-striped tr:nth-child(even) td,
-body[data-ee-version^="7."] table.zebra-striped tr:nth-child(even) td
+body[data-ee-version] table.zebra-striped tr:nth-child(even) td
 {
     background: var(--ee-panel-bg);
 }
 
-body[data-ee-version^="6."] table.structure-table th:first-child,
-body[data-ee-version^="7."] table.structure-table th:first-child
+body[data-ee-version] table.structure-table th:first-child
 {
     color: var(--ee-text-primary);
 }
 
-body[data-ee-version^="6."] table.structure-table select,
-body[data-ee-version^="7."] table.structure-table select
+body[data-ee-version] table.structure-table select
 {
     width: 100%;
 }
 
 
-body[data-ee-version^="6."] table.structure-table.validation-stats,
-body[data-ee-version^="7."] table.structure-table.validation-stats
+body[data-ee-version] table.structure-table.validation-stats
 {
     border-collapse: collapse;
     border-radius: 0;
 }
 
-body[data-ee-version^="6."] table.structure-table.validation-stats thead tr:first-child,
-body[data-ee-version^="7."] table.structure-table.validation-stats thead tr:first-child
+body[data-ee-version] table.structure-table.validation-stats thead tr:first-child
 {
     border-bottom: 1px solid var(--ee-panel-border);
 }
 
-body[data-ee-version^="6."] table.structure-table th.structure.total-divider,
-body[data-ee-version^="7."] table.structure-table th.structure.total-divider
+body[data-ee-version] table.structure-table th.structure.total-divider
 {
     border-right-color: var(--ee-panel-border);
 }
 
-body[data-ee-version^="6."] .tbl-ctrls .table-wrapper,
-body[data-ee-version^="7."] .tbl-ctrls .table-wrapper
+body[data-ee-version] .tbl-ctrls .table-wrapper
 {
   width: 100%;
   overflow-x: auto;
 }
 
-body[data-ee-version^="6."] .license_status_warning,
-body[data-ee-version^="7."] .license_status_warning
+body[data-ee-version] .license_status_warning
 {
     color: var(--ee-error);
     border-color: var(--ee-error);
     background-color: var(--ee-error-light);
 }
 
-body[data-ee-version^="6."] .structure_btn,
-body[data-ee-version^="7."] .structure_btn
+body[data-ee-version] .structure_btn
 {
     padding: 2px 10px;
     font-size: 0.8rem;
@@ -1883,26 +1807,22 @@ body[data-ee-version^="7."] .structure_btn
     user-select: none;
 }
 
-body[data-ee-version^="6."] .structure_btn.disable,
-body[data-ee-version^="7."] .structure_btn.disable
+body[data-ee-version] .structure_btn.disable
 {
     color: var(--ee-button-danger-color)!important;
     border-color: var(--ee-button-danger-bg);
     background-color: var(--ee-button-danger-bg);
 }
 
-body[data-ee-version^="6."] .structure_btn.action,
-body[data-ee-version^="6."] .structure_btn.preview,
-body[data-ee-version^="7."] .structure_btn.action,
-body[data-ee-version^="7."] .structure_btn.preview
+body[data-ee-version] .structure_btn.action,
+body[data-ee-version] .structure_btn.preview
 {
     color: var(--ee-button-primary-color) !important;
     border-color: var(--ee-button-primary-border);
     background-color: var(--ee-button-primary-bg);
 }
 
-body[data-ee-version^="6."] #structure-delete,
-body[data-ee-version^="7."] #structure-delete
+body[data-ee-version] #structure-delete
 {
     max-width: 550px;
     padding: 0;
@@ -1913,8 +1833,7 @@ body[data-ee-version^="7."] #structure-delete
     width: auto !important;
 }
 
-body[data-ee-version^="6."] #structure-page-selector,
-body[data-ee-version^="7."] #structure-page-selector {
+body[data-ee-version] #structure-page-selector {
     max-width: 550px;
     padding: 0;
     box-shadow: 0 8px 40px var(--ee-shadow-modal);
@@ -1923,37 +1842,30 @@ body[data-ee-version^="7."] #structure-page-selector {
     background: var(--ee-bg-blank);
 }
 
-body[data-ee-version^="6."] #structure-page-selector ul li,
-body[data-ee-version^="7."] #structure-page-selector ul li {
+body[data-ee-version] #structure-page-selector ul li {
     border-bottom: 1px solid var(--ee-border);
 }
 
-body[data-ee-version^="6."] #structure-page-selector ul li.last,
-body[data-ee-version^="7."] #structure-page-selector ul li.last{
+body[data-ee-version] #structure-page-selector ul li.last{
     border-bottom: none;
 }
 
-body[data-ee-version^="6."] #structure-page-selector ul li a,
-body[data-ee-version^="7."] #structure-page-selector ul li a {
+body[data-ee-version] #structure-page-selector ul li a {
     color: var(--ee-text-normal);
 }
 
-body[data-ee-version^="6."] #structure-page-selector ul li a:hover,
-body[data-ee-version^="7."] #structure-page-selector ul li a:hover {
+body[data-ee-version] #structure-page-selector ul li a:hover {
     background: var(--ee-bg-5);
 }
 
-body[data-ee-version^="6."] #structure-page-selector .ui-dialog-titlebar,
-body[data-ee-version^="7."] #structure-page-selector .ui-dialog-titlebar {
+body[data-ee-version] #structure-page-selector .ui-dialog-titlebar {
     background: var(--ee-bg-blank);
     border: 1px solid var(--ee-border);
     color: var(--ee-text-normal);
 }
 
-body[data-ee-version^="6."] #structure-delete .ui-dialog-content,
-body[data-ee-version^="7."] #structure-delete .ui-dialog-content,
-body[data-ee-version^="6."] #structure-page-selector .ui-dialog-content,
-body[data-ee-version^="7."] #structure-page-selector .ui-dialog-content
+body[data-ee-version] #structure-delete .ui-dialog-content,
+body[data-ee-version] #structure-page-selector .ui-dialog-content
 {
     margin-top: 0;
     font-size: 1rem;
@@ -1961,28 +1873,24 @@ body[data-ee-version^="7."] #structure-page-selector .ui-dialog-content
     padding: 20px 30px;
 }
 
-body[data-ee-version^="6."] #structure-page-selector .ui-dialog-content,
-body[data-ee-version^="7."] #structure-page-selector .ui-dialog-content {
+body[data-ee-version] #structure-page-selector .ui-dialog-content {
     border: 1px solid var(--ee-border);
     padding: 10px;
 }
 
-body[data-ee-version^="6."] #structure-delete .ui-dialog-buttonpane,
-body[data-ee-version^="7."] #structure-delete .ui-dialog-buttonpane
+body[data-ee-version] #structure-delete .ui-dialog-buttonpane
 {
     padding: 20px 30px;
     background-color: var(--ee-bg-0);
 
 }
 
-body[data-ee-version^="6."] #structure-page-selector .ui-dialog-buttonpane,
-body[data-ee-version^="7."] #structure-page-selector .ui-dialog-buttonpane {
+body[data-ee-version] #structure-page-selector .ui-dialog-buttonpane {
     padding: 10px;
     background-color: var(--ee-bg-0);
 }
 
-body[data-ee-version^="6."] #structure-page-selector .ui-dialog-buttonpane .ui-dialog-buttonset button,
-body[data-ee-version^="7."] #structure-page-selector .ui-dialog-buttonpane .ui-dialog-buttonset button {
+body[data-ee-version] #structure-page-selector .ui-dialog-buttonpane .ui-dialog-buttonset button {
     margin: 0;
     -webkit-appearance: none;
     display: inline-block;
@@ -2011,16 +1919,14 @@ body[data-ee-version^="7."] #structure-page-selector .ui-dialog-buttonpane .ui-d
     height: auto;
 }
 
-body[data-ee-version^="6."] .ui-dialog-buttonset:after,
-body[data-ee-version^="7."] .ui-dialog-buttonset:after
+body[data-ee-version] .ui-dialog-buttonset:after
 {
     content: '';
     display: block;
     clear: both;
 }
 
-body[data-ee-version^="6."] #structure-delete button,
-body[data-ee-version^="7."] #structure-delete button
+body[data-ee-version] #structure-delete button
 {
     margin: 0;
     -webkit-appearance: none;
@@ -2050,22 +1956,18 @@ body[data-ee-version^="7."] #structure-delete button
     height: auto;
 }
 
-body[data-ee-version^="6."] #structure-delete button:hover,
-body[data-ee-version^="7."] #structure-delete button:hover {
+body[data-ee-version] #structure-delete button:hover {
     color: var(--ee-button-danger-color);
     background-color: var(--ee-button-danger-hover-bg);
     border-color: var(--ee-button-danger-hover-border);
 }
 
-body[data-ee-version^="6."] #tree-ootb h1,
-body[data-ee-version^="7."] #tree-ootb h1 {
+body[data-ee-version] #tree-ootb h1 {
     color: var(--ee-text-normal);
 }
 
-body[data-ee-version^="6."] #tree-ootb ul li,
-body[data-ee-version^="7."] #tree-ootb ul li,
-body[data-ee-version^="6."] .note,
-body[data-ee-version^="7."] .note {
+body[data-ee-version] #tree-ootb ul li,
+body[data-ee-version] .note {
     border: 1px solid var(--ee-panel-border);
     background: var(--ee-panel-bg);
     color: var(--ee-text-normal);
@@ -2073,8 +1975,7 @@ body[data-ee-version^="7."] .note {
     position: relative;
 }
 
-body[data-ee-version^="6."] #tree-ootb ul li:before,
-body[data-ee-version^="7."] #tree-ootb ul li:before {
+body[data-ee-version] #tree-ootb ul li:before {
     position: absolute;
     display: block;
     top: 50%;
@@ -2082,29 +1983,27 @@ body[data-ee-version^="7."] #tree-ootb ul li:before {
     transform: translateY(-50%);
     font-size: 12px;
     font-weight: 400;
-    font-family: 'Font Awesome 5 Free';
-}
-
-body[data-ee-version^="7."] #tree-ootb ul li:before {
     font-family: 'Font Awesome 6 Pro';
 }
 
-body[data-ee-version^="6."] #tree-ootb ul li.ootb-settings:before,
-body[data-ee-version^="7."] #tree-ootb ul li.ootb-settings:before {
+body[data-ee-version^="6."] #tree-ootb ul li:before {
+    font-family: 'Font Awesome 5 Free';
+}
+
+body[data-ee-version] #tree-ootb ul li.ootb-settings:before {
     content: '\f013';
 }
 
-body[data-ee-version^="6."] #tree-ootb ul li.ootb-navigation-tags:before,
-body[data-ee-version^="7."] #tree-ootb ul li.ootb-navigation-tags:before {
+body[data-ee-version] #tree-ootb ul li.ootb-navigation-tags:before {
     content: '\f0ca';
+}
+
+body[data-ee-version] #tree-ootb ul li.ootb-page-types:before {
+    content: '\e178';
 }
 
 body[data-ee-version^="6."] #tree-ootb ul li.ootb-page-types:before {
     content: '\f0c5';
-}
-
-body[data-ee-version^="7."] #tree-ootb ul li.ootb-page-types:before {
-    content: '\e178';
 }
 
 .pro-frontend-modal.app-modal-inner #structure-ui ul#page-ui,
@@ -2123,19 +2022,16 @@ body[data-ee-version^="7."] #tree-ootb ul li.ootb-page-types:before {
     padding: 5px 10px!important;
 }
 
-body[data-ee-version^="6."] #structure-ui .page-ui div.page-controls span i,
-body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls span i {
+body[data-ee-version] #structure-ui .page-ui div.page-controls span i {
     display: none;
 }
 
 @media screen and (max-width: 767px) {
-    body[data-ee-version^="6."] #structure-ui .page-ui div.page-controls span a,
-    body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls span a {
+    body[data-ee-version] #structure-ui .page-ui div.page-controls span a {
         font-size: 0;
     }
 
-    body[data-ee-version^="6."] #structure-ui .page-ui div.page-controls span i,
-    body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls span i {
+    body[data-ee-version] #structure-ui .page-ui div.page-controls span i {
         width: 20px;
         height: 20px;
         position: relative;
@@ -2143,7 +2039,7 @@ body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls span i {
         font-style: normal;
     }
 
-    body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls span i:before {
+    body[data-ee-version] #structure-ui .page-ui div.page-controls span i:before {
         position: absolute;
         display: inline-block;
         left: 50%;
@@ -2156,18 +2052,21 @@ body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls span i {
         font-size: 12px;
     }
 
-    body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls span i.view_icon:before {
+    body[data-ee-version] #structure-ui .page-ui div.page-controls span i:before {
+        font-family: 'Font Awesome 5 Free';
+    }
+
+    body[data-ee-version] #structure-ui .page-ui div.page-controls span i.view_icon:before {
         content: '\f06e';
     }
-    body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls span i.add-icon:before {
+    body[data-ee-version] #structure-ui .page-ui div.page-controls span i.add-icon:before {
         content: '\f067';
     }
-    body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls span i.delete-icon:before {
+    body[data-ee-version] #structure-ui .page-ui div.page-controls span i.delete-icon:before {
         content: "\f1f8";
     }
 
-    body[data-ee-version^="6."] #structure-ui .page-ui div.page-controls,
-    body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls {
+    body[data-ee-version] #structure-ui .page-ui div.page-controls {
         display: flex;
     }
 }
