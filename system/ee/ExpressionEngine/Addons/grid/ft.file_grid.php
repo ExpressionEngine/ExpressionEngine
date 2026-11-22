@@ -53,6 +53,9 @@ class file_grid_ft extends Grid_ft
             'row_counter' => isset($this->settings['row_counter'])
                 ? get_bool_from_string($this->settings['row_counter'])
                 : false,
+            'tools_position' => isset($this->settings['tools_position'])
+                ? get_bool_from_string($this->settings['tools_position'])
+                : false,
         ]);
     }
 
@@ -158,6 +161,16 @@ class file_grid_ft extends Grid_ft
                                 'value' => isset($data['row_counter']) ? $data['row_counter'] : 'n'
                             )
                         )
+                    ],
+                    [
+                        'title' => 'grid_tools_position_title',
+                        'desc' => 'grid_tools_position_desc',
+                        'fields' => array(
+                            'tools_position' => array(
+                                'type' => 'yes_no',
+                                'value' => isset($data['tools_position']) ? $data['tools_position'] : 'n'
+                            )
+                        )
                     ]
                 ]
             ],
@@ -236,6 +249,7 @@ class file_grid_ft extends Grid_ft
         $settings['allowed_directories'] = $data['allowed_directories'];
         $settings['vertical_layout'] = empty($data['vertical_layout']) ? 'n' : $data['vertical_layout'];
         $settings['row_counter'] = empty($data['row_counter']) ? 'n' : $data['row_counter'];
+        $settings['tools_position'] = empty($data['tools_position']) ? 'n' : $data['tools_position'];
 
         return $settings;
     }
