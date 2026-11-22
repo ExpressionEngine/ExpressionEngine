@@ -389,16 +389,16 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             }
         }
 
-        ee()->javascript->set_global([
-            'relationship.publishCreateUrl' => ee('CP/URL')->make('publish/create/###')->compile(),
-            'relationship.publishEditUrl' => ee('CP/URL')->make('publish/edit/entry/###')->compile(),
-            'relationship.lang.creatingNew' => lang('creating_new_in_rel'),
-            'relationship.lang.relateEntry' => lang('relate_entry'),
-            'relationship.lang.search' => lang('search'),
-            'relationship.lang.channel' => lang('channel'),
-            'relationship.lang.remove' => lang('remove'),
-            'relationship.lang.edit' => lang('edit_entry'),
-        ]);
+        // ee()->javascript->set_global([
+        //     'relationship.publishCreateUrl' => ee('CP/URL')->make('publish/create/###')->compile(),
+        //     'relationship.publishEditUrl' => ee('CP/URL')->make('publish/edit/entry/###')->compile(),
+        //     'relationship.lang.creatingNew' => lang('creating_new_in_rel'),
+        //     'relationship.lang.relateEntry' => lang('relate_entry'),
+        //     'relationship.lang.search' => lang('search'),
+        //     'relationship.lang.channel' => lang('channel'),
+        //     'relationship.lang.remove' => lang('remove'),
+        //     'relationship.lang.edit' => lang('edit_entry'),
+        // ]);
 
         ee()->cp->add_js_script([
             'plugin' => ['ui.touch.punch', 'ee_interact.event'],
@@ -557,7 +557,17 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             'canCreateNew' => ee('Permission')->has('can_create_entries') && (
                 empty($this->settings['channels']) ||
                 !empty($channelsForNewEntriesChoices)
-            )
+            ),
+            'publishCreateUrl' => ee('CP/URL')->make('publish/create/###')->compile(),
+            'publishEditUrl' => ee('CP/URL')->make('publish/edit/entry/###')->compile(),
+            'lang' => [
+                'creatingNew' => lang('creating_new_in_rel'),
+                'relateEntry' => lang('relate_entry'),
+                'search' => lang('search'),
+                'channel' => lang('channel'),
+                'remove' => lang('remove'),
+                'edit' => lang('edit_entry'),
+            ],
         ]);
     }
 
