@@ -27130,6 +27130,24 @@ input[type=button].btn-block {
   margin-top: 1em;
 }
 
+.structure-uri-link {
+  display: inline-flex;
+  margin-left: 10px;
+}
+.structure-uri-link span.button, .structure-uri-link span.pagination__link, .structure-uri-link span.select-popup, .structure-uri-link span.select__button, .structure-uri-link span.license-status-badge, .structure-uri-link span.filter-bar__button {
+  padding: 0 !important;
+}
+.structure-uri-link span.button a, .structure-uri-link span.pagination__link a, .structure-uri-link span.select-popup a, .structure-uri-link span.select__button a, .structure-uri-link span.license-status-badge a, .structure-uri-link span.filter-bar__button a {
+  display: block;
+  padding: 5px 15px !important;
+}
+
+.structure-uri-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
 .main-nav {
   display: flex;
   width: 100%;
