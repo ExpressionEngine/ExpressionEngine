@@ -3,7 +3,7 @@ import FileManagerSection from '../_sections/FileManagerSection'
 class CropFile extends FileManagerSection {
   constructor() {
       super()
-      this.urlMatch = /files\/file\/crop/;
+      this.urlMatch = /files\/file\/view/;
 
       this.elements({
         // Main box elements
