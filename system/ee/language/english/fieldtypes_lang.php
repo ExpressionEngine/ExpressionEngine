@@ -18,6 +18,10 @@ $lang = array(
 
     'ft_multiselect_not_allowed' => 'Selecting multiple options is not allowed for this field',
 
+    'collapse_rows' => 'Collapse Rows',
+
+    'collapse_rows_desc' => 'When enabled, existing rows will be collapsed by default in the publish form when in Vertical layout.',
+
     /* Relationships */
     'any_author' => 'Any author',
 

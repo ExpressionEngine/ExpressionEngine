@@ -331,7 +331,18 @@ else: ?>
     <?php endif ?>
 
         <tbody>
-            <tr class="no-results<?php if (! empty($action_buttons) || ! empty($action_content)): ?> last<?php endif?> <?php if (!empty($data)): ?>hidden<?php endif?>"><td colspan="<?=(count($columns) + @intval($header_sorts))?>">
+            <?php
+                $colspan = count($columns);
+                if (isset($row_counter) && $row_counter) {
+                    $colspan++;
+                }
+                if ($header_sorts) {
+                    $colspan++;
+                }
+                // add a column for the remove button
+                $colspan++;
+            ?>
+            <tr class="no-results<?php if (! empty($action_buttons) || ! empty($action_content)): ?> last<?php endif?> <?php if (!empty($data)): ?>hidden<?php endif?>"><td colspan="<?=$colspan?>">
             <?php
             // Output this if Grid input so we can dynamically show it via JS
             ?>
@@ -353,25 +364,30 @@ else: ?>
                 $rows = array($rows);
             }
 
-                foreach ($rows as $row):
-                    $i++;
+            foreach ($rows as $row):
+                $i++;
 
-                    $row_class = "";
+                $row_class = "";
+                $column_hidden = '';
 
-                    if (isset($row['attrs']['class'])) {
-                        $row_class = $row['attrs']['class'];
-                        unset($row['attrs']['class']);
+                if (isset($row['attrs']['class'])) {
+                    $row_class = $row['attrs']['class'];
+                    unset($row['attrs']['class']);
+                }
+
+                if (isset($row_counter) && $row_counter){
+                    if (empty($row_class)) {
+                        $row_count++;
+                        $dataRowCounter = 'data-row-counter="' . $row_count . '"';
+                        $rowCounterNumber = $row_count;
                     }
+                }
 
-                    if (isset($row_counter) && $row_counter){
-                        if (empty($row_class)) {
-                            $row_count++;
-                            $dataRowCounter = 'data-row-counter="' . $row_count . '"';
-                            $rowCounterNumber = $row_count;
-                        }
-                    }
-
-                ?>
+                if ($collapse_rows && $row_class != 'grid-blank-row hidden') {
+                    $row_class .= ' grid__item--collapsed';
+                    $column_hidden = ' style="display: none;"';
+                }
+            ?>
                     <tr class="<?=$row_class?>" <?php foreach ($row['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?> <?=$dataRowCounter?>>
                         <?php if (REQ == 'CP' && isset($vertical_layout) && ($vertical_layout !== 'horizontal')):?>
                         <td class="grid-field__item-fieldset" style="display: none;">
@@ -402,7 +418,6 @@ else: ?>
                             </div>
                         </td>
                         <?php endif; ?>
-
                         <?php if (isset($row_counter) && $row_counter): ?>
                             <td class="row-counter-column body-row-counter-column js-row-counter-column"><span><?=$rowCounterNumber?></span></td>
                         <?php endif; ?>
