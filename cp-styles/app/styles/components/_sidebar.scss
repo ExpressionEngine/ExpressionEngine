@@ -151,6 +151,10 @@ $link-padding: 6px 12px;
 		margin-top: 0;
 	}
 
+	.secondary-sidebar__files & {
+		align-items: center;
+	}
+
 	.button {
 		position: relative;
 		// line-height: 1 !important;

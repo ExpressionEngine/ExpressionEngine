@@ -28093,6 +28093,9 @@ input[type=button].btn-block {
 .sidebar__section-title:first-child {
   margin-top: 0;
 }
+.secondary-sidebar__files .sidebar__section-title {
+  align-items: center;
+}
 .sidebar__section-title .button, .sidebar__section-title .pagination__link, .sidebar__section-title .no-results a, .no-results .sidebar__section-title a,
 .sidebar__section-title .field-no-results a,
 .field-no-results .sidebar__section-title a, .sidebar__section-title .select-popup, .sidebar__section-title select, .sidebar__section-title .select__button, .sidebar__section-title .license-status-badge, .sidebar__section-title .filter-bar__button, .sidebar__section-title .markItUpHeader ul a, .markItUpHeader ul .sidebar__section-title a {
@@ -50170,9 +50173,6 @@ body[data-theme=contrast] .file-grid__wrapper .file-grid__file:hover {
 body[data-theme=contrast] .file-grid__wrapper .file-grid__file:has(:focus-visible) {
   outline: 2px solid var(--ee-keyboard-focus);
   outline-offset: -2px;
-}
-body[data-theme=contrast] .f_manager-wrapper .file-grid__file.selected {
-  box-shadow: inset 4px 0 0 var(--ee-accent);
 }
 body[data-theme=contrast] .f_manager-wrapper .file-grid__file.drop-target--over {
   outline: 2px dashed var(--ee-accent);

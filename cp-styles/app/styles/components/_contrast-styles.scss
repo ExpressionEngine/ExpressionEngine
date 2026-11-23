@@ -86,10 +86,6 @@ body[data-theme="contrast"] {
   }
 
   .f_manager-wrapper {
-    .file-grid__file.selected {
-      box-shadow: inset 4px 0 0 var(--ee-accent);
-    }
-
     .file-grid__file.drop-target--over {
       outline: 2px dashed var(--ee-accent);
       outline-offset: -2px;
