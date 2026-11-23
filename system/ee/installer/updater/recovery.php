@@ -14,6 +14,8 @@ if (! in_array($recoveryStep, $recoverySteps, true)) {
 }
 
 defined('REQ') || define('REQ', 'CLI');
+// Each recovery continuation starts a new PHP process and must boot the restored site, not its installer.
+defined('INSTALL_MODE') || define('INSTALL_MODE', false);
 defined('SELF') || define('SELF', 'eecli.php');
 defined('EESELF') || define('EESELF', SELF);
 defined('SYSPATH') || define('SYSPATH', dirname(__DIR__, 2) . '/');

@@ -419,6 +419,16 @@ $lang = array(
     'command_update_option_force_addon_upgrades'                => 'Automatically runs all add-on updaters at end of update (advanced)',
     'command_update_option_y'                                   => 'Skip all confirmations. Don\'t do this.',
     'command_update_option_skip_cleanup'                        => 'Skip cleanup steps after update',
+    'command_update_option_package'                             => 'Path to an update package (zip) already on this server. Requires --signature and --expect-version. Only one update can run on a site at a time',
+    'command_update_option_signature'                           => 'Path to a file containing the signature of the update package',
+    'command_update_option_expect_version'                      => 'The exact ExpressionEngine version the update package holds, e.g. 7.5.29',
+    'command_update_package_options_together'                   => 'The --package, --signature and --expect-version options must be used together.',
+    'command_update_getting_info_from_package'                  => 'Checking the update package that was supplied',
+    'command_update_package_version_mismatch'                   => 'The update package holds ExpressionEngine %s, not %s as expected.',
+    'command_update_package_is_older'                           => 'The update package holds ExpressionEngine %s, which is older than the installed version (%s).',
+    'command_update_already_running'                            => 'Another update is running on this site from the command line. Wait for it to finish, then run the command again.',
+    'command_update_site_changed_while_waiting'                 => 'The installed version of ExpressionEngine changed while this command was running. Nothing was applied. Run the command again.',
+    'command_update_completion_pending'                         => 'The last update, to ExpressionEngine %s, did not finish its final steps. Run "php eecli.php update --complete" before starting another update. If an add-on stops that command from finishing, disable its extension and run it again.',
 
     // Lang entries for command sync:file-usage
     'command_sync_file_usage_description'     => 'Syncs the file usage for all files',

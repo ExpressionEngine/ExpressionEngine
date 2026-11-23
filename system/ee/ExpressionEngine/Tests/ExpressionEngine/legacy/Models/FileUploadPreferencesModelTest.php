@@ -8,14 +8,9 @@ if (!class_exists('CI_Model')) {
     }
 }
 
+// The model parses variables in the paths and URLs it reads
+require_once SYSPATH . 'ee/ExpressionEngine/Boot/boot.common.php';
 require_once SYSPATH . 'ee/legacy/models/file_upload_preferences_model.php';
-
-if (! function_exists('parse_config_variables')) {
-    function parse_config_variables($value, $variables = array())
-    {
-        return $value;
-    }
-}
 
 class FileUploadPreferencesModelTest extends TestCase
 {

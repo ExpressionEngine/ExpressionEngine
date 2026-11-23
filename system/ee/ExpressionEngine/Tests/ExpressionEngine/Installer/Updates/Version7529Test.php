@@ -158,7 +158,7 @@ class Version7529Test extends TestCase
     public function testUpdateWorksWithoutStoredRoutes()
     {
         $db = $this->getMockBuilder(\eeDbArMock::class)
-            ->onlyMethods(['select', 'join', 'where', 'get', 'update'])
+            ->onlyMethods(['select', 'join', 'where', 'get', 'update', 'insert'])
             ->addMethods(['table_exists', 'field_exists'])->getMock();
         $db->expects($this->once())->method('table_exists')->with('mfa_sessions')->willReturn(true);
         $db->expects($this->once())->method('field_exists')->with('mfa_login_id', 'sessions')->willReturn(true);
@@ -170,10 +170,39 @@ class Version7529Test extends TestCase
         $db->method('where')->willReturnSelf();
         $db->method('get')->willReturn(new \eeDbResultMock([]));
         $db->expects($this->never())->method('update');
+        $db->expects($this->once())->method('insert')->with('actions', [
+            'class' => 'Pro',
+            'method' => 'verifyDomainChallenge',
+        ])->willReturn(true);
         ee()->setMock('db', $db);
         $updater = new Updater();
-        $this->assertSame(['template_routes'], $updater->affected_tables);
+        $this->assertSame(['template_routes', 'actions'], $updater->affected_tables);
         $this->assertTrue($updater->do_update());
+    }
+
+    /**
+     * Keep the callback registered by Pro's installer when the upgrade is run again.
+     *
+     * @return void
+     */
+    public function testUpgradeKeepsTheActionRegisteredByPro(): void
+    {
+        require_once PATH_ADDONS . 'pro/mod.pro.php';
+        require_once PATH_ADDONS . 'pro/upd.pro.php';
+
+        $action = ['class' => 'Pro', 'method' => 'verifyDomainChallenge'];
+        $this->assertContains($action, get_class_vars(\Pro_upd::class)['actions']);
+        $this->assertTrue(is_callable([new \Pro(), $action['method']]));
+
+        $db = $this->createMock(\eeDbArMock::class);
+        $db->expects($this->once())->method('where')->with($action)->willReturnSelf();
+        $db->expects($this->once())->method('count_all_results')->with('actions')->willReturn(1);
+        $db->expects($this->never())->method('insert');
+        ee()->setMock('db', $db);
+
+        $method = new \ReflectionMethod(Updater::class, 'registerDomainChallengeAction');
+        \TestReflectionHelper::makeAccessible($method);
+        $this->assertTrue($method->invoke(new Updater()));
     }
 
     /**

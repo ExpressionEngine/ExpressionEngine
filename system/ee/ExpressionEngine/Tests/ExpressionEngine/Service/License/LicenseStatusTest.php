@@ -11,6 +11,7 @@
 namespace ExpressionEngine\Tests\Service\License;
 
 use ExpressionEngine\Service\Encrypt\Encrypt;
+use ExpressionEngine\Service\License\DomainChallenge;
 use ExpressionEngine\Service\License\LicenseStatus;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
@@ -62,6 +63,11 @@ class LicenseStatusTest extends TestCase
         $this->cache = new FakeFileCache($clock);
         $this->curl = new FakeCurl();
         $this->encrypt = new Encrypt('default-key');
+    }
+
+    protected function tearDown(): void
+    {
+        ee()->resetMocks();
     }
 
     public function testThereIsNoStatusBeforeAnyCheck()
@@ -672,6 +678,150 @@ class LicenseStatusTest extends TestCase
         }
     }
 
+    /**
+     * @return void
+     */
+    public function testBrowserChallengeAttachesOnlyTheDigestAndUsesItsOwnSchedule(): void
+    {
+        $action = 'https://EXAMPLE.com:443/cms/index.php?ACT=37';
+        $this->useDomainChallenge($action);
+        $status = $this->status();
+        $status->store($this->response('invalid_domain', ['pro' => 'valid']));
+
+        $challenge = $status->prepareBrowserChallenge();
+        $id = $challenge['id'];
+        $proof = ee('License/DomainChallenge')->read($id);
+        $this->assertIsString($proof);
+        $this->assertSame(['id', 'callback_url', 'proof_sha256'], array_keys($challenge));
+        $this->assertSame($action . '&challenge=' . $id, $challenge['callback_url']);
+        $this->assertSame(hash('sha256', $proof), $challenge['proof_sha256']);
+        $this->assertStringNotContainsString($proof, http_build_query($challenge));
+
+        $otherTab = $this->statusForSite(['site_url' => 'https://example.com:443/other-path']);
+        $this->assertNull($otherTab->prepareBrowserChallenge());
+        $otherTab->finishBrowserChallenge(str_repeat('0', 32), true);
+        $this->statusForSite(['license' => 'OTHERKEY'])->finishBrowserChallenge($id, true);
+        $this->assertSame($proof, ee('License/DomainChallenge')->read($id));
+
+        $status->finishBrowserChallenge($id, true);
+        $this->assertNull(ee('License/DomainChallenge')->read($id));
+        $this->assertSame('invalid_domain', $status->statusFor('pro'));
+        $this->assertSame([], $this->curl->requests);
+
+        $this->now += 14 * self::DAY - 1;
+        $this->assertNull($otherTab->prepareBrowserChallenge());
+        $this->now++;
+        $this->assertNotNull($otherTab->prepareBrowserChallenge());
+    }
+
+    /**
+     * @return void
+     */
+    public function testUnansweredAndRejectedBrowserPingsRetryAfterOneDay(): void
+    {
+        $this->useDomainChallenge('https://example.com/?ACT=37');
+        $status = $this->status();
+        $publisher = ee('License/DomainChallenge');
+
+        $first = $status->prepareBrowserChallenge();
+        $this->now += 181;
+        $this->assertNull($publisher->read($first['id']), 'An abandoned page leaves only a short-lived proof');
+        $this->assertNull($status->prepareBrowserChallenge());
+
+        $this->now += self::DAY - 181;
+        $next = $status->prepareBrowserChallenge();
+        $status->finishBrowserChallenge($first['id'], true);
+        $this->assertNotNull($publisher->read($next['id']), 'A late reply must not clear another challenge');
+
+        $status->finishBrowserChallenge($next['id'], false);
+        $this->assertNull($publisher->read($next['id']));
+        $this->now += self::DAY - 1;
+        $this->assertNull($status->prepareBrowserChallenge());
+        $this->now++;
+        $this->assertNotNull($status->prepareBrowserChallenge());
+    }
+
+    /**
+     * @return void
+     */
+    public function testBrowserChallengeSkipsIneligibleSitesAndFailedPublication(): void
+    {
+        $cache = $this->useDomainChallenge('https://example.com/?ACT=37');
+
+        foreach (['license' => '', 'site_url' => 'http://example.com', 'site_id' => 0] as $key => $value) {
+            $this->assertNull($this->statusForSite([$key => $value])->prepareBrowserChallenge());
+        }
+        foreach (['https://other.example.com', 'https://example.com:444'] as $url) {
+            $this->assertNull($this->statusForSite(['site_url' => $url])->prepareBrowserChallenge());
+        }
+        $this->assertSame([], $cache->items, 'A callback on a different origin must not leave a live proof');
+
+        $this->cache->writable = false;
+        $this->assertNull($this->status()->prepareBrowserChallenge());
+        $this->cache->writable = true;
+        $cache->writable = false;
+        $this->assertNull($this->status()->prepareBrowserChallenge());
+        $cache->writable = true;
+        $this->assertNull($this->status()->prepareBrowserChallenge(), 'Back off after a publication failure');
+
+        $this->now += self::DAY;
+        $this->assertNotNull($this->status()->prepareBrowserChallenge());
+        $this->assertSame([], $this->curl->requests);
+    }
+
+    /**
+     * @return void
+     */
+    public function testASiteWithCachingDisabledStillSpacesOutItsBrowserChallenges(): void
+    {
+        $this->useDomainChallenge('https://example.com/?ACT=37');
+        ee()->setMock('cache', new class () {
+            public function get_adapter()
+            {
+                return 'dummy';
+            }
+
+            public function get($key)
+            {
+                return false;
+            }
+
+            public function save($key, $data, $ttl = 60)
+            {
+                return true;
+            }
+        });
+        $status = $this->status();
+
+        $challenge = $status->prepareBrowserChallenge();
+        $this->assertNotNull($challenge);
+        $this->assertNull($status->prepareBrowserChallenge(), 'Not a new challenge on every page');
+
+        $status->finishBrowserChallenge($challenge['id'], true);
+        $this->assertNull(ee('License/DomainChallenge')->read($challenge['id']));
+        $this->now += 14 * self::DAY - 1;
+        $this->assertNull($status->prepareBrowserChallenge());
+        $this->now++;
+        $this->assertNotNull($status->prepareBrowserChallenge());
+    }
+
+    /**
+     * @param string $action
+     * @return FakeFileCache
+     */
+    private function useDomainChallenge(string $action): FakeFileCache
+    {
+        ee()->setMock('cache', $this->cache);
+        $cache = new FakeFileCache(function () {
+            return $this->now;
+        });
+        ee()->setMock('License/DomainChallenge', new DomainChallenge($cache, 1, static function () use ($action) {
+            return $action;
+        }));
+
+        return $cache;
+    }
+
     public function testAFreshCheckCanBeAskedForWithoutGivingUpTheStatus()
     {
         $this->status()->store($this->response('invalid_domain', ['pro' => 'valid']));
@@ -707,6 +857,53 @@ class LicenseStatusTest extends TestCase
         $this->assertTrue($status->backupCheckDue(), 'A new key is checked without waiting');
         $this->assertFalse($status->runBackupCheck(['license' => 'WXYZ1234ABCD5678']));
         $this->assertFalse($status->backupCheckDue(), 'The new key has its own retry delay');
+    }
+
+    public function testAnAnswerAskedForBeforeTheLicenseKeyChangedIsNotTakenForTheNewKey()
+    {
+        $this->status()->store($this->response('success', ['pro' => 'valid']), self::LICENSE);
+
+        // A check made for the old key comes back after the new one was saved
+        $status = $this->statusForSite(['license' => 'WXYZ1234ABCD5678']);
+
+        $this->assertFalse($status->store($this->response('success', ['pro' => 'valid']), self::LICENSE));
+        $this->assertFalse($status->statusFor('pro'));
+        $this->assertTrue($status->backupCheckDue(), 'The new key is still waiting for an answer of its own');
+
+        // However the key was written when the check was made
+        $this->assertTrue($status->store($this->response('expired', ['pro' => 'valid']), ' wxyz-1234-abcd-5678 '));
+        $this->assertSame('expired', $this->statusForSite(['license' => 'WXYZ1234ABCD5678'])->statusFor('pro'));
+    }
+
+    /**
+     * @dataProvider sitesWithoutALicenseKey
+     */
+    public function testASiteWithoutALicenseKeyKeepsTheAnswerItsPageAskedFor($configured, $posted)
+    {
+        $status = $this->statusForSite(['license' => $configured]);
+
+        $this->assertTrue($status->store($this->response('missing_license_key', ['pro' => 'valid']), $posted));
+        $this->assertSame('missing_license_key', $status->statusFor('pro'));
+
+        // A key saved while a check made without one was on its way
+        $licensed = $this->statusForSite(['license' => self::LICENSE]);
+        $this->assertFalse($licensed->store($this->response('missing_license_key', ['pro' => 'valid']), $posted));
+
+        // A key removed while a check made with it was on its way
+        $this->assertFalse($status->store($this->response('success', ['pro' => 'valid']), self::LICENSE));
+        $this->assertSame('missing_license_key', $status->statusFor('pro'));
+    }
+
+    /**
+     * How a key that is not set reaches the page, and how the page sends it back
+     */
+    public function sitesWithoutALicenseKey()
+    {
+        return [
+            'never set' => [false, 'false'],
+            'saved as empty' => ['', ''],
+            'null' => [null, ''],
+        ];
     }
 
     /**
@@ -942,8 +1139,20 @@ class FakeFileCache
         $this->clock = $clock;
     }
 
+    public function get_adapter()
+    {
+        return 'file';
+    }
+
     public function get($key)
     {
+        if (isset($this->items[$key])) {
+            $item = $this->items[$key];
+            if ($item['ttl'] > 0 && $item['mtime'] + $item['ttl'] <= call_user_func($this->clock)) {
+                unset($this->items[$key]);
+            }
+        }
+
         return isset($this->items[$key]) ? $this->items[$key]['data'] : false;
     }
 

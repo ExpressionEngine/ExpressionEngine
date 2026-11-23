@@ -26,6 +26,9 @@ class Preflight
 {
     use UpdaterPaths;
 
+    // Holds the version an update was checked for, in its working folder
+    private const TARGET_FILE = 'target-version';
+
     protected $filesystem;
     protected $logger;
     protected $config;
@@ -48,6 +51,50 @@ class Preflight
     }
 
     /**
+     * A command line update records the version it updated to until its
+     * finishing steps have run. While that record names the installed version,
+     * what was kept from that update is still needed.
+     */
+    public function checkLastUpdateCompleted()
+    {
+        $pending = self::unfinishedUpdate(
+            $this->config->get('updater_completion_pending'),
+            $this->config->get('app_version')
+        );
+
+        if ($pending !== null) {
+            throw new UpdaterException(sprintf(lang('update_completion_pending'), $pending), 25);
+        }
+    }
+
+    /**
+     * The version an update reached without its finishing steps having run,
+     * while that is still the installed version. A record of any other version
+     * no longer applies, the site having been updated another way since, and
+     * is removed.
+     *
+     * @param	mixed	$recorded	The site's updater_completion_pending setting
+     * @param	mixed	$installed	The site's app_version setting
+     * @return	string|null
+     */
+    public static function unfinishedUpdate($recorded, $installed)
+    {
+        $recorded = (string) $recorded;
+
+        if ($recorded === '') {
+            return null;
+        }
+
+        if ($recorded === (string) $installed) {
+            return $recorded;
+        }
+
+        ee()->config->_update_config([], ['updater_completion_pending' => $recorded]);
+
+        return null;
+    }
+
+    /**
      * Cleans up download and extract locations of any previous update artifacts
      */
     public function cleanUpOldUpgrades()
@@ -58,6 +105,10 @@ class Preflight
         if ($this->filesystem->isFile($this->getArchiveFilePath())) {
             $this->logger->log('Old zip archives found, deleting');
             $this->filesystem->delete($this->getArchiveFilePath());
+        }
+
+        if ($this->filesystem->isFile($this->getArchiveSignaturePath())) {
+            $this->filesystem->delete($this->getArchiveSignaturePath());
         }
 
         // Delete old extracted archives
@@ -191,6 +242,53 @@ class Preflight
             json_encode($config),
             true
         );
+    }
+
+    /**
+     * Keeps the version this update was checked for, so the requests that
+     * carry the update on all work to the same release. It replaces whatever
+     * an earlier update kept, and is kept on its own so that it is there
+     * however the rest of getting ready goes.
+     *
+     * @param	string|null	$target	Version number, when it is known
+     * @throws	UpdaterException	When what is kept is not what was asked for
+     */
+    public function keepTarget($target)
+    {
+        $path = $this->path() . self::TARGET_FILE;
+
+        if ($target !== null) {
+            $this->filesystem->write($path, $target, true);
+        } elseif ($this->filesystem->isFile($path)) {
+            $this->filesystem->delete($path);
+        }
+
+        // A write that fails does not say so, and the steps that follow go
+        // by what is on disk, so an update only starts once that is right
+        if (self::keptTarget($this->path()) !== $target) {
+            throw new UpdaterException(sprintf(lang('could_not_keep_update_target'), $path), 28);
+        }
+    }
+
+    /**
+     * The version the update in progress was checked for when it started.
+     * The steps that follow go by this, whatever has been released since.
+     * It is read without anything having to be made first, as it is asked
+     * for at the start of each of those steps.
+     *
+     * @param	string|null	$folder	The update's working folder, when it is not the usual one
+     * @return	string|null	Version number, or NULL when none was kept
+     */
+    public static function keptTarget($folder = null)
+    {
+        $path = ($folder ?: PATH_CACHE . 'ee_update/') . self::TARGET_FILE;
+
+        // The filesystem service remembers what it has read and written, so
+        // this is read as it is on disk now
+        clearstatcache(true, $path);
+        $target = is_file($path) ? trim((string) @file_get_contents($path)) : '';
+
+        return ($target !== '') ? $target : null;
     }
 
     /**

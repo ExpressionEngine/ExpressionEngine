@@ -13,6 +13,7 @@ namespace ExpressionEngine\Cli\Commands;
 use ExpressionEngine\Cli\Cli;
 use ExpressionEngine\Cli\Commands\Upgrade\UpgradeMap;
 use ExpressionEngine\Cli\Commands\Upgrade\UpgradeUtility;
+use ExpressionEngine\Service\Updater\Downloader\Preflight;
 
 /**
  * Update or upgrade EE
@@ -51,6 +52,9 @@ class CommandUpdate extends Cli
         'force-addon-upgrades' => 'command_update_option_force_addon_upgrades',
         'y'                    => 'command_update_option_y',
         'skip-cleanup'         => 'command_update_option_skip_cleanup',
+        'package:'             => 'command_update_option_package',
+        'signature:'           => 'command_update_option_signature',
+        'expect-version:'      => 'command_update_option_expect_version',
     ];
 
     protected $verbose;
@@ -64,6 +68,24 @@ class CommandUpdate extends Cli
     public $currentVersion;
     public $updateType;
     public $updateVersion;
+
+    /**
+     * An update package supplied to this command, once copied and verified
+     * @var array|null
+     */
+    protected $package;
+
+    /**
+     * Held from the start of an update until this command ends
+     * @var resource|null
+     */
+    protected $lock;
+
+    /**
+     * What the config file gave as the installed version when this command started
+     * @var array
+     */
+    protected $versionsWhenStarted = [];
 
     /**
      * Run the command
@@ -81,14 +103,46 @@ class CommandUpdate extends Cli
 
         if ($this->option('--complete', false)) {
             $this->completeUpdate();
+            $this->clearCompletionRecord();
             return $this->complete();
         }
+
+        // Rolling back and finishing, above, belong to an update that has
+        // already started and may be the one holding this
+        $this->takeUpdateLock();
+        $this->versionsWhenStarted = $this->versionsInConfigFile();
+
+        // A drop-in update leaves what was kept from the last update alone
+        if ($this->suppliesPackage() || ! $this->doesInstallerFolderExist()) {
+            $this->checkLastUpdateCompleted();
+        }
+
+        $this->checkPackageOptions();
 
         // Preflight checks, download and unpack update
         $this->initUpgrade();
 
+        // A supplied package is for one exact release. An older one is never
+        // reported as done.
+        if ($this->updateType === 'package' && version_compare($this->currentVersion, $this->updateVersion, '>')) {
+            $this->fail(sprintf(lang('command_update_package_is_older'), $this->updateVersion, $this->currentVersion));
+        }
+
         if (version_compare($this->currentVersion, $this->updateVersion, '>=')) {
             return $this->complete('ExpressionEngine ' . $this->currentVersion . lang('command_update_is_already_up_to_date'));
+        }
+
+        // A release chosen by the update service is held to the same rule as
+        // a one-click update. A supplied package names its own release, and
+        // files already in place were not put there by this command.
+        if ($this->updateType === 'curl') {
+            ee()->lang->loadfile('updater');
+
+            try {
+                ee('Updater/PrepMajorUpgrade')->checkComposerManagedCore($this->updateVersion);
+            } catch (\Throwable $e) {
+                $this->fail($e->getMessage());
+            }
         }
 
         // Advanced param checks
@@ -98,6 +152,8 @@ class CommandUpdate extends Cli
         if (! $this->defaultToYes) {
             $this->confirm('command_update_confirm_upgrade', false, ['required' => true, 'error_message' => 'command_update_not_run']);
         }
+
+        $this->checkSiteIsAsItWas();
 
         $this->runUpgrade();
         if ($this->updateType === 'local') {
@@ -125,6 +181,150 @@ class CommandUpdate extends Cli
     protected function hasPendingUpdate()
     {
         return is_dir(SYSPATH . 'ee/updater');
+    }
+
+    /**
+     * A command line update records the version it updated to until its
+     * finishing steps have run. While that record names the installed version
+     * nothing new is started, as what was kept from that update may still be
+     * needed.
+     */
+    protected function checkLastUpdateCompleted()
+    {
+        $pending = Preflight::unfinishedUpdate(
+            ee()->config->item('updater_completion_pending'),
+            ee()->config->item('app_version')
+        );
+
+        if ($pending !== null) {
+            $this->fail(sprintf(lang('command_update_completion_pending'), $pending));
+        }
+    }
+
+    /**
+     * Once the finishing steps have run, the record of them being due goes,
+     * followed by what was kept in case they failed.
+     */
+    protected function clearCompletionRecord()
+    {
+        $pending = (string) ee()->config->item('updater_completion_pending');
+
+        if ($pending === '') {
+            return;
+        }
+
+        ee()->config->_update_config([], ['updater_completion_pending' => $pending]);
+
+        $working_dir = $this->updateWorkingPath();
+
+        if (is_dir($working_dir)) {
+            ee('Filesystem')->deleteDir($working_dir);
+        }
+    }
+
+    protected function updateWorkingPath()
+    {
+        return SYSPATH . 'user/cache/ee_update/';
+    }
+
+    /**
+     * A package is supplied along with its signature and the version it is
+     * expected to hold, or not at all.
+     */
+    protected function checkPackageOptions()
+    {
+        $given = (int) $this->suppliesPackage();
+
+        foreach (['--signature', '--expect-version'] as $option) {
+            $given += (int) ! in_array($this->option($option), [null, false, ''], true);
+        }
+
+        if ($given !== 0 && $given !== 3) {
+            $this->fail('command_update_package_options_together');
+        }
+    }
+
+    /**
+     * One update from the command line at a time. The lock belongs to this
+     * process, so it goes when the process does, however that happens. An
+     * update from the control panel is a series of requests and cannot hold
+     * it; checkSiteIsAsItWas() is what looks out for those.
+     */
+    protected function takeUpdateLock()
+    {
+        $path = $this->updateLockPath();
+
+        // A file another user made can still be locked, though not written to
+        $handle = @fopen($path, 'c') ?: @fopen($path, 'r');
+
+        // Where no lock can be had, updates run as they always have
+        if (! is_resource($handle)) {
+            return;
+        }
+
+        if (! flock($handle, LOCK_EX | LOCK_NB, $held_elsewhere) && $held_elsewhere) {
+            fclose($handle);
+            $this->fail('command_update_already_running');
+        }
+
+        $this->lock = $handle;
+    }
+
+    /**
+     * Beside the update's working folder, which is removed when an update
+     * ends. Not the updater's own lock file, .ee-updater.lock: that one is
+     * taken for each request from the control panel, by whoever runs the web
+     * server, and counts as held whenever it cannot be opened.
+     */
+    protected function updateLockPath()
+    {
+        return SYSPATH . 'user/cache/.ee-updater-cli.lock';
+    }
+
+    /**
+     * Everything above was decided from the site as this command found it.
+     * Copying a package and waiting to be confirmed both take time, in which
+     * another update may have started or finished.
+     */
+    protected function checkSiteIsAsItWas()
+    {
+        if ($this->hasPendingUpdate()) {
+            $this->fail('An update is still pending. Run update --rollback before starting another update.');
+        }
+
+        if ($this->versionsInConfigFile() !== $this->versionsWhenStarted) {
+            $this->fail('command_update_site_changed_while_waiting');
+        }
+    }
+
+    /**
+     * Every version the config file gives as installed, as the file reads
+     * now. Which of them PHP would use is not worked out, so a version in a
+     * comment counts too: all that matters is whether any of them has changed
+     * since this command started.
+     */
+    protected function versionsInConfigFile()
+    {
+        // Read as text. Including the file can give back a copy PHP compiled
+        // before the file changed.
+        clearstatcache();
+        $source = @file_get_contents(ee()->config->config_path);
+
+        if (! is_string($source)
+            || ! preg_match_all('/\$config\[([\'"])app_version\1\]\s*=\s*([\'"])([^\'"]*)\2\s*;/', $source, $matches)) {
+            // Nothing to compare, so the site is taken to be as it was
+            return [];
+        }
+
+        return $matches[3];
+    }
+
+    /**
+     * Any name at all counts, "0" included
+     */
+    protected function suppliesPackage()
+    {
+        return ! in_array($this->option('--package'), [null, false, ''], true);
     }
 
     protected function runRecovery()
@@ -334,12 +534,18 @@ class CommandUpdate extends Cli
 
     private function getUpgradeInfo()
     {
+        // A supplied package is the update, whatever else is on this server
+        // or has been released since
+        if ($this->suppliesPackage()) {
+            return $this->getUpgradeVersionFromPackage();
+        }
+
         return $this->doesInstallerFolderExist()
                 ? $this->getUpgradeVersionFromLocal()
                 : $this->getUpgradeVersionFromCurl();
     }
 
-    private function doesInstallerFolderExist()
+    protected function doesInstallerFolderExist()
     {
         $path = SYSPATH . '/ee/installer';
 
@@ -360,6 +566,56 @@ class CommandUpdate extends Cli
 
         $this->updateType = 'local';
         $this->updateVersion = $wizard['version'];
+    }
+
+    private function getUpgradeVersionFromPackage()
+    {
+        $this->info('command_update_getting_info_from_package');
+        ee()->lang->loadfile('updater');
+
+        try {
+            $this->package = ee('Updater/Downloader')->stagePackage(
+                $this->absolutePath($this->option('--package')),
+                $this->absolutePath($this->option('--signature'))
+            );
+        } catch (\Throwable $e) {
+            $this->fail($e->getMessage());
+        }
+
+        // However this command ends, its copy of the package goes with it.
+        // By then this site's files may have been replaced, so nothing of
+        // ExpressionEngine's is used to remove it. A finished update has
+        // already removed it along with the rest of its working folder.
+        $package = $this->package;
+        register_shutdown_function(function () use ($package) {
+            if (is_file($package['path'])) {
+                unlink($package['path']);
+            }
+
+            if (is_dir($package['folder'])) {
+                rmdir($package['folder']);
+            }
+        });
+
+        try {
+            $version = ee('Updater/Unpacker')->packageVersion($this->package['path']);
+        } catch (\Throwable $e) {
+            $this->fail($e->getMessage());
+        }
+
+        if ($version !== (string) $this->option('--expect-version')) {
+            $this->fail(sprintf(lang('command_update_package_version_mismatch'), $version, $this->option('--expect-version')));
+        }
+
+        $this->updateType = 'package';
+        $this->updateVersion = $version;
+    }
+
+    private function absolutePath($path)
+    {
+        $absolute = realpath((string) $path);
+
+        return ($absolute === false) ? (string) $path : $absolute;
     }
 
     private function getUpgradeVersionFromCurl()
@@ -484,7 +740,14 @@ class CommandUpdate extends Cli
             // Allow this command to write to the config file
             ee()->cache->save('cli/update-config-settings', true);
 
-            ee('Updater/Runner')->run();
+            // Downloaded or supplied, the release being updated to is known by now
+            $runner = ee('Updater/Runner', $this->updateVersion);
+
+            if ($this->package) {
+                $runner->usePackage($this->package);
+            }
+
+            $runner->run();
         } catch (\Throwable $e) {
             $this->fail("{$e->getCode()}: {$e->getMessage()}\n\n\n{$e->getTraceAsString()}");
         }

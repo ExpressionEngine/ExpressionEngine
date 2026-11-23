@@ -59,6 +59,9 @@ class LicenseStatus
     const CONNECT_TIMEOUT = 3;
     const REQUEST_TIMEOUT = 5;
 
+    private const DOMAIN_CHECK_INTERVAL = 14 * 86400;
+    private const DOMAIN_CHECK_RETRY = 86400;
+
     const MAX_ADDONS = 1000;
 
     // The statuses that lapse when checks keep failing. One that already says
@@ -228,11 +231,22 @@ class LicenseStatus
      * Stores a response from the license service
      *
      * @param array $response Response fields
+     * @param string|null $asked_for License key the check was made for, when whoever passes on the answer says
      * @return bool TRUE when the response was accepted and stored
      */
-    public function store($response)
+    public function store($response, $asked_for = null)
     {
         if (! is_array($response)) {
+            return false;
+        }
+
+        // A site without a key gives its pages FALSE, which they send back as text
+        if ($asked_for === 'false') {
+            $asked_for = '';
+        }
+
+        // The key may have changed while the check was on its way
+        if (is_string($asked_for) && $this->licenseFingerprint(['license' => $asked_for]) !== $this->licenseFingerprint($this->site)) {
             return false;
         }
 
@@ -456,6 +470,115 @@ class LicenseStatus
         $response = json_decode((string) $body, true);
 
         return is_array($response) ? $response : null;
+    }
+
+    /**
+     * Prepare optional fields for an ordinary CP ping without contacting the license server.
+     *
+     * @return array{id: string, callback_url: string, proof_sha256: string}|null
+     */
+    public function prepareBrowserChallenge(): ?array
+    {
+        $key = $this->domainCheckKey();
+        if ($key === null) {
+            return null;
+        }
+
+        try {
+            $cache = $this->domainCheckCache();
+            // Back off even if publication fails or the browser never sends its ping.
+            if ($cache->get($key) !== false || ! $cache->save($key, true, self::DOMAIN_CHECK_RETRY)) {
+                return null;
+            }
+
+            $publisher = ee('License/DomainChallenge');
+            $challenge = $publisher->create();
+            if ($this->httpsOrigin($challenge['callback_url']) !== $this->httpsOrigin($this->site('site_url'))
+                || ! $cache->save($key, $challenge['id'], self::DOMAIN_CHECK_RETRY)) {
+                $publisher->forget($challenge['id']);
+
+                return null;
+            }
+
+            return $challenge;
+        } catch (\Throwable $e) {
+            // A proof is optional. The ordinary browser ping must still go out.
+            return null;
+        }
+    }
+
+    /**
+     * An accepted ping schedules the next attempt; it does not establish domain ownership.
+     *
+     * @param string $id Challenge acknowledged by the existing CP response handler.
+     * @param bool $accepted Whether EE accepted and stored the license response.
+     * @return void
+     */
+    public function finishBrowserChallenge(string $id, bool $accepted): void
+    {
+        $key = $this->domainCheckKey();
+        if ($key === null) {
+            return;
+        }
+
+        try {
+            $cache = $this->domainCheckCache();
+            if ($cache->get($key) !== $id) {
+                return;
+            }
+
+            ee('License/DomainChallenge')->forget($id);
+            $cache->save($key, true, $accepted ? self::DOMAIN_CHECK_INTERVAL : self::DOMAIN_CHECK_RETRY);
+        } catch (\Throwable $e) {
+            // Cleanup cannot invalidate a license response; the proof has its own short TTL.
+            log_message('error', 'Could not finish the temporary license domain challenge.');
+        }
+    }
+
+    /**
+     * The schedule lives in the site's configured cache, as the proof does, so
+     * every server of a site shares it. Both are still kept, in the file cache,
+     * when caching is disabled.
+     *
+     * @return object
+     */
+    private function domainCheckCache()
+    {
+        return ee()->cache->get_adapter() === 'dummy' ? $this->cache : ee()->cache;
+    }
+
+    /**
+     * Scope the browser challenge schedule to the installed site, license and HTTPS origin.
+     *
+     * @return string|null
+     */
+    private function domainCheckKey(): ?string
+    {
+        $origin = $this->httpsOrigin($this->site('site_url'));
+        $license = strtolower($this->cleanLicense($this->site('license')));
+        $siteId = (int) $this->site('site_id');
+        if ($siteId < 1 || $origin === null || $license === '') {
+            return null;
+        }
+
+        return '/license/domain-check/' . hash('sha256', implode('|', [$siteId, $origin[0], $origin[1], $license]));
+    }
+
+    /**
+     * Compare the exact HTTPS host and effective port, independent of the front-controller path.
+     *
+     * @param mixed $url
+     * @return array|null
+     */
+    private function httpsOrigin($url): ?array
+    {
+        $parts = is_string($url) ? parse_url($url) : false;
+        if (!$parts || strcasecmp($parts['scheme'] ?? '', 'https') !== 0 || empty($parts['host'])
+            || isset($parts['user']) || isset($parts['pass']) || isset($parts['fragment'])) {
+            return null;
+        }
+
+        return [strtolower($parts['host']), $parts['port'] ?? 443];
     }
 
     /**

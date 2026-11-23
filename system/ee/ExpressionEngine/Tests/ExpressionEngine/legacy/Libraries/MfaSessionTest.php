@@ -639,10 +639,12 @@ class MfaSessionTest extends TestCase
         require_once SYSPATH . 'ee/installer/updates/ud_7_05_29.php';
         require_once BASEPATH . 'libraries/template_router/Route.php';
         $db = $this->getMockBuilder(\stdClass::class)
-            ->addMethods(['table_exists', 'field_exists', 'select', 'join', 'where', 'get'])->getMock();
+            ->addMethods(['table_exists', 'field_exists', 'select', 'join', 'where', 'get', 'count_all_results'])->getMock();
         $db->method('select')->willReturnSelf();
         $db->method('join')->willReturnSelf();
         $db->method('where')->willReturnSelf();
+        // The action the update registers is already there
+        $db->method('count_all_results')->willReturn(1);
         $db->expects($expected ? $this->exactly(2) : $this->never())->method('get')
             ->withConsecutive(['template_routes'], ['sites'])->willReturn(new \eeDbResultMock([]));
         $db->data_cache = ['table_names' => []];

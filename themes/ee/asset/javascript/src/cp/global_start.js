@@ -230,7 +230,6 @@ $(document).ready(function () {
 	EE.cp.validateLicense();
 });
 
-
 /**
  * Posts the current EE license to the EE main site for validation purposes.
  */
@@ -257,16 +256,24 @@ EE.cp.validateLicense = function() {
 		meta.database_version = EE.cp.databaseVersion;
 	}
 
+	var ping = {
+		appVer: EE.cp.appVer,
+		license: EE.cp.licenseKey,
+		addons: installedAddons,
+		meta: [meta]
+	};
+	var challenge = EE.cp.domainChallenge;
+	if (challenge) {
+		ping.challenge_url = challenge.callback_url;
+		ping.challenge_proof = challenge.proof_sha256;
+		delete EE.cp.domainChallenge;
+	}
+
 	$.ajax({
 		type: 'POST',
 		url: EE.cp.lvUrl,
 		dataType: 'json',
-		data: {
-			appVer: EE.cp.appVer,
-			license: EE.cp.licenseKey,
-			addons: installedAddons,
-			meta: [meta]
-		},
+		data: ping,
 
 		success: function(result) {
 			if (EE.cp.accessResponseURL) {
@@ -285,18 +292,23 @@ EE.cp.validateLicense = function() {
 					}
 				});
 
+				var answer = {
+					licenseStatus: result,
+					appVer: EE.cp.appVer,
+					license: EE.cp.licenseKey,
+					addons: legacyAddons,
+					site_id: EE.site_id,
+					site_url: EE.site_url
+				};
+				if (challenge) {
+					answer.challenge_id = challenge.id;
+				}
+
 				$.ajax({
 					type: 'POST',
 					url: EE.cp.accessResponseURL,
 					dataType: 'json',
-					data: {
-						licenseStatus: result,
-						appVer: EE.cp.appVer,
-						license: EE.cp.licenseKey,
-						addons: legacyAddons,
-						site_id: EE.site_id,
-						site_url: EE.site_url
-					},
+					data: answer,
 
 					success: function (result) {
 
