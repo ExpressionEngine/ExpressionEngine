@@ -95,9 +95,22 @@
     min-width: 250px;
     max-width: 600px;
 
+    &.row-counter-column {
+      vertical-align: middle;
+    }
+
      @include m-tablet-down {
        border-right: none;
      }
+  }
+
+  > tbody > tr:has(> td > .note-fieldtype) > td:has(> .note-fieldtype, > input[type=text], > input[type=number]) {
+    vertical-align: middle;
+  }
+
+  > tbody > tr > td > .note-fieldtype {
+    padding-block: 15px;
+    margin-bottom: 0;
   }
 
   td:first-child, th:first-child {
