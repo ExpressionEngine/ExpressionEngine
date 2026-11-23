@@ -261,8 +261,11 @@ class Cp
             'cp.lastUpdateCheck' => $lastCheck
         );
 
-        // Only prepare a proof on pages where validateLicense() will send its normal ping.
-        if ($loggedInPage && ($lastCheck === false || $lastCheck > 60)) {
+        // Only prepare a proof on pages where validateLicense() will send its
+        // normal ping. A request that saves something and then redirects
+        // never shows the page that would send it, so the proof waits for a
+        // page that was simply asked for.
+        if ($loggedInPage && ee('Request')->isGet() && ($lastCheck === false || $lastCheck > 60)) {
             $challenge = $licenseStatus->prepareBrowserChallenge();
             if ($challenge !== null) {
                 $licenseGlobals['cp.domainChallenge'] = $challenge;

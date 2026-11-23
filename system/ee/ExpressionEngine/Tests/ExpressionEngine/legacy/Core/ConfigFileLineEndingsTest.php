@@ -1,14 +1,5 @@
 <?php
 
-namespace {
-    if (! function_exists('is_really_writable')) {
-        function is_really_writable($file)
-        {
-            return is_writable($file);
-        }
-    }
-}
-
 namespace ExpressionEngine\Tests\ExpressionEngine\legacy\Core {
     use PHPUnit\Framework\TestCase;
 
@@ -25,6 +16,8 @@ namespace ExpressionEngine\Tests\ExpressionEngine\legacy\Core {
 
         protected function setUp(): void
         {
+            // The config library asks whether its file can be written
+            require_once SYSPATH . 'ee/ExpressionEngine/Boot/boot.common.php';
             require_once BASEPATH . 'core/Config.php';
 
             if (! defined('REQ')) {
