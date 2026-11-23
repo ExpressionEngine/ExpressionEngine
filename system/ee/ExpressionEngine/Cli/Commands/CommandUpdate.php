@@ -132,6 +132,19 @@ class CommandUpdate extends Cli
             return $this->complete('ExpressionEngine ' . $this->currentVersion . lang('command_update_is_already_up_to_date'));
         }
 
+        // A release chosen by the update service is held to the same rule as
+        // a one-click update. A supplied package names its own release, and
+        // files already in place were not put there by this command.
+        if ($this->updateType === 'curl') {
+            ee()->lang->loadfile('updater');
+
+            try {
+                ee('Updater/PrepMajorUpgrade')->checkComposerManagedCore($this->updateVersion);
+            } catch (\Throwable $e) {
+                $this->fail($e->getMessage());
+            }
+        }
+
         // Advanced param checks
         $this->checkAdvancedParams();
         $this->info(lang('command_update_new_version_available') . " {$this->updateVersion}\n");
@@ -727,10 +740,11 @@ class CommandUpdate extends Cli
             // Allow this command to write to the config file
             ee()->cache->save('cli/update-config-settings', true);
 
-            $runner = ee('Updater/Runner');
+            // Downloaded or supplied, the release being updated to is known by now
+            $runner = ee('Updater/Runner', $this->updateVersion);
 
             if ($this->package) {
-                $runner->usePackage($this->package, $this->updateVersion);
+                $runner->usePackage($this->package);
             }
 
             $runner->run();

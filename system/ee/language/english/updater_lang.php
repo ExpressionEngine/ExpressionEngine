@@ -38,6 +38,18 @@ $lang = array(
     'prepMajorUpgrade_step' =>
     'Running checks and preparations',
 
+    'major_upgrade_use_composer' =>
+    'Composer manages this site\'s core. Use Composer to upgrade to ExpressionEngine %d.',
+
+    'update_target_not_kept' =>
+    'Could not determine which release this update was started for. Try to run the update again.',
+
+    'could_not_keep_update_target' =>
+    'Could not record which release this update is for. Check that %s can be written, then run the update again.',
+
+    'composer_manifest_invalid' =>
+    'Could not tell whether Composer manages this site\'s core because %s does not contain a JSON object. Correct the file and retry the update.',
+
     'preflight_moving_addons_to_user_folder' =>
     'Moving add-ons to user folder',
 
@@ -116,6 +128,12 @@ Status code returned: %s',
 
     'package_version_not_found' =>
     'Could not read the ExpressionEngine version from the update package.',
+
+    'package_not_announced_release' =>
+    'The update package is ExpressionEngine %s, not the %s release this update was checked for.',
+
+    'package_older_than_installed' =>
+    'The update package is ExpressionEngine %s, which is older than the installed version, %s.',
 
     'update_completion_pending' =>
     'The last update, to ExpressionEngine %s, did not finish its final steps. Run <code>php eecli.php update --complete</code> from the command line before starting another update. If an add-on stops that command from finishing, disable its extension and run it again.',

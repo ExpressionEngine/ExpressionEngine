@@ -27,8 +27,14 @@ class Runner
     protected $package;
     protected $target_version;
 
-    public function __construct()
+    /**
+     * @param string|null $targetVersion The release selected by the caller, if known.
+     */
+    public function __construct(?string $targetVersion = null)
     {
+        // An empty version is no version, here and in everything that follows
+        $this->target_version = ($targetVersion === '') ? null : $targetVersion;
+
         // The idea here is to separate the download and unpacking
         // process into quick, hopefully low-memory tasks when accessed
         // through the browser
@@ -51,23 +57,36 @@ class Runner
      * verified, instead of downloading one
      *
      * @param	array	$package	Package details from Updater/Downloader's stagePackage()
-     * @param	string	$version	ExpressionEngine version the package holds
      */
-    public function usePackage(array $package, $version)
+    public function usePackage(array $package)
     {
         $this->package = $package;
-        $this->target_version = $version;
+    }
+
+    /**
+     * The release selected for this runner, available to the existing updater_start hook.
+     *
+     * @return string|null
+     */
+    public function getTargetVersion(): ?string
+    {
+        return $this->target_version;
     }
 
     // She packed my bags last night...
     public function preflight()
     {
         // Before the log or anything kept from the last update is cleared
-        ee('Updater/Preflight')->checkLastUpdateCompleted();
+        $preflight = ee('Updater/Preflight');
+        $preflight->checkLastUpdateCompleted();
 
         $this->logger->truncate();
         $this->logger->log('Maximum execution time: ' . @ini_get('max_execution_time'));
         $this->logger->log('Memory limit: ' . @ini_get('memory_limit'));
+
+        // Kept before anything below can end this step, so the steps that
+        // follow never go by what an earlier update left behind
+        $preflight->keepTarget($this->target_version);
 
         // -------------------------------------------
         // 'updater_start' hook.
@@ -93,8 +112,8 @@ class Runner
 
     public function prepMajorUpgrade()
     {
-        // A supplied package says which version it holds. Without one, the
-        // latest release is the one being updated to.
+        // A runner that was not told which release it is for goes by the
+        // latest one
         $major = $this->target_version ? (int) explode('.', $this->target_version, 2)[0] : null;
 
         ee('Updater/PrepMajorUpgrade')->prepMajorIfApplicable($major);
@@ -118,8 +137,12 @@ class Runner
         $unpacker = ee('Updater/Unpacker');
 
         // In the control panel each step is its own request, so the package's
-        // details come from where the download step left them
-        $unpacker->unzipPackage($this->package ?: ee('Updater/Downloader')->downloadedPackage());
+        // details come from where the download step left them. The package
+        // is opened as the release this update was checked for.
+        $unpacker->unzipPackage(
+            $this->package ?: ee('Updater/Downloader')->downloadedPackage(),
+            $this->target_version
+        );
         $unpacker->verifyExtractedPackage();
         $unpacker->checkRequirements();
         $unpacker->moveUpdater();

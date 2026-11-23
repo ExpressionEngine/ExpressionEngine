@@ -26,6 +26,9 @@ class Preflight
 {
     use UpdaterPaths;
 
+    // Holds the version an update was checked for, in its working folder
+    private const TARGET_FILE = 'target-version';
+
     protected $filesystem;
     protected $logger;
     protected $config;
@@ -239,6 +242,53 @@ class Preflight
             json_encode($config),
             true
         );
+    }
+
+    /**
+     * Keeps the version this update was checked for, so the requests that
+     * carry the update on all work to the same release. It replaces whatever
+     * an earlier update kept, and is kept on its own so that it is there
+     * however the rest of getting ready goes.
+     *
+     * @param	string|null	$target	Version number, when it is known
+     * @throws	UpdaterException	When what is kept is not what was asked for
+     */
+    public function keepTarget($target)
+    {
+        $path = $this->path() . self::TARGET_FILE;
+
+        if ($target !== null) {
+            $this->filesystem->write($path, $target, true);
+        } elseif ($this->filesystem->isFile($path)) {
+            $this->filesystem->delete($path);
+        }
+
+        // A write that fails does not say so, and the steps that follow go
+        // by what is on disk, so an update only starts once that is right
+        if (self::keptTarget($this->path()) !== $target) {
+            throw new UpdaterException(sprintf(lang('could_not_keep_update_target'), $path), 28);
+        }
+    }
+
+    /**
+     * The version the update in progress was checked for when it started.
+     * The steps that follow go by this, whatever has been released since.
+     * It is read without anything having to be made first, as it is asked
+     * for at the start of each of those steps.
+     *
+     * @param	string|null	$folder	The update's working folder, when it is not the usual one
+     * @return	string|null	Version number, or NULL when none was kept
+     */
+    public static function keptTarget($folder = null)
+    {
+        $path = ($folder ?: PATH_CACHE . 'ee_update/') . self::TARGET_FILE;
+
+        // The filesystem service remembers what it has read and written, so
+        // this is read as it is on disk now
+        clearstatcache(true, $path);
+        $target = is_file($path) ? trim((string) @file_get_contents($path)) : '';
+
+        return ($target !== '') ? $target : null;
     }
 
     /**

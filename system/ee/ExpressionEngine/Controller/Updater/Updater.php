@@ -49,10 +49,11 @@ class Updater extends CP_Controller
         }
 
         $preflight_error = null;
-        $runner = ee('Updater/Runner');
+        $runner = ee('Updater/Runner', $to_version);
 
         try {
             // Run preflight first and go ahead and show those errors
+            ee('Updater/PrepMajorUpgrade')->checkComposerManagedCore($to_version);
             $runner->runStep($runner->getFirstStep());
         } catch (\Exception $e) {
             $preflight_error = str_replace("\n", '<br>', $e->getMessage());
@@ -90,14 +91,29 @@ class Updater extends CP_Controller
             return;
         }
 
+        ee()->lang->loadfile('updater');
+
         // This step should not have hit this controller
         if ($step == 'updateFiles') {
-            ee()->lang->loadfile('updater');
-
             throw new \Exception(lang('out_of_date_admin_php'));
         }
 
-        $runner = ee('Updater/Runner');
+        $target = null;
+
+        if ($step !== 'rollback') {
+            // Every step works to the release this update was checked for
+            // when it started, whatever has been released since. Without a
+            // record of that there is no update to carry on with.
+            $target = Service\Updater\Downloader\Preflight::keptTarget();
+
+            if ($target === null) {
+                throw new \Exception(lang('update_target_not_kept'));
+            }
+
+            ee('Updater/PrepMajorUpgrade')->checkComposerManagedCore($target);
+        }
+
+        $runner = ee('Updater/Runner', $target);
         $runner->runStep($step);
 
         // If there is no next step and we're not rolling back, 'updateFiles'

@@ -279,8 +279,8 @@ $setup = [
             return new Resource\Stylesheet();
         },
 
-        'Updater/Runner' => function ($ee) {
-            return new Updater\Runner();
+        'Updater/Runner' => function ($ee, $targetVersion = null) {
+            return new Updater\Runner($targetVersion);
         },
 
         'Updater/Downloader' => function ($ee) {

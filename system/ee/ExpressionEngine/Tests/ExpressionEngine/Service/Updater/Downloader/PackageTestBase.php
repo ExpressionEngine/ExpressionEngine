@@ -133,12 +133,21 @@ abstract class PackageTestBase extends TestCase
             {
                 return $this->working;
             }
+
+            // The site these packages arrive at, whatever version the tests run as
+            protected function installedVersion()
+            {
+                return '7.5.29';
+            }
         };
     }
 
-    protected function makePreflight()
+    /**
+     * @param object|null $filesystem One that stands in for the real one
+     */
+    protected function makePreflight($filesystem = null)
     {
-        return new class(new Filesystem(), $this->logger, Mockery::mock('ExpressionEngine\Service\Config\File'), [], $this->working) extends Preflight {
+        return new class($filesystem ?: new Filesystem(), $this->logger, Mockery::mock('ExpressionEngine\Service\Config\File'), [], $this->working) extends Preflight {
             private $working;
 
             public function __construct($filesystem, $logger, $config, $theme_paths, $working)

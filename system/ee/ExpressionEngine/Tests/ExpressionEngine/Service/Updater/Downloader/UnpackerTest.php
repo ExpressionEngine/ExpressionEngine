@@ -63,6 +63,11 @@ class UnpackerTest extends TestCase
         $this->filesystem->shouldReceive('mkDir')->with(PATH_CACHE . 'ee_update/ExpressionEngine');
         $this->signature->shouldReceive('verify')->with($package['hash'], 'signature')->andReturn(true);
 
+        // The package holds the version that is installed here
+        $this->zip_archive->shouldReceive('getFromName')
+            ->with('system/ee/legacy/libraries/Core.php')
+            ->andReturn("<?php define('APP_VER', '" . APP_VER . "');");
+
         $this->zip_archive->shouldReceive('open')
             ->with($path)
             ->once()

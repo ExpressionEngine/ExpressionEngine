@@ -3,6 +3,7 @@
 namespace ExpressionEngine\Tests\Service\Updater\Downloader;
 
 use ExpressionEngine\Library\Filesystem\Filesystem;
+use ExpressionEngine\Service\Updater\Downloader\Preflight;
 use ExpressionEngine\Service\Updater\UpdaterException;
 use Mockery;
 
@@ -148,6 +149,92 @@ class DownloadedPackageTest extends PackageTestBase
     }
 
     /**
+     * Whether an update is a major upgrade is settled from the version that
+     * was announced. If the update server answers with another major version
+     * by the time the package is fetched, or with a release older than the
+     * one announced, that package is a different update, however good its
+     * signature. With or without an announced version, the site (which runs
+     * 7.5.29 here) is not taken back to an older release.
+     *
+     * @dataProvider packagesAndTheReleaseThatWasAnnounced
+     */
+    public function testOnlyAPackageThatIsTheUpdateThatWasAnnouncedIsUnpacked($delivered, $announced, $refusal)
+    {
+        $this->download($this->release($delivered));
+
+        try {
+            $this->unpackInALaterRequest($announced);
+            $this->assertNull($refusal, 'A package for ' . $delivered . ' was unpacked');
+        } catch (UpdaterException $e) {
+            $this->assertEquals($refusal, $e->getCode(), $e->getMessage());
+        }
+
+        $this->assertSame($refusal === null, is_dir($this->working . 'ExpressionEngine'));
+    }
+
+    public function packagesAndTheReleaseThatWasAnnounced()
+    {
+        return [
+            'another major version than announced' => ['8.0.0', '7.5.30', 26],
+            'older than announced' => ['7.5.28', '7.5.30', 26],
+            'the release that was announced' => ['7.5.30', '7.5.30', null],
+            'a later release of the same major version' => ['7.5.31', '7.5.30', null],
+            'a preview build, which holds the version it previews' => ['7.5.30', '7.5.30-dp.1', null],
+            'nothing announced, older than the site' => ['7.5.28', null, 27],
+            'nothing announced, an older major version' => ['6.4.17', null, 27],
+            'nothing announced, the version the site runs' => ['7.5.29', null, null],
+            'nothing announced, newer than the site' => ['8.0.0', null, null],
+        ];
+    }
+
+    public function testLaterRequestsGoByTheReleaseTheUpdateWasCheckedForWhenItStarted()
+    {
+        $this->assertNull(Preflight::keptTarget($this->working), 'Nothing has been checked yet');
+
+        $this->makePreflight()->keepTarget('7.5.30');
+
+        $this->assertSame('7.5.30', Preflight::keptTarget($this->working));
+
+        $this->makePreflight()->keepTarget(null);
+
+        $this->assertNull(Preflight::keptTarget($this->working), 'An update started without a known release does not go by an earlier one\'s');
+    }
+
+    /**
+     * A write or a removal that fails does not say so. An update that went
+     * on regardless would have its later steps work to an earlier update's
+     * release.
+     *
+     * @dataProvider releasesThatCouldNotBePutOnRecord
+     */
+    public function testAnUpdateDoesNotStartUnlessTheReleaseItIsForIsOnRecord($target)
+    {
+        $this->makePreflight()->keepTarget('7.5.30');
+
+        $filesystem = Mockery::mock('ExpressionEngine\Library\Filesystem\Filesystem');
+        $filesystem->shouldReceive('write');
+        $filesystem->shouldReceive('isFile')->andReturn(true);
+        $filesystem->shouldReceive('delete');
+
+        try {
+            $this->makePreflight($filesystem)->keepTarget($target);
+            $this->fail('An update started with an earlier update\'s release still on record');
+        } catch (UpdaterException $e) {
+            $this->assertEquals(28, $e->getCode());
+        }
+
+        $this->assertSame('7.5.30', Preflight::keptTarget($this->working));
+    }
+
+    public function releasesThatCouldNotBePutOnRecord()
+    {
+        return [
+            'another release' => ['8.0.0'],
+            'no known release' => [null],
+        ];
+    }
+
+    /**
      * The request that downloads the package, with the update server
      * answering as it does: the zip as the body and its signature in a header
      *
@@ -172,9 +259,11 @@ class DownloadedPackageTest extends PackageTestBase
     /**
      * The request that unpacks the package. It did not download the package,
      * and has only what that request left in the update folder to go on.
+     *
+     * @param string|null $announced Version the update was checked for, when known
      */
-    private function unpackInALaterRequest()
+    private function unpackInALaterRequest($announced = null)
     {
-        $this->makeUnpacker()->unzipPackage($this->makeDownloader()->downloadedPackage());
+        $this->makeUnpacker()->unzipPackage($this->makeDownloader()->downloadedPackage(), $announced);
     }
 }

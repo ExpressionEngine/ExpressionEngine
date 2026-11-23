@@ -45,6 +45,7 @@ class RunnerTest extends TestCase
                 public function checkPermissions() {}
                 public function cleanUpOldUpgrades() { $this->events[] = 'old update files removed'; }
                 public function checkDiskSpace() {}
+                public function keepTarget($target) { $this->events[] = ['release kept', $target]; }
                 public function stashConfig() {}
             },
             'Updater/PrepMajorUpgrade' => new class($events) {
@@ -70,7 +71,7 @@ class RunnerTest extends TestCase
             'Updater/Unpacker' => new class($events) {
                 private $events;
                 public function __construct($events) { $this->events = $events; }
-                public function unzipPackage(array $package) { $this->events[] = ['unpacked', $package]; }
+                public function unzipPackage(array $package, $announced = null) { $this->events[] = ['unpacked', $package, $announced]; }
                 public function verifyExtractedPackage() {}
                 public function checkRequirements() {}
                 public function moveUpdater() {}
@@ -124,8 +125,28 @@ class RunnerTest extends TestCase
         (new Runner())->preflight();
 
         $this->assertSame(
-            ['last update checked', 'log cleared', 'hook checked', 'old update files removed'],
+            ['last update checked', 'log cleared', ['release kept', null], 'hook checked', 'old update files removed'],
             $this->events->getArrayCopy()
+        );
+    }
+
+    public function testTheReleaseAnUpdateIsForIsOnRecordAndShownToExtensionsHoweverGettingReadyEnds()
+    {
+        $extensions = new class {
+            public $end_script = true;
+            public $seen;
+            public function active_hook($hook) { return true; }
+            public function call($hook, $runner) { $this->seen = [$hook, $runner->getTargetVersion()]; }
+        };
+        ee()->setMock('extensions', $extensions);
+
+        (new Runner('7.5.30'))->preflight();
+
+        $this->assertSame(['updater_start', '7.5.30'], $extensions->seen);
+        $this->assertSame(
+            ['last update checked', 'log cleared', ['release kept', '7.5.30']],
+            $this->events->getArrayCopy(),
+            'The release is on record before an extension can end the step'
         );
     }
 
@@ -133,16 +154,16 @@ class RunnerTest extends TestCase
     {
         $package = ['path' => 'supplied.zip', 'signature' => 'supplied signature', 'hash' => 'supplied hash'];
 
-        $runner = new Runner();
-        $runner->usePackage($package, '8.0.1');
+        $runner = new Runner('8.0.1');
+        $runner->usePackage($package);
         $runner->prepMajorUpgrade();
         $runner->download();
         $runner->unpack();
 
         $this->assertSame(
-            [['prepared for major version', 8], ['unpacked', $package]],
+            [['prepared for major version', 8], ['unpacked', $package, '8.0.1']],
             $this->events->getArrayCopy(),
-            'The package\'s own version decides how the site is prepared, and nothing is downloaded'
+            'The release the update is for decides how the site is prepared, and nothing is downloaded'
         );
     }
 
@@ -154,17 +175,18 @@ class RunnerTest extends TestCase
         $runner->unpack();
 
         $this->assertSame(
-            [['prepared for major version', null], 'downloaded', ['unpacked', $this->services['Updater/Downloader']->downloaded]],
+            [['prepared for major version', null], 'downloaded', ['unpacked', $this->services['Updater/Downloader']->downloaded, null]],
             $this->events->getArrayCopy()
         );
     }
 
     public function testUnpackingInALaterRequestUsesWhatTheDownloadKept()
     {
-        (new Runner())->unpack();
+        // As the control panel does, with the release the update was started for
+        (new Runner('7.5.30'))->unpack();
 
         $this->assertSame(
-            ['kept details read', ['unpacked', $this->services['Updater/Downloader']->downloaded]],
+            ['kept details read', ['unpacked', $this->services['Updater/Downloader']->downloaded, '7.5.30']],
             $this->events->getArrayCopy()
         );
     }

@@ -3,6 +3,7 @@
 namespace ExpressionEngine\Tests\Cli\Commands;
 
 use ExpressionEngine\Cli\Commands\CommandUpdate;
+use ExpressionEngine\Service\Updater\UpdaterException;
 use PHPUnit\Framework\TestCase;
 
 class CommandUpdateTest extends TestCase
@@ -130,6 +131,45 @@ class CommandUpdateTest extends TestCase
         $this->assertSame(['updater_complete'], $this->extensions->calls);
     }
 
+    /** @dataProvider waysToUpdateASiteThatLeavesMajorUpgradesToComposer */
+    public function testOnlyADownloadedReleaseIsHeldToTheRuleForOneClickUpdates($flags, $updateType, $events)
+    {
+        $rule = new class {
+            public $asked = [];
+            public function checkComposerManagedCore($target)
+            {
+                $this->asked[] = $target;
+                throw new UpdaterException('Use Composer to upgrade');
+            }
+        };
+        ee()->setMock('Updater/PrepMajorUpgrade', $rule);
+        $this->command->flags = $flags;
+        $this->command->updateType = $updateType;
+        $held = ($updateType === 'curl');
+
+        try {
+            $this->command->handle();
+            $this->assertFalse($held, 'A downloaded release was applied without asking');
+        } catch (UpdateCommandFailure $e) {
+            $this->assertTrue($held, $e->getMessage());
+            $this->assertStringContainsString('Use Composer to upgrade', $e->getMessage());
+        }
+
+        $this->assertSame($held ? ['7.5.29'] : [], $rule->asked);
+        $this->assertSame($events, $this->command->events);
+    }
+
+    public function waysToUpdateASiteThatLeavesMajorUpgradesToComposer()
+    {
+        $package = ['--package' => 'ee.zip', '--signature' => 'ee.sig', '--expect-version' => '7.5.29'];
+
+        return [
+            'the latest release, downloaded' => [[], 'curl', ['initialize']],
+            'a supplied package' => [$package, 'package', ['initialize', 'upgrade', 'complete']],
+            'new files already in place' => [[], 'local', ['initialize', 'upgrade', 'postflight', 'complete']],
+        ];
+    }
+
     /** @dataProvider incompletePackageOptions */
     public function testAPackageIsSuppliedWithItsSignatureAndExpectedVersionOrNotAtAll($flags)
     {
@@ -188,7 +228,7 @@ class CommandUpdateTest extends TestCase
     {
         $runner = new class {
             public $events = [];
-            public function usePackage(array $package, $version) { $this->events[] = ['package', $package, $version]; }
+            public function usePackage(array $package) { $this->events[] = ['package', $package]; }
             public function run() { $this->events[] = 'run'; }
         };
         ee()->setMock('Updater/Runner', $runner);
@@ -197,7 +237,7 @@ class CommandUpdateTest extends TestCase
         $this->command->supply($package);
         $this->command->download();
 
-        $this->assertSame([['package', $package, '7.5.29'], 'run'], $runner->events);
+        $this->assertSame([['package', $package], 'run'], $runner->events);
     }
 
     public function testAnUpdateWhoseFinishingStepsAreDueStopsAnotherFromStarting()

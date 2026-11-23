@@ -65,20 +65,14 @@ class Unpacker
      *
      * @param	array	$package	Path of the package's zip file, with the
      *   signature and hash it was verified with
+     * @param	string|null	$announced	Version this update was checked as
+     *   before the package arrived, when that is known
      */
-    public function unzipPackage(array $package)
+    public function unzipPackage(array $package, $announced = null)
     {
         $this->verifyPackage($package);
 
-        $this->logger->log('Unzipping package');
-
-        $this->filesystem->mkDir($this->getExtractedArchivePath());
-
-        if (($response = $this->zip_archive->open($package['path'])) === true) {
-            $this->zip_archive->extractTo($this->getExtractedArchivePath());
-            $this->zip_archive->close();
-            $this->logger->log('Package unzipped');
-        } else {
+        if (($response = $this->zip_archive->open($package['path'])) !== true) {
             throw new UpdaterException(
                 sprintf(
                     lang('could_not_unzip') . "\n\n" . lang('try_again_later'),
@@ -87,6 +81,51 @@ class Unpacker
                 8
             );
         }
+
+        try {
+            $version = $this->versionInOpenPackage();
+
+            // Whether this is a major upgrade was settled from the version
+            // that was announced. A package for another major version is a
+            // different update, and an older one would take the site
+            // backwards, however good its signature. A later release of the
+            // same major version is let through, and a preview build holds
+            // the version it previews.
+            if ($announced !== null && ((int) $version !== (int) $announced || version_compare($version, $announced, '<'))) {
+                throw new UpdaterException(
+                    sprintf(lang('package_not_announced_release'), $version, $announced) . "\n\n" . lang('try_again_later'),
+                    26
+                );
+            }
+
+            // With or without an announced version to go by, the site is
+            // never taken back to a release older than the one it runs
+            if (version_compare($version, $this->installedVersion(), '<')) {
+                throw new UpdaterException(
+                    sprintf(lang('package_older_than_installed'), $version, $this->installedVersion()) . "\n\n" . lang('try_again_later'),
+                    27
+                );
+            }
+
+            $this->logger->log('Unzipping package');
+
+            $this->filesystem->mkDir($this->getExtractedArchivePath());
+            $this->zip_archive->extractTo($this->getExtractedArchivePath());
+        } finally {
+            $this->zip_archive->close();
+        }
+
+        $this->logger->log('Package unzipped');
+    }
+
+    /**
+     * The ExpressionEngine version whose files are in place now
+     *
+     * @return	string	Version number, e.g. 7.5.29
+     */
+    protected function installedVersion()
+    {
+        return APP_VER;
     }
 
     /**
@@ -125,12 +164,25 @@ class Unpacker
      */
     public function packageVersion($path)
     {
-        $source = false;
+        if ($this->zip_archive->open($path) !== true) {
+            throw new UpdaterException(lang('package_version_not_found'), 24);
+        }
 
-        if ($this->zip_archive->open($path) === true) {
-            $source = $this->zip_archive->getFromName('system/ee/legacy/libraries/Core.php');
+        try {
+            return $this->versionInOpenPackage();
+        } finally {
             $this->zip_archive->close();
         }
+    }
+
+    /**
+     * The ExpressionEngine version held by the package that is open now
+     *
+     * @return	string	Version number, e.g. 7.5.29
+     */
+    private function versionInOpenPackage()
+    {
+        $source = $this->zip_archive->getFromName('system/ee/legacy/libraries/Core.php');
 
         // One version, however it is quoted and however often it is stated,
         // or the package cannot be trusted to say what it is
