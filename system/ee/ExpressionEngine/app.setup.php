@@ -621,6 +621,21 @@ $setup = [
             return new License\LicenseFactory($default_key);
         },
 
+        'License/DomainChallenge' => function ($ee) {
+            $cache = ee()->cache->get_adapter() === 'dummy' ? ee()->cache->file : ee()->cache;
+
+            return new License\DomainChallenge($cache, (int) ee()->config->item('site_id'), function () use ($ee) {
+                $action = $ee->make('Model')->get('Action')->filter('class', 'Pro')
+                    ->filter('method', 'verifyDomainChallenge')->first();
+
+                if (!$action) {
+                    return null;
+                }
+
+                return ee()->functions->fetch_site_index(false, false) . QUERY_MARKER . 'ACT=' . $action->getId();
+            });
+        },
+
         'License/Status' => function ($ee) {
             return new License\LicenseStatus(
                 ee()->cache->file,

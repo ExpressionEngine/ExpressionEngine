@@ -13,7 +13,7 @@ namespace ExpressionEngine\Updater\Version_7_5_29;
 class Updater
 {
     public $version_suffix = '';
-    public $affected_tables = ['template_routes'];
+    public $affected_tables = ['template_routes', 'actions'];
 
     /**
      * Create independent MFA approvals and recompile saved template routes.
@@ -29,6 +29,7 @@ class Updater
             'addMfaLoginId',
             'recompileTemplateRoutes',
             'clearRenderedCaches',
+            'registerDomainChallengeAction',
         ]);
 
         foreach ($steps as $step) {
@@ -38,6 +39,21 @@ class Updater
         }
 
         return true;
+    }
+
+    /**
+     * Register the Pro callback on existing sites without changing an assigned ACT ID.
+     *
+     * @return bool
+     */
+    private function registerDomainChallengeAction(): bool
+    {
+        $action = ['class' => 'Pro', 'method' => 'verifyDomainChallenge'];
+        if (ee()->db->where($action)->count_all_results('actions') > 0) {
+            return true;
+        }
+
+        return ee()->db->insert('actions', $action) !== false;
     }
 
     /** Add a stable login identifier to the existing, released sessions table. */

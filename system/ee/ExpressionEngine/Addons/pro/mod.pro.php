@@ -35,6 +35,26 @@ class Pro
     }
 
     /**
+     * Serve a live domain proof without rendering a template or appending profiler output.
+     *
+     * @return void
+     */
+    public function verifyDomainChallenge(): void
+    {
+        if (REQ !== 'ACTION') {
+            return;
+        }
+
+        $id = ee()->input->get('challenge');
+        $proof = ee('Request')->method() === 'GET' && is_string($id) ? ee('License/DomainChallenge')->read($id) : null;
+
+        http_response_code($proof === null ? 404 : 200);
+        header('Cache-Control: no-store');
+        header('Content-Type: text/plain; charset=UTF-8');
+        exit($proof ?? '');
+    }
+
+    /**
      * Enable MFA after verifying the member's setup code.
      *
      * @return void

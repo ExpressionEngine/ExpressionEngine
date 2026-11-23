@@ -89,6 +89,42 @@ context('License check', () => {
     cy.get('@answer.all').should('have.length', 1)
   })
 
+  it('adds a prepared challenge to one normal browser ping', () => {
+    serviceAnswers('success', 'valid')
+    cy.auth()
+    cy.wait('@check')
+    cy.wait('@answer')
+
+    const id = '0123456789abcdef0123456789abcdef'
+    const url = 'https://example.test/index.php?ACT=12&challenge=' + id
+    const digest = 'ab'.repeat(32)
+    cy.window().then(({ EE }) => {
+      EE.cp.domainChallenge = { id: id, callback_url: url, proof_sha256: digest }
+      EE.cp.validateLicense()
+    })
+
+    cy.wait('@check').then(({ request }) => {
+      const sent = fields(request.body)
+      expect(sent.get('meta[0][source]')).to.eq('browser')
+      expect(sent.get('challenge_url')).to.eq(url)
+      expect(sent.get('challenge_proof')).to.eq(digest)
+      expect(sent.has('challenge_id')).to.eq(false)
+    })
+    cy.wait('@answer').then(({ request }) => {
+      expect(fields(request.body).get('challenge_id')).to.eq(id)
+    })
+
+    cy.window().then(({ EE }) => EE.cp.validateLicense())
+    cy.wait('@check').then(({ request }) => {
+      expect(fields(request.body).has('challenge_url')).to.eq(false)
+      expect(fields(request.body).has('challenge_proof')).to.eq(false)
+    })
+    cy.wait('@answer').then(({ request }) => {
+      expect(fields(request.body).has('challenge_id')).to.eq(false)
+    })
+    cy.get('@check.all').should('have.length', 3)
+  })
+
   it('asks again after an add-on is installed', () => {
     serviceAnswers('success', 'valid')
     cy.auth()
