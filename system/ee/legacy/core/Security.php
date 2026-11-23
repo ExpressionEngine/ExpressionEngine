@@ -132,8 +132,9 @@ class EE_Security
         define('REQUEST_XID', $csrf_token);
         define('XID_SECURE_HASH', $csrf_token);
 
-        // Send the header and legacy header for ajax requests
-        if (AJAX_REQUEST && ee()->input->server('REQUEST_METHOD') == 'POST') {
+        // Send the header and legacy header for ajax requests that needed a
+        // token (PUT, PATCH and DELETE do too), so a stale one can be replaced
+        if (AJAX_REQUEST && ! in_array(ee()->input->server('REQUEST_METHOD'), array('GET', 'HEAD', 'OPTIONS', 'TRACE'))) {
             header('X-CSRF-TOKEN: ' . CSRF_TOKEN);
             header('X-EEXID: ' . CSRF_TOKEN);
         }
