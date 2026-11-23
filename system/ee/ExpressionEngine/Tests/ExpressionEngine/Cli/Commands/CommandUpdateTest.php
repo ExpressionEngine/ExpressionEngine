@@ -155,7 +155,7 @@ class CommandUpdateTest extends TestCase
             $this->assertStringContainsString('Use Composer to upgrade', $e->getMessage());
         }
 
-        $this->assertSame($held ? ['7.5.29'] : [], $rule->asked);
+        $this->assertSame($held ? ['7.6.0'] : [], $rule->asked);
         $this->assertSame($events, $this->command->events);
     }
 
@@ -575,7 +575,7 @@ class UpdateCommandStub extends CommandUpdate
     {
         $this->config = $config;
         $this->currentVersion = '7.5.28';
-        $this->updateVersion = '7.5.29';
+        $this->updateVersion = '7.6.0';
         $this->updateType = 'curl';
         $this->defaultToYes = true;
         $this->lockPath = sys_get_temp_dir() . '/ee-update-' . bin2hex(random_bytes(8)) . '.lock';

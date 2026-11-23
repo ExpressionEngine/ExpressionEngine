@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace ExpressionEngine\Updater\Version_7_5_29;
+namespace ExpressionEngine\Updater\Version_7_6_0;
 
 class Updater
 {
