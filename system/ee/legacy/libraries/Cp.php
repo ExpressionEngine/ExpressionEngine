@@ -152,6 +152,7 @@ class Cp
             'light_theme' => lang('light_theme'),
             'slate_theme' => lang('slate_theme'),
             'snow_theme' => lang('snow_theme'),
+            'contrast_theme' => lang('contrast_theme'),
             'many_jump_results' => lang('many_jump_results'),
             'password_icon' => lang('password_icon')
         );
