@@ -30050,6 +30050,9 @@ div[data-relationship-react] .dropdown, div[data-relationship-react] .select__dr
   }
 }
 .upgrade-success-banner__wrapper {
+  --upgrade-banner-link: #454cbd;
+  --upgrade-banner-copy: #55576e;
+  --upgrade-banner-border: #d9dbef;
   background-color: var(--ee-panel-bg);
   background-position: center;
   background-repeat: no-repeat;
@@ -30062,47 +30065,87 @@ div[data-relationship-react] .dropdown, div[data-relationship-react] .select__dr
   border: 1px solid var(--ee-panel-border);
   overflow: hidden;
 }
+.upgrade-success-banner__wrapper .upgrade-success-banner__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 18px;
+  padding-inline-end: 44px;
+}
 .upgrade-success-banner__wrapper img {
   max-width: 100%;
   display: block;
   margin: auto;
+}
+.upgrade-success-banner__wrapper .upgrade-success-banner__title,
+.upgrade-success-banner__wrapper .upgrade-success-banner__title-link {
+  color: var(--upgrade-banner-link);
+}
+.upgrade-success-banner__wrapper .upgrade-success-banner__title:hover,
+.upgrade-success-banner__wrapper .upgrade-success-banner__title-link:hover {
+  text-decoration: underline;
 }
 .upgrade-success-banner__wrapper .upgrade-success-banner__title {
   font-size: 17px;
   font-weight: 500;
   background-color: var(--ee-accent-light);
   padding: 6px 25px 7px;
-  margin-right: 15px;
   display: inline-block;
   border-radius: 1000px;
+  overflow-wrap: anywhere;
 }
 .upgrade-success-banner__wrapper .upgrade-success-banner__title strong {
   color: var(--ee-text-normal);
   font-weight: 500;
 }
 .upgrade-success-banner__wrapper .upgrade-success-banner__title-link {
-  display: inline-block;
+  font-weight: 600;
 }
 .upgrade-success-banner__wrapper .upgrade-success-banner__title-link i {
-  opacity: 0.4;
+  opacity: 0.8;
   margin-right: 3px;
 }
+.upgrade-success-banner__wrapper a:focus-visible {
+  outline: 2px solid var(--upgrade-banner-link);
+  outline-offset: 3px;
+}
 .upgrade-success-banner__wrapper .banner-dismiss {
-  color: var(--ee-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: absolute;
-  right: 30px;
+  inset-inline-end: 15px;
+  top: 15px;
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  color: var(--upgrade-banner-copy);
   text-decoration: none;
-  top: 20px;
 }
 .upgrade-success-banner__wrapper .banner-dismiss:hover {
-  color: var(--ee-text-tertiary);
+  background-color: var(--ee-accent-light);
+  color: var(--upgrade-banner-link);
 }
 .upgrade-success-banner__wrapper .banner-dismiss::before {
   font-family: "Font Awesome 6 Pro";
   font-weight: 900;
   content: "\f00d";
-  font-size: 24px;
+  font-size: 18px;
   line-height: 1;
+}
+@media screen and (max-width: 700px) {
+  .upgrade-success-banner__wrapper {
+    margin-inline: 20px;
+    padding: 16px;
+  }
+  .upgrade-success-banner__wrapper .upgrade-success-banner__title {
+    padding-inline: 12px;
+    font-size: 15px;
+  }
+  .upgrade-success-banner__wrapper .banner-dismiss {
+    inset-inline-end: 6px;
+    top: 8px;
+  }
 }
 .upgrade-success-banner__wrapper .upgrade-success-banner__blurb-wrapper {
   margin-top: 25px;
@@ -30124,36 +30167,49 @@ div[data-relationship-react] .dropdown, div[data-relationship-react] .select__dr
   background-color: var(--ee-bg-blank);
   padding: 15px 20px 20px 42px;
   position: relative;
-  border: 1px solid var(--ee-panel-border);
+  border: 1px solid var(--upgrade-banner-border);
   border-radius: 5px;
   -webkit-transition: border-color 0.15s ease-in-out;
   -moz-transition: border-color 0.15s ease-in-out;
   -o-transition: border-color 0.15s ease-in-out;
 }
 .upgrade-success-banner__wrapper .upgrade-success-banner__blurb-wrapper .upgrade-success-banner__blurb:hover {
-  border-color: var(--ee-brand-primary);
+  border-color: var(--upgrade-banner-link);
 }
 .upgrade-success-banner__wrapper .upgrade-success-banner__blurb-wrapper .upgrade-success-banner__blurb:hover h6,
 .upgrade-success-banner__wrapper .upgrade-success-banner__blurb-wrapper .upgrade-success-banner__blurb:hover .upgrade-success-banner__blurb-learn {
   color: var(--ee-link-hover);
 }
+.upgrade-success-banner__wrapper .upgrade-success-banner__blurb-wrapper .upgrade-success-banner__blurb:focus-visible {
+  outline-offset: -3px;
+}
 .upgrade-success-banner__wrapper .upgrade-success-banner__blurb-wrapper .upgrade-success-banner__blurb i {
   position: absolute;
   top: 19px;
   left: 15px;
-  opacity: 0.5;
+  color: var(--upgrade-banner-link);
+  opacity: 0.82;
 }
 .upgrade-success-banner__wrapper .upgrade-success-banner__blurb-wrapper .upgrade-success-banner__blurb h6 {
   font-size: 15px;
+  font-weight: 650;
   color: var(--ee-text-normal);
   margin-bottom: 5px;
 }
 .upgrade-success-banner__wrapper .upgrade-success-banner__blurb-wrapper .upgrade-success-banner__blurb p {
   font-size: 13px;
-  color: var(--ee-text-secondary);
+  color: var(--upgrade-banner-copy);
 }
 .upgrade-success-banner__wrapper .upgrade-success-banner__blurb-wrapper .upgrade-success-banner__blurb .upgrade-success-banner__blurb-learn {
-  color: var(--ee-link);
+  color: var(--upgrade-banner-link);
+}
+
+[data-theme=dark] .upgrade-success-banner__wrapper,
+[data-theme=pink] .upgrade-success-banner__wrapper,
+[data-theme=contrast] .upgrade-success-banner__wrapper {
+  --upgrade-banner-link: var(--ee-link-hover);
+  --upgrade-banner-copy: var(--ee-text-tertiary);
+  --upgrade-banner-border: var(--ee-panel-border);
 }
 
 [data-theme=dark] .upgrade-success-banner__wrapper,
