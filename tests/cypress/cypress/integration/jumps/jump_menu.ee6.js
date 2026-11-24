@@ -44,12 +44,33 @@ context('Jump Menu', () => {
 		cy.url().should('include', '/members/profile/consent');
 	});
 
-	it('switches to Contrast from the theme picker and remembers it', function() {
+	it('keeps keyboard navigation working with an incomplete cached command', function() {
+		cy.window().then(win => {
+			win.EE.cp.JumpMenuCommands[1].unavailableCommand = { command_title: 'View Members' };
+		});
+
+		page.get('primary_input').type('switch theme{downarrow}{enter}');
+		page.get('secondary_results').should('be.visible').contains('light');
+	});
+
+	it('highlights the applied theme when switching and after reload', function() {
 		page.get('primary_input').type('switch theme{enter}');
-		page.get('secondary_results').contains('.jump-menu__link', /^\s*contrast\s*$/i).click();
-		cy.get('body').should('have.attr', 'data-theme', 'contrast');
+		page.get('secondary_results').find('.jump-menu__link--active').should('contain.text', 'light');
+
+		['dark', 'slate', 'light', 'contrast'].forEach(theme => {
+			page.get('secondary_results').contains('.jump-menu__link', new RegExp('^\\s*' + theme + '\\s*$')).click();
+			cy.get('body').should('have.attr', 'data-theme', theme);
+			page.get('secondary_results').find('.jump-menu__link--active').should('have.length', 1).and('contain.text', theme);
+		});
+
 		cy.reload();
 		cy.get('body').should('have.attr', 'data-theme', 'contrast');
+		page.get('primary_input').type('switch theme{enter}');
+		page.get('secondary_results').find('.jump-menu__link--active').should('contain.text', 'contrast');
+
+		page.get('secondary_input').type('{uparrow}{enter}');
+		cy.get('body').should('have.attr', 'data-theme', 'slate');
+		page.get('secondary_results').find('.jump-menu__link--active').should('contain.text', 'slate');
 	});
 
 	describe('entry edit jumps', function() {

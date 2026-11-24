@@ -224,11 +224,13 @@ EE.cp.JumpMenu = {
 		}
 	},
 
-	handleClick: function(commandKey) {
+	handleClick: function(commandKey, link) {
 		// Check if we're changing the theme.
 		if (EE.cp.JumpMenuCommands[EE.cp.JumpMenu.currentFocus][commandKey].target.indexOf('theme/') !== -1) {
 			jumpContainer.document.body.dataset.theme = EE.cp.JumpMenuCommands[EE.cp.JumpMenu.currentFocus][commandKey].target.replace('theme/', '');
 			localStorage.setItem('theme', jumpContainer.document.body.dataset.theme);
+			link.parentElement.querySelector('.jump-menu__link--active').classList.remove('jump-menu__link--active');
+			link.classList.add('jump-menu__link--active');
 		} else {
 			// Save the command key we selected into an array for the level we're on (i.e. top level command or a sub-command).
 			EE.cp.JumpMenu.commandKeys[EE.cp.JumpMenu.currentFocus] = commandKey;
@@ -362,7 +364,7 @@ EE.cp.JumpMenu = {
 		// Determine which result box to target; default to level 1.
 		let entryTarget = '#jumpMenu' + level;
 		let entryInputTarget = '#jumpEntry' + level;
-		let resultsTarget = '#jumpMenuResults' + level;
+		let results = jumpContainer.document.querySelector('#jumpMenuResults' + level);
 
 		// Show the first or secondary input box.
 		if (level > 1) {
@@ -372,16 +374,19 @@ EE.cp.JumpMenu = {
 		jumpContainer.document.querySelector(entryInputTarget).focus();
 
 		// Reset the target results box to empty for our new results.
-		jumpContainer.document.querySelector(resultsTarget).innerHTML = '';
-		jumpContainer.document.querySelector(resultsTarget).style.display = 'block';
+		results.innerHTML = '';
+		results.style.display = 'block';
 
-		// Note that the first entry that matches should be selected so the user can just hit enter.
-		let firstMatch = true;
-		let matchClass = '';
+		const currentThemeTarget = 'theme/' + (jumpContainer.document.body.dataset.theme || 'light');
+		let highlightedIndex = 0;
 		let displayedCommands = 0;
 
 		// Loop through our commands. Can be the primary EE.cp.JumpMenuCommands set or from the dynamic secondary ajax response.
 		for (var commandKey in commandSet) {
+			if (typeof commandSet[commandKey].target !== 'string') {
+				continue;
+			}
+
 			if (!searchString || commandSet[commandKey].command.match(searchRegex)) {
 				// We have at least one match, make sure to remove the 'no results' box.
 				jumpContainer.document.querySelector('#jumpMenuNoResults').style.display = 'none';
@@ -393,19 +398,19 @@ EE.cp.JumpMenu = {
 				// We only want to display 10 so by checking for 11, we know we have at least 1
 				// more so we can display a "there are more results" message.
 				if (displayedCommands >= 11) {
-					jumpContainer.document.querySelector(resultsTarget).innerHTML += '<div class="jump-menu__header text-center">' + EE.lang.many_jump_results + '</div>';
+					results.innerHTML += '<div class="jump-menu__header text-center">' + EE.lang.many_jump_results + '</div>';
 					break;
 				}
 
-				if (firstMatch) {
-					matchClass = 'jump-menu__link--active';
+				if (commandSet[commandKey].target === currentThemeTarget) {
+					highlightedIndex = displayedCommands - 1;
 				}
 
 				let jumpTarget = '#';
 				let jumpClick = '';
 
 				if (commandSet[commandKey].dynamic === true) {
-					jumpClick = 'onclick="EE.cp.JumpMenu.handleClick(\'' + commandKey + '\');"';
+					jumpClick = 'onclick="EE.cp.JumpMenu.handleClick(\'' + commandKey + '\', this);"';
 				} else if (commandSet[commandKey].target.indexOf('?') >= 0) {
 					jumpTarget = commandSet[commandKey].target;
 				} else {
@@ -418,17 +423,17 @@ EE.cp.JumpMenu = {
 					commandContext = commandSet[commandKey].command_context;
 				}
 
-				jumpContainer.document.querySelector(resultsTarget).innerHTML += '<a class="jump-menu__link ' + matchClass + '" href="' + jumpTarget + '" ' + jumpClick + '><span class="jump-menu__link-text"><i class="fal fa-sm ' + commandSet[commandKey].icon + '"></i> ' + commandSet[commandKey].command_title + '</span><span class="meta-info jump-menu__link-right">' + commandContext + '</span></a>';
-
-				firstMatch = false;
-				matchClass = '';
+				results.innerHTML += '<a class="jump-menu__link" href="' + jumpTarget + '" ' + jumpClick + '><span class="jump-menu__link-text"><i class="fal fa-sm ' + commandSet[commandKey].icon + '"></i> ' + commandSet[commandKey].command_title + '</span><span class="meta-info jump-menu__link-right">' + commandContext + '</span></a>';
 			}
 		}
 
 		if (displayedCommands == 0) {
 			jumpContainer.document.querySelectorAll('.jump-menu__items').forEach(el => { el.style.display = 'none'; });
 			jumpContainer.document.querySelector('#jumpMenuNoResults').style.display = 'block';
+			return;
 		}
+
+		results.children[highlightedIndex].classList.add('jump-menu__link--active');
 	},
 
 	/**
