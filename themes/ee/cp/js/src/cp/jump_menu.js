@@ -383,6 +383,10 @@ EE.cp.JumpMenu = {
 
 		// Loop through our commands. Can be the primary EE.cp.JumpMenuCommands set or from the dynamic secondary ajax response.
 		for (var commandKey in commandSet) {
+			if (typeof commandSet[commandKey].target !== 'string') {
+				continue;
+			}
+
 			if (!searchString || commandSet[commandKey].command.match(searchRegex)) {
 				// We have at least one match, make sure to remove the 'no results' box.
 				jumpContainer.document.querySelector('#jumpMenuNoResults').style.display = 'none';
