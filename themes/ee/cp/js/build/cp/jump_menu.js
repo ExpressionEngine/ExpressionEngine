@@ -7,7 +7,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -218,11 +218,13 @@ EE.cp.JumpMenu = {
       }
     }
   },
-  handleClick: function handleClick(commandKey) {
+  handleClick: function handleClick(commandKey, link) {
     // Check if we're changing the theme.
     if (EE.cp.JumpMenuCommands[EE.cp.JumpMenu.currentFocus][commandKey].target.indexOf('theme/') !== -1) {
       jumpContainer.document.body.dataset.theme = EE.cp.JumpMenuCommands[EE.cp.JumpMenu.currentFocus][commandKey].target.replace('theme/', '');
       localStorage.setItem('theme', jumpContainer.document.body.dataset.theme);
+      link.parentElement.querySelector('.jump-menu__link--active').classList.remove('jump-menu__link--active');
+      link.classList.add('jump-menu__link--active');
     } else {
       // Save the command key we selected into an array for the level we're on (i.e. top level command or a sub-command).
       EE.cp.JumpMenu.commandKeys[EE.cp.JumpMenu.currentFocus] = commandKey;
@@ -353,7 +355,7 @@ EE.cp.JumpMenu = {
 
     var entryTarget = '#jumpMenu' + level;
     var entryInputTarget = '#jumpEntry' + level;
-    var resultsTarget = '#jumpMenuResults' + level; // Show the first or secondary input box.
+    var results = jumpContainer.document.querySelector('#jumpMenuResults' + level); // Show the first or secondary input box.
 
     if (level > 1) {
       jumpContainer.document.querySelector(entryTarget).style.display = 'flex';
@@ -361,11 +363,10 @@ EE.cp.JumpMenu = {
 
     jumpContainer.document.querySelector(entryInputTarget).focus(); // Reset the target results box to empty for our new results.
 
-    jumpContainer.document.querySelector(resultsTarget).innerHTML = '';
-    jumpContainer.document.querySelector(resultsTarget).style.display = 'block'; // Note that the first entry that matches should be selected so the user can just hit enter.
-
-    var firstMatch = true;
-    var matchClass = '';
+    results.innerHTML = '';
+    results.style.display = 'block';
+    var currentThemeTarget = 'theme/' + (jumpContainer.document.body.dataset.theme || 'light');
+    var highlightedIndex = 0;
     var displayedCommands = 0; // Loop through our commands. Can be the primary EE.cp.JumpMenuCommands set or from the dynamic secondary ajax response.
 
     for (var commandKey in commandSet) {
@@ -378,19 +379,19 @@ EE.cp.JumpMenu = {
         // more so we can display a "there are more results" message.
 
         if (displayedCommands >= 11) {
-          jumpContainer.document.querySelector(resultsTarget).innerHTML += '<div class="jump-menu__header text-center">' + EE.lang.many_jump_results + '</div>';
+          results.innerHTML += '<div class="jump-menu__header text-center">' + EE.lang.many_jump_results + '</div>';
           break;
         }
 
-        if (firstMatch) {
-          matchClass = 'jump-menu__link--active';
+        if (commandSet[commandKey].target === currentThemeTarget) {
+          highlightedIndex = displayedCommands - 1;
         }
 
         var jumpTarget = '#';
         var jumpClick = '';
 
         if (commandSet[commandKey].dynamic === true) {
-          jumpClick = 'onclick="EE.cp.JumpMenu.handleClick(\'' + commandKey + '\');"';
+          jumpClick = 'onclick="EE.cp.JumpMenu.handleClick(\'' + commandKey + '\', this);"';
         } else if (commandSet[commandKey].target.indexOf('?') >= 0) {
           jumpTarget = commandSet[commandKey].target;
         } else {
@@ -403,9 +404,7 @@ EE.cp.JumpMenu = {
           commandContext = commandSet[commandKey].command_context;
         }
 
-        jumpContainer.document.querySelector(resultsTarget).innerHTML += '<a class="jump-menu__link ' + matchClass + '" href="' + jumpTarget + '" ' + jumpClick + '><span class="jump-menu__link-text"><i class="fal fa-sm ' + commandSet[commandKey].icon + '"></i> ' + commandSet[commandKey].command_title + '</span><span class="meta-info jump-menu__link-right">' + commandContext + '</span></a>';
-        firstMatch = false;
-        matchClass = '';
+        results.innerHTML += '<a class="jump-menu__link" href="' + jumpTarget + '" ' + jumpClick + '><span class="jump-menu__link-text"><i class="fal fa-sm ' + commandSet[commandKey].icon + '"></i> ' + commandSet[commandKey].command_title + '</span><span class="meta-info jump-menu__link-right">' + commandContext + '</span></a>';
       }
     }
 
@@ -414,7 +413,10 @@ EE.cp.JumpMenu = {
         el.style.display = 'none';
       });
       jumpContainer.document.querySelector('#jumpMenuNoResults').style.display = 'block';
+      return;
     }
+
+    results.children[highlightedIndex].classList.add('jump-menu__link--active');
   },
 
   /**
