@@ -5,9 +5,8 @@
 // being tested and is offered an update: the caller's beforeEach leaves the
 // browser on the control panel with the update button showing.
 //
-// The version the site has on record is set back, so that the latest public
-// release is offered. The update is stopped before any of the site's files
-// are replaced.
+// The version the site has on record is set back, so that an update is
+// offered. The update is stopped before any of the site's files are replaced.
 export function firstHalfChecks() {
   const updateFolder = '../../system/user/cache/ee_update/'
   const updater = '../../system/ee/updater'

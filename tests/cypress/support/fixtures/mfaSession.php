@@ -327,7 +327,6 @@ if (array_key_exists($scenario, $invalidApprovals)) {
                 $installerPath = SYSPATH . 'ee/_installer/';
             }
 
-            defined('EE_APPPATH') || define('EE_APPPATH', BASEPATH);
             require_once $installerPath . 'libraries/Progress.php';
             require_once $installerPath . 'updates/ud_7_06_00.php';
             $updater = new \ExpressionEngine\Updater\Version_7_6_0\Updater();

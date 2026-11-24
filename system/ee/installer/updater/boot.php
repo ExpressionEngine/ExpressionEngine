@@ -47,6 +47,8 @@ try {
         defined('FILE_WRITE_MODE') || define('FILE_WRITE_MODE', 0666);
         defined('DIR_READ_MODE') || define('DIR_READ_MODE', 0755);
         defined('DIR_WRITE_MODE') || define('DIR_WRITE_MODE', 0777);
+        // On Windows a path is tested for writability by opening it
+        defined('FOPEN_WRITE_CREATE') || define('FOPEN_WRITE_CREATE', 'ab');
 
         require __DIR__ . '/ExpressionEngine/Updater/Boot/boot.common.php';
     }

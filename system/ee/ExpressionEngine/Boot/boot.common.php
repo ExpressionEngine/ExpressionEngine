@@ -16,9 +16,11 @@ use ExpressionEngine\Library\Filesystem\Filesystem;
 
 // Check to see if we're upgrading from EE5 or EE6+.
 // random_compat requirement is processed differently
+// The updater's copy of this file also boots a rollback, which can run while
+// none of the application's files are in place.
 if (file_exists(SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/random.php')) {
     require_once SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/random.php';
-} else {
+} elseif (file_exists(SYSPATH . '/ee/ExpressionEngine/Library/Compat/Random/random.php')) {
     require_once SYSPATH . '/ee/ExpressionEngine/Library/Compat/Random/random.php';
 }
 

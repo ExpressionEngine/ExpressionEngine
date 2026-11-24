@@ -329,6 +329,12 @@ module.exports = defineConfig({
                 }
             })
 
+            on('task', {
+                'updater:use_update_server': (url) => {
+                    return updater.use_update_server(url)
+                }
+            })
+
             on("task", {
                 generateOTP: require("cypress-otp")
             });

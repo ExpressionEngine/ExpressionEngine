@@ -11,6 +11,11 @@ context('One-Click Updater', () => {
  
   before(function(){
     cy.task('updater:backup_files')
+
+    // Where a run supplies an update server of its own, the site asks that
+    // one for the release to update to. Otherwise it asks the public one.
+    cy.task('updater:use_update_server', Cypress.env('UPDATE_SERVER_URL') || null)
+
     cy.task('db:seed')
     cy.task('installer:disable')
     cy.exec(`chmod 666 '../../system/user/config/config.php'`)
@@ -125,12 +130,20 @@ context('One-Click Updater', () => {
     })
   })
 
-  // The site is now running the release it was just updated to, and its files
-  // ask the public update server from here on. Setting the version it has on
-  // record back makes it offer the latest public release, which puts the new
-  // release's own code in charge of fetching and unpacking a package. The
-  // update is stopped before any of the site's files are replaced.
+  // The site is now running the release it was just updated to. Setting the
+  // version it has on record back makes it offer an update again, which puts
+  // the new release's own code in charge of fetching and unpacking a package.
+  // The update is stopped before any of the site's files are replaced.
   context('with the updated release doing the updating', () => {
+
+    // The update also replaced the files that say which update server to
+    // ask. Where a run supplies one of its own, the release is pointed at it
+    // again, so that it is offered the release that server holds. A release
+    // still being tested is newer than anything the public update server
+    // has, and a site is never taken back to an older one.
+    before(function() {
+      cy.task('updater:use_update_server', Cypress.env('UPDATE_SERVER_URL') || null)
+    })
 
     firstHalfChecks()
 

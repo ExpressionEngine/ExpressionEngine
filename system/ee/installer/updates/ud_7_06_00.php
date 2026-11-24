@@ -181,8 +181,10 @@ class Updater
      */
     public function recompileTemplateRoutes()
     {
+        // The installer's own path constants are not defined when the control
+        // panel runs this update on a site that keeps install mode switched off
         if (! class_exists('EE_Route', false)) {
-            require_once EE_APPPATH . 'libraries/template_router/Route.php';
+            require_once BASEPATH . 'libraries/template_router/Route.php';
         }
 
         $routes = ee()->db->select('template_routes.route_id, route, route_required')

@@ -15,7 +15,6 @@ class Version760Test extends TestCase
 {
     protected function setUp(): void
     {
-        define('EE_APPPATH', BASEPATH);
         require_once SYSPATH . 'ee/installer/updates/ud_7_06_00.php';
         require_once BASEPATH . 'libraries/Progress.php';
         require_once BASEPATH . 'libraries/template_router/Match.php';
