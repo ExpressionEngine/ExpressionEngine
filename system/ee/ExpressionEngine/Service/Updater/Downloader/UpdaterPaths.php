@@ -29,6 +29,17 @@ trait UpdaterPaths
     }
 
     /**
+     * Constructs and returns the path to the signature and hash kept with the
+     * downloaded zip archive
+     *
+     * @return	string	Path to the downloaded archive's signature details
+     */
+    protected function getArchiveSignaturePath()
+    {
+        return $this->getArchiveFilePath() . '.sig';
+    }
+
+    /**
      * Constructs and returns the path to the extracted archive path
      *
      * @return	string	Path to extracted archive

@@ -12,6 +12,7 @@ namespace ExpressionEngine\Service\Updater\Downloader;
 
 use ExpressionEngine\Library\Filesystem\Filesystem;
 use ExpressionEngine\Service\Updater\Logger;
+use ExpressionEngine\Service\Updater\UpdaterException;
 
 /**
  * Prep Major Upgrades
@@ -53,6 +54,37 @@ class PrepMajorUpgrade
 
         // Is the upcoming release a major version?
         return ($update_version_major > $version_major);
+    }
+
+    /**
+     * Leave major upgrades to Composer when the site has explicitly opted in.
+     *
+     * @param string $targetVersion Version the update is for
+     * @return void
+     * @throws UpdaterException
+     */
+    public function checkComposerManagedCore(string $targetVersion): void
+    {
+        if (! $this->isMajorUpgrade((int) $targetVersion)) {
+            return;
+        }
+
+        $path = dirname(SYSPATH) . '/composer.json';
+        if (! $this->filesystem->isFile($path)) {
+            return;
+        }
+
+        // Decoded as an object, so that a list is not taken for one
+        $manifest = json_decode($this->filesystem->read($path));
+
+        // Anything but an object cannot say the site has not opted in
+        if (! is_object($manifest)) {
+            throw new UpdaterException(sprintf(lang('composer_manifest_invalid'), $path));
+        }
+
+        if (($manifest->extra->expressionengine->{'managed-core'} ?? null) === true) {
+            throw new UpdaterException(sprintf(lang('major_upgrade_use_composer'), (int) $targetVersion));
+        }
     }
 
     /**

@@ -31,44 +31,23 @@ class License extends CP_Controller
     }
 
     /**
-     * Handles the license check from the EE main server.
+     * Receives the license service's answer from the control panel and
+     * stores it.
      *
      * @return string success or error
      */
     public function handleAccessResponse()
     {
-        $licenseResponse = ee()->input->post('licenseStatus');
-
-        // Combine our info into a file we can cache.
-        $data = [
-            'appVer' => preg_replace('/[^\da-z\.-]/i', '', ee()->input->post('appVer')),
-            'license' => preg_replace('/[^a-z0-9]/i', '', ee()->input->post('license')),
-            'validLicense' => ($licenseResponse['messageType'] === 'success'),
-            'licenseStatus' => preg_replace('/[^a-z0-9_]/i', '', $licenseResponse['messageType']),
-            'site_id' => filter_var(ee()->input->post('site_id'), FILTER_VALIDATE_INT),
-            'site_url' => filter_var(ee()->input->post('site_url'), FILTER_VALIDATE_URL),
-            'addons' => []
-        ];
-
-        if (!empty(ee()->input->post('addons')) && is_array(ee()->input->post('addons'))) {
-            foreach (ee()->input->post('addons') as $addon) {
-                $cleanSlug = preg_replace('/[^\da-z\.-_]/i', '', $addon['slug']);
-                $data['addons'][$cleanSlug] = [
-                    'slug' => $cleanSlug,
-                    'version' => isset($addon['version']) ? preg_replace('/[^\da-z\.-]/i', '', $addon['version']) : '',
-                    'status' => $addon['status'],
-                    'update' => $addon['update']
-                ];
-            }
+        $response = ee()->input->post('licenseStatus');
+        $status = ee('License/Status');
+        $stored = is_array($response) && $status->store($response, ee()->input->post('license'));
+        $challengeId = ee()->input->post('challenge_id');
+        if (is_string($challengeId)) {
+            $status->finishBrowserChallenge($challengeId, $stored);
         }
 
-        $data['sha'] = hash('sha256', json_encode($data));
-
-        $encrypted = ee('Encrypt')->encode(json_encode($data), ee()->config->item('session_crypt_key'));
-        ee()->cache->file->save('/addons-status', $encrypted . '||s=' . hash('sha256', $encrypted), 0);
-
         return ee()->output->send_ajax_response(array(
-            'messageType' => 'success',
+            'messageType' => $stored ? 'success' : 'error',
             'message' => ''
         ));
     }

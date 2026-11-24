@@ -217,10 +217,11 @@ class Pro_search_filter_keywords extends Pro_search_filter
         if (
             ($match = $this->params->get('keywords:match')) &&
             ($field = $this->fields->name($match)) &&
-            ($rawKeywords = addslashes($this->params->get('keywords')))
+            ($rawKeywords = $this->params->get('keywords'))
         ) {
             $join = $this->fields->table($match);
-            $select[] = "IF({$field} = '{$rawKeywords}', 1, 0) AS `match`";
+            $rawKeywords = ee()->db->escape((string) $rawKeywords);
+            $select[] = "IF({$field} = {$rawKeywords}, 1, 0) AS `match`";
         }
 
         // This depends on FT

@@ -69,13 +69,16 @@ $current_page = ee()->uri->segment(2);
             <div class="ee-main" role="main">
 
             <section class="lv-banner">
-                <?php if(ee('pro:Access')->requiresValidLicense() && ee('pro:Access')->hasProNotice('expired')): ?>
+                <?php $expired = ee('pro:Access')->requiresValidLicense() && ee('pro:Access')->hasProNotice('expired'); ?>
+                <?php if($expired || (ee('pro:Access')->requiresValidLicense() && ee('pro:Access')->hasVerificationNotice())): ?>
                     <div class="lv-banner__inner alert <?= ee('pro:Access')->canManageLicenses() ? 'alert--error' : 'alert--warning'; ?>">
                         <div class="lv-banner__info alert__content">
                             <p class="alert__title">Software License Notice.</p>
-                            <?php if(ee('pro:Access')->canManageLicenses()): ?>
+                            <?php if($expired && ee('pro:Access')->canManageLicenses()): ?>
                                 <p>Your ExpressionEngine license has expired. <a href="https://expressionengine.com/store/purchase-pro?utm_source=cp&utm_medium=cp-link&utm_campaign=cp-cta&utm_content=cp-banner#renew" target="_blank">Please renew ExpressionEngine Pro today</a>.
                                 <p>We recommend keeping licenses current to ensure smooth site operation, access to updates, and security fixes.</p>
+                            <?php elseif(ee('pro:Access')->canManageLicenses()): ?>
+                                <p><?=lang('license_check_notice_desc')?></p>
                             <?php else: ?>
                                 <p>Please contact the site administrator and ask them to log in to resolve any license notices.</p>
                                 <p>Note: This will not impact the operation of the site.</p>

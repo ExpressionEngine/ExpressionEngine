@@ -21,7 +21,7 @@ class PostRequest extends Request
 
         if (! empty($data)) {
             $config['CURLOPT_POST'] = 1;
-            $config['CURLOPT_POSTFIELDS'] = http_build_query($data);
+            $config['CURLOPT_POSTFIELDS'] = $this->buildQuery($data);
         }
 
         parent::__construct($url, $config, $callback);

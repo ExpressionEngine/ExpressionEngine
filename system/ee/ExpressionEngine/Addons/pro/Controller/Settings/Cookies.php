@@ -44,7 +44,9 @@ class Cookies extends Settings\Pro
                         $cookie->cookie_title,
                         $cookie_prefix . $cookie->cookie_name,
                         isset($providers[$cookie->cookie_provider]) ? $providers[$cookie->cookie_provider]->getName() : lang($cookie->cookie_provider),
-                        ($cookie->cookie_enforced_lifetime !== null) ? $cookie->cookie_enforced_lifetime : $cookie->cookie_lifetime,
+                        $cookie->cookie_name === 'mfa_session'
+                            ? (int) ee()->config->item('mfa_session_length')
+                            : (($cookie->cookie_enforced_lifetime !== null) ? $cookie->cookie_enforced_lifetime : $cookie->cookie_lifetime),
                         ['toolbar_items' => ['settings' => [
                             'href' => ee('CP/URL')->make('settings/pro/cookies/manage/' . $cookie->cookie_id),
                             'title' => lang('settings'),
@@ -137,11 +139,13 @@ class Cookies extends Settings\Pro
                 ),
                 array(
                     'title' => 'cookie_lifetime',
-                    'desc' => 'cookie_lifetime_desc',
+                    'desc' => $cookie->cookie_name === 'mfa_session' ? 'cookie_mfa_session_lifetime_desc' : 'cookie_lifetime_desc',
                     'fields' => array(
                         'cookie_lifetime' => array(
                             'type' => 'text',
-                            'value' => ($cookie->cookie_enforced_lifetime !== null) ? $cookie->cookie_enforced_lifetime : $cookie->cookie_lifetime,
+                            'value' => $cookie->cookie_name === 'mfa_session'
+                                ? (int) ee()->config->item('mfa_session_length')
+                                : (($cookie->cookie_enforced_lifetime !== null) ? $cookie->cookie_enforced_lifetime : $cookie->cookie_lifetime),
                             'disabled' => !$lifetimeIsChangeable
                         )
                     )

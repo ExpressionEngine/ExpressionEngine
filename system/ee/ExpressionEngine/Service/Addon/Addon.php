@@ -790,64 +790,18 @@ class Addon
     /**
      * Check cached license response
      *
-     * @return bool
+     * @return string|bool
      */
     public function checkCachedLicenseResponse()
     {
-        // See if we have a cached check.
-        $cached = ee()->cache->file->get('/addons-status');
+        $licenseStatus = ee('License/Status');
+        $status = $licenseStatus->statusFor($this->shortname);
 
-        if (empty($cached)) {
-            return false;
+        if ($status === false && $licenseStatus->getError()) {
+            $this->logLicenseError($licenseStatus->getError());
         }
 
-        if (!ee()->cache->file->is_writable('/addons-status')) {
-            $this->logLicenseError('license_error_file_not_writable');
-
-            return false;
-        }
-
-        list($cache, $integrity) = explode('||s=', $cached);
-
-        // Make sure the cache exists and has the proper integrity to use.
-        if (empty($cache) || empty($integrity) || hash('sha256', $cache) !== $integrity) {
-            $this->logLicenseError('license_error_file_broken');
-
-            return false;
-        }
-
-        $json = ee('Encrypt')->decode($cache, ee()->config->item('session_crypt_key'));
-
-        if (empty($json) || !$data = json_decode($json, true)) {
-            $this->logLicenseError('license_error_file_broken');
-
-            return false;
-        }
-
-        $sha = $data['sha'];
-        unset($data['sha']);
-
-        if ($sha !== hash('sha256', json_encode($data))) {
-            $this->logLicenseError('license_error_file_broken');
-
-            return false;
-        }
-
-        $addonStatus = 'na';
-
-        if (isset($data['addons'][$this->shortname]) && isset($data['addons'][$this->shortname]['status'])) {
-            $addonStatus = $data['addons'][$this->shortname]['status'];
-
-            if ($addonStatus === 'valid' && $data['validLicense'] === false) {
-                if (!empty($data['licenseStatus'])) {
-                    return $data['licenseStatus'];
-                } else {
-                    return 'invalid';
-                }
-            }
-        }
-
-        return $addonStatus;
+        return $status;
     }
 
     /**

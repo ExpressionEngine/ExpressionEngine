@@ -24,9 +24,17 @@ class Runner
     }
 
     protected $logger;
+    protected $package;
+    protected $target_version;
 
-    public function __construct()
+    /**
+     * @param string|null $targetVersion The release selected by the caller, if known.
+     */
+    public function __construct(?string $targetVersion = null)
     {
+        // An empty version is no version, here and in everything that follows
+        $this->target_version = ($targetVersion === '') ? null : $targetVersion;
+
         // The idea here is to separate the download and unpacking
         // process into quick, hopefully low-memory tasks when accessed
         // through the browser
@@ -44,12 +52,41 @@ class Runner
         @ini_set('memory_limit', '256M');
     }
 
+    /**
+     * Updates from a package that is already on this server and has been
+     * verified, instead of downloading one
+     *
+     * @param	array	$package	Package details from Updater/Downloader's stagePackage()
+     */
+    public function usePackage(array $package)
+    {
+        $this->package = $package;
+    }
+
+    /**
+     * The release selected for this runner, available to the existing updater_start hook.
+     *
+     * @return string|null
+     */
+    public function getTargetVersion(): ?string
+    {
+        return $this->target_version;
+    }
+
     // She packed my bags last night...
     public function preflight()
     {
+        // Before the log or anything kept from the last update is cleared
+        $preflight = ee('Updater/Preflight');
+        $preflight->checkLastUpdateCompleted();
+
         $this->logger->truncate();
         $this->logger->log('Maximum execution time: ' . @ini_get('max_execution_time'));
         $this->logger->log('Memory limit: ' . @ini_get('memory_limit'));
+
+        // Kept before anything below can end this step, so the steps that
+        // follow never go by what an earlier update left behind
+        $preflight->keepTarget($this->target_version);
 
         // -------------------------------------------
         // 'updater_start' hook.
@@ -64,6 +101,8 @@ class Runner
         //
         // -------------------------------------------
 
+        // Made here, as it reads the site's theme paths when it is made and
+        // the hook above may have changed them
         $preflight = ee('Updater/Preflight');
         $preflight->checkPermissions();
         $preflight->cleanUpOldUpgrades();
@@ -73,12 +112,22 @@ class Runner
 
     public function prepMajorUpgrade()
     {
-        ee('Updater/PrepMajorUpgrade')->prepMajorIfApplicable();
+        // A runner that was not told which release it is for goes by the
+        // latest one
+        $major = $this->target_version ? (int) explode('.', $this->target_version, 2)[0] : null;
+
+        ee('Updater/PrepMajorUpgrade')->prepMajorIfApplicable($major);
     }
 
     public function download()
     {
-        ee('Updater/Downloader')->downloadPackage(
+        if ($this->package) {
+            $this->logger->log('Using the update package that was supplied');
+
+            return;
+        }
+
+        $this->package = ee('Updater/Downloader')->downloadPackage(
             'https://update.expressionengine.com'
         );
     }
@@ -86,7 +135,14 @@ class Runner
     public function unpack()
     {
         $unpacker = ee('Updater/Unpacker');
-        $unpacker->unzipPackage();
+
+        // In the control panel each step is its own request, so the package's
+        // details come from where the download step left them. The package
+        // is opened as the release this update was checked for.
+        $unpacker->unzipPackage(
+            $this->package ?: ee('Updater/Downloader')->downloadedPackage(),
+            $this->target_version
+        );
         $unpacker->verifyExtractedPackage();
         $unpacker->checkRequirements();
         $unpacker->moveUpdater();

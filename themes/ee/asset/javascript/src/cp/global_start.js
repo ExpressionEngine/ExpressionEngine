@@ -90,7 +90,10 @@ $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
 		// Trigger broadcast events
 		'ee-broadcast': function(event) {
 			EE.cp.broadcastEvents[event]();
-			$(window).trigger('broadcast', event);
+
+			// Namespaced, or every broadcast listener in the other tabs (CSRF
+			// token, base path, remember me) receives this event name as its data
+			$(window).trigger('broadcast.idleState', event);
 		}
 	};
 
@@ -230,58 +233,85 @@ $(document).ready(function () {
 	EE.cp.validateLicense();
 });
 
-
 /**
  * Posts the current EE license to the EE main site for validation purposes.
  */
 EE.cp.validateLicense = function() {
 	// Verify we have a license validation URL and the last update check was more than a minute ago.
-	if (!EE.cp.lvUrl || (EE.cp.lastUpdateCheck && EE.cp.lastUpdateCheck <= 60)) {
+	if (!EE.cp.lvUrl || (typeof EE.cp.lastUpdateCheck === 'number' && EE.cp.lastUpdateCheck <= 60)) {
 		return;
 	}
 
 	var installedAddons = JSON.parse(EE.cp.installedAddons);
 
+	var meta = {
+		site_name: EE.site_name,
+		site_id: EE.site_id,
+		site_url: EE.site_url,
+		usesPro: EE.cp.usesPro,
+		source: 'browser'
+	};
+
+	// Server details are only present for members who manage licenses.
+	if (EE.cp.phpVersion) {
+		meta.php_version = EE.cp.phpVersion;
+		meta.database_engine = EE.cp.databaseEngine;
+		meta.database_version = EE.cp.databaseVersion;
+	}
+
+	var ping = {
+		appVer: EE.cp.appVer,
+		license: EE.cp.licenseKey,
+		addons: installedAddons,
+		meta: [meta]
+	};
+	var challenge = EE.cp.domainChallenge;
+	if (challenge) {
+		ping.challenge_url = challenge.callback_url;
+		ping.challenge_proof = challenge.proof_sha256;
+		delete EE.cp.domainChallenge;
+	}
+
 	$.ajax({
 		type: 'POST',
 		url: EE.cp.lvUrl,
 		dataType: 'json',
-		data: {
-			appVer: EE.cp.appVer,
-			license: EE.cp.licenseKey,
-			addons: installedAddons,
-			meta: [
-				{
-					site_name: EE.site_name,
-					site_id: EE.site_id,
-					site_url: EE.site_url,
-					usesPro: EE.cp.usesPro
-				}
-			]
-		},
+		data: ping,
 
 		success: function(result) {
 			if (EE.cp.accessResponseURL) {
-				// Fill in some missing data between the request and response.
-				for (var addon of result.addons) {
-					installedAddons[addon.slug].status = addon.status;
-					installedAddons[addon.slug].update = addon.update;
+				// The handler in earlier versions reads add-on statuses from the
+				// `addons` field; kept so a site mid-upgrade keeps working.
+				var legacyAddons = {};
+				var responseAddons = Array.isArray(result && result.addons) ? result.addons : [];
+				responseAddons.forEach(function(addon) {
+					if (addon && Object.prototype.hasOwnProperty.call(installedAddons, addon.slug)) {
+						legacyAddons[addon.slug] = {
+							slug: addon.slug,
+							version: installedAddons[addon.slug].version,
+							status: addon.status,
+							update: addon.update
+						};
+					}
+				});
+
+				var answer = {
+					licenseStatus: result,
+					appVer: EE.cp.appVer,
+					license: EE.cp.licenseKey,
+					addons: legacyAddons,
+					site_id: EE.site_id,
+					site_url: EE.site_url
+				};
+				if (challenge) {
+					answer.challenge_id = challenge.id;
 				}
 
-				// Post the response to the backend.
 				$.ajax({
 					type: 'POST',
 					url: EE.cp.accessResponseURL,
 					dataType: 'json',
-					data: {
-						appVer: EE.cp.appVer,
-						license: EE.cp.licenseKey,
-						licenseStatus: result,
-						addons: installedAddons,
-						site_name: EE.site_name,
-						site_id: EE.site_id,
-						site_url: EE.site_url
-					},
+					data: answer,
 
 					success: function (result) {
 
@@ -620,6 +650,10 @@ EE.cp.broadcastEvents = (function() {
 		// Bind on the modal submission
 		logoutModal.find('form').on('submit', function() {
 
+			// The moment we know they are here. The answer can reach us much
+			// later: a frozen tab only hears back when it wakes up.
+			var submittedAt = $.now();
+
 			$.ajax({
 				type: 'POST',
 				url: this.action,
@@ -632,8 +666,17 @@ EE.cp.broadcastEvents = (function() {
 						return;
 					}
 
+					// They gave us their password when they submitted the form
+					State.lastActive = Math.max(State.lastActive, submittedAt);
+
 					// Hide the dialog
 					Events.login();
+
+					// Logging back in is activity the other tabs should know
+					// about. Share when the password was given, not our own
+					// clock: that may have been moved on by another tab's
+					// automatic pings while we waited for the answer.
+					SharedActivity.write(submittedAt);
 
 					// Grab the new token
 					EE.cp.refreshSessionData(null, result.base);
@@ -652,6 +695,61 @@ EE.cp.broadcastEvents = (function() {
 	});
 
 	/**
+	 * Shared record of the last real user interaction in *any* control panel tab.
+	 *
+	 * Broadcast events only reach tabs that are awake to hear them. Browsers
+	 * throttle, freeze and sleep background tabs, so a tab can wake up having
+	 * missed every "active" ping and conclude the user has been idle for hours
+	 * while they were working in another tab. It would then show the modal on
+	 * every tab and lock the control panel session they all share.
+	 *
+	 * To avoid that we also keep the time of the last interaction in
+	 * localStorage, where a tab can check it before deciding the user is idle.
+	 */
+	var SharedActivity = {
+
+		// One record per control panel, other installations on this domain
+		// have sessions of their own
+		KEY: 'ee_cp_last_active:' + window.location.pathname,
+		WRITE_INTERVAL: 5 * 1000,	// interactions fire constantly, no need to store them all
+		_lastWrite: 0,
+
+		read: function() {
+			try {
+				var time = parseInt(window.localStorage.getItem(this.KEY), 10) || 0;
+
+				// A time in the future (clock change, tampering) proves nothing
+				return (time > $.now() + this.WRITE_INTERVAL) ? 0 : time;
+			} catch (e) {
+				return 0;
+			}
+		},
+
+		write: function(time) {
+			// Login pages load this file too (the Pro login form does), but
+			// anyone can open those, so nothing seen there counts
+			if (EE.router_class == 'login') {
+				return;
+			}
+
+			if (Math.abs(time - this._lastWrite) < this.WRITE_INTERVAL) {
+				return;
+			}
+
+			this._lastWrite = time;
+
+			// Never replace newer activity with older
+			if (time <= this.read()) {
+				return;
+			}
+
+			try {
+				window.localStorage.setItem(this.KEY, time);
+			} catch (e) {}
+		}
+	};
+
+	/**
 	 * This object tracks the current state of the page.
 	 *
 	 * The resolve function is called once per tick. The individual events will
@@ -665,7 +763,7 @@ EE.cp.broadcastEvents = (function() {
 		lastActive: $.now(),
 		lastRefresh: $.now(),
 
-		setActiveTime: function() {
+		setActiveTime: function(isUserActivity) {
 			// Before we set someone as not idle we need to check if they've
 			// sneakily been idle for a long time. When you close your laptop
 			// the timer stops. Reopening it hours later creates a race between
@@ -681,15 +779,45 @@ EE.cp.broadcastEvents = (function() {
 					this.doRefresh();
 				}
 
-				this.lastActive = $.now();
+				// What this tab sees happens now. Word from another tab may
+				// not: a frozen tab hears it when it wakes up, long after the
+				// fact. So go by the shared record of when someone was last
+				// seen, where there is one, not by when the message arrived.
+				var lastSeen = (isUserActivity || this.modalActive) ? 0 : SharedActivity.read();
+
+				this.lastActive = lastSeen ? Math.max(this.lastActive, lastSeen) : $.now();
+
+				// Only real activity seen by this tab is shared. Pings relayed
+				// from other tabs are not, the tab that saw it has done so.
+				// Activity behind the login modal is not shared either: the
+				// session is locked, so it must not vouch for other tabs.
+				if (isUserActivity && ! this.modalActive) {
+					SharedActivity.write(this.lastActive);
+				}
 			}
 		},
 
 		modalThresholdReached: function() {
-			var idleTimeDelta = $.now() - this.lastActive,
-				mustShowModal = (this.hasFocus && idleTimeDelta > FOCUSED_IDLE_LIMIT) ||
-								( ! this.hasFocus && idleTimeDelta > BLURRED_IDLE_LIMIT);
-			return (this.modalActive === false && mustShowModal === true);
+			if (this.modalActive === true) {
+				return false;
+			}
+
+			if ( ! this.idleLimitReached()) {
+				return false;
+			}
+
+			// We think the user is idle, but we may have slept through their
+			// activity in another tab. Check before locking everyone out.
+			this.lastActive = Math.max(this.lastActive, SharedActivity.read());
+
+			return this.idleLimitReached();
+		},
+
+		idleLimitReached: function() {
+			var idleTimeDelta = $.now() - this.lastActive;
+
+			return (this.hasFocus && idleTimeDelta > FOCUSED_IDLE_LIMIT) ||
+				( ! this.hasFocus && idleTimeDelta > BLURRED_IDLE_LIMIT);
 		},
 
 		refreshThresholdReached: function() {
@@ -747,20 +875,20 @@ EE.cp.broadcastEvents = (function() {
 
 		// user focused, they are active
 		focus: function() {
-			State.setActiveTime();
+			State.setActiveTime(true);
 			State.hasFocus = true;
 		},
 
 		// user left, they are idle
 		blur: function() {
-			State.setActiveTime();
+			State.setActiveTime(true);
 			State.hasFocus = false;
 		},
 
 		// user typing / mousing, possibly active
 		interact: function() {
 			if (State.hasFocus) {
-				State.setActiveTime();
+				State.setActiveTime(true);
 			}
 		},
 
@@ -794,6 +922,10 @@ EE.cp.broadcastEvents = (function() {
 				logoutModal.find(':password').val('');
 			}
 
+			// This message may reach us long after the login it announces, a
+			// frozen tab gets its messages when it wakes up. So it is not proof
+			// that anyone is here now: setActiveTime() checks the shared record
+			// of activity, which the tab that logged in has just updated.
 			State.setActiveTime();
 		},
 
@@ -812,6 +944,14 @@ EE.cp.broadcastEvents = (function() {
 		_t: null,
 
 		init: function() {
+			// Loading a control panel page is activity other tabs should know
+			// about. Record it before telling them, they check it when told.
+			// Pages in a frame can load with nobody there (Pro's front-end
+			// idle prompt does), those have to wait for someone to use them.
+			if (window.self === window.top) {
+				SharedActivity.write(State.lastActive);
+			}
+
 			$(window).trigger('broadcast.setBasePath', EE.BASE);
 			$(window).trigger('broadcast.setCsrfToken', EE.CSRF_TOKEN);
 			$(window).trigger('broadcast.setRememberMe', EE.hasRememberMe);

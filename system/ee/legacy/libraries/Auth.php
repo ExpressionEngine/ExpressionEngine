@@ -113,6 +113,33 @@ class Auth
     }
 
     /**
+     * Determine whether a member needs MFA on the current site.
+     *
+     * Password-only integrations cannot complete MFA, so they must reject
+     * members covered by the same member and primary-role settings as login.
+     *
+     * @param \ExpressionEngine\Model\Member\Member $member
+     * @param int|null $site_id
+     * @return bool
+     */
+    public function requires_mfa($member, $site_id = null)
+    {
+        if (ee()->config->item('enable_mfa') !== false && ee()->config->item('enable_mfa') !== 'y') {
+            return false;
+        }
+
+        if ($member->enable_mfa === true) {
+            return true;
+        }
+
+        $role = $member->PrimaryRole;
+        $site_id = $site_id ?: ee()->config->item('site_id');
+        $settings = $role ? $role->RoleSettings->filter('site_id', $site_id)->first() : null;
+
+        return $settings && $settings->require_mfa === true;
+    }
+
+    /**
      * Authenticate from basic http auth
      *
      * @access public
@@ -709,6 +736,7 @@ class Auth_result
                 $this->member('member_id'),
                 $cp_sess
             );
+            ee()->session->restore_mfa();
         }
 
         if (ee()->config->item($sess_type) != 's') {

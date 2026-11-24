@@ -133,7 +133,7 @@ class MimeType
      */
     public function ofFile($path)
     {
-        if (! file_exists($path)) {
+        if (! file_exists_safe($path)) {
             throw new Exception("File " . $path . " does not exist.");
         }
 

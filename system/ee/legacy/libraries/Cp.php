@@ -152,15 +152,10 @@ class Cp
             'light_theme' => lang('light_theme'),
             'slate_theme' => lang('slate_theme'),
             'snow_theme' => lang('snow_theme'),
+            'contrast_theme' => lang('contrast_theme'),
             'many_jump_results' => lang('many_jump_results'),
             'password_icon' => lang('password_icon')
         );
-
-        $lastUpdateCheck = false;
-        $statusCache = ee()->cache->get_metadata('/addons-status');
-        if (!empty($statusCache) && !empty($statusCache['mtime'])) {
-            $lastUpdateCheck = time() - $statusCache['mtime'];
-        }
 
         ee()->javascript->set_global(array(
             'BASE' => str_replace(AMP, '&', BASE),
@@ -183,7 +178,6 @@ class Cp
                 'fluid_field' => ee('CP/URL', 'design/copy/fluid/{fluid_id}/field/{id}')->compile(),
                 'fluid_fieldgroup' => ee('CP/URL', 'design/copy/fluid/{fluid_id}/group/{id}')->compile(),
             ],
-            'cp.lastUpdateCheck' => $lastUpdateCheck,
             'site_id' => ee()->config->item('site_id'),
             'site_name' => ee()->config->item('site_name'),
             'site_url' => ee()->config->item('site_url'),
@@ -244,26 +238,49 @@ class Cp
                 'components/filterable', 'components/toggle', 'components/select_list',
                 'fields/select/select', 'fields/select/mutable_select', 'fields/dropdown/dropdown', 'cp/passwords')
         );
-        $installed_modules = ee()->db->select('module_name,module_version')->get('modules');
-
-        $installed_modules_js = [];
-        foreach ($installed_modules->result() as $installed_module) {
-            $installed_modules_js[strtolower($installed_module->module_name)] = [
-                'slug' => strtolower($installed_module->module_name),
-                'name' => ucwords(str_replace('_', ' ', $installed_module->module_name)),
-                'version' => $installed_module->module_version,
-            ];
-        }
-
         // Grab the site's license key, license URL, and list of installed
         // add-ons to send to the license validation service.
-        ee()->javascript->set_global(array(
+        $usesPro = ee('pro:Access')->requiresValidLicense();
+        $licenseStatus = ee('License/Status');
+        $installed_modules_js = $licenseStatus->installedModules();
+
+        // When the control panel has not been able to reach the license
+        // validation service for a while, ask it from here instead. Only for
+        // someone who is logged in: the login page is open to anyone.
+        $loggedInPage = ee()->session->userdata('admin_sess') == 1 && ! (defined('AJAX_REQUEST') && AJAX_REQUEST);
+        if ($loggedInPage && $licenseStatus->backupCheckDue()) {
+            $licenseStatus->runSiteCheck($installed_modules_js);
+        }
+
+        $lastCheck = $licenseStatus->secondsSinceUpdate();
+        $licenseGlobals = array(
             'cp.appVer' => APP_VER,
             'cp.licenseKey' => ee()->config->item('site_license_key'),
-            'cp.lvUrl' => 'https://updates.expressionengine.com/check',
-            'cp.usesPro' => ee('pro:Access')->requiresValidLicense(),
-            'cp.installedAddons' => json_encode($installed_modules_js)
-        ));
+            'cp.lvUrl' => \ExpressionEngine\Service\License\LicenseStatus::CHECK_URL,
+            'cp.usesPro' => $usesPro,
+            'cp.installedAddons' => json_encode($installed_modules_js),
+            'cp.lastUpdateCheck' => $lastCheck
+        );
+
+        // Only prepare a proof on pages where validateLicense() will send its
+        // normal ping. A request that saves something and then redirects
+        // never shows the page that would send it, so the proof waits for a
+        // page that was simply asked for.
+        if ($loggedInPage && ee('Request')->isGet() && ($lastCheck === false || $lastCheck > 60)) {
+            $challenge = $licenseStatus->prepareBrowserChallenge();
+            if ($challenge !== null) {
+                $licenseGlobals['cp.domainChallenge'] = $challenge;
+            }
+        }
+
+        // Server details are only passed along by members who manage licenses
+        if (ee('pro:Access')->canManageLicenses()) {
+            $licenseGlobals['cp.phpVersion'] = PHP_VERSION;
+            $licenseGlobals['cp.databaseEngine'] = ee()->db->engine();
+            $licenseGlobals['cp.databaseVersion'] = ee()->db->version_number();
+        }
+
+        ee()->javascript->set_global($licenseGlobals);
 
         $modal = ee('View')->make('ee:_shared/modal_confirm_remove')->render([
             'name' => 'modal-default-confirm-remove',

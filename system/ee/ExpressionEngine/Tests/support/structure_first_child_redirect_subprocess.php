@@ -11,9 +11,9 @@ if (! $outputFile) {
 }
 
 $setUp = new ReflectionMethod(StructureFirstChildRedirectTest::class, 'setUp');
-$setUp->setAccessible(true);
+\TestReflectionHelper::makeAccessible($setUp);
 $structureProperty = new ReflectionProperty(StructureTestBase::class, 'structure');
-$structureProperty->setAccessible(true);
+\TestReflectionHelper::makeAccessible($structureProperty);
 $returned = false;
 $xdebugAvailable = function_exists('xdebug_start_code_coverage') && function_exists('xdebug_get_code_coverage');
 

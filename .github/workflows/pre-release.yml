@@ -83,7 +83,7 @@ jobs:
           APP_REPO_PATH: ${{ github.workspace }}
           REDACTORX_REPO_PATH: ${{ github.workspace }}/__redactorx
         run: |
-          gulp app --local --nogit --head --skip-lint --skip-pro --version=${{ steps.build_json.outputs.BUILD_VERSION }}-dp.${{ env.dp_ver }}
+          ./node_modules/.bin/gulp app --local --nogit --head --skip-lint --skip-pro --version=${{ steps.build_json.outputs.BUILD_VERSION }}-dp.${{ env.dp_ver }}
 
       - name: Archive Build files
         uses: actions/upload-artifact@v4
@@ -156,9 +156,6 @@ jobs:
                   unzip -q ExpressionEngine7.0.0.zip
                   mv ./__repo/tests ./
                   mv ./__repo/build-tools ./
-                  sudo apt-get install -yq rpl
-                  rpl -v https://update.expressionengine.com ${{ secrets.STAGING_UPDATE_URL }} system/ee/ExpressionEngine/Service/Updater/Runner.php
-                  rpl -v https://update.expressionengine.com ${{ secrets.STAGING_UPDATE_URL }} system/ee/legacy/libraries/El_pings.php
 
             - name: List the files
               run: |
@@ -170,13 +167,15 @@ jobs:
                   php-version: ${{ matrix.php }}
                   extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
                   coverage: none
-                  ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
+                  ini-values: >-
+                      error_reporting=E_ALL, log_errors=On, error_log=/home/runner/php_errors.log, memory_limit=128M
 
             - name: Copy config.php
               run: |
                 rm -f system/user/config/config.php
                 cp -f tests/cypress/support/config/config.php system/user/config/config.php
-                rpl -v '${{ needs.build.outputs.version }}' '7.0.0' build-tools/build.json
+                jq '.tag = "7.0.0"' build-tools/build.json > build-tools/build.json.tmp
+                mv build-tools/build.json.tmp build-tools/build.json
 
             - name: Remove installer
               run: |
@@ -209,6 +208,15 @@ jobs:
             - name: Start PHP Server
               run: php -S localhost:8888 &
 
+            # Stands in for the update server: the site asks this address for
+            # updates, and each request is passed on
+            - name: Start update server proxy
+              env:
+                UPDATE_SERVER_UPSTREAM: ${{ secrets.STAGING_UPDATE_URL }}
+              run: |
+                php -S 127.0.0.1:8889 tests/cypress/support/update-server-proxy.php > /home/runner/update-server-proxy.log 2>&1 &
+                curl --silent --show-error --fail-with-body --retry 5 --retry-delay 1 --retry-connrefused http://127.0.0.1:8889/
+
             - name: Run 1-click Updater Tests
               uses: cypress-io/github-action@v6
               with:
@@ -220,6 +228,7 @@ jobs:
               env:
                 CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
                 CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+                CYPRESS_UPDATE_SERVER_URL: http://127.0.0.1:8889
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Archive screenshots
@@ -231,7 +240,10 @@ jobs:
 
             - name: Archive server errors
               uses: actions/upload-artifact@v4
-              if: failure()
+              if: always()
               with:
                 name: updater.error.log
-                path: /home/runner/php_errors.log
+                path: |
+                    /home/runner/php_errors.log
+                    /home/runner/update-server-proxy.log
+                    system/user/logs/

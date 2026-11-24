@@ -66,7 +66,7 @@ class EE_Upload
     {
         if (count($props) > 0) {
             $this->initialize($props);
-            return true;
+            return;
         }
 
         ee()->load->helper('xss');
@@ -103,7 +103,7 @@ class EE_Upload
 
         $_FILES['userfile'] = array(
             'name' => $name,
-            'size' => ee_mb_strlen($data),
+            'size' => strlen($data),
             'tmp_name' => $tmp,
             'error' => UPLOAD_ERR_OK
         );
@@ -817,7 +817,7 @@ class EE_Upload
     {
         $file = $this->file_temp;
 
-        if (filesize($file) == 0) {
+        if (strpos((string) $file, "\0") !== false || filesize($file) == 0) {
             return false;
         }
 
@@ -878,7 +878,7 @@ class EE_Upload
     {
         $file = $this->file_temp;
 
-        if (filesize($file) == 0) {
+        if (strpos((string) $file, "\0") !== false || filesize($file) == 0) {
             return false;
         }
 
@@ -1160,6 +1160,11 @@ class EE_Upload
     protected function increase_memory_limit($size)
     {
         $current = ee('Memory')->getMemoryLimitBytes();
+
+        // -1 means no limit, so there is nothing to increase
+        if ($current === -1) {
+            return;
+        }
 
         // There was a bug/behavioural change in PHP 5.2, where numbers over
         // one million get output into scientific notation.  number_format()

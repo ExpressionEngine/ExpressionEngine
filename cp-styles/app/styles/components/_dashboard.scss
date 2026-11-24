@@ -275,6 +275,10 @@
 
 // Upgrade Success banner
 .upgrade-success-banner__wrapper {
+  --upgrade-banner-link: #454cbd;
+  --upgrade-banner-copy: #55576e;
+  --upgrade-banner-border: #d9dbef;
+
   // Set background-image URL inline
   background-color: color(panel-bg);
   background-position: center;
@@ -288,6 +292,14 @@
   border: 1px solid color(panel-border);
   overflow: hidden;
 
+  .upgrade-success-banner__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 18px;
+    padding-inline-end: 44px;
+  }
+
   img {
     // Set max-height inline to natural height of image
     max-width: 100%;
@@ -295,14 +307,23 @@
     margin: auto;
   }
 
+  .upgrade-success-banner__title,
+  .upgrade-success-banner__title-link {
+    color: var(--upgrade-banner-link);
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
   .upgrade-success-banner__title {
     font-size: 17px;
     font-weight: 500;
     background-color: color(accent-light);
     padding: 6px 25px 7px;
-    margin-right: 15px;
     display: inline-block;
     border-radius: $border-radius-full;
+    overflow-wrap: anywhere;
 
     strong {
       color: color(text-normal);
@@ -311,34 +332,60 @@
   }
 
   .upgrade-success-banner__title-link {
-    display: inline-block;
+    font-weight: 600;
 
     i {
-      opacity: 0.4;
+      opacity: 0.8;
       margin-right: 3px;
     }
   }
 
+  a:focus-visible {
+    outline: 2px solid var(--upgrade-banner-link);
+    outline-offset: 3px;
+  }
+
   .banner-dismiss {
-    color: var(--ee-text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: absolute;
-    right: 30px;
+    inset-inline-end: 15px;
+    top: 15px;
+    width: 44px;
+    height: 44px;
+    border-radius: $border-radius-large;
+    color: var(--upgrade-banner-copy);
     text-decoration: none;
-    top: 20px;
 
     &:hover {
-      color: var(--ee-text-tertiary);
+      background-color: color(accent-light);
+      color: var(--upgrade-banner-link);
     }
 
     &::before {
       font-family: 'Font Awesome 6 Pro';
       font-weight: 900;
       content: "\f00d";
-      font-size: 24px;
+      font-size: 18px;
       line-height: 1;
     }
   }
 
+  @media screen and (max-width: 700px) {
+    margin-inline: 20px;
+    padding: 16px;
+
+    .upgrade-success-banner__title {
+      padding-inline: 12px;
+      font-size: 15px;
+    }
+
+    .banner-dismiss {
+      inset-inline-end: 6px;
+      top: 8px;
+    }
+  }
 
   .upgrade-success-banner__blurb-wrapper {
     margin-top: 25px;
@@ -359,14 +406,14 @@
       background-color: color(bg-blank);
       padding: 15px 20px 20px 42px;
       position: relative;
-      border: 1px solid color(panel-border);
+      border: 1px solid var(--upgrade-banner-border);
       border-radius: $border-radius-base;
       -webkit-transition: border-color .15s ease-in-out;
       -moz-transition: border-color .15s ease-in-out;
       -o-transition: border-color .15s ease-in-out;
 
       &:hover {
-        border-color: color(brand-primary);
+        border-color: var(--upgrade-banner-link);
 
         h6,
         .upgrade-success-banner__blurb-learn {
@@ -374,29 +421,43 @@
         }
       }
 
+      &:focus-visible {
+        outline-offset: -3px;
+      }
+
       i {
         position: absolute;
         top: 19px;
         left: 15px;
-        opacity: 0.5;
+        color: var(--upgrade-banner-link);
+        opacity: 0.82;
       }
 
       h6 {
         font-size: 15px;
+        font-weight: 650;
         color: color(text-normal);
         margin-bottom: 5px;
       }
 
       p {
         font-size: 13px;
-        color: color(text-secondary);
+        color: var(--upgrade-banner-copy);
       }
 
       .upgrade-success-banner__blurb-learn {
-        color: color(link);
+        color: var(--upgrade-banner-link);
       }
     }
   }
+}
+
+[data-theme="dark"] .upgrade-success-banner__wrapper,
+[data-theme="pink"] .upgrade-success-banner__wrapper,
+[data-theme="contrast"] .upgrade-success-banner__wrapper {
+  --upgrade-banner-link: #{color(link-hover)};
+  --upgrade-banner-copy: #{color(text-tertiary)};
+  --upgrade-banner-border: #{color(panel-border)};
 }
 
 // Turn off banner background image in Dark and Pink themes:

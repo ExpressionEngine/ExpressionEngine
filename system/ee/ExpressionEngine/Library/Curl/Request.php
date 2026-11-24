@@ -48,6 +48,56 @@ abstract class Request
         }
     }
 
+    /**
+     * Convert public object properties before PHP 8.6 query encoding.
+     * Circular references are rejected on this path; earlier PHP stays native.
+     *
+     * @throws \InvalidArgumentException When PHP 8.6 query data is circular.
+     */
+    protected function buildQuery($data)
+    {
+        // Name the separator: arg_separator.output is meant for links in HTML
+        if (PHP_VERSION_ID < 80600) {
+            return http_build_query($data, '', '&');
+        }
+
+        return http_build_query($this->queryData($data), '', '&');
+    }
+
+    private function queryData($data, array $parents = array(), $identity = null)
+    {
+        // Native encoding accepts nested backed enums and rejects unit enums.
+        if ($data instanceof \UnitEnum || (!is_array($data) && !is_object($data))) {
+            return $data;
+        }
+
+        if (is_object($data)) {
+            $identity = 'object:' . spl_object_id($data);
+        }
+        if ($identity !== null) {
+            if (isset($parents[$identity])) {
+                throw new \InvalidArgumentException('Query data cannot contain circular references.');
+            }
+            $parents[$identity] = true;
+        }
+
+        if (is_object($data)) {
+            // Match native query encoding: use stored public values without invoking hooks.
+            $data = array_filter(get_mangled_object_vars($data), static function ($key) {
+                return strpos((string) $key, "\0") === false;
+            }, ARRAY_FILTER_USE_KEY);
+        }
+
+        $result = array();
+        foreach ($data as $key => $value) {
+            // This method only runs on PHP 8.6, where ReflectionReference exists.
+            $reference = is_array($value) ? \ReflectionReference::fromArrayElement($data, $key) : null;
+            $identity = $reference === null ? null : 'array:' . $reference->getId();
+            $result[$key] = $this->queryData($value, $parents, $identity);
+        }
+        return $result;
+    }
+
     public function exec()
     {
         $curl = curl_init();
@@ -59,11 +109,17 @@ abstract class Request
             throw new \Exception(curl_error($curl));
         }
 
-        list($headers, $data) = explode("\r\n\r\n", $response, 2);
+        // cURL only knows where the headers end when it was asked to return them
+        $header_size = empty($this->config[CURLOPT_HEADER]) ? 0 : (int) curl_getinfo($curl, CURLINFO_HEADER_SIZE);
+
+        list($headers, $data) = $this->splitResponse($response, $header_size);
 
         $this->setHeaders($headers, $curl);
 
-        curl_close($curl);
+        if (PHP_VERSION_ID < 80000) {
+            curl_close($curl);
+        }
+        unset($curl);
 
         if (! empty($this->callback)) {
             return call_user_func($this->callback, $data);
@@ -75,6 +131,27 @@ abstract class Request
     public function callback($data)
     {
         return $data;
+    }
+
+    /**
+     * Separates the headers of the final response from its body
+     *
+     * A proxy, a redirect or an interim response each put a header block of
+     * their own ahead of the final one.
+     *
+     * @param string $response Everything cURL returned
+     * @param int $header_size Length of all the header blocks as cURL reports it, or 0 when it cannot say
+     * @return array Headers of the final response, then the body
+     */
+    protected function splitResponse($response, $header_size)
+    {
+        if ($header_size <= 0) {
+            return array_pad(explode("\r\n\r\n", $response, 2), 2, '');
+        }
+
+        $blocks = explode("\r\n\r\n", trim(substr($response, 0, $header_size)));
+
+        return array(end($blocks), (string) substr($response, $header_size));
     }
 
     /**

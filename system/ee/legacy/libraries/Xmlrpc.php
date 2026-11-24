@@ -105,6 +105,8 @@ class EE_Xmlrpc
         $this->xmlrpcstr['http_error'] = "Did not receive a '200 OK' response from remote server.";
         $this->xmlrpcerr['no_data'] = '6';
         $this->xmlrpcstr['no_data'] = 'No data received from server.';
+        $this->xmlrpcerr['request_too_large'] = '7';
+        $this->xmlrpcstr['request_too_large'] = 'The request is larger than this XML-RPC Server accepts.';
 
         $this->initialize($config);
 
@@ -610,7 +612,7 @@ class XML_RPC_Message extends EE_Xmlrpc
         //-------------------------------------
 
         $parser = xml_parser_create($this->xmlrpc_defencoding);
-        $parser_name = is_php(8) ? spl_object_hash($parser) : (string) $parser;
+        $parser_name = is_php(8) ? spl_object_id($parser) : (string) $parser;
 
         $this->xh[$parser_name] = array();
         $this->xh[$parser_name]['isf'] = 0;
@@ -657,11 +659,17 @@ class XML_RPC_Message extends EE_Xmlrpc
             );
             //error_log($errstr);
             $r = new XML_RPC_Response(0, $this->xmlrpcerr['invalid_return'], $this->xmlrpcstr['invalid_return']);
-            xml_parser_free($parser);
+            if (PHP_VERSION_ID < 80000) {
+                xml_parser_free($parser);
+            }
+            unset($parser);
 
             return $r;
         }
-        xml_parser_free($parser);
+        if (PHP_VERSION_ID < 80000) {
+            xml_parser_free($parser);
+        }
+        unset($parser);
 
         // ---------------------------------------
         //  Got Ourselves Some Badness, It Seems
@@ -751,7 +759,7 @@ class XML_RPC_Message extends EE_Xmlrpc
 
     public function open_tag($the_parser, $name, $attrs)
     {
-        $parser_name = is_php(8) ? spl_object_hash($the_parser) : (string) $the_parser;
+        $parser_name = is_php(8) ? spl_object_id($the_parser) : (string) $the_parser;
 
         // If invalid nesting, then return
         if ($this->xh[$parser_name]['isf'] > 1) {
@@ -768,8 +776,8 @@ class XML_RPC_Message extends EE_Xmlrpc
                 return;
             }
         } else {
-            // not top level element: see if parent is OK
-            if (! in_array($this->xh[$parser_name]['stack'][0], $this->valid_parents[$name], true)) {
+            // not top level element: see if it is a known element and its parent is OK
+            if (! isset($this->valid_parents[$name]) || ! in_array($this->xh[$parser_name]['stack'][0], $this->valid_parents[$name], true)) {
                 $this->xh[$parser_name]['isf'] = 2;
                 $this->xh[$parser_name]['isf_reason'] = "XML-RPC element $name cannot be child of " . $this->xh[$parser_name]['stack'][0];
 
@@ -862,7 +870,7 @@ class XML_RPC_Message extends EE_Xmlrpc
 
     public function closing_tag($the_parser, $name)
     {
-        $parser_name = is_php(8) ? spl_object_hash($the_parser) : (string) $the_parser;
+        $parser_name = is_php(8) ? spl_object_id($the_parser) : (string) $the_parser;
 
         if ($this->xh[$parser_name]['isf'] > 1) {
             return;
@@ -991,7 +999,7 @@ class XML_RPC_Message extends EE_Xmlrpc
 
     public function character_data($the_parser, $data)
     {
-        $parser_name = is_php(8) ? spl_object_hash($the_parser) : (string) $the_parser;
+        $parser_name = is_php(8) ? spl_object_id($the_parser) : (string) $the_parser;
 
         if ($this->xh[$parser_name]['isf'] > 1) {
             return;

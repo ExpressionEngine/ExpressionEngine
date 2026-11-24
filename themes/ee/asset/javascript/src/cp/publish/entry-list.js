@@ -394,6 +394,7 @@ $(document).ready(function () {
 		$('.f_manager-wrapper tbody .drop-target, .f_manager-wrapper .file-grid__wrapper .drop-target').droppable({
 			accept: "table .app-listing__row, .file-grid__wrapper .filepicker-item",
 			tolerance: "intersect",
+			hoverClass: 'drop-target--over',
 			revert: true,
 			drop: function(e, ui) {
 				var el = ui.draggable;
@@ -444,7 +445,7 @@ $(document).ready(function () {
 			deactivate: function(e, ui) {
 				clearTimeout(timer);
 				window.selectedFolder = null
-				$(e.target).removeAttr('style');
+				$(e.target).removeClass('drop-target--over').removeAttr('style');
 			}
 		});
 	}

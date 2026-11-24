@@ -2907,7 +2907,7 @@ class EE_Template
 
         $basepath = PATH_TMPL . ee()->config->item('site_short_name') . '/' . $template_group . '.group';
 
-        if (!is_dir($basepath)) {
+        if (strpos($basepath . '/' . $template, "\0") !== false || !is_dir($basepath)) {
             return false;
         }
 
@@ -2966,7 +2966,8 @@ class EE_Template
                 'site_id' => ee()->config->item('site_id')
             );
 
-            $group_id = ee()->template_model->create_group($data);
+            // A frontend request should not grant its visitor's role access to this group.
+            $group_id = ee()->template_model->create_group($data, false);
         }
 
         $data = array(

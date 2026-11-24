@@ -105,7 +105,7 @@ class ControllerTest extends TestCase
         $backend = $this->getMockBuilder(\stdClass::class)->addMethods(['fetch_token'])->getMock();
         $backend->method('fetch_token')->willReturn(null);
         $property = new \ReflectionProperty(\Csrf::class, 'backend');
-        $property->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($property);
         $property->setValue($csrf, $backend);
         $_SERVER['HTTP_X_CSRF_TOKEN'] = $csrf->get_user_token();
         $_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';

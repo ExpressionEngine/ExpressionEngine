@@ -1,12 +1,8 @@
 <?php
 
 namespace {
-    if (! function_exists('show_error')) {
-        function show_error($message, $status = 500)
-        {
-            throw new \RuntimeException((string) $message, (int) $status);
-        }
-    }
+    // Use the same helpers as MIME and filesystem tests, regardless of discovery order.
+    require_once SYSPATH . 'ee/ExpressionEngine/Boot/boot.common.php';
 
     if (! function_exists('redirect')) {
         function redirect($url)
@@ -37,13 +33,6 @@ namespace {
             $GLOBALS['wizard_apc_clear_cache_called'] = true;
 
             return true;
-        }
-    }
-
-    if (! function_exists('is_really_writable')) {
-        function is_really_writable($path)
-        {
-            return is_writable($path);
         }
     }
 
@@ -737,14 +726,20 @@ class WizardTest extends TestCase
         ee()->setMock('input', new WizardInputStub());
 
         $originalMode = @fileperms(PATH_CACHE) & 0777;
-        @chmod(PATH_CACHE, 0555);
+        try {
+            @chmod(PATH_CACHE, 0555);
+            clearstatcache(true, PATH_CACHE);
+            if (is_really_writable(PATH_CACHE)) {
+                $this->markTestSkipped('This environment cannot make the cache directory unwritable with chmod.');
+            }
 
-        $this->assertFalse($this->invokePrivate($wizard, 'preflight'));
-
-        @chmod(PATH_CACHE, $originalMode ?: 0755);
-        @unlink($wizard->config->config_path);
-        if ($createdSchemaPath) {
-            @rmdir($schemaPath);
+            $this->assertFalse($this->invokePrivate($wizard, 'preflight'));
+        } finally {
+            @chmod(PATH_CACHE, $originalMode ?: 0755);
+            @unlink($wizard->config->config_path);
+            if ($createdSchemaPath) {
+                @rmdir($schemaPath);
+            }
         }
     }
 

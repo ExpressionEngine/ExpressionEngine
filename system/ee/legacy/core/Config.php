@@ -915,8 +915,9 @@ class EE_Config
 
                 $fp = parse_config_variables($site_prefs[$val]);
 
-                if (! @is_dir($fp)) {
+                if (strpos((string) $fp, "\0") !== false || ! @is_dir($fp)) {
                     $this->_config_path_errors[lang('invalid_path')][$val] = lang($val) . ': ' . $fp;
+                    continue;
                 }
 
                 if ((! is_really_writable($fp)) && ($val != 'theme_folder_path')) {
@@ -1099,8 +1100,10 @@ class EE_Config
         // Remove values if needed
         if (count($remove_values) > 0) {
             foreach ($remove_values as $key => $val) {
+                // Up to the end of the line the value finishes on, however
+                // that line ends, the last line of the file included
                 $config_file = preg_replace(
-                    '#\$' . "config\[(\042|\047)" . $key . "\\1\].*?;\n#is",
+                    '#\$' . "config\[(\042|\047)" . $key . "\\1\].*?;(?:\r\n|\r|\n|\z)#is",
                     "",
                     $config_file
                 );

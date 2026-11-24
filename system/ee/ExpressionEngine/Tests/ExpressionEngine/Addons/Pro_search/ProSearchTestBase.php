@@ -161,6 +161,11 @@ class ProSearchFakeDb extends FakeDb
     {
         return addcslashes($str, '%_');
     }
+
+    public function escape($str)
+    {
+        return "'" . $str . "'";
+    }
 }
 
 class ProSearchDbResult extends eeDbResultMock

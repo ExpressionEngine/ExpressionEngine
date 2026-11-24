@@ -115,7 +115,10 @@ class Categories extends AbstractCategoriesController
     }
 
     /**
-     * AJAX end point for reordering categories on catList page
+     * Reorder categories for a group the acting member is authorized to edit.
+     *
+     * @param int $group_id The category group to reorder.
+     * @return void
      */
     public function reorder($group_id)
     {
@@ -127,14 +130,20 @@ class Categories extends AbstractCategoriesController
             ->filter('group_id', $group_id)
             ->first();
 
-        $cat_group->sort_order = 'c';
-        $cat_group->save();
-
         $new_order = ee()->input->post('order');
 
         if (! AJAX_REQUEST or ! $cat_group or empty($new_order)) {
             show_error(lang('unauthorized_access'), 403);
         }
+
+        $can_edit = explode('|', rtrim((string) $cat_group->can_edit_categories, '|'));
+
+        if (! ee('Permission')->isSuperAdmin() && ! ee('Permission')->hasAnyRole($can_edit)) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
+        $cat_group->sort_order = 'c';
+        $cat_group->save();
 
         // Create a flattened array based on the JSON response
         // from Nestable; we basically want to mirror the data

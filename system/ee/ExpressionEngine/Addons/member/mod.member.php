@@ -145,7 +145,8 @@ class Member
             if (!ee('Config')->getFile()->getBoolean('legacy_member_templates')) {
                 ee()->logger->developer('Someone tried to access legacy member template, but those are not enabled in config.php', true, 60 * 60 * 24 * 30);
 
-                return ee()->output->show_user_error('general', lang('legacy_member_templates_not_enabled'));
+                ee()->output->show_user_error('general', lang('legacy_member_templates_not_enabled'));
+                return;
             }
         }
     }
@@ -1411,7 +1412,10 @@ class Member
         curl_setopt($curl, CURLOPT_URL, 'https://www.google.com/recaptcha/api/siteverify');
         curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
         $response = curl_exec($curl);
-        curl_close($curl);
+        if (PHP_VERSION_ID < 80000) {
+            curl_close($curl);
+        }
+        unset($curl);
 
         return is_string($response) ? json_decode($response, true) : null;
     }

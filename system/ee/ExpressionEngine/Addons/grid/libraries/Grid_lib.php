@@ -1041,8 +1041,7 @@ class Grid_lib
             (isset($column['col_settings'])) ? $column['col_settings'] : array()
         );
 
-        $fieldtype_errors = isset($this->error_objects[$field_name])
-            ? $this->error_objects[$field_name] : null;
+        $fieldtype_errors = $this->error_objects[$field_name ?? ''] ?? null;
 
         return $this->_view_for_col_settings($type, $settings, $column['col_id'], $fieldtype_errors);
     }

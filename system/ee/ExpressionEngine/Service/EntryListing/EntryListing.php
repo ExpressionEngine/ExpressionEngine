@@ -396,18 +396,20 @@ class EntryListing
      */
     private function createAuthorFilter($channel = null)
     {
-        // It is more performant to query the members table and filter by having at least one channel_title authored
-        // than to do a distinct query on author_id across a potentially very large channel_titles table.
-        $where = 'SELECT count(t.entry_id) FROM '. ee()->db->dbprefix('channel_titles').' t WHERE t.author_id = m.member_id';
+        // Distinct author_ids from channel_titles first (uses channel_id), then
+        // join those few rows to members. A correlated COUNT against every member
+        // timed out on large member lists; DISTINCT+JOIN on titles can still
+        // expand to every entry in the channel before uniquing.
+        $authorsSubquery = 'SELECT DISTINCT author_id FROM ' . ee()->db->dbprefix('channel_titles');
 
         if ($channel) {
-            $where .= ' AND t.channel_id = '. (int) $channel->channel_id;
+            $authorsSubquery .= ' WHERE channel_id = ' . (int) $channel->channel_id;
         }
 
-        $db = ee('db')->select('m.member_id as author_id, m.screen_name, m.username')
-                ->from('members m')
-                ->where("($where) > 0")
-                ->order_by('screen_name', 'asc');
+        $db = ee('db')->select('m.member_id AS author_id, m.screen_name, m.username')
+            ->from('members m')
+            ->join('(' . $authorsSubquery . ')', 'a.author_id = m.member_id', '', 'a')
+            ->order_by('m.screen_name', 'asc');
 
         $authors_query = $db->get();
 

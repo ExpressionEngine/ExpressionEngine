@@ -884,7 +884,9 @@ var createHashManifest = function (path) {
 var fillUpdaterDependencies = function (path) {
 	path = (typeof path !== 'undefined') ? path : './';
 
+	// Mirrored by packageUpdater() in system/ee/ExpressionEngine/Tests/ExpressionEngine/Installer/Updater/BootTest.php
 	var filesToCopy = [
+		'legacy/helpers/cli_helper.php',
 		properties.namespaced_path + '/Boot/boot.common.php',
 		properties.namespaced_path + '/Core/Autoloader.php',
 		properties.namespaced_path + '/Service/Logger/File.php',

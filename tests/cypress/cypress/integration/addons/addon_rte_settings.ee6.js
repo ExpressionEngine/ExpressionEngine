@@ -14,12 +14,8 @@ context('Rich Text Editor', () => {
     describe('RTE Settings', function() {
 
         it('Shows the RTE Settings page', function() {
-            cy.intercept('**/check').as('check')
-            cy.intercept('**/license/handleAccessResponse').as('license')
             cy.authVisit(page.url);
             page.get('title').contains('Rich Text Editor')
-            cy.wait('@check')
-            cy.wait('@license')
 
             page.get('default_tool_set').first().should('be.checked')
             page.get('tool_set_names').first().parent().should('have.class', 'default')

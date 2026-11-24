@@ -29,7 +29,7 @@ if (! defined('BASEPATH')) {
 if (! function_exists('read_file')) {
     function read_file($file)
     {
-        if (! file_exists($file)) {
+        if (! file_exists_safe($file)) {
             return false;
         }
 
@@ -86,7 +86,7 @@ if (! function_exists('delete_files')) {
         $path = rtrim($path, DIRECTORY_SEPARATOR);
 
         // If this isnt a directory, lets return false
-        if (! is_dir($path) || ! $current_dir = @opendir($path)) {
+        if (strpos((string) $path, "\0") !== false || ! is_dir($path) || ! $current_dir = @opendir($path)) {
             return false;
         }
 
@@ -231,7 +231,7 @@ if (! function_exists('get_dir_file_info')) {
 if (! function_exists('get_file_info')) {
     function get_file_info($file, $returned_values = array('name', 'server_path', 'size', 'date'))
     {
-        if (! file_exists($file)) {
+        if (! file_exists_safe($file)) {
             return false;
         }
 

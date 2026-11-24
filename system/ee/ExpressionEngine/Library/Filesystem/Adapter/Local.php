@@ -35,13 +35,13 @@ class Local extends Flysystem\Adapter\Local implements AdapterInterface, Validat
         $linkHandling = self::DISALLOW_LINKS;
         $permissions = [];
 
-        $root = \is_link($root) ? \realpath($root) : $root;
+        $root = strpos((string) $root, "\0") === false && \is_link($root) ? \realpath($root) : $root;
         $isRoot = substr_count(str_replace('\\', '/', $root), '/') === 1;
         $this->permissionMap = \array_replace_recursive(static::$permissions, $permissions);
 
         // Overriding parent constructor to remove this behavior of creating the root if it does not exist
         // $this->ensureDirectory($root);
-        if (!\is_dir($root) || (!$isRoot && !\is_readable($root))) {
+        if (strpos((string) $root, "\0") !== false || !\is_dir($root) || (!$isRoot && !\is_readable($root))) {
             //throw an exception if root is not valid, but only if it's not validation request
             if ($this->settings['allow_missing'] ?? false) {
                 $this->rootExists = false;

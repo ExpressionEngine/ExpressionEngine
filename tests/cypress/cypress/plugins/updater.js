@@ -5,6 +5,12 @@ const backupPath = `${basePath}one_click_backup/`;
 const preserveFolders = ['system', 'themes', 'images'];
 const configPath = `${basePath}system/user/config/config.php`;
 const handoffPath = `${basePath}system/ee/updater`;
+const publicUpdateServer = 'https://update.expressionengine.com';
+// The files that say which update server a site asks
+const updateServerFiles = [
+    'system/ee/ExpressionEngine/Service/Updater/Runner.php',
+    'system/ee/legacy/libraries/El_pings.php'
+];
 
 class Updater {
     configure_handoff({ sessionType, csrfDisabled }) {
@@ -65,6 +71,33 @@ $config['disable_csrf_protection'] = '${csrfDisabled ? 'y' : 'n'}';
             fse.writeFileSync(configPath, this.handoffConfig);
             this.handoffConfig = null;
         }
+        return true;
+    }
+
+    // Makes the site's files ask another update server than the public one.
+    // An update replaces these files, so this is done again for the release
+    // an update has just installed. Without an address the files are left
+    // alone, and the public update server is asked.
+    use_update_server(url) {
+        if (!url) {
+            return false;
+        }
+        // The address is written into PHP source as it is given
+        if (!/^https?:\/\/[\w.:\/-]+$/.test(url)) {
+            throw new Error('The update server must be a plain http or https address');
+        }
+
+        updateServerFiles.forEach(function(file) {
+            const path = `${basePath}${file}`;
+            const source = fse.readFileSync(path, 'utf8');
+
+            if (source.includes(publicUpdateServer)) {
+                fse.writeFileSync(path, source.split(publicUpdateServer).join(url));
+            } else if (!source.includes(url)) {
+                throw new Error(`No update server address found in ${file}`);
+            }
+        });
+
         return true;
     }
 

@@ -60,7 +60,7 @@ if (! function_exists('byte_format')) {
 if (! function_exists('get_bytes')) {
     function get_bytes($setting)
     {
-        $setting = strtolower($setting);
+        $setting = strtolower((string) $setting);
         switch (substr($setting, -1)) {
             case 'k':
                 return (int) $setting * 1024;

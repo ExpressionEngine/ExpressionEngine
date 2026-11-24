@@ -23,6 +23,13 @@ endif;
     <?=form_password(array('dir' => 'ltr', 'name' => "password_confirm", 'id' => "password_confirm", 'value' => ''
     , 'autocomplete' => 'off'))?>
 </fieldset>
+<fieldset>
+    <div class="field-instruct">
+        <label for="mfa_code"><?=lang('mfa_code')?></label>
+    </div>
+    <?=form_input(array('dir' => 'ltr', 'name' => 'mfa_code', 'id' => 'mfa_code', 'value' => '',
+        'maxlength' => 6, 'autocomplete' => 'off'))?>
+</fieldset>
 <fieldset class="last">
-    <?=form_submit('submit', $btn_label, 'class="' . $btn_class . '" data-work-text="' . lang('authenticating') . $btn_disabled)?>
+    <?=form_submit('submit', $btn_label, 'class="' . $btn_class . '" data-work-text="' . lang('authenticating') . '" ' . $btn_disabled)?>
 </fieldset>

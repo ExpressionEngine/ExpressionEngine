@@ -364,11 +364,19 @@ class Member extends ContentModel
     }
 
     /**
-     * Log email and password changes
+     * Revoke MFA sessions and process notifications for member changes.
+     *
+     * @param array $changed The previous values of updated properties.
+     * @return void
      */
     public function onAfterUpdate($changed)
     {
         parent::onAfterUpdate($changed);
+
+        if (isset($changed['password']) || isset($changed['enable_mfa']) || isset($changed['backup_mfa_code']) || isset($changed['unique_id'])) {
+            ee()->load->library('mfa_session');
+            ee()->mfa_session->revoke_member($this->member_id);
+        }
 
         if (REQ == 'CP') {
             if (isset($changed['password'])) {
@@ -445,6 +453,8 @@ class Member extends ContentModel
 
     public function onAfterDelete()
     {
+        ee()->load->library('mfa_session');
+        ee()->mfa_session->revoke_member($this->member_id);
         $this->updateRoleTotalMembers();
     }
 
@@ -1153,6 +1163,10 @@ class Member extends ContentModel
     /**
      * Get permissions assigned to member
      *
+     * Answers for the site that is current on the first call during the
+     * request, and keeps that answer for the rest of it. The session library
+     * stores the same answer under this cache key when it loads the member.
+     *
      * @return Array [permission => permission_id]
      */
     public function getPermissions()
@@ -1162,8 +1176,34 @@ class Member extends ContentModel
         $permissions = $this->getFromCache($cache_key);
 
         if ($permissions === false) {
+            $permissions = $this->getPermissionsForSite(ee()->config->item('site_id'));
+
+            $this->saveToCache($cache_key, $permissions);
+        }
+
+        return $permissions;
+    }
+
+    /**
+     * Get permissions assigned to member on a given site
+     *
+     * Permissions are held per site. getPermissions() answers for the site
+     * that was current when it was first called during the request; this
+     * answers for the site named, whichever site is current.
+     *
+     * @param  int $site_id Site to get the permissions for
+     * @return Array [permission => permission_id]
+     */
+    public function getPermissionsForSite($site_id)
+    {
+        $site_id = (int) $site_id;
+        $cache_key = "Member/{$this->member_id}/Permissions/Site/{$site_id}";
+
+        $permissions = $this->getFromCache($cache_key);
+
+        if ($permissions === false) {
             $permissions = $this->getModelFacade()->get('Permission')
-                ->filter('site_id', ee()->config->item('site_id'))
+                ->filter('site_id', $site_id)
                 ->filter('role_id', 'IN', $this->getAllRoles()->pluck('role_id'))
                 ->all()
                 ->getDictionary('permission', 'permission_id');

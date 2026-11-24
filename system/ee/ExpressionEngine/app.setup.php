@@ -279,8 +279,8 @@ $setup = [
             return new Resource\Stylesheet();
         },
 
-        'Updater/Runner' => function ($ee) {
-            return new Updater\Runner();
+        'Updater/Runner' => function ($ee, $targetVersion = null) {
+            return new Updater\Runner($targetVersion);
         },
 
         'Updater/Downloader' => function ($ee) {
@@ -615,10 +615,40 @@ $setup = [
         },
 
         'License' => function ($ee) {
-            $default_key_path = SYSPATH . 'ee/ExpressionEngine/ExpressionEngine.pub';
+            $default_key_path = SYSPATH . 'ee/ExpressionEngine/Keys/ExpressionEngine.pub';
             $default_key = (is_readable($default_key_path)) ? file_get_contents($default_key_path) : '';
 
             return new License\LicenseFactory($default_key);
+        },
+
+        'License/DomainChallenge' => function ($ee) {
+            $cache = ee()->cache->get_adapter() === 'dummy' ? ee()->cache->file : ee()->cache;
+
+            return new License\DomainChallenge($cache, (int) ee()->config->item('site_id'), function () use ($ee) {
+                $action = $ee->make('Model')->get('Action')->filter('class', 'Pro')
+                    ->filter('method', 'verifyDomainChallenge')->first();
+
+                if (!$action) {
+                    return null;
+                }
+
+                return ee()->functions->fetch_site_index(false, false) . QUERY_MARKER . 'ACT=' . $action->getId();
+            });
+        },
+
+        'License/Status' => function ($ee) {
+            return new License\LicenseStatus(
+                ee()->cache->file,
+                $ee->make('Encrypt'),
+                ee()->config->item('session_crypt_key'),
+                [
+                    'license' => ee()->config->item('site_license_key'),
+                    'site_id' => ee()->config->item('site_id'),
+                    'site_url' => ee()->config->item('site_url'),
+                    'app_version' => APP_VER,
+                ],
+                $ee->make('Curl')
+            );
         },
 
         'Member' => function ($ee) {
@@ -846,6 +876,7 @@ $setup = [
         'csrf_token',
         'flash',
         'remember',
+        'mfa_session',
         'sessionid',
         'visitor_consents',
     ],
@@ -869,6 +900,10 @@ $setup = [
         ],
         'remember' => [
             'description' => 'lang:cookie_remember_desc',
+        ],
+        'mfa_session' => [
+            'description' => 'lang:cookie_mfa_session_desc',
+            'lifetime_changeable' => false,
         ],
         'sessionid' => [
             'description' => 'lang:cookie_sessionid_desc',

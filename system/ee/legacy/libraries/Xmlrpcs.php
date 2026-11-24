@@ -26,6 +26,7 @@ class EE_Xmlrpcs extends EE_Xmlrpc
     public $controller_obj;
 
     public $object = false;
+    public $max_request_size = 0;	// Largest request body to read, in bytes. 0 for no limit.
 
     /**
      * Constructor
@@ -62,6 +63,10 @@ class EE_Xmlrpcs extends EE_Xmlrpc
 
         if (isset($config['xss_clean'])) {
             $this->xss_clean = $config['xss_clean'];
+        }
+
+        if (isset($config['max_request_size'])) {
+            $this->max_request_size = (int) $config['max_request_size'];
         }
     }
 
@@ -125,10 +130,14 @@ class EE_Xmlrpcs extends EE_Xmlrpc
     //  Parse Server Request
     //-------------------------------------
 
+    /**
+     * Parse an XML-RPC request and dispatch its registered method.
+     *
+     * @param string $data The XML request, or an empty string to read the request body.
+     * @return XML_RPC_Response
+     */
     public function parseRequest($data = '')
     {
-        // $HTTP_RAW_POST_DATA is deprecated in PHP 5.6 and removed in 7.0
-
         //-------------------------------------
         //  Get Data
         //-------------------------------------
@@ -137,7 +146,21 @@ class EE_Xmlrpcs extends EE_Xmlrpc
             static $raw_post_data;
 
             if (empty($raw_post_data)) {
-                $raw_post_data = file_get_contents("php://input");
+                $max_size = (int) $this->max_request_size;
+
+                if ($max_size > 0) {
+                    // Stop at the limit rather than reading and parsing the whole body
+                    $declared_size = isset($_SERVER['CONTENT_LENGTH']) ? (int) $_SERVER['CONTENT_LENGTH'] : 0;
+                    $body = ($declared_size > $max_size) ? false : file_get_contents('php://input', false, null, 0, $max_size + 1);
+
+                    if ($body === false || strlen($body) > $max_size) {
+                        return new XML_RPC_Response(0, $this->xmlrpcerr['request_too_large'], $this->xmlrpcstr['request_too_large']);
+                    }
+
+                    $raw_post_data = $body;
+                } else {
+                    $raw_post_data = file_get_contents("php://input");
+                }
             }
 
             $data = $raw_post_data;
@@ -150,7 +173,7 @@ class EE_Xmlrpcs extends EE_Xmlrpc
         $parser = xml_parser_create($this->xmlrpc_defencoding);
         $parser_object = new XML_RPC_Message("filler");
 
-        $parser_name = (string) $parser;
+        $parser_name = is_php(8) ? spl_object_id($parser) : (string) $parser;
         $parser_object->xh[$parser_name] = array();
         $parser_object->xh[$parser_name]['isf'] = 0;
         $parser_object->xh[$parser_name]['isf_reason'] = '';
@@ -160,21 +183,17 @@ class EE_Xmlrpcs extends EE_Xmlrpc
         $parser_object->xh[$parser_name]['method'] = '';
 
         xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, true);
-        xml_set_character_data_handler($parser, function($parser, $cdata) {
-            return $this->character_data($parser, $cdata);
-        });
-        xml_set_element_handler($parser, function($parser, $tag, $attributes) {
-            return $this->open_tag($parser, $tag, $attributes);
-        }, function($parser, $tag) {
-            return $this->closing_tag($parser, $tag);
-        });
-        //xml_set_default_handler($parser, 'default_handler');
+        xml_set_character_data_handler($parser, array($parser_object, 'character_data'));
+        xml_set_element_handler($parser, array($parser_object, 'open_tag'), array($parser_object, 'closing_tag'));
 
         //-------------------------------------
         //  PARSE + PROCESS XML DATA
         //-------------------------------------
 
-        if (! xml_parse($parser, $data, 1)) {
+        $parsed = xml_parse($parser, $data, 1);
+        $plist = '';
+
+        if (! $parsed) {
             // return XML error as a faultCode
             $r = new XML_RPC_Response(
                 0,
@@ -185,14 +204,19 @@ class EE_Xmlrpcs extends EE_Xmlrpc
                     xml_get_current_line_number($parser)
                 )
             );
-            xml_parser_free($parser);
-        } elseif ($parser_object->xh[$parser_name]['isf']) {
-            return new XML_RPC_Response(0, $this->xmlrpcerr['invalid_return'], $this->xmlrpcstr['invalid_return']);
-        } else {
-            xml_parser_free($parser);
+        }
 
+        if (is_resource($parser)) {
+            xml_parser_free($parser);
+        }
+        unset($parser);
+
+        if ($parsed && $parser_object->xh[$parser_name]['isf']) {
+            return new XML_RPC_Response(0, $this->xmlrpcerr['invalid_return'], $this->xmlrpcstr['invalid_return']);
+        }
+
+        if ($parsed) {
             $m = new XML_RPC_Message($parser_object->xh[$parser_name]['method']);
-            $plist = '';
 
             for ($i = 0; $i < count($parser_object->xh[$parser_name]['params']); $i++) {
                 if ($this->debug === true) {
@@ -226,6 +250,12 @@ class EE_Xmlrpcs extends EE_Xmlrpc
     //  Executes the Method
     //-------------------------------------
 
+    /**
+     * Execute a registered XML-RPC method against its configured handler.
+     *
+     * @param XML_RPC_Message $m The parsed method call and parameters.
+     * @return XML_RPC_Response
+     */
     public function _execute($m)
     {
         $methName = $m->method_name;
@@ -253,15 +283,14 @@ class EE_Xmlrpcs extends EE_Xmlrpc
         $objectCall = (isset($method_parts['1']) && $method_parts['1'] != "") ? true : false;
 
         if ($system_call === true) {
-            if (! is_callable(array($this,$method_parts['1']))) {
-                return new XML_RPC_Response(0, $this->xmlrpcerr['unknown_method'], $this->xmlrpcstr['unknown_method']);
-            }
+            $callback = array($this, $method_parts['1']);
         } else {
-            if ($objectCall && ! is_callable(array($method_parts['0'],$method_parts['1']))) {
-                return new XML_RPC_Response(0, $this->xmlrpcerr['unknown_method'], $this->xmlrpcstr['unknown_method']);
-            } elseif (! $objectCall && ! is_callable($this->methods[$methName]['function'])) {
-                return new XML_RPC_Response(0, $this->xmlrpcerr['unknown_method'], $this->xmlrpcstr['unknown_method']);
-            }
+            $object = $this->object === false ? $method_parts['0'] : $this->object;
+            $callback = $objectCall ? array($object, $method_parts['1']) : $this->methods[$methName]['function'];
+        }
+
+        if (! is_callable($callback)) {
+            return new XML_RPC_Response(0, $this->xmlrpcerr['unknown_method'], $this->xmlrpcstr['unknown_method']);
         }
 
         //-------------------------------------
@@ -343,7 +372,7 @@ class EE_Xmlrpcs extends EE_Xmlrpc
     public function methodSignature($m)
     {
         $parameters = $m->output_parameters();
-        $method_name = $parameters[0];
+        $method_name = (isset($parameters[0]) && is_string($parameters[0])) ? $parameters[0] : '';
 
         if (isset($this->methods[$method_name])) {
             if ($this->methods[$method_name]['signature']) {
@@ -376,7 +405,7 @@ class EE_Xmlrpcs extends EE_Xmlrpc
     public function methodHelp($m)
     {
         $parameters = $m->output_parameters();
-        $method_name = $parameters[0];
+        $method_name = (isset($parameters[0]) && is_string($parameters[0])) ? $parameters[0] : '';
 
         if (isset($this->methods[$method_name])) {
             $docstring = isset($this->methods[$method_name]['docstring']) ? $this->methods[$method_name]['docstring'] : '';

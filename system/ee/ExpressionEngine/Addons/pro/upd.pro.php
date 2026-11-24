@@ -18,6 +18,10 @@ class Pro_upd extends Installer
         ],
         [
             'class' => 'Pro',
+            'method' => 'verifyDomainChallenge'
+        ],
+        [
+            'class' => 'Pro',
             'method' => 'qrCode'
         ],
         [

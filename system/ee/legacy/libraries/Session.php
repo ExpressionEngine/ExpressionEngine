@@ -86,6 +86,9 @@ class EE_Session
     // Garbage collection probability. Used to kill expired sessions.
     public $gc_probability = 5;
 
+    // Seconds a session ID that was just rotated out is still followed to its replacement
+    public $rotation_grace_period = 180;
+
     // Store data for just this page load.
     // Multi-dimensional array with module/class name,
     // e.g. $this->cache['module']['var_name']
@@ -96,13 +99,16 @@ class EE_Session
     private $member_model = null;
 
     /**
-     * Session Class Constructor
+     * Initialize the current request's session and member data.
+     *
+     * @return void
      */
     public function __construct()
     {
         // If they load this library manually we need to make sure our
         // dependencies are all here. This can happen in the cp_js_end hook.
         ee()->load->library('remember');
+        ee()->load->library('mfa_session');
         ee()->load->library('localize');
 
         if (ee()->config->item('website_session_length')) {
@@ -191,6 +197,7 @@ class EE_Session
             } else {
                 if ($this->validation == 'c') {
                     $this->create_new_session($this->userdata['member_id']);
+                    $this->restore_mfa();
                 } else {
                     $this->fetch_guest_data();
                 }
@@ -388,6 +395,8 @@ class EE_Session
         }
 
         $this->sdata['session_id'] = ee()->functions->random();
+        $this->sdata['mfa_login_id'] = hash('sha256', $this->sdata['session_id']);
+        $this->userdata['mfa_login_id'] = $this->sdata['mfa_login_id'];
         $this->sdata['ip_address'] = ee()->input->ip_address();
         $this->sdata['user_agent'] = substr(ee()->input->user_agent(), 0, 120);
         $this->sdata['member_id'] = (int) $member_id;
@@ -414,6 +423,25 @@ class EE_Session
         $this->session_exists = true;
 
         return $this->sdata['session_id'];
+    }
+
+    /**
+     * Restore verified MFA after password authentication or remembered login.
+     *
+     * @return void
+     */
+    public function restore_mfa()
+    {
+        if (
+            $this->sdata['mfa_flag'] === 'show'
+            && ($login_id = ee()->mfa_session->restore($this->sdata['member_id'], $this->sdata['session_id']))
+        ) {
+            $this->sdata['mfa_flag'] = 'skip';
+            $this->userdata['mfa_flag'] = 'skip';
+            $this->mfa_flag = 'skip';
+            $this->sdata['mfa_login_id'] = $login_id;
+            $this->userdata['mfa_login_id'] = $login_id;
+        }
     }
 
     /**
@@ -510,14 +538,16 @@ class EE_Session
     public function destroy()
     {
         if ($this->userdata['session_id'] === 0) {
+            ee()->mfa_session->delete(0, '');
             // just to be sure
             $this->fetch_guest_data();
 
             return;
         }
 
-        ee()->db->where('session_id', $this->userdata['session_id']);
-        ee()->db->delete(array('sessions', 'security_hashes'));
+        ee()->mfa_session->delete(
+            $this->userdata['member_id'], $this->userdata['session_id'], $this->userdata['mfa_login_id'] ?? null
+        );
 
         // Really should redirect after calling this
         // method, but if someone doesn't - we're safe
@@ -738,6 +768,14 @@ class EE_Session
 
         $session = $session->first();
 
+        // The session ID may have just been rotated by a request that was in
+        // flight at the same time as this one (another tab, parallel AJAX), or
+        // whose response never reached the browser. Follow the old ID to its
+        // replacement for a short while instead of logging the user out.
+        if (! $session) {
+            $session = $this->_fetch_rotated_session();
+        }
+
         if (! $session or $session->member_id == 0) {
             $this->_initialize_session();
 
@@ -753,6 +791,9 @@ class EE_Session
         $this->sdata['can_debug'] = $session->can_debug;
 
         $this->sdata['mfa_flag'] = $session->mfa_flag;
+        if ($session->mfa_login_id !== null) {
+            $this->sdata['mfa_login_id'] = $session->mfa_login_id;
+        }
 
         // Is this an admin session?
         $this->sdata['admin_sess'] = ($session->admin_sess == 1) ? 1 : 0;
@@ -1005,6 +1046,62 @@ class EE_Session
     }
 
     /**
+     * The ID a session is given when it is rotated in update_session().
+     *
+     * It can only be computed with the site's private key, so knowing an old
+     * session ID does not reveal the ones that follow it.
+     *
+     * @param  string $session_id The session ID being replaced
+     * @return string|null        The new session ID, NULL if we have no key to derive it with
+     */
+    protected function _rotated_session_id($session_id)
+    {
+        $key = ee()->config->item('session_crypt_key') ?: ee()->config->item('encryption_key');
+
+        if (empty($key) || ! is_string($session_id) || ! preg_match('/^[a-f0-9]{40}$/', $session_id)) {
+            return null;
+        }
+
+        return hash_hmac('sha1', 'session-rotation:' . $session_id, $key);
+    }
+
+    /**
+     * Find the session that replaced the (now unknown) session ID we were sent,
+     * if it was rotated within the last $rotation_grace_period seconds.
+     *
+     * @return object|null Session model
+     */
+    protected function _fetch_rotated_session()
+    {
+        if ($this->validation == 's') {
+            return null;
+        }
+
+        $rotated_id = $this->_rotated_session_id($this->sdata['session_id']);
+
+        if (! $rotated_id) {
+            return null;
+        }
+
+        $session = ee('Model')->get('Session')
+            ->filter('session_id', $rotated_id)
+            ->filter('sess_start', '>=', ee()->localize->now - $this->rotation_grace_period);
+
+        if ($this->validation == 'cs') {
+            $session = $session->filter('fingerprint', (string) $this->sdata['fingerprint']);
+        }
+
+        $session = $session->first();
+
+        if ($session) {
+            // Carry on as the new session, the cookie is refreshed on output
+            $this->sdata['session_id'] = $session->session_id;
+        }
+
+        return $session;
+    }
+
+    /**
      * Update Member session
      */
     public function update_session()
@@ -1012,6 +1109,11 @@ class EE_Session
         $this->sdata['last_activity'] = ee()->localize->now;
 
         $cur_session_id = $this->sdata['session_id'];
+        // Keep the logout identity fixed while the browser session ID rotates.
+        // Sessions created before the update receive it on their first activity.
+        if (isset($this->sdata['mfa_login_id']) && $this->sdata['mfa_login_id'] === '') {
+            $this->sdata['mfa_login_id'] = hash('sha256', $cur_session_id);
+        }
 
         // generate a new session ID if they've remained active during the whole
         // TTL but only if the session ID is being transported via a cookie, or
@@ -1019,7 +1121,12 @@ class EE_Session
         // windows or tabs. Note that the fingerprint is not affected by a
         // session id change, so it also works for cs.
         if ($this->validation != 's' && ($this->sdata['last_activity'] - $this->sdata['sess_start']) > $this->session_length) {
-            $this->sdata['session_id'] = ee()->functions->random();
+            // Requests from other tabs (or parallel AJAX requests) can arrive
+            // with the same old session ID at the same moment. If each of them
+            // picked a random new ID only one would end up in the database and
+            // the browser may keep one of the others, logging the user out.
+            // Deriving the new ID from the old one lets them all agree.
+            $this->sdata['session_id'] = $this->_rotated_session_id($cur_session_id) ?: ee()->functions->random();
             $this->userdata['session_id'] = $this->sdata['session_id'];
             $this->sdata['sess_start'] = $this->sdata['last_activity'];
 

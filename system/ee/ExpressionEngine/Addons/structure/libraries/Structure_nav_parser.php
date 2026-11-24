@@ -5,6 +5,9 @@ namespace ExpressionEngine\Addons\Structure\Libraries;
 use DOMElement;
 use DOMDocument;
 use Structure;
+use Structure_Helper;
+
+require_once PATH_ADDONS . 'structure/helper.php';
 
 /**
  * Library File for Structure Nav by Rob Sanchez
@@ -231,6 +234,11 @@ class Structure_core_nav_parser
                     $variable_row[$prefix . $field_name] = $channelEntry->$field_name;
                 }
 
+                // An entry supplied without a title keeps the title the row already has
+                if (isset($channelEntry->title)) {
+                    $variable_row[$prefix . 'title'] = Structure_Helper::encode_title_for_template($channelEntry->title);
+                }
+
                 // edit date is special in getModChannelResultsArray, so also special here
                 // not sure why is that though...
                 if (isset($variable_row[$prefix . 'edit_date'])) {
@@ -302,6 +310,10 @@ class Structure_core_nav_parser
             }
 
             $variable_row[$prefix . $key] = $value;
+        }
+
+        if (isset($row['title'])) {
+            $variable_row[$prefix . 'title'] = Structure_Helper::encode_title_for_template($row['title']);
         }
 
         $field_names = $this->get_custom_fields_by_group($row['field_group']);
@@ -416,6 +428,23 @@ class Structure_core_nav_parser
         return $fields;
     }
 
+    /**
+     * Get the text of the overview link when its label was written in the
+     * template, as it reads once the navigation markup has been loaded
+     *
+     * @return string|null
+     */
+    protected function get_overview_label()
+    {
+        $label = ee()->TMPL->fetch_param('rename_overview', 'Overview');
+
+        if (! ee()->TMPL->fetch_param('show_overview', false) || ! is_string($label) || $label === 'title') {
+            return null;
+        }
+
+        return html_entity_decode(strip_tags($label), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    }
+
     protected function parse_ul(DOMElement $ul, $depth = 0)
     {
         if ($depth === 0) {
@@ -445,8 +474,16 @@ class Structure_core_nav_parser
 
         $separator = ee()->config->item('word_separator') !== 'dash' ? '_' : '-';
 
+        $overview_label = $this->get_overview_label();
+
         foreach ($lis as $i => $li) {
             $link = $li->firstChild;
+            $title = $link->nodeValue;
+
+            // A label written in the template is left for the template to finish
+            if ($overview_label === null || $title !== $overview_label) {
+                $title = Structure_Helper::encode_title_for_template($title);
+            }
 
             $class = $li->getAttribute('class');
 
@@ -454,10 +491,10 @@ class Structure_core_nav_parser
 
             $variables[$i] = array(
                 '__prefix' => $prefix,
-                $prefix . 'entry_id' => $entry_id,
-                $prefix . 'title' => $link->nodeValue,
-                $prefix . 'page_url' => $link->getAttribute('href'),
-                $prefix . 'page_uri' => str_replace(ee()->functions->create_url(''), '', $link->getAttribute('href')),
+                $prefix . 'entry_id' => Structure_Helper::encode_title_for_template($entry_id),
+                $prefix . 'title' => $title,
+                $prefix . 'page_url' => Structure_Helper::encode_title_for_template($link->getAttribute('href')),
+                $prefix . 'page_uri' => Structure_Helper::encode_title_for_template(str_replace(ee()->functions->create_url(''), '', $link->getAttribute('href'))),
                 $prefix . 'first_child' => $i === 0,
                 $prefix . 'last_child' => ($i + 1) === $numLis,
                 $prefix . 'count' => $i + 1,

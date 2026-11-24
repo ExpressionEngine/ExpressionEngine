@@ -103,7 +103,7 @@ class CommandUpdateRunHook extends Cli
     {
         $customConfig = ($path ? rtrim($path, '/') : SYSPATH) . '/upgrade.config.php';
 
-        if (! file_exists($customConfig)) {
+        if (! file_exists_safe($customConfig)) {
             return false;
         }
 

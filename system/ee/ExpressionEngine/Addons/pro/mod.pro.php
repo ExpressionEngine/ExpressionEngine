@@ -35,7 +35,27 @@ class Pro
     }
 
     /**
-     * Enables MFA
+     * Serve a live domain proof without rendering a template or appending profiler output.
+     *
+     * @return void
+     */
+    public function verifyDomainChallenge(): void
+    {
+        if (REQ !== 'ACTION') {
+            return;
+        }
+
+        $id = ee()->input->get('challenge');
+        $proof = ee('Request')->method() === 'GET' && is_string($id) ? ee('License/DomainChallenge')->read($id) : null;
+
+        http_response_code($proof === null ? 404 : 200);
+        header('Cache-Control: no-store');
+        header('Content-Type: text/plain; charset=UTF-8');
+        exit($proof ?? '');
+    }
+
+    /**
+     * Enable MFA after verifying the member's setup code.
      *
      * @return void
      */
@@ -77,6 +97,7 @@ class Pro
                         $session->save();
                     }
 
+                    ee()->mfa_session->create($member, ee()->session->userdata('session_id'));
                     $this->redirectBack();
                 }
             }
@@ -178,14 +199,17 @@ class Pro
 
                 ee()->lang->load('myaccount');
                 $rules = [
-                    'password_confirm' => 'required|authenticated'
+                    'password_confirm' => 'required|authenticated',
+                    'mfa_code' => 'required|integer|exact_length[6]'
                 ];
                 $validator = ee('Validation')->make($rules);
 
                 $validation = $validator->validate($_POST);
 
-                if ($validation->passed()) {
-                    $member = ee()->session->getMember();
+                $member = ee()->session->getMember();
+                $validCode = ee('pro:Mfa')->validateMemberOtp(ee('Request')->post('mfa_code'), $member);
+
+                if ($validation->passed() && $validCode) {
                     $member->enable_mfa = false;
                     $member->backup_mfa_code = '';
                     $member->save();
@@ -203,7 +227,7 @@ class Pro
                         $session->save();
                     }
                     ee()->lang->load('pro');
-                    ee()->session->set_cache('mfa', 'errors', [lang('existing_password_mfa_reset_desc')]);
+                    ee()->session->set_cache('mfa', 'errors', [lang($validCode ? 'existing_password_mfa_reset_desc' : 'mfa_wrong_code_desc')]);
                     //sync the session
                     ee()->session->mfa_flag = 'show';
                 }
@@ -222,7 +246,7 @@ class Pro
     }
 
     /**
-     * Validates one-time password
+     * Verify a one-time password and remember MFA when configured.
      *
      * @return void
      */
@@ -259,6 +283,7 @@ class Pro
                         $session->mfa_flag = 'skip';
                         $session->save();
                     }
+                    ee()->mfa_session->create(ee()->session->getMember(), ee()->session->userdata('session_id'));
                     $this->redirectBack();
                 }
             }

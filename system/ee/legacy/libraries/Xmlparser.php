@@ -207,15 +207,14 @@ class EE_XMLparser
         $entities = $this->fetch_entity_definitions($xml);
         $xml = ($entities === false) ? $xml : $this->replace_entities($xml, $entities);
 
-        if (xml_parse_into_struct($parser, $xml, $this->tagdata, $this->index) === 0) {
+        $result = xml_parse_into_struct($parser, $xml, $this->tagdata, $this->index);
+
+        if (PHP_VERSION_ID < 80000) {
             xml_parser_free($parser);
-
-            return false;
         }
+        unset($parser);
 
-        xml_parser_free($parser);
-
-        return true;
+        return $result !== 0;
     }
 
     /** -------------------------------------

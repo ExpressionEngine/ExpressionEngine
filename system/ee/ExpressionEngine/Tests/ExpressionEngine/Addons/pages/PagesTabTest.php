@@ -20,7 +20,20 @@ if (!class_exists('PagesTabChannelEntryStub')) {
 
 class PagesTabTest extends PagesTestBase
 {
-    public function testDisplayBuildsSettingsForExistingEntry(): void
+    private function withWarningsAsExceptions(callable $callback)
+    {
+        set_error_handler(function ($severity, $message, $file, $line) {
+            throw new ErrorException($message, 0, $severity, $file, $line);
+        }, E_ALL);
+        try {
+            return $callback();
+        } finally {
+            restore_error_handler();
+        }
+    }
+
+    /** @dataProvider entryLookupIdProvider */
+    public function testDisplayBuildsSettingsForExistingEntry($entryId): void
     {
         $captured = (object) ['setSettings' => []];
 
@@ -44,8 +57,8 @@ class PagesTabTest extends PagesTestBase
                 if ($key === 'site_pages') {
                     return [
                         1 => [
-                            'uris' => [44 => '/about'],
-                            'templates' => [44 => 9],
+                            'uris' => [44 => '/about', '' => '/about'],
+                            'templates' => [44 => 9, '' => 9],
                         ],
                     ];
                 }
@@ -113,11 +126,22 @@ class PagesTabTest extends PagesTestBase
         });
 
         $tab = new Pages_tab();
-        $settings = $tab->display(3, 44);
+        $settings = $this->withWarningsAsExceptions(function () use ($tab, $entryId) {
+            return $tab->display(3, $entryId);
+        });
 
         $this->assertSame('/about', $settings['pages_uri']['field_data']);
         $this->assertSame(9, $settings['pages_template_id']['selected']);
         $this->assertCount(2, $captured->setSettings);
+    }
+
+    public function entryLookupIdProvider(): array
+    {
+        return [
+            'existing entry' => [44],
+            'unsaved entry' => [null],
+            'legacy empty ID' => [''],
+        ];
     }
 
     public function testDisplayBuildsNoTemplatesMessageForNewEntry(): void
@@ -292,7 +316,8 @@ class PagesTabTest extends PagesTestBase
         $this->assertSame($values, $tab->cloneData($entry, $values));
     }
 
-    public function testCloneDataPrefixesDuplicateUriUntilUnique(): void
+    /** @dataProvider entryLookupIdProvider */
+    public function testCloneDataPrefixesDuplicateUriUntilUnique($entryId): void
     {
         ee()->setMock('config', new class {
             public function item($key)
@@ -304,16 +329,19 @@ class PagesTabTest extends PagesTestBase
                     return 'underscore';
                 }
                 if ($key === 'site_pages') {
-                    return [1 => ['uris' => [11 => '/foo', 12 => '/copy_foo', 33 => '/self']]];
+                    return [1 => ['uris' => [11 => '/foo', 12 => '/copy_foo', 44 => '/self', '' => '/self']]];
                 }
                 return null;
             }
         });
 
-        $entry = new PagesTabChannelEntryStub(33);
+        $entry = new PagesTabChannelEntryStub();
+        $entry->entry_id = $entryId;
         $tab = new Pages_tab();
 
-        $values = $tab->cloneData($entry, ['pages_uri' => 'foo', 'pages_template_id' => 2]);
+        $values = $this->withWarningsAsExceptions(function () use ($tab, $entry) {
+            return $tab->cloneData($entry, ['pages_uri' => 'foo', 'pages_template_id' => 2]);
+        });
         $this->assertSame('copy_foo', $values['pages_uri']);
         $this->assertSame('copy_foo', $_POST['pages__pages_uri']);
     }
@@ -438,7 +466,8 @@ class PagesTabTest extends PagesTestBase
         $this->assertSame('SKIPPED', $captured->defined['whenURI']('pages_template_id', '', [], $rule));
     }
 
-    public function testValidationClosuresCoverErrorAndSuccessPaths(): void
+    /** @dataProvider entryLookupIdProvider */
+    public function testValidationClosuresCoverErrorAndSuccessPaths($entryId): void
     {
         ee()->setMock('config', new class {
             public function item($key)
@@ -450,7 +479,7 @@ class PagesTabTest extends PagesTestBase
                     return 'https://example.com/';
                 }
                 if ($key === 'site_pages') {
-                    return [1 => ['uris' => [8 => '/dupe', 9 => '/other']]];
+                    return [1 => ['uris' => [8 => '/dupe', 44 => '/other', '' => '/legacy']]];
                 }
                 return null;
             }
@@ -501,9 +530,13 @@ class PagesTabTest extends PagesTestBase
         $this->assertSame('invalid_page_num_segs', $segRule('pages_uri', '/a/b/c/d/e/f/g/h/i/j'));
         $this->assertTrue($segRule('pages_uri', '/a/b/c/d/e/f/g/h/i'));
 
-        $notDupRule = $this->invokePrivate($tab, 'makeNotDuplicatedRule', [new PagesTabChannelEntryStub(9)]);
+        $entry = new PagesTabChannelEntryStub();
+        $entry->entry_id = $entryId;
+        $notDupRule = $this->invokePrivate($tab, 'makeNotDuplicatedRule', [$entry]);
         $this->assertTrue($notDupRule('pages_uri', ''));
-        $message = $notDupRule('pages_uri', '/dupe');
+        $message = $this->withWarningsAsExceptions(function () use ($notDupRule) {
+            return $notDupRule('pages_uri', '/dupe');
+        });
         $this->assertSame('duplicate_page_uri_used', $message);
     }
 

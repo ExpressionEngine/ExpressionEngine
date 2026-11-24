@@ -40,6 +40,8 @@ $lang = array(
 
     'slate_theme' => 'Slate Theme',
 
+    'contrast_theme' => 'Contrast Theme',
+
     'dark' => 'Dark',
 
     'light' => 'Light',
@@ -47,6 +49,8 @@ $lang = array(
     'snow' => 'Snow',
 
     'slate' => 'Slate',
+
+    'contrast' => 'Contrast',
 
     'jump_menu_item' => 'Jump Menu',
 
@@ -748,6 +752,9 @@ $lang = array(
     'license_invalid_license_key' => 'Invalid License Key',
     'license_missing_license_key' => 'Missing License Key',
     'license_na' => 'Unknown',
+    'license_unverified' => 'Unverified',
+
+    'license_check_notice_desc' => 'ExpressionEngine has not been able to check this site&rsquo;s license for over a week. Please make sure this site and your browser can reach <b>updates.expressionengine.com</b>. Licensed features are paused after 14 days without a successful check.',
 
     'purchase_pro_license' => 'Purchase Pro License',
     'renew_pro_license' => 'Renew Pro License',
@@ -818,7 +825,7 @@ $lang = array(
 
     'search_reindex_tip' => 'Content Reindex',
 
-    'search_reindex_tip_desc' => "Please <a href='%s'>run the content reindex tool</a> tool to keep your searchable data up-to-date.",
+    'search_reindex_tip_desc' => "Please <a href='%s'>run the content reindex tool</a> to keep your searchable data up-to-date.",
 
     'reindex_not_needed' => 'Reindexing Not Necessary',
 

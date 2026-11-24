@@ -134,7 +134,7 @@ class View
         $src_dir = PATH_JS . '/';
         $path = PATH_THEMES_GLOBAL_ASSET . 'javascript/' . $src_dir . $file;
 
-        if (! file_exists($path)) {
+        if (! file_exists_safe($path)) {
             return null;
         }
 
@@ -159,7 +159,7 @@ class View
         $filemtime = null;
         $file_url = URL_THEMES . 'cp/' . $file;
 
-        if (file_exists(PATH_CP_THEME . $file)) {
+        if (file_exists_safe(PATH_CP_THEME . $file)) {
             $filemtime = filemtime(PATH_CP_THEME . $file);
         }
 

@@ -568,6 +568,24 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
           }
         });
       }
+      // Existing files remain selectable even if a directory's upload policy changed.
+      var browseDirectoriesForDropdown = uploadDirectoriesForDropdown;
+
+      if (this.props.contentType == 'image') {
+        var imageTypes = EE.dragAndDrop.imageTypes || ['img'];
+        uploadDirectoriesForDropdown = uploadDirectoriesForDropdown.filter(function (directory) {
+          var allowedTypes = (EE.dragAndDrop.allowedDirectoryTypes || {})[directory.upload_location_id];
+          return !allowedTypes || allowedTypes.includes('all') || imageTypes.some(function (type) {
+            return allowedTypes.includes(type);
+          });
+        });
+      }
+
+      if (this.props.allowedDirectory == 'all' && browseDirectoriesForDropdown.length > 0 && uploadDirectoriesForDropdown.length == 0) {
+        heading = EE.lang.file_dnd_no_directories;
+        subheading = EE.lang.file_dnd_no_compatible_directories;
+      }
+
       return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
         className: "file-field" + (this.props.marginTop ? ' mt' : '') + (this.warningsExist() ? ' file-field--warning' : '') + (this.state.error ? ' file-field--invalid' : '')
       }, /*#__PURE__*/React.createElement("div", {
@@ -717,7 +735,7 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
         keepSelectedState: false,
         title: EE.lang.file_dnd_choose_existing,
         placeholder: EE.lang.file_dnd_filter_directories,
-        items: uploadDirectoriesForDropdown,
+        items: browseDirectoriesForDropdown,
         onSelect: function onSelect(directory) {
           return _this5.chooseExisting(directory);
         },
@@ -727,7 +745,7 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
         createNewDirectory: false,
         ignoreChild: true,
         addInput: false
-      }), /*#__PURE__*/React.createElement(DropDownButton, {
+      }), uploadDirectoriesForDropdown.length > 0 && /*#__PURE__*/React.createElement(DropDownButton, {
         key: EE.lang.file_dnd_upload_new,
         action: true,
         keepSelectedState: false,

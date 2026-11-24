@@ -57,7 +57,7 @@ class EE_Actions
 
         // Make sure the ACT variable is set
         if (! $action_id = ee()->input->get_post('ACT')) {
-            return false;
+            return;
         }
 
         // Fetch the class and method name (checks to make sure module is installed too)
@@ -72,7 +72,7 @@ class EE_Actions
                 if (ee()->config->item('debug') >= 1) {
                     ee()->output->fatal_error(ee()->lang->line('invalid_action'));
                 } else {
-                    return false;
+                    return;
                 }
             }
 
@@ -82,7 +82,7 @@ class EE_Actions
         } else {
             // If the ID is not numeric we'll invoke the class/method manually
             if (! isset($specials[$action_id])) {
-                return false;
+                return;
             }
 
             $class = $specials[$action_id]['0'];
@@ -99,7 +99,7 @@ class EE_Actions
                 if (ee()->config->item('debug') >= 1) {
                     ee()->output->fatal_error(ee()->lang->line('invalid_action'));
                 } else {
-                    return false;
+                    return;
                 }
             }
         }
@@ -137,7 +137,7 @@ class EE_Actions
             if (ee()->config->item('debug') >= 1) {
                 ee()->output->fatal_error(ee()->lang->line('invalid_action'));
             } else {
-                return false;
+                return;
             }
         }
 
@@ -174,7 +174,7 @@ class EE_Actions
                 if (ee()->config->item('debug') >= 1) {
                     ee()->output->fatal_error(ee()->lang->line('invalid_action'));
                 } else {
-                    return false;
+                    return;
                 }
             }
 

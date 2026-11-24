@@ -16,9 +16,11 @@ use ExpressionEngine\Library\Filesystem\Filesystem;
 
 // Check to see if we're upgrading from EE5 or EE6+.
 // random_compat requirement is processed differently
+// The updater's copy of this file also boots a rollback, which can run while
+// none of the application's files are in place.
 if (file_exists(SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/random.php')) {
     require_once SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/random.php';
-} else {
+} elseif (file_exists(SYSPATH . '/ee/ExpressionEngine/Library/Compat/Random/random.php')) {
     require_once SYSPATH . '/ee/ExpressionEngine/Library/Compat/Random/random.php';
 }
 
@@ -39,6 +41,22 @@ if (file_exists(SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/r
 function is_php($version = '5.0.0')
 {
     return (version_compare(PHP_VERSION, $version) < 0) ? false : true;
+}
+
+/**
+ * Check whether a file or directory exists, with consistent NUL-path handling.
+ *
+ * Reject paths containing NUL bytes before calling file_exists(), avoiding
+ * warnings on older PHP versions and ValueError on PHP 8.6 and later.
+ * Other paths retain native file_exists() behavior; paths are not normalized
+ * or modified, and other filesystem errors are not suppressed.
+ *
+ * @param string $path Filesystem path to check
+ * @return bool Whether the file or directory exists
+ */
+function file_exists_safe($path)
+{
+    return strpos((string) $path, "\0") === false && file_exists($path);
 }
 
 /**
