@@ -32272,10 +32272,20 @@ fieldset .field-control #eye {
   min-width: 250px;
   max-width: 600px;
 }
+.grid-field__table tbody td.row-counter-column {
+  vertical-align: middle;
+}
 @media (max-width: 767px) {
   .grid-field__table tbody td {
     border-right: none;
   }
+}
+.grid-field__table > tbody > tr:has(> td > .note-fieldtype) > td:has(> .note-fieldtype, > input[type=text], > input[type=number]) {
+  vertical-align: middle;
+}
+.grid-field__table > tbody > tr > td > .note-fieldtype {
+  padding-block: 15px;
+  margin-bottom: 0;
 }
 .grid-field__table td:first-child, .grid-field__table th:first-child {
   padding-left: 15px;
