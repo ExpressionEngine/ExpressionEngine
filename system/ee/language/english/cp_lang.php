@@ -915,6 +915,8 @@ $lang = array(
 
     'toggle_buton' => 'toggle button',
 
+    'insert_row' => 'Insert row below',
+
     'reorder_row' => 'Reorder row button',
 
     'remove_row' => 'Remove row button',
