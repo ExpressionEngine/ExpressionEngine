@@ -23,6 +23,11 @@ abstract class AbstractLexer
     protected $str;
 
     /**
+     * Current byte position in the unchanged input buffer.
+     */
+    protected $pos = 0;
+
+    /**
      * Final token array
      */
     protected $tokens = array();
@@ -30,20 +35,20 @@ abstract class AbstractLexer
     /**
      * All lexers must implement their own tokenizing method.
      *
-     * @param String $str The string to tokenize
-     * @return array of tokens
+     * @param string $str The input to tokenize.
+     * @return array The resulting tokens.
      */
     abstract public function tokenize($str);
 
     /**
-     * Peek ahead n characters without moving
+     * Read up to $n bytes without advancing the cursor.
      *
-     * @param int $n The number of characters to peek ahead
-     * @return string The next $n characters
+     * @param int $n The number of bytes to read.
+     * @return string The requested bytes, or an empty string at the end of input.
      */
     protected function peek($n = 1)
     {
-        return substr($this->str, 0, $n);
+        return substr($this->str, $this->pos, $n);
     }
 
     /**
@@ -51,41 +56,59 @@ abstract class AbstractLexer
      *
      * @param string $regex A regular expression
      * @param string $flags Optionally change the regex flags
-     * @return array|string The result of the match or an empty string
+     * @return string|null The matched text or null
      */
     protected function peekRegex($regex, $flags = 'us')
     {
-        if (preg_match('/' . $regex . '/A' . $flags, $this->str, $matches)) {
-            return $matches[0];
+        $matches = $this->matchAnchored('/' . $regex . '/A' . $flags);
+
+        return isset($matches) ? $matches[0] : null;
+    }
+
+    /**
+     * Match an anchored pattern against the current regex subject.
+     *
+     * @param string $pattern The complete anchored regular expression.
+     * @return array|null The matched captures or null.
+     */
+    protected function matchAnchored($pattern)
+    {
+        if (preg_match($pattern, $this->getRegexSubject(), $matches) === 1) {
+            return $matches;
         }
 
         return null;
     }
 
     /**
-     * Seek to the first character in char mask
+     * Provide the remaining input with the current position at subject start.
      *
-     * @param string $char_mask The characters we are seeking
-     * @return string The characters lost in the move
+     * @return string
+     */
+    protected function getRegexSubject()
+    {
+        return $this->rest();
+    }
+
+    /**
+     * Advance to the first byte in the character mask, leaving that byte unconsumed.
+     *
+     * @param string $char_mask The delimiter bytes to seek.
+     * @return string The bytes consumed before the delimiter or end of input.
      */
     protected function seekTo($char_mask)
     {
-        $n = 0;
-
-        // if mbstring.func_overload is enabled strcspn here and substr in move()
-        // will not have matching lengths, so only use strcspn when they match
-        // and fall back to regex otherwise
-        if ($n = preg_match('/^[^' . preg_quote($char_mask, '/') . ']*/', $this->str, $matches)) {
-            $n = strlen($matches[0]);
-        }
+        // strcspn from the current position (mbstring.func_overload, the
+        // reason for the old regex, no longer exists as of PHP 8)
+        $n = strcspn($this->str, $char_mask, $this->pos);
 
         return $this->move($n);
     }
 
     /**
-     * Move to the next character
+     * Consume the next byte if one is available.
      *
-     * @return string The consumed character
+     * @return string The consumed byte, or an empty string at the end of input.
      */
     protected function next()
     {
@@ -93,37 +116,37 @@ abstract class AbstractLexer
     }
 
     /**
-     * Move ahead n characters in the string, returning the consumed bit
+     * Consume up to $n bytes and advance the cursor by the number consumed.
      *
-     * @param int $n The number of characters to move ahead
-     * @return string The characters lost in the move
+     * @param int $n The number of bytes to consume.
+     * @return string The consumed bytes.
      */
     protected function move($n)
     {
-        $buffer = substr($this->str, 0, $n);
-        $this->str = substr($this->str, $n);
+        $buffer = substr($this->str, $this->pos, $n);
+        $this->pos += strlen($buffer);
 
         return $buffer;
     }
 
     /**
-     * Check if end of string reached.
+     * Check whether the cursor has reached the end of input.
      *
-     * @return Bool End reached
+     * @return bool
      */
     protected function eof()
     {
-        return $this->str == '';
+        return $this->pos >= strlen($this->str);
     }
 
     /**
-     * Get the remaining string to be lexed
+     * Return the input remaining at the cursor.
      *
-     * @return Remaining string
+     * @return string
      */
     protected function rest()
     {
-        return $this->str;
+        return (string) substr($this->str, $this->pos);
     }
 }
 
