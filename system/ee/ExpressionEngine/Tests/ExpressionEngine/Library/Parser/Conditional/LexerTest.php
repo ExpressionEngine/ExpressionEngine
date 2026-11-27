@@ -202,6 +202,8 @@ class LexerTest extends TestCase
             array('Ifelse duplicity', 					'{if 5 == 5}out{if:else:else}out{/if}'),
             array('Ifelse Prefixing', 					'{if 5 == 5}out{if:elsebeth}out{/if}'),
             array('Ifelseif Prefixing', 				'{if 5 == 5}out{if:elseiffy}out{/if}'),
+            array('Unclosed Tag in Condition', 			'{if x == {y'),
+            array('Unclosed Nested Tag in Condition', 	'{if x == {y {z'),
         );
     }
 

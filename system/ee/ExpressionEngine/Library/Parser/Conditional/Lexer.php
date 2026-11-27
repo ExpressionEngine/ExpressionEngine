@@ -290,8 +290,12 @@ class Lexer extends AbstractLexer
         $this->tag_depth++;
         $this->tag_buffer .= '{';
 
-        while (($char = $this->peek()) !== false) {
-            switch ($char) {
+        while (true) {
+            if ($this->eof()) {
+                throw new LexerException('Unclosed tag.');
+            }
+
+            switch ($this->peek()) {
                 case '}':
                     $this->next();
 
